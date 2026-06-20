@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { Mail, Phone, MessageCircle, Star } from "lucide-react";
+import { NewContactButton } from "./new-contact-button";
 
 export default async function ClientDetailPage({
   params,
@@ -13,7 +15,7 @@ export default async function ClientDetailPage({
       assignedPartner: true,
       assignedManager: true,
       assignedCollaborator: true,
-      contacts: true,
+      contacts: { orderBy: [{ isPrimary: "desc" }, { lastName: "asc" }] },
       tasks: { orderBy: { createdAt: "desc" }, take: 10 },
       documents: { orderBy: { createdAt: "desc" }, take: 10 },
       tickets: { orderBy: { createdAt: "desc" }, take: 10 },
@@ -36,7 +38,12 @@ export default async function ClientDetailPage({
         <InfoCard title="Identité">
           <Info label="SIREN" value={client.siren} />
           <Info label="Forme juridique" value={client.legalForm} />
-          <Info label="Ville" value={client.city} />
+          <Info label="Adresse" value={client.address} />
+          <Info
+            label="Ville"
+            value={[client.postalCode, client.city].filter(Boolean).join(" ") || null}
+          />
+          <Info label="Client depuis" value={formatDate(client.clientSince)} />
         </InfoCard>
         <InfoCard title="Fiscalité">
           <Info label="Régime fiscal" value={client.taxRegime} />
@@ -69,6 +76,59 @@ export default async function ClientDetailPage({
             }
           />
         </InfoCard>
+      </div>
+
+      <div className="bg-white rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold">Contacts</h2>
+          <NewContactButton clientId={client.id} />
+        </div>
+        {client.contacts.length === 0 ? (
+          <p className="text-gray-400 text-sm">Aucun contact enregistré.</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-3">
+            {client.contacts.map((contact) => {
+              const fullName = [contact.firstName, contact.lastName]
+                .filter(Boolean)
+                .join(" ");
+              const initials = `${contact.firstName?.[0] ?? ""}${contact.lastName?.[0] ?? ""}`.toUpperCase();
+              return (
+                <div
+                  key={contact.id}
+                  className="rounded-xl border border-gray-100 p-4 space-y-2"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-full bg-brand/10 text-brand flex items-center justify-center text-sm font-semibold shrink-0">
+                      {initials || "?"}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate flex items-center gap-1">
+                        {fullName || "Contact"}
+                        {contact.isPrimary && (
+                          <Star size={12} className="text-amber-400 fill-amber-400" />
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-400 truncate">
+                        {contact.role || "—"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-xs text-gray-500">
+                    <p className="flex items-center gap-1.5 truncate">
+                      <Mail size={12} /> {contact.email || "—"}
+                    </p>
+                    <p className="flex items-center gap-1.5 truncate">
+                      <Phone size={12} /> {contact.phone || "—"}
+                    </p>
+                    <p className="flex items-center gap-1.5 truncate">
+                      <MessageCircle size={12} /> {contact.whatsappPhone || "—"}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -147,9 +207,13 @@ function InfoCard({ title, children }: { title: string; children: React.ReactNod
 
 function Info({ label, value }: { label: string; value?: string | null }) {
   return (
-    <div className="flex justify-between text-sm">
-      <span className="text-gray-400">{label}</span>
-      <span>{value || "—"}</span>
+    <div className="flex justify-between text-sm gap-3">
+      <span className="text-gray-400 shrink-0">{label}</span>
+      <span className="text-right">{value || "—"}</span>
     </div>
   );
+}
+
+function formatDate(date: Date | null) {
+  return date ? date.toLocaleDateString("fr-FR") : null;
 }
