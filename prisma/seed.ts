@@ -147,6 +147,7 @@ async function main() {
       status: "todo",
       kanbanColumn: "a_faire",
       priority: "normal",
+      dueDate: new Date(),
     },
     {
       id: "00000000-0000-0000-0000-000000000031",
@@ -181,7 +182,7 @@ async function main() {
 
   await prisma.ticket.upsert({
     where: { ticketNumber: "TCK-0001" },
-    update: {},
+    update: { assignedTo: collaborator.id },
     create: {
       ticketNumber: "TCK-0001",
       clientId: client.id,
@@ -189,6 +190,7 @@ async function main() {
       subject: "Question sur la TVA du mois",
       status: "new",
       createdBy: collaborator.id,
+      assignedTo: collaborator.id,
     },
   });
 

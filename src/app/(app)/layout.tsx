@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Sidebar } from "@/components/sidebar";
+import { Topbar } from "@/components/topbar";
 
 export default async function AppLayout({
   children,
@@ -17,12 +18,14 @@ export default async function AppLayout({
 
   return (
     <div className="flex w-full">
-      <Sidebar
-        userName={session?.user?.name ?? "Utilisateur"}
-        userRole={session?.user?.role ?? null}
-        mailsToTreat={mailsToTreat}
-      />
-      <main className="flex-1 p-8">{children}</main>
+      <Sidebar mailsToTreat={mailsToTreat} />
+      <div className="flex-1 flex flex-col min-h-screen">
+        <Topbar
+          userName={session?.user?.name ?? "Utilisateur"}
+          userRole={session?.user?.role ?? null}
+        />
+        <main className="flex-1 p-8">{children}</main>
+      </div>
     </div>
   );
 }

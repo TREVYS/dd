@@ -27,12 +27,8 @@ const NAV = [
 ];
 
 export function Sidebar({
-  userName,
-  userRole,
   mailsToTreat = 0,
 }: {
-  userName: string;
-  userRole: string | null;
   mailsToTreat?: number;
 }) {
   const pathname = usePathname();
@@ -82,8 +78,6 @@ export function Sidebar({
       </nav>
 
       <div className="border-t border-gray-100 pt-4 mt-4">
-        <p className="text-sm font-medium">{userName}</p>
-        <p className="text-xs text-gray-400 mb-3">{userRole ?? "Utilisateur"}</p>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-red-500"
