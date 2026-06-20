@@ -1,55 +1,51 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { MailRow } from "./mail-row";
+import { MailClient } from "./mail-client";
 
 export default async function MailsPage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const mails = userId
-    ? await prisma.mail.findMany({
-        where: { recipientId: userId },
-        orderBy: { receivedAt: "desc" },
-        include: { client: true },
-      })
-    : [];
+  const [mails, folders] = userId
+    ? await Promise.all([
+        prisma.mail.findMany({
+          where: { recipientId: userId },
+          orderBy: { receivedAt: "desc" },
+          include: {
+            client: true,
+            replies: { orderBy: { createdAt: "asc" }, include: { author: true } },
+          },
+        }),
+        prisma.mailFolder.findMany({
+          where: { userId },
+          orderBy: { name: "asc" },
+        }),
+      ])
+    : [[], []];
 
-  const toTreat = mails.filter((m) => m.status === "a_traiter").length;
+  const mailData = mails.map((mail) => ({
+    id: mail.id,
+    fromName: mail.fromName,
+    fromEmail: mail.fromEmail,
+    subject: mail.subject,
+    body: mail.body,
+    status: mail.status,
+    isRead: mail.isRead,
+    receivedAt: mail.receivedAt.toISOString(),
+    folderId: mail.folderId,
+    clientName: mail.client?.commercialName ?? mail.client?.legalName ?? null,
+    replies: mail.replies.map((r) => ({
+      id: r.id,
+      body: r.body,
+      aiGenerated: r.aiGenerated,
+      createdAt: r.createdAt.toISOString(),
+      authorName: `${r.author.firstName} ${r.author.lastName}`,
+    })),
+  }));
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Mails</h1>
-        <p className="text-sm text-gray-500">
-          {toTreat > 0
-            ? `${toTreat} mail${toTreat > 1 ? "s" : ""} à traiter`
-            : "Tout est traité"}
-        </p>
-      </div>
+  const folderData = folders.map((f) => ({ id: f.id, name: f.name }));
 
-      <div className="bg-white rounded-2xl divide-y divide-gray-50">
-        {mails.length === 0 && (
-          <p className="p-6 text-gray-400 text-sm">Aucun mail.</p>
-        )}
-        {mails.map((mail) => (
-          <MailRow
-            key={mail.id}
-            mail={{
-              id: mail.id,
-              fromName: mail.fromName,
-              fromEmail: mail.fromEmail,
-              subject: mail.subject,
-              body: mail.body,
-              status: mail.status,
-              isRead: mail.isRead,
-              receivedAt: mail.receivedAt.toISOString(),
-              clientName: mail.client?.commercialName ?? mail.client?.legalName ?? null,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
+  return <MailClient initialMails={mailData} initialFolders={folderData} />;
 }
 
 export const metadata = {

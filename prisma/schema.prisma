@@ -88,29 +88,31 @@ model User {
   quotesValidatedManager Quote[] @relation("QuoteValidatedByManager")
   quotesValidatedPartner Quote[] @relation("QuoteValidatedByPartner")
 
-  timeEntries        TimeEntry[]
-  capacityPlans      CapacityPlan[]
-  qualityReviews     QualityReview[]
-  risksDetected      Risk[]             @relation("RiskDetectedBy")
-  risksAssigned      Risk[]             @relation("RiskAssignedTo")
-  knowledgeAuthored  KnowledgeArticle[] @relation("KnowledgeCreatedBy")
-  knowledgeValidated KnowledgeArticle[] @relation("KnowledgeValidatedBy")
-  auditLogs          AuditLog[]
-  announcementsCreated Announcement[] @relation("AnnouncementCreatedBy")
-  mails Mail[] @relation("MailRecipient")
+  timeEntries          TimeEntry[]
+  capacityPlans        CapacityPlan[]
+  qualityReviews       QualityReview[]
+  risksDetected        Risk[]             @relation("RiskDetectedBy")
+  risksAssigned        Risk[]             @relation("RiskAssignedTo")
+  knowledgeAuthored    KnowledgeArticle[] @relation("KnowledgeCreatedBy")
+  knowledgeValidated   KnowledgeArticle[] @relation("KnowledgeValidatedBy")
+  auditLogs            AuditLog[]
+  announcementsCreated Announcement[]     @relation("AnnouncementCreatedBy")
+  mails                Mail[]             @relation("MailRecipient")
+  mailFolders          MailFolder[]
+  mailReplies          MailReply[]
 
   @@map("users")
 }
 
 model Announcement {
-  id          String   @id @default(uuid())
-  category    String   @db.VarChar(40)
-  title       String   @db.VarChar(255)
+  id          String    @id @default(uuid())
+  category    String    @db.VarChar(40)
+  title       String    @db.VarChar(255)
   content     String
-  createdById String   @map("created_by")
-  startsAt    DateTime @default(now()) @map("starts_at")
+  createdById String    @map("created_by")
+  startsAt    DateTime  @default(now()) @map("starts_at")
   endsAt      DateTime? @map("ends_at")
-  createdAt   DateTime @default(now()) @map("created_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
 
   createdBy User @relation("AnnouncementCreatedBy", fields: [createdById], references: [id])
 
@@ -119,22 +121,53 @@ model Announcement {
 }
 
 model Mail {
-  id          String    @id @default(uuid())
-  recipientId String    @map("recipient_id")
-  clientId    String?   @map("client_id")
-  fromName    String    @map("from_name") @db.VarChar(180)
-  fromEmail   String    @map("from_email") @db.VarChar(180)
-  subject     String    @db.VarChar(255)
+  id          String   @id @default(uuid())
+  recipientId String   @map("recipient_id")
+  clientId    String?  @map("client_id")
+  folderId    String?  @map("folder_id")
+  fromName    String   @map("from_name") @db.VarChar(180)
+  fromEmail   String   @map("from_email") @db.VarChar(180)
+  subject     String   @db.VarChar(255)
   body        String
-  status      String    @default("a_traiter") @db.VarChar(30)
-  isRead      Boolean   @default(false) @map("is_read")
-  receivedAt  DateTime  @default(now()) @map("received_at")
+  status      String   @default("a_traiter") @db.VarChar(30)
+  isRead      Boolean  @default(false) @map("is_read")
+  receivedAt  DateTime @default(now()) @map("received_at")
 
-  recipient User    @relation("MailRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
-  client    Client? @relation(fields: [clientId], references: [id])
+  recipient User        @relation("MailRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  client    Client?     @relation(fields: [clientId], references: [id])
+  folder    MailFolder? @relation(fields: [folderId], references: [id])
+  replies   MailReply[]
 
   @@index([recipientId, status])
+  @@index([folderId])
   @@map("mails")
+}
+
+model MailFolder {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String   @db.VarChar(80)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mails Mail[]
+
+  @@unique([userId, name])
+  @@map("mail_folders")
+}
+
+model MailReply {
+  id          String   @id @default(uuid())
+  mailId      String   @map("mail_id")
+  authorId    String   @map("author_id")
+  body        String
+  aiGenerated Boolean  @default(false) @map("ai_generated")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  mail   Mail @relation(fields: [mailId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map("mail_replies")
 }
 
 model Client {
@@ -514,11 +547,11 @@ model Quote {
   signedAt           DateTime? @map("signed_at")
   createdAt          DateTime  @default(now()) @map("created_at")
 
-  client           Client?            @relation(fields: [clientId], references: [id])
-  creator          User?              @relation("QuoteCreatedBy", fields: [createdBy], references: [id])
-  managerValidator User?              @relation("QuoteValidatedByManager", fields: [validatedByManager], references: [id])
-  partnerValidator User?              @relation("QuoteValidatedByPartner", fields: [validatedByPartner], references: [id])
-  lines            QuoteLine[]
+  client            Client?            @relation(fields: [clientId], references: [id])
+  creator           User?              @relation("QuoteCreatedBy", fields: [createdBy], references: [id])
+  managerValidator  User?              @relation("QuoteValidatedByManager", fields: [validatedByManager], references: [id])
+  partnerValidator  User?              @relation("QuoteValidatedByPartner", fields: [validatedByPartner], references: [id])
+  lines             QuoteLine[]
   engagementLetters EngagementLetter[]
 
   @@map("quotes")

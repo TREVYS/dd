@@ -6,6 +6,7 @@ import { z } from "zod";
 const MailUpdateSchema = z.object({
   isRead: z.boolean().optional(),
   status: z.enum(["a_traiter", "traite"]).optional(),
+  folderId: z.string().nullable().optional(),
 });
 
 export async function PATCH(
