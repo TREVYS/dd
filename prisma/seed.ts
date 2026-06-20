@@ -233,6 +233,39 @@ async function main() {
     });
   }
 
+  const announcementsData = [
+    {
+      id: "00000000-0000-0000-0000-000000000050",
+      category: "fiscalite",
+      title: "Taux de TVA réduit reconduit",
+      content:
+        "Le taux de TVA réduit à 10% sur les travaux de rénovation énergétique est reconduit pour l'année en cours. Pensez à vérifier les factures de vos clients du BTP.",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000051",
+      category: "attention",
+      title: "Clôtures d'avril en retard",
+      content:
+        "Plusieurs dossiers de clôture d'avril ne sont pas encore finalisés. Merci de prioriser ces dossiers avant la fin de la semaine.",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000052",
+      category: "objectif",
+      title: "Objectif du mois : satisfaction client",
+      content:
+        "Ce mois-ci, l'objectif du cabinet est de réduire le délai moyen de réponse aux mails clients à moins de 24h.",
+    },
+  ];
+
+  for (const a of announcementsData) {
+    const data = { ...a, createdById: partner.id };
+    await prisma.announcement.upsert({
+      where: { id: a.id },
+      update: data,
+      create: data,
+    });
+  }
+
   console.log("Seed terminé.");
 }
 

@@ -67,38 +67,47 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-brand rounded-3xl p-8 text-white relative overflow-hidden">
-        <div className="flex items-start justify-between gap-4">
+      <div className="bg-gradient-to-br from-brand via-violet-600 to-indigo-700 rounded-3xl p-8 text-white relative overflow-hidden">
+        <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
+        <div className="absolute -bottom-20 left-1/3 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+
+        <div className="relative flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-medium opacity-80 mb-2">CABINET TREVYS</p>
+            <p className="text-xs font-semibold tracking-wide opacity-80 mb-2">
+              COMMUNICATIONS DU CABINET
+            </p>
             <h1 className="text-3xl font-semibold mb-1">Bonjour {firstName} 👋</h1>
-            <p className="opacity-80">
-              Voici l&apos;état de votre activité aujourd&apos;hui.
+            <p className="opacity-80 max-w-md">
+              Actualités fiscales, points d&apos;attention et nouvelles du cabinet, réunis ici.
             </p>
           </div>
           {isPartner && <NewAnnouncementButton />}
         </div>
 
-        {announcements.length > 0 && (
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+        {announcements.length > 0 ? (
+          <div className="relative mt-6 grid grid-cols-1 md:grid-cols-3 gap-3">
             {announcements.slice(0, 3).map((a) => {
               const meta = CATEGORY_META[a.category] ?? CATEGORY_META.info;
               const Icon = meta.icon;
               return (
                 <div
                   key={a.id}
-                  className="bg-white/10 backdrop-blur rounded-2xl p-4 space-y-1"
+                  className="bg-white text-gray-800 rounded-2xl p-4 space-y-1.5 shadow-sm"
                 >
-                  <div className="flex items-center gap-2 text-xs font-medium opacity-90">
-                    <Icon size={14} />
+                  <div className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${meta.color}`}>
+                    <Icon size={12} />
                     {meta.label}
                   </div>
                   <p className="font-semibold text-sm">{a.title}</p>
-                  <p className="text-xs opacity-80 line-clamp-2">{a.content}</p>
+                  <p className="text-xs text-gray-500 line-clamp-2">{a.content}</p>
                 </div>
               );
             })}
           </div>
+        ) : (
+          <p className="relative mt-6 text-sm opacity-70">
+            Aucune communication pour le moment.
+          </p>
         )}
       </div>
 
