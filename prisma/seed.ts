@@ -85,6 +85,20 @@ async function main() {
     },
   });
 
+  await prisma.clientMission.upsert({
+    where: { id: "00000000-0000-0000-0000-000000000020" },
+    update: {},
+    create: {
+      id: "00000000-0000-0000-0000-000000000020",
+      clientId: client.id,
+      missionId: mission.id,
+      recurrence: "mensuelle",
+      feeAmount: 450,
+      estimatedHours: 4,
+      assignedUserId: collaborator.id,
+    },
+  });
+
   await prisma.task.createMany({
     data: [
       {
