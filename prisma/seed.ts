@@ -55,85 +55,129 @@ async function main() {
     },
   });
 
+  const clientData = {
+    legalName: "SARL Dupont Construction",
+    commercialName: "Dupont Construction",
+    siren: "123456789",
+    legalForm: "SARL",
+    taxRegime: "IS",
+    vatRegime: "Réel normal",
+    address: "12 rue des Tisseurs",
+    postalCode: "69002",
+    city: "Lyon",
+    assignedPartnerId: partner.id,
+    assignedManagerId: manager.id,
+    assignedCollaboratorId: collaborator.id,
+    clientSince: new Date("2022-01-15"),
+  };
+
   const client = await prisma.client.upsert({
     where: { id: "00000000-0000-0000-0000-000000000001" },
-    update: {},
+    update: clientData,
     create: {
       id: "00000000-0000-0000-0000-000000000001",
-      legalName: "SARL Dupont Construction",
-      commercialName: "Dupont Construction",
-      siren: "123456789",
-      legalForm: "SARL",
-      taxRegime: "IS",
-      vatRegime: "Réel normal",
-      city: "Lyon",
-      assignedPartnerId: partner.id,
-      assignedManagerId: manager.id,
-      assignedCollaboratorId: collaborator.id,
-      clientSince: new Date("2022-01-15"),
+      ...clientData,
     },
   });
+
+  const contact1Data = {
+    clientId: client.id,
+    firstName: "Marc",
+    lastName: "Dupont",
+    role: "Gérant",
+    email: "marc.dupont@dupont-construction.fr",
+    phone: "0478001122",
+    whatsappPhone: "0612345678",
+    isPrimary: true,
+  };
+
+  await prisma.clientContact.upsert({
+    where: { id: "00000000-0000-0000-0000-000000000002" },
+    update: contact1Data,
+    create: { id: "00000000-0000-0000-0000-000000000002", ...contact1Data },
+  });
+
+  const contact2Data = {
+    clientId: client.id,
+    firstName: "Sophie",
+    lastName: "Lambert",
+    role: "Comptable interne",
+    email: "s.lambert@dupont-construction.fr",
+    phone: "0478001133",
+    isPrimary: false,
+  };
+
+  await prisma.clientContact.upsert({
+    where: { id: "00000000-0000-0000-0000-000000000003" },
+    update: contact2Data,
+    create: { id: "00000000-0000-0000-0000-000000000003", ...contact2Data },
+  });
+
+  const missionData = {
+    name: "Tenue comptable mensuelle",
+    category: "Comptabilité",
+    defaultEstimatedHours: 4,
+  };
 
   const mission = await prisma.mission.upsert({
     where: { id: "00000000-0000-0000-0000-000000000010" },
-    update: {},
-    create: {
-      id: "00000000-0000-0000-0000-000000000010",
-      name: "Tenue comptable mensuelle",
-      category: "Comptabilité",
-      defaultEstimatedHours: 4,
-    },
+    update: missionData,
+    create: { id: "00000000-0000-0000-0000-000000000010", ...missionData },
   });
+
+  const clientMissionData = {
+    clientId: client.id,
+    missionId: mission.id,
+    recurrence: "mensuelle",
+    feeAmount: 450,
+    estimatedHours: 4,
+    assignedUserId: collaborator.id,
+  };
 
   await prisma.clientMission.upsert({
     where: { id: "00000000-0000-0000-0000-000000000020" },
-    update: {},
-    create: {
-      id: "00000000-0000-0000-0000-000000000020",
-      clientId: client.id,
-      missionId: mission.id,
-      recurrence: "mensuelle",
-      feeAmount: 450,
-      estimatedHours: 4,
-      assignedUserId: collaborator.id,
-    },
+    update: clientMissionData,
+    create: { id: "00000000-0000-0000-0000-000000000020", ...clientMissionData },
   });
 
-  await prisma.task.createMany({
-    data: [
-      {
-        clientId: client.id,
-        missionId: mission.id,
-        assignedTo: collaborator.id,
-        managerId: manager.id,
-        title: "Saisie comptable mai",
-        status: "todo",
-        kanbanColumn: "a_faire",
-        priority: "normal",
-      },
-      {
-        clientId: client.id,
-        missionId: mission.id,
-        assignedTo: collaborator.id,
-        managerId: manager.id,
-        title: "Déclaration TVA mai",
-        status: "in_progress",
-        kanbanColumn: "en_cours",
-        priority: "high",
-      },
-      {
-        clientId: client.id,
-        missionId: mission.id,
-        assignedTo: collaborator.id,
-        managerId: manager.id,
-        title: "Contrôle manager clôture avril",
-        status: "review",
-        kanbanColumn: "controle",
-        priority: "normal",
-      },
-    ],
-    skipDuplicates: true,
-  });
+  const tasksData = [
+    {
+      id: "00000000-0000-0000-0000-000000000030",
+      title: "Saisie comptable mai",
+      status: "todo",
+      kanbanColumn: "a_faire",
+      priority: "normal",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000031",
+      title: "Déclaration TVA mai",
+      status: "in_progress",
+      kanbanColumn: "en_cours",
+      priority: "high",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000032",
+      title: "Contrôle manager clôture avril",
+      status: "review",
+      kanbanColumn: "controle",
+      priority: "normal",
+    },
+  ];
+
+  for (const { id, ...task } of tasksData) {
+    const taskData = {
+      clientId: client.id,
+      missionId: mission.id,
+      assignedTo: collaborator.id,
+      managerId: manager.id,
+      ...task,
+    };
+    await prisma.task.upsert({
+      where: { id },
+      update: taskData,
+      create: { id, ...taskData },
+    });
+  }
 
   await prisma.ticket.upsert({
     where: { ticketNumber: "TCK-0001" },
