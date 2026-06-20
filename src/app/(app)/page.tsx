@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Users, KanbanSquare, Inbox, FileText, Landmark, AlertTriangle, Target, Info } from "lucide-react";
+import { Users, KanbanSquare, Inbox, FileText, Landmark, AlertTriangle, Target, Info, Mail } from "lucide-react";
 import { NewAnnouncementButton } from "./new-announcement-button";
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Info; color: string }> = {
@@ -21,12 +21,15 @@ export default async function DashboardPage() {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-  const [clientCount, openTasks, openTickets, draftQuotes, announcements] =
+  const [clientCount, openTasks, openTickets, draftQuotes, mailsToTreat, announcements] =
     await Promise.all([
       prisma.client.count({ where: { status: "active" } }),
       prisma.task.count({ where: { status: { not: "done" } } }),
       prisma.ticket.count({ where: { status: { not: "closed" } } }),
       prisma.quote.count({ where: { status: "draft" } }),
+      userId
+        ? prisma.mail.count({ where: { recipientId: userId, status: "a_traiter" } })
+        : Promise.resolve(0),
       prisma.announcement.findMany({
         where: { OR: [{ endsAt: null }, { endsAt: { gte: now } }] },
         orderBy: { createdAt: "desc" },
@@ -57,6 +60,7 @@ export default async function DashboardPage() {
   const stats = [
     { label: "Clients actifs", value: clientCount, icon: Users, href: "/clients" },
     { label: "Tâches en cours", value: openTasks, icon: KanbanSquare, href: "/production" },
+    { label: "Mails à traiter", value: mailsToTreat, icon: Mail, href: "/mails" },
     { label: "Tickets ouverts", value: openTickets, icon: Inbox, href: "/tickets" },
     { label: "Devis en brouillon", value: draftQuotes, icon: FileText, href: "/devis" },
   ];
@@ -98,7 +102,7 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-6 gap-4">
         {stats.map((s) => {
           const Icon = s.icon;
           return (

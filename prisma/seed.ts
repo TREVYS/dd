@@ -192,6 +192,45 @@ async function main() {
     },
   });
 
+  const mailsData = [
+    {
+      id: "00000000-0000-0000-0000-000000000040",
+      fromName: "Marc Dupont",
+      fromEmail: "marc.dupont@dupont-construction.fr",
+      subject: "Justificatifs de mai à transmettre",
+      body: "Bonjour, je vous transmets les relevés bancaires et factures du mois de mai en pièce jointe. Pouvez-vous me confirmer la bonne réception ?",
+      status: "a_traiter",
+      isRead: false,
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000041",
+      fromName: "URSSAF",
+      fromEmail: "contact@urssaf.fr",
+      subject: "Échéance de cotisations à venir",
+      body: "Rappel : l'échéance de cotisations sociales du client SARL Dupont Construction est due le 5 du mois prochain.",
+      status: "a_traiter",
+      isRead: false,
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000042",
+      fromName: "Sophie Lambert",
+      fromEmail: "s.lambert@dupont-construction.fr",
+      subject: "Question sur la déclaration TVA",
+      body: "Bonjour, j'ai une question sur le taux de TVA à appliquer pour notre dernière facture fournisseur. Merci de me rappeler.",
+      status: "traite",
+      isRead: true,
+    },
+  ];
+
+  for (const { id, ...mailFields } of mailsData) {
+    const mailData = { clientId: client.id, recipientId: collaborator.id, ...mailFields };
+    await prisma.mail.upsert({
+      where: { id },
+      update: mailData,
+      create: { id, ...mailData },
+    });
+  }
+
   console.log("Seed terminé.");
 }
 

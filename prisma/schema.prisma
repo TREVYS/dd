@@ -97,6 +97,7 @@ model User {
   knowledgeValidated KnowledgeArticle[] @relation("KnowledgeValidatedBy")
   auditLogs          AuditLog[]
   announcementsCreated Announcement[] @relation("AnnouncementCreatedBy")
+  mails Mail[] @relation("MailRecipient")
 
   @@map("users")
 }
@@ -115,6 +116,25 @@ model Announcement {
 
   @@index([startsAt])
   @@map("announcements")
+}
+
+model Mail {
+  id          String    @id @default(uuid())
+  recipientId String    @map("recipient_id")
+  clientId    String?   @map("client_id")
+  fromName    String    @map("from_name") @db.VarChar(180)
+  fromEmail   String    @map("from_email") @db.VarChar(180)
+  subject     String    @db.VarChar(255)
+  body        String
+  status      String    @default("a_traiter") @db.VarChar(30)
+  isRead      Boolean   @default(false) @map("is_read")
+  receivedAt  DateTime  @default(now()) @map("received_at")
+
+  recipient User    @relation("MailRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  client    Client? @relation(fields: [clientId], references: [id])
+
+  @@index([recipientId, status])
+  @@map("mails")
 }
 
 model Client {
@@ -159,6 +179,7 @@ model Client {
   tasks                  Task[]
   deadlines              Deadline[]
   tickets                Ticket[]
+  mails                  Mail[]
   interactions           Interaction[]
   quotes                 Quote[]
   engagementLetters      EngagementLetter[]

@@ -11,12 +11,14 @@ import {
   FileText,
   Gauge,
   LogOut,
+  Mail,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/clients", label: "Clients", icon: Users },
+  { href: "/mails", label: "Mails", icon: Mail },
   { href: "/ged", label: "GED", icon: FolderOpen },
   { href: "/production", label: "Production", icon: KanbanSquare },
   { href: "/tickets", label: "Tickets", icon: Inbox },
@@ -27,9 +29,11 @@ const NAV = [
 export function Sidebar({
   userName,
   userRole,
+  mailsToTreat = 0,
 }: {
   userName: string;
   userRole: string | null;
+  mailsToTreat?: number;
 }) {
   const pathname = usePathname();
 
@@ -62,7 +66,16 @@ export function Sidebar({
               }`}
             >
               <Icon size={18} />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {item.href === "/mails" && mailsToTreat > 0 && (
+                <span
+                  className={`rounded-full text-xs font-semibold px-2 py-0.5 ${
+                    active ? "bg-white text-brand" : "bg-brand text-white"
+                  }`}
+                >
+                  {mailsToTreat}
+                </span>
+              )}
             </Link>
           );
         })}
