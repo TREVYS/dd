@@ -1,0 +1,678 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique @db.VarChar(80)
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  users           User[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id     String @id @default(uuid())
+  code   String @unique @db.VarChar(120)
+  label  String @db.VarChar(160)
+  module String @db.VarChar(80)
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model User {
+  id                  String   @id @default(uuid())
+  firstName           String   @map("first_name") @db.VarChar(100)
+  lastName            String   @map("last_name") @db.VarChar(100)
+  email               String   @unique @db.VarChar(180)
+  passwordHash        String?  @map("password_hash")
+  phone               String?  @db.VarChar(40)
+  roleId              String?  @map("role_id")
+  managerId           String?  @map("manager_id")
+  weeklyCapacityHours Decimal  @default(35) @map("weekly_capacity_hours") @db.Decimal(5, 2)
+  status              String   @default("active") @db.VarChar(30)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  role    Role?  @relation(fields: [roleId], references: [id])
+  manager User?  @relation("UserManager", fields: [managerId], references: [id])
+  reports User[] @relation("UserManager")
+
+  assignedAsPartner      Client[] @relation("PartnerClients")
+  assignedAsManager      Client[] @relation("ManagerClients")
+  assignedAsCollaborator Client[] @relation("CollaboratorClients")
+
+  identifiedNeeds ClientNeed[] @relation("NeedIdentifiedBy")
+  assignedNeeds   ClientNeed[] @relation("NeedAssignedTo")
+
+  uploadedDocuments Document[]
+
+  clientMissions ClientMission[]
+
+  tasksAssigned Task[] @relation("TaskAssignedTo")
+  tasksManaged  Task[] @relation("TaskManagerOf")
+
+  taskStatusChanges TaskStatusHistory[]
+
+  validatedChecklistItems TaskChecklistItem[]
+
+  deadlines Deadline[]
+
+  ticketsAssigned Ticket[] @relation("TicketAssignedTo")
+  ticketsCreated  Ticket[] @relation("TicketCreatedBy")
+
+  interactions Interaction[]
+
+  quotesCreated          Quote[] @relation("QuoteCreatedBy")
+  quotesValidatedManager Quote[] @relation("QuoteValidatedByManager")
+  quotesValidatedPartner Quote[] @relation("QuoteValidatedByPartner")
+
+  timeEntries        TimeEntry[]
+  capacityPlans      CapacityPlan[]
+  qualityReviews     QualityReview[]
+  risksDetected      Risk[]             @relation("RiskDetectedBy")
+  risksAssigned      Risk[]             @relation("RiskAssignedTo")
+  knowledgeAuthored  KnowledgeArticle[] @relation("KnowledgeCreatedBy")
+  knowledgeValidated KnowledgeArticle[] @relation("KnowledgeValidatedBy")
+  auditLogs          AuditLog[]
+
+  @@map("users")
+}
+
+model Client {
+  id                     String    @id @default(uuid())
+  legalName              String    @map("legal_name") @db.VarChar(255)
+  commercialName         String?   @map("commercial_name") @db.VarChar(255)
+  siren                  String?   @db.VarChar(20)
+  siret                  String?   @db.VarChar(20)
+  legalForm              String?   @map("legal_form") @db.VarChar(80)
+  shareCapital           Decimal?  @map("share_capital") @db.Decimal(14, 2)
+  apeCode                String?   @map("ape_code") @db.VarChar(20)
+  activityDescription    String?   @map("activity_description")
+  creationDate           DateTime? @map("creation_date")
+  address                String?
+  postalCode             String?   @map("postal_code") @db.VarChar(20)
+  city                   String?   @db.VarChar(120)
+  country                String    @default("France") @db.VarChar(80)
+  taxRegime              String?   @map("tax_regime") @db.VarChar(50)
+  vatRegime              String?   @map("vat_regime") @db.VarChar(50)
+  vatFrequency           String?   @map("vat_frequency") @db.VarChar(50)
+  fiscalYearEnd          String?   @map("fiscal_year_end") @db.VarChar(10)
+  status                 String    @default("active") @db.VarChar(30)
+  clientSince            DateTime? @map("client_since")
+  assignedPartnerId      String?   @map("assigned_partner_id")
+  assignedManagerId      String?   @map("assigned_manager_id")
+  assignedCollaboratorId String?   @map("assigned_collaborator_id")
+  qualityScore           Decimal?  @map("quality_score") @db.Decimal(5, 2)
+  riskScore              Decimal?  @map("risk_score") @db.Decimal(5, 2)
+  profitabilityScore     Decimal?  @map("profitability_score") @db.Decimal(5, 2)
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  assignedPartner      User? @relation("PartnerClients", fields: [assignedPartnerId], references: [id])
+  assignedManager      User? @relation("ManagerClients", fields: [assignedManagerId], references: [id])
+  assignedCollaborator User? @relation("CollaboratorClients", fields: [assignedCollaboratorId], references: [id])
+
+  contacts               ClientContact[]
+  needs                  ClientNeed[]
+  documentFolders        DocumentFolder[]
+  documents              Document[]
+  clientMissions         ClientMission[]
+  tasks                  Task[]
+  deadlines              Deadline[]
+  tickets                Ticket[]
+  interactions           Interaction[]
+  quotes                 Quote[]
+  engagementLetters      EngagementLetter[]
+  timeEntries            TimeEntry[]
+  profitabilitySnapshots ProfitabilitySnapshot[]
+  qualityReviews         QualityReview[]
+  risks                  Risk[]
+  clientUsers            ClientUser[]
+  whatsappMessages       WhatsappMessage[]
+
+  @@index([siren])
+  @@index([assignedCollaboratorId])
+  @@index([status])
+  @@map("clients")
+}
+
+model ClientContact {
+  id            String   @id @default(uuid())
+  clientId      String   @map("client_id")
+  firstName     String?  @map("first_name") @db.VarChar(100)
+  lastName      String?  @map("last_name") @db.VarChar(100)
+  role          String?  @db.VarChar(120)
+  email         String?  @db.VarChar(180)
+  phone         String?  @db.VarChar(40)
+  whatsappPhone String?  @map("whatsapp_phone") @db.VarChar(40)
+  isPrimary     Boolean  @default(false) @map("is_primary")
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  client           Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  interactions     Interaction[]
+  tickets          Ticket[]
+  clientUsers      ClientUser[]
+  whatsappMessages WhatsappMessage[]
+
+  @@map("client_contacts")
+}
+
+model ClientNeed {
+  id           String    @id @default(uuid())
+  clientId     String    @map("client_id")
+  title        String    @db.VarChar(255)
+  description  String?
+  category     String?   @db.VarChar(80)
+  priority     String    @default("normal") @db.VarChar(30)
+  status       String    @default("identified") @db.VarChar(30)
+  identifiedBy String?   @map("identified_by")
+  assignedTo   String?   @map("assigned_to")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  closedAt     DateTime? @map("closed_at")
+
+  client           Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  identifiedByUser User?  @relation("NeedIdentifiedBy", fields: [identifiedBy], references: [id])
+  assignedToUser   User?  @relation("NeedAssignedTo", fields: [assignedTo], references: [id])
+
+  @@map("client_needs")
+}
+
+model DocumentFolder {
+  id         String   @id @default(uuid())
+  clientId   String?  @map("client_id")
+  parentId   String?  @map("parent_id")
+  name       String   @db.VarChar(180)
+  folderType String?  @map("folder_type") @db.VarChar(60)
+  path       String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  client    Client?          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  parent    DocumentFolder?  @relation("FolderParent", fields: [parentId], references: [id], onDelete: Cascade)
+  children  DocumentFolder[] @relation("FolderParent")
+  documents Document[]
+
+  @@map("document_folders")
+}
+
+model Document {
+  id           String   @id @default(uuid())
+  clientId     String?  @map("client_id")
+  folderId     String?  @map("folder_id")
+  name         String   @db.VarChar(255)
+  documentType String?  @map("document_type") @db.VarChar(80)
+  category     String?  @db.VarChar(80)
+  fiscalYear   Int?     @map("fiscal_year")
+  period       String?  @db.VarChar(20)
+  fileUrl      String   @map("file_url")
+  fileSize     BigInt?  @map("file_size")
+  mimeType     String?  @map("mime_type") @db.VarChar(120)
+  version      Int      @default(1)
+  uploadedBy   String?  @map("uploaded_by")
+  source       String?  @db.VarChar(50)
+  ocrText      String?  @map("ocr_text")
+  aiSummary    String?  @map("ai_summary")
+  isDeleted    Boolean  @default(false) @map("is_deleted")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  client            Client?            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  folder            DocumentFolder?    @relation(fields: [folderId], references: [id])
+  uploadedByUser    User?              @relation(fields: [uploadedBy], references: [id])
+  engagementLetters EngagementLetter[]
+
+  @@index([clientId])
+  @@index([fiscalYear])
+  @@index([category])
+  @@map("documents")
+}
+
+model Mission {
+  id                    String   @id @default(uuid())
+  name                  String   @db.VarChar(160)
+  category              String?  @db.VarChar(80)
+  defaultEstimatedHours Decimal? @map("default_estimated_hours") @db.Decimal(6, 2)
+  description           String?
+  isActive              Boolean  @default(true) @map("is_active")
+
+  clientMissions ClientMission[]
+  tasks          Task[]
+  checklists     Checklist[]
+  quoteLines     QuoteLine[]
+  timeEntries    TimeEntry[]
+
+  @@map("missions")
+}
+
+model ClientMission {
+  id             String    @id @default(uuid())
+  clientId       String    @map("client_id")
+  missionId      String    @map("mission_id")
+  startDate      DateTime? @map("start_date")
+  endDate        DateTime? @map("end_date")
+  recurrence     String?   @db.VarChar(50)
+  feeAmount      Decimal?  @map("fee_amount") @db.Decimal(12, 2)
+  estimatedHours Decimal?  @map("estimated_hours") @db.Decimal(6, 2)
+  assignedUserId String?   @map("assigned_user_id")
+  status         String    @default("active") @db.VarChar(30)
+
+  client       Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mission      Mission @relation(fields: [missionId], references: [id])
+  assignedUser User?   @relation(fields: [assignedUserId], references: [id])
+
+  @@map("client_missions")
+}
+
+model Task {
+  id             String    @id @default(uuid())
+  clientId       String    @map("client_id")
+  missionId      String?   @map("mission_id")
+  assignedTo     String?   @map("assigned_to")
+  managerId      String?   @map("manager_id")
+  title          String    @db.VarChar(255)
+  description    String?
+  taskType       String?   @map("task_type") @db.VarChar(80)
+  status         String    @default("todo") @db.VarChar(50)
+  priority       String    @default("normal") @db.VarChar(30)
+  dueDate        DateTime? @map("due_date")
+  estimatedHours Decimal?  @map("estimated_hours") @db.Decimal(6, 2)
+  actualHours    Decimal?  @map("actual_hours") @db.Decimal(6, 2)
+  kanbanColumn   String?   @map("kanban_column") @db.VarChar(80)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  completedAt    DateTime? @map("completed_at")
+
+  client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mission  Mission? @relation(fields: [missionId], references: [id])
+  assignee User?    @relation("TaskAssignedTo", fields: [assignedTo], references: [id])
+  manager  User?    @relation("TaskManagerOf", fields: [managerId], references: [id])
+
+  statusHistory  TaskStatusHistory[]
+  checklistItems TaskChecklistItem[]
+  deadlines      Deadline[]
+  timeEntries    TimeEntry[]
+
+  @@index([assignedTo])
+  @@index([dueDate])
+  @@index([status])
+  @@map("tasks")
+}
+
+model TaskStatusHistory {
+  id        String   @id @default(uuid())
+  taskId    String   @map("task_id")
+  oldStatus String?  @map("old_status") @db.VarChar(50)
+  newStatus String?  @map("new_status") @db.VarChar(50)
+  changedBy String?  @map("changed_by")
+  changedAt DateTime @default(now()) @map("changed_at")
+
+  task          Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  changedByUser User? @relation(fields: [changedBy], references: [id])
+
+  @@map("task_status_history")
+}
+
+model Checklist {
+  id          String  @id @default(uuid())
+  name        String  @db.VarChar(180)
+  missionId   String? @map("mission_id")
+  clientType  String? @map("client_type") @db.VarChar(80)
+  taxRegime   String? @map("tax_regime") @db.VarChar(80)
+  description String?
+
+  mission Mission?        @relation(fields: [missionId], references: [id])
+  items   ChecklistItem[]
+
+  @@map("checklists")
+}
+
+model ChecklistItem {
+  id               String  @id @default(uuid())
+  checklistId      String  @map("checklist_id")
+  label            String  @db.VarChar(255)
+  description      String?
+  orderIndex       Int     @default(0) @map("order_index")
+  isRequired       Boolean @default(true) @map("is_required")
+  estimatedMinutes Int?    @map("estimated_minutes")
+
+  checklist Checklist           @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  taskItems TaskChecklistItem[]
+
+  @@map("checklist_items")
+}
+
+model TaskChecklistItem {
+  id              String    @id @default(uuid())
+  taskId          String    @map("task_id")
+  checklistItemId String    @map("checklist_item_id")
+  status          String    @default("todo") @db.VarChar(30)
+  validatedBy     String?   @map("validated_by")
+  validatedAt     DateTime? @map("validated_at")
+  comment         String?
+
+  task            Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  checklistItem   ChecklistItem @relation(fields: [checklistItemId], references: [id])
+  validatedByUser User?         @relation(fields: [validatedBy], references: [id])
+
+  @@map("task_checklist_items")
+}
+
+model Deadline {
+  id            String   @id @default(uuid())
+  clientId      String   @map("client_id")
+  deadlineType  String   @map("deadline_type") @db.VarChar(80)
+  label         String   @db.VarChar(180)
+  period        String?  @db.VarChar(30)
+  dueDate       DateTime @map("due_date")
+  status        String   @default("open") @db.VarChar(30)
+  assignedTo    String?  @map("assigned_to")
+  relatedTaskId String?  @map("related_task_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  client      Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  assignee    User?  @relation(fields: [assignedTo], references: [id])
+  relatedTask Task?  @relation(fields: [relatedTaskId], references: [id])
+
+  @@map("deadlines")
+}
+
+model Ticket {
+  id              String    @id @default(uuid())
+  ticketNumber    String    @unique @map("ticket_number") @db.VarChar(40)
+  clientId        String    @map("client_id")
+  contactId       String?   @map("contact_id")
+  source          String    @db.VarChar(50)
+  category        String?   @db.VarChar(80)
+  subject         String    @db.VarChar(255)
+  description     String?
+  priority        String    @default("normal") @db.VarChar(30)
+  status          String    @default("new") @db.VarChar(50)
+  assignedTo      String?   @map("assigned_to")
+  createdBy       String?   @map("created_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  firstResponseAt DateTime? @map("first_response_at")
+  closedAt        DateTime? @map("closed_at")
+  slaDueAt        DateTime? @map("sla_due_at")
+
+  client           Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  contact          ClientContact?    @relation(fields: [contactId], references: [id])
+  assignee         User?             @relation("TicketAssignedTo", fields: [assignedTo], references: [id])
+  creator          User?             @relation("TicketCreatedBy", fields: [createdBy], references: [id])
+  messages         TicketMessage[]
+  whatsappMessages WhatsappMessage[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([assignedTo])
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id         String   @id @default(uuid())
+  ticketId   String   @map("ticket_id")
+  senderType String   @map("sender_type") @db.VarChar(30)
+  senderId   String?  @map("sender_id")
+  message    String
+  channel    String?  @db.VarChar(50)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_messages")
+}
+
+model Interaction {
+  id        String   @id @default(uuid())
+  clientId  String   @map("client_id")
+  contactId String?  @map("contact_id")
+  type      String?  @db.VarChar(60)
+  channel   String?  @db.VarChar(60)
+  subject   String?  @db.VarChar(255)
+  content   String?
+  createdBy String?  @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  client  Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  contact ClientContact? @relation(fields: [contactId], references: [id])
+  creator User?          @relation(fields: [createdBy], references: [id])
+
+  @@map("interactions")
+}
+
+model Quote {
+  id                 String    @id @default(uuid())
+  clientId           String?   @map("client_id")
+  prospectName       String?   @map("prospect_name") @db.VarChar(255)
+  status             String    @default("draft") @db.VarChar(50)
+  totalMonthlyFee    Decimal?  @map("total_monthly_fee") @db.Decimal(12, 2)
+  setupFee           Decimal?  @map("setup_fee") @db.Decimal(12, 2)
+  annualFee          Decimal?  @map("annual_fee") @db.Decimal(12, 2)
+  estimatedHours     Decimal?  @map("estimated_hours") @db.Decimal(8, 2)
+  marginEstimate     Decimal?  @map("margin_estimate") @db.Decimal(8, 2)
+  createdBy          String?   @map("created_by")
+  validatedByManager String?   @map("validated_by_manager")
+  validatedByPartner String?   @map("validated_by_partner")
+  sentAt             DateTime? @map("sent_at")
+  signedAt           DateTime? @map("signed_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  client           Client?            @relation(fields: [clientId], references: [id])
+  creator          User?              @relation("QuoteCreatedBy", fields: [createdBy], references: [id])
+  managerValidator User?              @relation("QuoteValidatedByManager", fields: [validatedByManager], references: [id])
+  partnerValidator User?              @relation("QuoteValidatedByPartner", fields: [validatedByPartner], references: [id])
+  lines            QuoteLine[]
+  engagementLetters EngagementLetter[]
+
+  @@map("quotes")
+}
+
+model QuoteLine {
+  id             String   @id @default(uuid())
+  quoteId        String   @map("quote_id")
+  missionId      String?  @map("mission_id")
+  label          String   @db.VarChar(255)
+  quantity       Decimal  @default(1) @db.Decimal(8, 2)
+  unitPrice      Decimal? @map("unit_price") @db.Decimal(12, 2)
+  estimatedHours Decimal? @map("estimated_hours") @db.Decimal(8, 2)
+  totalPrice     Decimal? @map("total_price") @db.Decimal(12, 2)
+
+  quote   Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  mission Mission? @relation(fields: [missionId], references: [id])
+
+  @@map("quote_lines")
+}
+
+model EngagementLetter {
+  id                String    @id @default(uuid())
+  clientId          String?   @map("client_id")
+  quoteId           String?   @map("quote_id")
+  documentId        String?   @map("document_id")
+  status            String    @default("draft") @db.VarChar(50)
+  signedAt          DateTime? @map("signed_at")
+  signatureProvider String?   @map("signature_provider") @db.VarChar(80)
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  client   Client?   @relation(fields: [clientId], references: [id])
+  quote    Quote?    @relation(fields: [quoteId], references: [id])
+  document Document? @relation(fields: [documentId], references: [id])
+
+  @@map("engagement_letters")
+}
+
+model TimeEntry {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  clientId        String?  @map("client_id")
+  taskId          String?  @map("task_id")
+  missionId       String?  @map("mission_id")
+  entryDate       DateTime @map("entry_date")
+  durationMinutes Int      @map("duration_minutes")
+  description     String?
+  entryMode       String   @default("manual") @map("entry_mode") @db.VarChar(30)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user    User     @relation(fields: [userId], references: [id])
+  client  Client?  @relation(fields: [clientId], references: [id])
+  task    Task?    @relation(fields: [taskId], references: [id])
+  mission Mission? @relation(fields: [missionId], references: [id])
+
+  @@map("time_entries")
+}
+
+model CapacityPlan {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  weekStart      DateTime @map("week_start")
+  availableHours Decimal  @default(35) @map("available_hours") @db.Decimal(6, 2)
+  plannedHours   Decimal  @default(0) @map("planned_hours") @db.Decimal(6, 2)
+  actualHours    Decimal  @default(0) @map("actual_hours") @db.Decimal(6, 2)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, weekStart])
+  @@map("capacity_plans")
+}
+
+model ProfitabilitySnapshot {
+  id             String   @id @default(uuid())
+  clientId       String   @map("client_id")
+  period         String   @db.VarChar(30)
+  feesAmount     Decimal? @map("fees_amount") @db.Decimal(12, 2)
+  estimatedHours Decimal? @map("estimated_hours") @db.Decimal(8, 2)
+  actualHours    Decimal? @map("actual_hours") @db.Decimal(8, 2)
+  internalCost   Decimal? @map("internal_cost") @db.Decimal(12, 2)
+  marginAmount   Decimal? @map("margin_amount") @db.Decimal(12, 2)
+  marginRate     Decimal? @map("margin_rate") @db.Decimal(8, 2)
+  status         String?  @db.VarChar(30)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("profitability_snapshots")
+}
+
+model QualityReview {
+  id         String   @id @default(uuid())
+  clientId   String   @map("client_id")
+  missionId  String?  @map("mission_id")
+  reviewedBy String?  @map("reviewed_by")
+  score      Decimal? @db.Decimal(5, 2)
+  status     String?  @db.VarChar(30)
+  comments   String?
+  reviewedAt DateTime @default(now()) @map("reviewed_at")
+
+  client         Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  reviewedByUser User?  @relation(fields: [reviewedBy], references: [id])
+
+  @@map("quality_reviews")
+}
+
+model Risk {
+  id          String   @id @default(uuid())
+  clientId    String   @map("client_id")
+  riskType    String?  @map("risk_type") @db.VarChar(80)
+  label       String?  @db.VarChar(180)
+  description String?
+  severity    String?  @db.VarChar(30)
+  status      String   @default("open") @db.VarChar(30)
+  detectedBy  String?  @map("detected_by")
+  assignedTo  String?  @map("assigned_to")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  detector User?  @relation("RiskDetectedBy", fields: [detectedBy], references: [id])
+  assignee User?  @relation("RiskAssignedTo", fields: [assignedTo], references: [id])
+
+  @@map("risks")
+}
+
+model KnowledgeArticle {
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(255)
+  category    String?  @db.VarChar(80)
+  content     String
+  tags        String?
+  createdBy   String?  @map("created_by")
+  validatedBy String?  @map("validated_by")
+  status      String   @default("draft") @db.VarChar(30)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  creator   User? @relation("KnowledgeCreatedBy", fields: [createdBy], references: [id])
+  validator User? @relation("KnowledgeValidatedBy", fields: [validatedBy], references: [id])
+
+  @@map("knowledge_articles")
+}
+
+model ClientUser {
+  id           String    @id @default(uuid())
+  clientId     String    @map("client_id")
+  contactId    String?   @map("contact_id")
+  email        String    @unique @db.VarChar(180)
+  passwordHash String?   @map("password_hash")
+  phone        String?   @db.VarChar(40)
+  role         String?   @db.VarChar(80)
+  status       String    @default("active") @db.VarChar(30)
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  client  Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  contact ClientContact? @relation(fields: [contactId], references: [id])
+
+  @@map("client_users")
+}
+
+model WhatsappMessage {
+  id              String    @id @default(uuid())
+  clientId        String?   @map("client_id")
+  contactId       String?   @map("contact_id")
+  phoneNumber     String?   @map("phone_number") @db.VarChar(40)
+  message         String?
+  direction       String?   @db.VarChar(20)
+  relatedTicketId String?   @map("related_ticket_id")
+  receivedAt      DateTime? @map("received_at")
+  sentAt          DateTime? @map("sent_at")
+  status          String?   @db.VarChar(30)
+
+  client        Client?        @relation(fields: [clientId], references: [id])
+  contact       ClientContact? @relation(fields: [contactId], references: [id])
+  relatedTicket Ticket?        @relation(fields: [relatedTicketId], references: [id])
+
+  @@map("whatsapp_messages")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id")
+  entityType String   @map("entity_type") @db.VarChar(80)
+  entityId   String?  @map("entity_id")
+  action     String   @db.VarChar(80)
+  oldValue   Json?    @map("old_value")
+  newValue   Json?    @map("new_value")
+  ipAddress  String?  @map("ip_address") @db.VarChar(80)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
