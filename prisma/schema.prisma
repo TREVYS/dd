@@ -96,8 +96,25 @@ model User {
   knowledgeAuthored  KnowledgeArticle[] @relation("KnowledgeCreatedBy")
   knowledgeValidated KnowledgeArticle[] @relation("KnowledgeValidatedBy")
   auditLogs          AuditLog[]
+  announcementsCreated Announcement[] @relation("AnnouncementCreatedBy")
 
   @@map("users")
+}
+
+model Announcement {
+  id          String   @id @default(uuid())
+  category    String   @db.VarChar(40)
+  title       String   @db.VarChar(255)
+  content     String
+  createdById String   @map("created_by")
+  startsAt    DateTime @default(now()) @map("starts_at")
+  endsAt      DateTime? @map("ends_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  createdBy User @relation("AnnouncementCreatedBy", fields: [createdById], references: [id])
+
+  @@index([startsAt])
+  @@map("announcements")
 }
 
 model Client {
