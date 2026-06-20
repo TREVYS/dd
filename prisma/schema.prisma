@@ -272,19 +272,25 @@ model ClientNeed {
 }
 
 model DocumentFolder {
-  id         String   @id @default(uuid())
-  clientId   String?  @map("client_id")
-  parentId   String?  @map("parent_id")
-  name       String   @db.VarChar(180)
-  folderType String?  @map("folder_type") @db.VarChar(60)
-  path       String?
-  createdAt  DateTime @default(now()) @map("created_at")
+  id             String   @id @default(uuid())
+  clientId       String?  @map("client_id")
+  parentId       String?  @map("parent_id")
+  name           String   @db.VarChar(180)
+  folderType     String?  @map("folder_type") @db.VarChar(60)
+  level          Int      @default(1)
+  fiscalYear     Int?     @map("fiscal_year")
+  month          Int?
+  isSystemFolder Boolean  @default(true) @map("is_system_folder")
+  isActive       Boolean  @default(true) @map("is_active")
+  path           String?
+  createdAt      DateTime @default(now()) @map("created_at")
 
   client    Client?          @relation(fields: [clientId], references: [id], onDelete: Cascade)
   parent    DocumentFolder?  @relation("FolderParent", fields: [parentId], references: [id], onDelete: Cascade)
   children  DocumentFolder[] @relation("FolderParent")
   documents Document[]
 
+  @@index([clientId, fiscalYear])
   @@map("document_folders")
 }
 

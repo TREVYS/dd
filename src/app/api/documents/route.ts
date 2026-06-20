@@ -5,6 +5,7 @@ import { z } from "zod";
 
 const DocumentSchema = z.object({
   clientId: z.string().min(1),
+  folderId: z.string().optional(),
   name: z.string().min(1),
   category: z.string().optional(),
   fiscalYear: z.coerce.number().optional(),

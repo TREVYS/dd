@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { ensureClientFolderTree } from "../src/lib/ged";
 
 const prisma = new PrismaClient();
 
@@ -79,6 +80,8 @@ async function main() {
       ...clientData,
     },
   });
+
+  await ensureClientFolderTree(client.id);
 
   const contact1Data = {
     clientId: client.id,

@@ -1,21 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload } from "lucide-react";
 
-type ClientOption = { id: string; legalName: string; commercialName: string | null };
+type FolderOption = { id: string; name: string; level: number };
 
-export function UploadDocumentButton({ clients }: { clients: ClientOption[] }) {
+export function UploadDocumentButton({
+  clientId,
+  folders,
+  defaultFolderId,
+}: {
+  clientId: string;
+  folders: FolderOption[];
+  defaultFolderId: string | null;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    clientId: clients[0]?.id ?? "",
     name: "",
-    category: "",
-    fiscalYear: "",
+    folderId: defaultFolderId ?? folders[0]?.id ?? "",
   });
+
+  useEffect(() => {
+    setForm((f) => ({ ...f, folderId: defaultFolderId ?? folders[0]?.id ?? "" }));
+  }, [defaultFolderId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,12 +34,15 @@ export function UploadDocumentButton({ clients }: { clients: ClientOption[] }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...form,
+        clientId,
+        folderId: form.folderId || undefined,
+        name: form.name,
         fileUrl: `/uploads/${encodeURIComponent(form.name)}`,
       }),
     });
     setLoading(false);
     setOpen(false);
+    setForm({ ...form, name: "" });
     router.refresh();
   }
 
@@ -50,13 +63,13 @@ export function UploadDocumentButton({ clients }: { clients: ClientOption[] }) {
             <form onSubmit={handleSubmit} className="space-y-3">
               <select
                 required
-                value={form.clientId}
-                onChange={(e) => setForm({ ...form, clientId: e.target.value })}
+                value={form.folderId}
+                onChange={(e) => setForm({ ...form, folderId: e.target.value })}
                 className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
               >
-                {clients.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.commercialName || c.legalName}
+                {folders.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {"—".repeat(f.level - 1)} {f.name}
                   </option>
                 ))}
               </select>
@@ -67,20 +80,6 @@ export function UploadDocumentButton({ clients }: { clients: ClientOption[] }) {
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
               />
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  placeholder="Catégorie"
-                  value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm"
-                />
-                <input
-                  placeholder="Exercice"
-                  value={form.fiscalYear}
-                  onChange={(e) => setForm({ ...form, fiscalYear: e.target.value })}
-                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm"
-                />
-              </div>
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setOpen(false)} className="px-4 py-2 text-sm text-gray-500">
                   Annuler

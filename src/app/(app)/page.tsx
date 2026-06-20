@@ -1,7 +1,21 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Users, KanbanSquare, Inbox, FileText, Landmark, AlertTriangle, Target, Info, Mail } from "lucide-react";
+import {
+  Users,
+  KanbanSquare,
+  Inbox,
+  FileText,
+  Landmark,
+  AlertTriangle,
+  Target,
+  Info,
+  Mail,
+  GraduationCap,
+  Calculator,
+  Scale,
+  Wallet,
+} from "lucide-react";
 import { NewAnnouncementButton } from "./new-announcement-button";
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Info; color: string }> = {
@@ -10,6 +24,37 @@ const CATEGORY_META: Record<string, { label: string; icon: typeof Info; color: s
   objectif: { label: "Objectif du mois", icon: Target, color: "bg-emerald-50 text-emerald-600" },
   info: { label: "Information", icon: Info, color: "bg-gray-50 text-gray-600" },
 };
+
+const LESSONS = [
+  {
+    title: "Bien calculer la TVA déductible",
+    category: "Fiscalité",
+    icon: Landmark,
+    color: "bg-blue-50 text-blue-600",
+    summary: "Les cas particuliers de récupération de TVA sur véhicules et notes de frais.",
+  },
+  {
+    title: "Clôturer un exercice sans stress",
+    category: "Comptabilité",
+    icon: Calculator,
+    color: "bg-emerald-50 text-emerald-600",
+    summary: "Checklist du dossier de révision avant édition de la liasse fiscale.",
+  },
+  {
+    title: "Rupture conventionnelle : les pièges",
+    category: "Social",
+    icon: Wallet,
+    color: "bg-amber-50 text-amber-600",
+    summary: "Les points de vigilance à vérifier avant signature de la convention.",
+  },
+  {
+    title: "Dépôt des comptes au greffe",
+    category: "Juridique",
+    icon: Scale,
+    color: "bg-violet-50 text-violet-600",
+    summary: "Le rappel des délais et pièces à fournir pour le dépôt annuel.",
+  },
+];
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -56,6 +101,16 @@ export default async function DashboardPage() {
   const totalMonthly = monthlyTasks.length;
   const doneMonthly = monthlyTasks.filter((t) => t.status === "done").length;
   const progressPct = totalMonthly > 0 ? Math.round((doneMonthly / totalMonthly) * 100) : 0;
+  const pendingMonthly = totalMonthly - doneMonthly;
+
+  const myTicketsOpen = userId
+    ? await prisma.ticket.count({ where: { assignedTo: userId, status: { not: "closed" } } })
+    : 0;
+
+  const isUpToDate = totalMonthly === 0 || progressPct >= 80;
+  const initials = `${session?.user?.name?.[0] ?? ""}${
+    session?.user?.name?.split(" ")[1]?.[0] ?? ""
+  }`.toUpperCase();
 
   const stats = [
     { label: "Clients actifs", value: clientCount, icon: Users, href: "/clients" },
@@ -67,51 +122,89 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-gradient-to-br from-brand via-violet-600 to-indigo-700 rounded-3xl p-8 text-white relative overflow-hidden">
-        <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -bottom-20 left-1/3 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
+        <div className="bg-gradient-to-br from-brand via-violet-600 to-indigo-700 rounded-3xl p-8 text-white relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute -bottom-20 left-1/3 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
 
-        <div className="relative flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold tracking-wide opacity-80 mb-2">
-              COMMUNICATIONS DU CABINET
-            </p>
-            <h1 className="text-3xl font-semibold mb-1">Bonjour {firstName} 👋</h1>
-            <p className="opacity-80 max-w-md">
-              Actualités fiscales, points d&apos;attention et nouvelles du cabinet, réunis ici.
-            </p>
+          <div className="relative flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold tracking-wide opacity-80 mb-2">
+                COMMUNICATIONS DU CABINET
+              </p>
+              <h1 className="text-3xl font-semibold mb-1">Bonjour {firstName} 👋</h1>
+              <p className="opacity-80 max-w-md">
+                Actualités fiscales, points d&apos;attention et nouvelles du cabinet, réunis ici.
+              </p>
+            </div>
+            {isPartner && <NewAnnouncementButton />}
           </div>
-          {isPartner && <NewAnnouncementButton />}
+
+          {announcements.length > 0 ? (
+            <div className="relative mt-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+              {announcements.slice(0, 3).map((a) => {
+                const meta = CATEGORY_META[a.category] ?? CATEGORY_META.info;
+                const Icon = meta.icon;
+                return (
+                  <div
+                    key={a.id}
+                    className="bg-white text-gray-800 rounded-2xl p-4 space-y-1.5 shadow-sm"
+                  >
+                    <div className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${meta.color}`}>
+                      <Icon size={12} />
+                      {meta.label}
+                    </div>
+                    <p className="font-semibold text-sm">{a.title}</p>
+                    <p className="text-xs text-gray-500 line-clamp-2">{a.content}</p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="relative mt-6 text-sm opacity-70">
+              Aucune communication pour le moment.
+            </p>
+          )}
         </div>
 
-        {announcements.length > 0 ? (
-          <div className="relative mt-6 grid grid-cols-1 md:grid-cols-3 gap-3">
-            {announcements.slice(0, 3).map((a) => {
-              const meta = CATEGORY_META[a.category] ?? CATEGORY_META.info;
-              const Icon = meta.icon;
-              return (
-                <div
-                  key={a.id}
-                  className="bg-white text-gray-800 rounded-2xl p-4 space-y-1.5 shadow-sm"
-                >
-                  <div className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${meta.color}`}>
-                    <Icon size={12} />
-                    {meta.label}
-                  </div>
-                  <p className="font-semibold text-sm">{a.title}</p>
-                  <p className="text-xs text-gray-500 line-clamp-2">{a.content}</p>
-                </div>
-              );
-            })}
+        <div className="bg-white rounded-3xl p-6 flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-brand/10 text-brand flex items-center justify-center font-semibold">
+              {initials || "?"}
+            </div>
+            <div>
+              <p className="font-semibold leading-tight">{session?.user?.name}</p>
+              <p className="text-xs text-gray-400">{session?.user?.role}</p>
+            </div>
           </div>
-        ) : (
-          <p className="relative mt-6 text-sm opacity-70">
-            Aucune communication pour le moment.
-          </p>
-        )}
+
+          <div
+            className={`rounded-2xl px-4 py-3 text-sm font-medium flex items-center justify-between ${
+              isUpToDate ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+            }`}
+          >
+            <span>{isUpToDate ? "À jour" : "En retard"}</span>
+            <span>{progressPct}%</span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <Link href="/production" className="rounded-xl bg-gray-50 px-2 py-3 hover:bg-gray-100">
+              <p className="text-lg font-semibold">{pendingMonthly < 0 ? 0 : pendingMonthly}</p>
+              <p className="text-[11px] text-gray-400">Tâches/mois</p>
+            </Link>
+            <Link href="/mails" className="rounded-xl bg-gray-50 px-2 py-3 hover:bg-gray-100">
+              <p className="text-lg font-semibold">{mailsToTreat}</p>
+              <p className="text-[11px] text-gray-400">Mails</p>
+            </Link>
+            <Link href="/tickets" className="rounded-xl bg-gray-50 px-2 py-3 hover:bg-gray-100">
+              <p className="text-lg font-semibold">{myTicketsOpen}</p>
+              <p className="text-[11px] text-gray-400">Tickets</p>
+            </Link>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-6 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         {stats.map((s) => {
           const Icon = s.icon;
           return (
@@ -128,32 +221,30 @@ export default async function DashboardPage() {
             </Link>
           );
         })}
+      </div>
 
-        {!isPartner && (
-          <div className="bg-white rounded-2xl p-5 flex flex-col items-center justify-center text-center">
-            <div className="relative h-16 w-16 mb-2">
-              <svg viewBox="0 0 36 36" className="h-16 w-16 -rotate-90">
-                <circle cx="18" cy="18" r="16" fill="none" stroke="#f1f0fd" strokeWidth="4" />
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="16"
-                  fill="none"
-                  stroke="#6d5bf6"
-                  strokeWidth="4"
-                  strokeDasharray={`${(progressPct / 100) * 100.5} 100.5`}
-                  strokeLinecap="round"
-                />
-              </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold">
-                {progressPct}%
-              </span>
-            </div>
-            <p className="text-xs text-gray-500">
-              {doneMonthly}/{totalMonthly} dossiers ce mois-ci
-            </p>
-          </div>
-        )}
+      <div className="bg-white rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold flex items-center gap-2">
+            <GraduationCap size={18} className="text-brand" />
+            Académie TREVYS
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          {LESSONS.map((l) => {
+            const Icon = l.icon;
+            return (
+              <div key={l.title} className="rounded-2xl border border-gray-100 p-4 space-y-2">
+                <div className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${l.color}`}>
+                  <Icon size={12} />
+                  {l.category}
+                </div>
+                <p className="font-semibold text-sm">{l.title}</p>
+                <p className="text-xs text-gray-500 line-clamp-2">{l.summary}</p>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl p-6">
