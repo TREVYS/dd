@@ -117,6 +117,11 @@ model User {
   fecImportsUploaded   FecImport[]
   fecReportsCreated    FecReport[]
   fecChatMessages      FecChatMessage[]
+  valuationsCreated    Valuation[]
+  valuationVersionsCreated ValuationVersion[]
+  valuationComments    ValuationComment[]
+  formationsAcquired       FormationAcquisition[] @relation("FormationAcquiredBy")
+  formationAccessGranted   FormationTeamAccess[]   @relation("FormationAccessGrantedBy")
 
   @@map("users")
 }
@@ -126,7 +131,8 @@ model Team {
   name      String   @db.VarChar(120)
   createdAt DateTime @default(now()) @map("created_at")
 
-  members User[]
+  members        User[]
+  formationAccess FormationTeamAccess[]
 
   @@map("teams")
 }
@@ -318,6 +324,7 @@ model Client {
   fecImports             FecImport[]
   fecReports             FecReport[]
   fecOpportunities       FecOpportunity[]
+  valuations             Valuation[]
 
   @@index([siren])
   @@index([assignedCollaboratorId])
@@ -953,12 +960,41 @@ model Formation {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  author   User?               @relation("FormationAuthor", fields: [authorId], references: [id])
-  contents FormationContent[]
-  parcours ParcoursFormation[]
-  progress FormationProgress[]
+  author      User?                 @relation("FormationAuthor", fields: [authorId], references: [id])
+  contents    FormationContent[]
+  parcours    ParcoursFormation[]
+  progress    FormationProgress[]
+  acquisition FormationAcquisition?
+  teamAccess  FormationTeamAccess[]
 
   @@map("formations")
+}
+
+model FormationAcquisition {
+  id           String   @id @default(uuid())
+  formationId  String   @unique @map("formation_id")
+  acquiredById String?  @map("acquired_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  formation  Formation @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  acquiredBy User?     @relation("FormationAcquiredBy", fields: [acquiredById], references: [id])
+
+  @@map("formation_acquisitions")
+}
+
+model FormationTeamAccess {
+  id          String   @id @default(uuid())
+  formationId String   @map("formation_id")
+  teamId      String   @map("team_id")
+  grantedById String?  @map("granted_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  formation Formation @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  grantedBy User?     @relation("FormationAccessGrantedBy", fields: [grantedById], references: [id])
+
+  @@unique([formationId, teamId])
+  @@map("formation_team_access")
 }
 
 model FormationContent {
@@ -1036,6 +1072,7 @@ model FecImport {
   reports    FecReport[]
   chatLogs   FecChatMessage[]
   opportunities FecOpportunity[]
+  valuations    Valuation[]
 
   @@index([clientId])
   @@map("fec_imports")
@@ -1121,4 +1158,61 @@ model AppSetting {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("app_settings")
+}
+
+model Valuation {
+  id            String    @id @default(uuid())
+  clientId      String    @map("client_id")
+  fecImportId   String?   @map("fec_import_id")
+  title         String    @db.VarChar(180)
+  status        String    @default("draft") @db.VarChar(20)
+  companyData   Json?     @map("company_data")
+  createdById   String?   @map("created_by_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  client     Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  fecImport  FecImport?         @relation(fields: [fecImportId], references: [id])
+  createdBy  User?              @relation(fields: [createdById], references: [id])
+  versions   ValuationVersion[]
+  comments   ValuationComment[]
+
+  @@index([clientId])
+  @@map("valuations")
+}
+
+model ValuationVersion {
+  id              String   @id @default(uuid())
+  valuationId     String   @map("valuation_id")
+  label           String   @db.VarChar(40)
+  inputs          Json
+  methodWeights   Json     @map("method_weights")
+  assumptions     Json
+  scenarios       Json
+  results         Json
+  sensitivity     Json?
+  aiRecommendation Json?   @map("ai_recommendation")
+  aiNarrative     Json?    @map("ai_narrative")
+  createdById     String?  @map("created_by_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  valuation Valuation @relation(fields: [valuationId], references: [id], onDelete: Cascade)
+  createdBy User?     @relation(fields: [createdById], references: [id])
+
+  @@index([valuationId])
+  @@map("valuation_versions")
+}
+
+model ValuationComment {
+  id          String   @id @default(uuid())
+  valuationId String   @map("valuation_id")
+  authorId    String?  @map("author_id")
+  body        String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  valuation Valuation @relation(fields: [valuationId], references: [id], onDelete: Cascade)
+  author    User?     @relation(fields: [authorId], references: [id])
+
+  @@index([valuationId])
+  @@map("valuation_comments")
 }

@@ -80,6 +80,10 @@ export function Sidebar() {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    setHovered(false);
+  }, [pathname]);
+
   function togglePinned() {
     const next = !pinned;
     setPinned(next);

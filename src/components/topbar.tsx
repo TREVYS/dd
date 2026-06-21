@@ -36,8 +36,15 @@ export function Topbar({
         setOpen(false);
       }
     }
+    function onEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
     document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onEscape);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onEscape);
+    };
   }, []);
 
   const initials = userName
@@ -80,6 +87,7 @@ export function Topbar({
               items={data?.tasksToday.map((t) => ({ id: t.id, label: t.title })) ?? []}
               emptyLabel="Aucune tâche due aujourd'hui"
               href="/production"
+              onNavigate={() => setOpen(false)}
             />
             <NotifSection
               icon={Inbox}
@@ -87,6 +95,7 @@ export function Topbar({
               items={data?.ticketsToTreat.map((t) => ({ id: t.id, label: t.subject, href: `/tickets/${t.id}` })) ?? []}
               emptyLabel="Aucun ticket à traiter"
               href="/tickets"
+              onNavigate={() => setOpen(false)}
             />
           </div>
         )}
@@ -112,12 +121,14 @@ function NotifSection({
   items,
   emptyLabel,
   href,
+  onNavigate,
 }: {
   icon: typeof Bell;
   title: string;
   items: { id: string; label: string; href?: string }[];
   emptyLabel: string;
   href: string;
+  onNavigate: () => void;
 }) {
   return (
     <div>
@@ -133,13 +144,14 @@ function NotifSection({
             <Link
               key={item.id}
               href={item.href ?? href}
+              onClick={onNavigate}
               className="block text-sm text-gray-700 hover:bg-gray-50 rounded-lg px-2 py-1.5 truncate"
             >
               {item.label}
             </Link>
           ))}
           {items.length > 4 && (
-            <Link href={href} className="block text-xs text-brand px-2">
+            <Link href={href} onClick={onNavigate} className="block text-xs text-brand px-2">
               Voir tout ({items.length})
             </Link>
           )}

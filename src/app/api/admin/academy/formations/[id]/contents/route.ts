@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { canManageAcademy } from "@/lib/permissions";
+import { canCreateFormations } from "@/lib/permissions";
 import { z } from "zod";
 
 const FILE_TYPES = ["pdf", "word", "excel", "powerpoint"];
@@ -37,7 +37,7 @@ async function getAcademyFolderId() {
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
-  if (!session || !canManageAcademy(session.user.role)) {
+  if (!session || !canCreateFormations(session.user.role)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 

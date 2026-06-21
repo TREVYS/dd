@@ -12,7 +12,7 @@ export default async function AcademyAdminPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Academy TREVYS</h1>
-      <AcademyManager />
+      <AcademyManager role={session?.user?.role ?? null} />
     </div>
   );
 }

@@ -24,6 +24,16 @@ export function canManageAcademy(role: string | null | undefined) {
   return role === "Associé" || role === "Administrateur";
 }
 
+// Seul le super admin (Administrateur) peut créer/éditer les formations du store Academy.
+export function canCreateFormations(role: string | null | undefined) {
+  return role === "Administrateur";
+}
+
+// L'Associé peut acheter (acquérir) une formation du store et la rendre disponible à ses équipes.
+export function canPurchaseFormations(role: string | null | undefined) {
+  return role === "Associé";
+}
+
 export function canManageEmailSettings(role: string | null | undefined) {
   return role === "Administrateur";
 }

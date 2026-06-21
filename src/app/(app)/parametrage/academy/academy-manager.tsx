@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, ChevronDown, ChevronUp, ShoppingCart, Users2, X } from "lucide-react";
 
 type Content = {
   id: string;
@@ -23,7 +23,11 @@ type Formation = {
   author: { firstName: string; lastName: string } | null;
   contents: Content[];
   _count: { progress: number };
+  acquisition: { id: string } | null;
+  teamAccess: { id: string; teamId: string }[];
 };
+
+type Team = { id: string; name: string };
 
 type ParcoursFormationLink = { formationId: string; formation: { id: string; title: string } };
 type Parcours = { id: string; name: string; description: string | null; formations: ParcoursFormationLink[] };
@@ -56,35 +60,66 @@ const STATUS_LABELS: Record<string, string> = {
 
 const emptyFormation = { title: "", category: "", level: "", durationMinutes: "", tags: "" };
 
-export function AcademyManager() {
+export function AcademyManager({ role }: { role: string | null }) {
+  const canCreate = role === "Administrateur";
+  const canPurchase = role === "Associé";
+
   const [tab, setTab] = useState<"formations" | "parcours" | "suivi">("formations");
   const [formations, setFormations] = useState<Formation[]>([]);
   const [parcoursList, setParcoursList] = useState<Parcours[]>([]);
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyFormation);
   const [loading, setLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [contentForm, setContentForm] = useState({ type: "text", title: "", body: "", url: "" });
+  const [accessFormationId, setAccessFormationId] = useState<string | null>(null);
 
   const [parcoursOpen, setParcoursOpen] = useState(false);
   const [parcoursForm, setParcoursForm] = useState({ name: "", description: "", formationIds: [] as string[] });
 
   async function loadAll() {
-    const [f, p, pr] = await Promise.all([
+    const [f, p, pr, t] = await Promise.all([
       fetch("/api/admin/academy/formations").then((r) => r.json()),
       fetch("/api/admin/academy/parcours").then((r) => r.json()),
       fetch("/api/admin/academy/progress").then((r) => r.json()),
+      fetch("/api/admin/teams").then((r) => (r.ok ? r.json() : [])),
     ]);
     setFormations(f);
     setParcoursList(p);
     setProgress(pr);
+    setTeams(Array.isArray(t) ? t : []);
   }
 
   useEffect(() => {
     loadAll();
   }, []);
+
+  async function acquireFormation(f: Formation) {
+    await fetch(`/api/admin/academy/formations/${f.id}/acquire`, { method: "POST" });
+    loadAll();
+  }
+
+  async function revokeAcquisition(f: Formation) {
+    await fetch(`/api/admin/academy/formations/${f.id}/acquire`, { method: "DELETE" });
+    loadAll();
+  }
+
+  async function grantTeamAccess(formationId: string, teamId: string) {
+    await fetch(`/api/admin/academy/formations/${formationId}/access`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ teamId }),
+    });
+    loadAll();
+  }
+
+  async function revokeTeamAccess(formationId: string, teamId: string) {
+    await fetch(`/api/admin/academy/formations/${formationId}/access?teamId=${teamId}`, { method: "DELETE" });
+    loadAll();
+  }
 
   async function handleCreateFormation(e: React.FormEvent) {
     e.preventDefault();
@@ -187,19 +222,22 @@ export function AcademyManager() {
 
       {tab === "formations" && (
         <>
-          <div className="flex justify-end">
-            <button
-              onClick={() => setOpen(true)}
-              className="flex items-center gap-2 bg-brand text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-brand-dark"
-            >
-              <Plus size={16} />
-              Nouvelle formation
-            </button>
-          </div>
+          {canCreate && (
+            <div className="flex justify-end">
+              <button
+                onClick={() => setOpen(true)}
+                className="flex items-center gap-2 bg-brand text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-brand-dark"
+              >
+                <Plus size={16} />
+                Nouvelle formation
+              </button>
+            </div>
+          )}
 
           <div className="space-y-3">
             {formations.map((f) => {
               const isExpanded = expandedId === f.id;
+              const acquired = Boolean(f.acquisition);
               return (
                 <div key={f.id} className="glass-panel rounded-2xl p-5">
                   <div className="flex items-center justify-between">
@@ -213,6 +251,15 @@ export function AcademyManager() {
                         >
                           {f.isPublished ? "Publiée" : "Brouillon"}
                         </span>
+                        {canPurchase && (
+                          <span
+                            className={`text-xs rounded-full px-2 py-0.5 ${
+                              acquired ? "bg-brand/10 text-brand" : "bg-gray-100 text-gray-500"
+                            }`}
+                          >
+                            {acquired ? `Achetée · ${f.teamAccess.length} équipe(s)` : "Non achetée"}
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-gray-400 mt-1">
                         {f.category ?? "—"} · {f.level ?? "—"} · {f.durationMinutes ?? "?"} min ·{" "}
@@ -229,12 +276,40 @@ export function AcademyManager() {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => togglePublish(f)} className="text-xs text-gray-500 hover:text-brand">
-                        {f.isPublished ? "Dépublier" : "Publier"}
-                      </button>
-                      <button onClick={() => deleteFormation(f.id)} className="text-gray-400 hover:text-red-500">
-                        <Trash2 size={15} />
-                      </button>
+                      {canPurchase &&
+                        (acquired ? (
+                          <>
+                            <button
+                              onClick={() => setAccessFormationId(f.id)}
+                              className="flex items-center gap-1 text-xs text-gray-500 hover:text-brand"
+                              title="Rendre disponible à une équipe"
+                            >
+                              <Users2 size={14} />
+                              Équipes
+                            </button>
+                            <button onClick={() => revokeAcquisition(f)} className="text-xs text-gray-500 hover:text-red-500">
+                              Annuler l&apos;achat
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => acquireFormation(f)}
+                            className="flex items-center gap-1 text-xs bg-brand/10 text-brand rounded-lg px-2 py-1 hover:bg-brand/20"
+                          >
+                            <ShoppingCart size={14} />
+                            Acheter
+                          </button>
+                        ))}
+                      {canCreate && (
+                        <>
+                          <button onClick={() => togglePublish(f)} className="text-xs text-gray-500 hover:text-brand">
+                            {f.isPublished ? "Dépublier" : "Publier"}
+                          </button>
+                          <button onClick={() => deleteFormation(f.id)} className="text-gray-400 hover:text-red-500">
+                            <Trash2 size={15} />
+                          </button>
+                        </>
+                      )}
                       <button
                         onClick={() => setExpandedId(isExpanded ? null : f.id)}
                         className="text-gray-400 hover:text-brand"
@@ -252,11 +327,14 @@ export function AcademyManager() {
                             <span className="text-xs text-gray-400 uppercase mr-2">{c.type}</span>
                             {c.title}
                           </span>
-                          <button onClick={() => deleteContent(c.id)} className="text-gray-400 hover:text-red-500">
-                            <Trash2 size={14} />
-                          </button>
+                          {canCreate && (
+                            <button onClick={() => deleteContent(c.id)} className="text-gray-400 hover:text-red-500">
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       ))}
+                      {canCreate && (
                       <form onSubmit={(e) => handleAddContent(f.id, e)} className="flex flex-wrap gap-2 items-end">
                         <select
                           value={contentForm.type}
@@ -296,6 +374,7 @@ export function AcademyManager() {
                           Ajouter
                         </button>
                       </form>
+                      )}
                     </div>
                   )}
                 </div>
@@ -475,6 +554,43 @@ export function AcademyManager() {
           </div>
         </div>
       )}
+
+      {accessFormationId && (() => {
+        const f = formations.find((x) => x.id === accessFormationId);
+        if (!f) return null;
+        const accessTeamIds = f.teamAccess.map((a) => a.teamId);
+        return (
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+            <div className="glass-panel rounded-2xl p-6 w-full max-w-sm max-h-[85vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Équipes ayant accès</h2>
+                <button onClick={() => setAccessFormationId(null)} className="text-gray-400 hover:text-gray-600">
+                  <X size={18} />
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mb-3">{f.title}</p>
+              <div className="space-y-1">
+                {teams.map((t) => {
+                  const checked = accessTeamIds.includes(t.id);
+                  return (
+                    <label key={t.id} className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() =>
+                          checked ? revokeTeamAccess(f.id, t.id) : grantTeamAccess(f.id, t.id)
+                        }
+                      />
+                      {t.name}
+                    </label>
+                  );
+                })}
+                {teams.length === 0 && <p className="text-xs text-gray-400">Aucune équipe créée.</p>}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
