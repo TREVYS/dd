@@ -32,7 +32,7 @@ export default async function ProductionPage({
         subtasks: { orderBy: { orderIndex: "asc" } },
         comments: { include: { author: true }, orderBy: { createdAt: "asc" } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ orderIndex: "asc" }, { createdAt: "desc" }],
     }),
     prisma.client.findMany({ orderBy: { legalName: "asc" }, select: { id: true, legalName: true } }),
     prisma.user.findMany({
@@ -70,12 +70,15 @@ export default async function ProductionPage({
         tasks={tasks.map((t) => ({
           id: t.id,
           title: t.title,
+          description: t.description,
           clientName: t.client.legalName,
           assigneeId: t.assignedTo,
           assigneeName: t.assignee ? `${t.assignee.firstName} ${t.assignee.lastName}` : null,
           priority: t.priority,
           kanbanColumn: t.kanbanColumn ?? "a_faire",
           status: t.status,
+          orderIndex: t.orderIndex,
+          dueDate: t.dueDate ? t.dueDate.toISOString() : null,
           tags: t.tags,
           subtasks: t.subtasks.map((s) => ({ id: s.id, title: s.title, isDone: s.isDone })),
           comments: t.comments.map((c) => ({

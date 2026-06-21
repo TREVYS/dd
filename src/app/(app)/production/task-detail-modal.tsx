@@ -7,9 +7,11 @@ import { X, Plus, Trash2, Tag, CheckSquare, MessageSquare } from "lucide-react";
 export type TaskDetail = {
   id: string;
   title: string;
+  description: string | null;
   clientName: string;
   assigneeId: string | null;
   priority: string;
+  dueDate: string | null;
   tags: string[];
   subtasks: { id: string; title: string; isDone: boolean }[];
   comments: { id: string; body: string; authorName: string; createdAt: string }[];
@@ -26,6 +28,8 @@ export function TaskDetailModal({
 }) {
   const router = useRouter();
   const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description ?? "");
+  const [dueDate, setDueDate] = useState(task.dueDate ? task.dueDate.slice(0, 10) : "");
   const [priority, setPriority] = useState(task.priority);
   const [assigneeId, setAssigneeId] = useState(task.assigneeId ?? "");
   const [tags, setTags] = useState(task.tags);
@@ -127,7 +131,31 @@ export function TaskDetailModal({
         </div>
         <p className="text-sm text-gray-400">{task.clientName}</p>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs text-gray-400">Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onBlur={() => saveField({ description: description || null })}
+            placeholder="Décrire la tâche..."
+            rows={3}
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm mt-1 resize-none"
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="text-xs text-gray-400">Échéance</label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => {
+                setDueDate(e.target.value);
+                saveField({ dueDate: e.target.value || null });
+              }}
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm mt-1"
+            />
+          </div>
           <div>
             <label className="text-xs text-gray-400">Priorité</label>
             <select

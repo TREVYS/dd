@@ -505,6 +505,7 @@ model Task {
   estimatedHours Decimal?  @map("estimated_hours") @db.Decimal(6, 2)
   actualHours    Decimal?  @map("actual_hours") @db.Decimal(6, 2)
   kanbanColumn   String?   @map("kanban_column") @db.VarChar(80)
+  orderIndex     Int       @default(0) @map("order_index")
   tags           String[]  @default([])
   createdAt      DateTime  @default(now()) @map("created_at")
   completedAt    DateTime? @map("completed_at")
