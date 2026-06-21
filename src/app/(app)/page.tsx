@@ -271,13 +271,13 @@ export default async function DashboardPage() {
                     )}
                   </div>
                 </div>
-                <a
-                  href={`mailto:${me.manager.email}?subject=${encodeURIComponent("Échange")}`}
+                <Link
+                  href={`/chat?with=${me.manager.id}`}
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-brand bg-brand/10 rounded-full px-3 py-1.5 hover:bg-brand/20 transition"
                 >
                   <MessageCircle size={13} />
                   Discuter avec mon mentor
-                </a>
+                </Link>
               </div>
             )}
 
@@ -290,7 +290,11 @@ export default async function DashboardPage() {
               ) : (
                 <div className="grid grid-cols-2 gap-2">
                   {me.reports.map((r) => (
-                    <div key={r.id} className="flex items-center gap-2 text-sm">
+                    <Link
+                      key={r.id}
+                      href={`/chat?with=${r.id}`}
+                      className="flex items-center gap-2 text-sm hover:bg-gray-50 rounded-lg px-1 py-1 -mx-1"
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={`https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(r.email)}&backgroundColor=ede9fe`}
@@ -298,7 +302,7 @@ export default async function DashboardPage() {
                         className="h-8 w-8 rounded-full bg-brand/10 shrink-0"
                       />
                       <span className="truncate">{r.firstName} {r.lastName}</span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}
