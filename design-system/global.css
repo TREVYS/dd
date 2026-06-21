@@ -1,0 +1,134 @@
+/* ==========================================================================
+   TREVYS OS — Styles globaux
+   Reproduit fidèlement src/app/globals.css (fond, glassmorphism, dark mode).
+   Suppose Tailwind v4 (@import "tailwindcss") + tokens.css importé avant.
+   ========================================================================== */
+
+@import "tailwindcss";
+@import "./tokens.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--foreground);
+  background: radial-gradient(circle at 10% 0%, var(--bg-glow-1) 0%, transparent 45%),
+    radial-gradient(circle at 90% 10%, var(--bg-glow-2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 100%, var(--bg-glow-3) 0%, transparent 45%),
+    var(--background);
+  background-attachment: fixed;
+  min-height: 100vh;
+  transition: background-color var(--transition-base), color var(--transition-base);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Glassmorphism : les 3 niveaux de "verre" utilisés partout dans l'app --- */
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-panel-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border-strong);
+  box-shadow: var(--glass-shadow-strong);
+}
+
+.glass-nav {
+  background: var(--glass-bg-nav);
+  backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border-nav);
+  box-shadow: var(--glass-shadow-strong);
+}
+
+/* ==========================================================================
+   Dark mode — activé en ajoutant la classe .dark sur <html>.
+   Script anti-flash (à reproduire dans <head>, avant hydratation React) :
+
+   <script>
+     try {
+       if (localStorage.getItem('theme') === 'dark') {
+         document.documentElement.classList.add('dark');
+       }
+     } catch (e) {}
+   </script>
+   ========================================================================== */
+
+.dark body {
+  color: var(--foreground);
+  background: radial-gradient(circle at 10% 0%, var(--bg-glow-1) 0%, transparent 45%),
+    radial-gradient(circle at 90% 10%, var(--bg-glow-2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 100%, var(--bg-glow-3) 0%, transparent 45%),
+    var(--background-dark-base);
+}
+
+.dark .glass-panel,
+.dark .glass-panel-strong {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.dark .glass-nav {
+  background: var(--glass-bg-nav);
+  border: 1px solid var(--glass-border-nav);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Réécriture des utilitaires Tailwind neutres pour qu'ils restent lisibles
+   en dark mode (l'app n'utilise pas de classes dark: explicites, elle
+   réécrit globalement les utilitaires gray/white). */
+.dark .bg-white {
+  background-color: var(--glass-bg);
+}
+.dark .bg-gray-50 {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+.dark .bg-gray-100,
+.dark .bg-gray-200 {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.dark .border-gray-50,
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.dark .text-gray-300 {
+  color: var(--text-gray-300);
+}
+.dark .text-gray-400 {
+  color: var(--text-gray-400);
+}
+.dark .text-gray-500 {
+  color: var(--text-gray-500);
+}
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: var(--text-gray-700);
+}
+.dark .hover\:bg-gray-50:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}

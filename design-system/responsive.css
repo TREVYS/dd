@@ -1,0 +1,74 @@
+/* ==========================================================================
+   TREVYS OS — Responsive
+   L'ERP source utilise quasi exclusivement les breakpoints Tailwind par
+   défaut (sm/md/lg), appliqués au cas par cas (grilles, visibilité d'éléments).
+   Il n'y a pas de media queries custom dans le CSS — tout passe par des
+   classes utilitaires conditionnelles (md:grid-cols-4, hidden md:block, etc.)
+   Ce fichier documente les breakpoints et les patterns relevés, pour
+   permettre de les reproduire en CSS pur si besoin (hors Tailwind).
+   ========================================================================== */
+
+/* Breakpoints Tailwind v4 par défaut (non surchargés dans ce projet) */
+:root {
+  --breakpoint-sm: 40rem;  /* 640px */
+  --breakpoint-md: 48rem;  /* 768px */
+  --breakpoint-lg: 64rem;  /* 1024px */
+  --breakpoint-xl: 80rem;  /* 1280px */
+}
+
+/* --- Patterns relevés dans le code --- */
+
+/* fec-analyse-view.tsx : grille de KPI 2 colonnes -> 4 colonnes au-delà de md */
+.kpi-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* fec-analyse-view.tsx : graphiques CA / charges côte à côte dès md, sinon empilés */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* parametrage/page.tsx : grille de cartes de paramétrage, 1 -> 2 -> 3 colonnes */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 640px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .settings-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* topbar.tsx : logo masqué sous md (priorité à la barre de recherche sur mobile) */
+.topbar-logo {
+  display: none;
+}
+@media (min-width: 768px) {
+  .topbar-logo {
+    display: block;
+  }
+}
+
+/* Pas de media query dédiée au mobile pour la sidebar dans le code source :
+   elle conserve son comportement hover/pin à toutes les tailles d'écran.
+   Si une adaptation mobile (drawer plein écran, bouton burger) est nécessaire
+   dans le nouveau projet, c'est un élément à CONCEVOIR — voir README-design.md
+   section "Éléments manquants". */
