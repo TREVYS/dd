@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Users, UsersRound, ShieldCheck, GraduationCap, Mail } from "lucide-react";
-import { canManageCollaborators, canManageHabilitations, canManageAcademy, canManageEmailSettings } from "@/lib/permissions";
+import { Users, UsersRound, ShieldCheck, GraduationCap, Mail, Palette } from "lucide-react";
+import {
+  canManageCollaborators,
+  canManageHabilitations,
+  canManageAcademy,
+  canManageEmailSettings,
+  canManageValuationBranding,
+} from "@/lib/permissions";
 
 export default async function ParametragePage() {
   const session = await auth();
@@ -45,6 +51,13 @@ export default async function ParametragePage() {
       description: "Configurer le serveur SMTP utilisé pour l'envoi des rapports clients.",
       icon: Mail,
       show: canManageEmailSettings(session?.user?.role),
+    },
+    {
+      href: "/parametrage/valorisation",
+      title: "Personnalisation valorisation",
+      description: "Logo, couleurs, mentions légales et signature des rapports Word de valorisation.",
+      icon: Palette,
+      show: canManageValuationBranding(session?.user?.role),
     },
   ].filter((c) => c.show);
 

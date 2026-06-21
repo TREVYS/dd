@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import {
   Bar,
   BarChart,
@@ -11,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Sparkles, Plus, Trash2, FileDown, Loader2 } from "lucide-react";
+import { Sparkles, Plus, Trash2, FileDown, Loader2, Send, CheckCircle2, XCircle } from "lucide-react";
 import {
   computeValuation,
   type FinancialInputs,
@@ -23,8 +24,9 @@ import {
   type ValuationResults,
 } from "@/lib/valuation/engine";
 import type { MethodRecommendation, ValuationNarrative } from "@/lib/valuation/analyst";
+import { canValidateValuations } from "@/lib/permissions";
 
-type Step = "donnees" | "analyse" | "methodes" | "ajustements" | "restitution" | "rapport";
+type Step = "donnees" | "analyse" | "methodes" | "ajustements" | "restitution" | "validation" | "rapport";
 
 const STEPS: { key: Step; label: string }[] = [
   { key: "donnees", label: "Données" },
@@ -32,16 +34,44 @@ const STEPS: { key: Step; label: string }[] = [
   { key: "methodes", label: "Méthodes" },
   { key: "ajustements", label: "Ajustements" },
   { key: "restitution", label: "Restitution" },
+  { key: "validation", label: "Validation" },
   { key: "rapport", label: "Rapport" },
 ];
 
+const STATUS_LABELS: Record<string, string> = {
+  draft: "Brouillon",
+  in_progress: "En cours",
+  pending_validation: "En attente de validation",
+  validated: "Validée",
+  changes_requested: "Modifications demandées",
+};
+
+const STATUS_STYLES: Record<string, string> = {
+  draft: "bg-gray-100 text-gray-500",
+  in_progress: "bg-blue-100 text-blue-700",
+  pending_validation: "bg-amber-100 text-amber-700",
+  validated: "bg-emerald-100 text-emerald-700",
+  changes_requested: "bg-red-100 text-red-700",
+};
+
 type FecImportOption = { id: string; fiscalYear: number; fileName: string; metrics: { totals: Record<string, number> } | null };
+
+type CommentEntry = {
+  id: string;
+  body: string;
+  kind: string;
+  createdAt: string;
+  author: { firstName: string; lastName: string } | null;
+};
 
 type ValuationDetail = {
   id: string;
   title: string;
+  status: string;
   client: { id: string; legalName: string };
   fecImport: { id: string; fiscalYear: number; metrics: { totals: Record<string, number> } | null } | null;
+  validatedBy: { firstName: string; lastName: string } | null;
+  comments: CommentEntry[];
   versions: {
     id: string;
     label: string;
@@ -96,6 +126,15 @@ export function ValuationWizard({ valuationId }: { valuationId: string }) {
   const [loadingReport, setLoadingReport] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [postingComment, setPostingComment] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [validationComment, setValidationComment] = useState("");
+
+  const { data: session } = useSession();
+  const role = session?.user?.role as string | null | undefined;
+  const canValidate = canValidateValuations(role);
 
   async function load() {
     const v: ValuationDetail = await fetch(`/api/valuations/${valuationId}`).then((r) => r.json());
@@ -204,6 +243,51 @@ export function ValuationWizard({ valuationId }: { valuationId: string }) {
     if (res.ok) load();
   }
 
+  async function handlePostComment() {
+    if (!commentDraft.trim()) return;
+    setPostingComment(true);
+    try {
+      const res = await fetch(`/api/valuations/${valuationId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body: commentDraft.trim() }),
+      });
+      if (res.ok) {
+        setCommentDraft("");
+        await load();
+      }
+    } finally {
+      setPostingComment(false);
+    }
+  }
+
+  async function handleSubmitForValidation() {
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/valuations/${valuationId}/submit`, { method: "POST" });
+      if (res.ok) await load();
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleValidate(decision: "approved" | "changes_requested") {
+    setValidating(true);
+    try {
+      const res = await fetch(`/api/valuations/${valuationId}/validate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decision, comment: validationComment.trim() || undefined }),
+      });
+      if (res.ok) {
+        setValidationComment("");
+        await load();
+      }
+    } finally {
+      setValidating(false);
+    }
+  }
+
   async function handleGenerateReport() {
     setLoadingReport(true);
     if (!narrative) await handleNarrative();
@@ -236,9 +320,16 @@ export function ValuationWizard({ valuationId }: { valuationId: string }) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">{valuation.title}</h1>
-        <p className="text-sm text-gray-500 mt-1">{valuation.client.legalName}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">{valuation.title}</h1>
+          <p className="text-sm text-gray-500 mt-1">{valuation.client.legalName}</p>
+        </div>
+        <span
+          className={`text-xs px-2.5 py-1 rounded-full whitespace-nowrap ${STATUS_STYLES[valuation.status] ?? "bg-gray-100 text-gray-500"}`}
+        >
+          {STATUS_LABELS[valuation.status] ?? valuation.status}
+        </span>
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
@@ -472,6 +563,105 @@ export function ValuationWizard({ valuationId }: { valuationId: string }) {
               {saving ? "Enregistrement..." : "Enregistrer une version"}
             </button>
             {saveFeedback && <span className="text-sm text-gray-500">{saveFeedback}</span>}
+          </div>
+        </div>
+      )}
+
+      {step === "validation" && (
+        <div className="space-y-4">
+          <div className="glass-panel rounded-2xl p-6 space-y-4">
+            <h2 className="font-semibold">Validation par un supérieur</h2>
+            {valuation.status !== "pending_validation" ? (
+              <button
+                onClick={handleSubmitForValidation}
+                disabled={submitting}
+                className="flex items-center gap-2 bg-brand text-white rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-50"
+              >
+                {submitting ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+                Soumettre pour validation
+              </button>
+            ) : (
+              <p className="text-sm text-amber-700">Ce dossier est en attente de validation par un Associé / Administrateur.</p>
+            )}
+
+            {canValidate && valuation.status === "pending_validation" && (
+              <div className="rounded-xl bg-gray-50 p-4 space-y-3">
+                <textarea
+                  value={validationComment}
+                  onChange={(e) => setValidationComment(e.target.value)}
+                  placeholder="Commentaire de validation (optionnel)"
+                  rows={2}
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleValidate("approved")}
+                    disabled={validating}
+                    className="flex items-center gap-2 bg-emerald-600 text-white rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-50"
+                  >
+                    <CheckCircle2 size={15} />
+                    Valider
+                  </button>
+                  <button
+                    onClick={() => handleValidate("changes_requested")}
+                    disabled={validating}
+                    className="flex items-center gap-2 bg-red-600 text-white rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-50"
+                  >
+                    <XCircle size={15} />
+                    Demander des modifications
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {valuation.status === "validated" && valuation.validatedBy && (
+              <p className="text-sm text-emerald-700">
+                Validé par {valuation.validatedBy.firstName} {valuation.validatedBy.lastName}.
+              </p>
+            )}
+          </div>
+
+          <div className="glass-panel rounded-2xl p-6 space-y-3">
+            <h2 className="font-semibold">Commentaires</h2>
+            <div className="space-y-3 max-h-80 overflow-y-auto">
+              {valuation.comments.length === 0 && <p className="text-sm text-gray-400">Aucun commentaire.</p>}
+              {valuation.comments.map((c) => (
+                <div key={c.id} className="rounded-xl bg-gray-50 px-3 py-2 text-sm">
+                  <div className="flex items-center justify-between text-xs text-gray-400">
+                    <span>
+                      {c.author ? `${c.author.firstName} ${c.author.lastName}` : "Système"}
+                      {c.kind !== "comment" && (
+                        <span className="ml-2 text-brand">
+                          ·{" "}
+                          {c.kind === "approval"
+                            ? "Validation"
+                            : c.kind === "rejection"
+                              ? "Modifications demandées"
+                              : "Soumission"}
+                        </span>
+                      )}
+                    </span>
+                    <span>{new Date(c.createdAt).toLocaleString("fr-FR")}</span>
+                  </div>
+                  <p className="mt-1 text-gray-700">{c.body}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                value={commentDraft}
+                onChange={(e) => setCommentDraft(e.target.value)}
+                placeholder="Ajouter un commentaire..."
+                className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm"
+              />
+              <button
+                onClick={handlePostComment}
+                disabled={postingComment || !commentDraft.trim()}
+                className="bg-brand text-white rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-50"
+              >
+                {postingComment ? "..." : "Ajouter"}
+              </button>
+            </div>
           </div>
         </div>
       )}

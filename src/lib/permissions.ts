@@ -55,3 +55,12 @@ export function canManageValuations(role: string | null | undefined) {
     role === "Collaborateur"
   );
 }
+
+// Le "supérieur" (Associé/Administrateur) valide ou rejette une valorisation soumise.
+export function canValidateValuations(role: string | null | undefined) {
+  return role === "Associé" || role === "Administrateur";
+}
+
+export function canManageValuationBranding(role: string | null | undefined) {
+  return role === "Administrateur";
+}

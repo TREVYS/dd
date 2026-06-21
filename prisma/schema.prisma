@@ -50,7 +50,7 @@ model User {
   phone               String?  @db.VarChar(40)
   jobTitle            String?  @map("job_title") @db.VarChar(120)
   department          String?  @db.VarChar(120)
-  office               String?  @db.VarChar(120)
+  office              String?  @db.VarChar(120)
   roleId              String?  @map("role_id")
   managerId           String?  @map("manager_id")
   teamId              String?  @map("team_id")
@@ -93,35 +93,36 @@ model User {
   quotesValidatedManager Quote[] @relation("QuoteValidatedByManager")
   quotesValidatedPartner Quote[] @relation("QuoteValidatedByPartner")
 
-  timeEntries          TimeEntry[]
-  capacityPlans        CapacityPlan[]
-  qualityReviews       QualityReview[]
-  risksDetected        Risk[]             @relation("RiskDetectedBy")
-  risksAssigned        Risk[]             @relation("RiskAssignedTo")
-  knowledgeAuthored    KnowledgeArticle[] @relation("KnowledgeCreatedBy")
-  knowledgeValidated   KnowledgeArticle[] @relation("KnowledgeValidatedBy")
-  auditLogs            AuditLog[]
-  announcementsCreated Announcement[]     @relation("AnnouncementCreatedBy")
-  mails                Mail[]             @relation("MailRecipient")
-  mailFolders          MailFolder[]
-  mailReplies          MailReply[]
-  contactNotes         ContactNote[]
-  taskComments         TaskComment[]
-  legalCasesCreated    LegalCase[]
-  prospectsAssigned    Prospect[]         @relation("ProspectAssignedTo")
-  prospectsSigned      Prospect[]         @relation("ProspectSignedBy")
-  conversationMembers  ConversationMember[]
-  chatMessagesSent     ChatMessage[]
-  formationsAuthored   Formation[]          @relation("FormationAuthor")
-  formationProgress    FormationProgress[]
-  fecImportsUploaded   FecImport[]
-  fecReportsCreated    FecReport[]
-  fecChatMessages      FecChatMessage[]
-  valuationsCreated    Valuation[]
+  timeEntries              TimeEntry[]
+  capacityPlans            CapacityPlan[]
+  qualityReviews           QualityReview[]
+  risksDetected            Risk[]                 @relation("RiskDetectedBy")
+  risksAssigned            Risk[]                 @relation("RiskAssignedTo")
+  knowledgeAuthored        KnowledgeArticle[]     @relation("KnowledgeCreatedBy")
+  knowledgeValidated       KnowledgeArticle[]     @relation("KnowledgeValidatedBy")
+  auditLogs                AuditLog[]
+  announcementsCreated     Announcement[]         @relation("AnnouncementCreatedBy")
+  mails                    Mail[]                 @relation("MailRecipient")
+  mailFolders              MailFolder[]
+  mailReplies              MailReply[]
+  contactNotes             ContactNote[]
+  taskComments             TaskComment[]
+  legalCasesCreated        LegalCase[]
+  prospectsAssigned        Prospect[]             @relation("ProspectAssignedTo")
+  prospectsSigned          Prospect[]             @relation("ProspectSignedBy")
+  conversationMembers      ConversationMember[]
+  chatMessagesSent         ChatMessage[]
+  formationsAuthored       Formation[]            @relation("FormationAuthor")
+  formationProgress        FormationProgress[]
+  fecImportsUploaded       FecImport[]
+  fecReportsCreated        FecReport[]
+  fecChatMessages          FecChatMessage[]
+  valuationsCreated        Valuation[]            @relation("ValuationCreatedBy")
+  valuationsValidated      Valuation[]            @relation("ValuationValidatedBy")
   valuationVersionsCreated ValuationVersion[]
-  valuationComments    ValuationComment[]
+  valuationComments        ValuationComment[]
   formationsAcquired       FormationAcquisition[] @relation("FormationAcquiredBy")
-  formationAccessGranted   FormationTeamAccess[]   @relation("FormationAccessGrantedBy")
+  formationAccessGranted   FormationTeamAccess[]  @relation("FormationAccessGrantedBy")
 
   @@map("users")
 }
@@ -131,7 +132,7 @@ model Team {
   name      String   @db.VarChar(120)
   createdAt DateTime @default(now()) @map("created_at")
 
-  members        User[]
+  members         User[]
   formationAccess FormationTeamAccess[]
 
   @@map("teams")
@@ -178,24 +179,24 @@ model ChatMessage {
 }
 
 model Prospect {
-  id                String    @id @default(uuid())
-  companyName       String    @map("company_name") @db.VarChar(255)
-  contactName       String?   @map("contact_name") @db.VarChar(180)
-  contactEmail      String?   @map("contact_email") @db.VarChar(180)
-  contactPhone      String?   @map("contact_phone") @db.VarChar(40)
-  source            String?   @db.VarChar(80)
-  estimatedValue    Decimal?  @map("estimated_value") @db.Decimal(12, 2)
+  id                String   @id @default(uuid())
+  companyName       String   @map("company_name") @db.VarChar(255)
+  contactName       String?  @map("contact_name") @db.VarChar(180)
+  contactEmail      String?  @map("contact_email") @db.VarChar(180)
+  contactPhone      String?  @map("contact_phone") @db.VarChar(40)
+  source            String?  @db.VarChar(80)
+  estimatedValue    Decimal? @map("estimated_value") @db.Decimal(12, 2)
   notes             String?
-  pipelineStage     String    @default("prospects") @map("pipeline_stage") @db.VarChar(30)
-  assignedToId      String?   @map("assigned_to")
-  signedById        String?   @map("signed_by")
-  convertedClientId String?   @unique @map("converted_client_id")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  pipelineStage     String   @default("prospects") @map("pipeline_stage") @db.VarChar(30)
+  assignedToId      String?  @map("assigned_to")
+  signedById        String?  @map("signed_by")
+  convertedClientId String?  @unique @map("converted_client_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
-  assignedTo      User?    @relation("ProspectAssignedTo", fields: [assignedToId], references: [id])
-  signedBy        User?    @relation("ProspectSignedBy", fields: [signedById], references: [id])
-  convertedClient Client?  @relation(fields: [convertedClientId], references: [id])
+  assignedTo      User?   @relation("ProspectAssignedTo", fields: [assignedToId], references: [id])
+  signedBy        User?   @relation("ProspectSignedBy", fields: [signedById], references: [id])
+  convertedClient Client? @relation(fields: [convertedClientId], references: [id])
 
   @@index([pipelineStage])
   @@map("prospects")
@@ -513,12 +514,12 @@ model Task {
   assignee User?    @relation("TaskAssignedTo", fields: [assignedTo], references: [id])
   manager  User?    @relation("TaskManagerOf", fields: [managerId], references: [id])
 
-  statusHistory  TaskStatusHistory[]
-  checklistItems TaskChecklistItem[]
-  subtasks       TaskSubtask[]
-  comments       TaskComment[]
-  deadlines      Deadline[]
-  timeEntries    TimeEntry[]
+  statusHistory    TaskStatusHistory[]
+  checklistItems   TaskChecklistItem[]
+  subtasks         TaskSubtask[]
+  comments         TaskComment[]
+  deadlines        Deadline[]
+  timeEntries      TimeEntry[]
   fecOpportunities FecOpportunity[]
 
   @@index([assignedTo])
@@ -1053,24 +1054,24 @@ model FormationProgress {
 }
 
 model FecImport {
-  id            String    @id @default(uuid())
-  clientId      String    @map("client_id")
-  fiscalYear    Int       @map("fiscal_year")
-  fileUrl       String    @map("file_url")
-  fileName      String    @map("file_name") @db.VarChar(255)
-  lineCount     Int       @default(0) @map("line_count")
-  journalCount  Int       @default(0) @map("journal_count")
-  status        String    @default("imported") @db.VarChar(30)
-  metrics       Json?
-  meetingPrep   Json?     @map("meeting_prep")
-  uploadedById  String?   @map("uploaded_by_id")
-  createdAt     DateTime  @default(now()) @map("created_at")
+  id           String   @id @default(uuid())
+  clientId     String   @map("client_id")
+  fiscalYear   Int      @map("fiscal_year")
+  fileUrl      String   @map("file_url")
+  fileName     String   @map("file_name") @db.VarChar(255)
+  lineCount    Int      @default(0) @map("line_count")
+  journalCount Int      @default(0) @map("journal_count")
+  status       String   @default("imported") @db.VarChar(30)
+  metrics      Json?
+  meetingPrep  Json?    @map("meeting_prep")
+  uploadedById String?  @map("uploaded_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
 
-  client     Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  uploadedBy User?        @relation(fields: [uploadedById], references: [id])
-  anomalies  FecAnomaly[]
-  reports    FecReport[]
-  chatLogs   FecChatMessage[]
+  client        Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  uploadedBy    User?            @relation(fields: [uploadedById], references: [id])
+  anomalies     FecAnomaly[]
+  reports       FecReport[]
+  chatLogs      FecChatMessage[]
   opportunities FecOpportunity[]
   valuations    Valuation[]
 
@@ -1094,22 +1095,22 @@ model FecAnomaly {
 }
 
 model FecReport {
-  id              String    @id @default(uuid())
-  fecImportId     String    @map("fec_import_id")
-  clientId        String    @map("client_id")
-  title           String    @db.VarChar(180)
-  type            String    @default("synthese_dirigeant") @db.VarChar(40)
-  tone            String    @default("dirigeant") @db.VarChar(30)
-  content         Json
-  status          String    @default("draft") @db.VarChar(20)
-  shareToken      String?   @unique @map("share_token")
-  shareExpiresAt  DateTime? @map("share_expires_at")
-  viewedAt        DateTime? @map("viewed_at")
-  viewCount       Int       @default(0) @map("view_count")
-  sentAt          DateTime? @map("sent_at")
-  createdById     String?   @map("created_by_id")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  id             String    @id @default(uuid())
+  fecImportId    String    @map("fec_import_id")
+  clientId       String    @map("client_id")
+  title          String    @db.VarChar(180)
+  type           String    @default("synthese_dirigeant") @db.VarChar(40)
+  tone           String    @default("dirigeant") @db.VarChar(30)
+  content        Json
+  status         String    @default("draft") @db.VarChar(20)
+  shareToken     String?   @unique @map("share_token")
+  shareExpiresAt DateTime? @map("share_expires_at")
+  viewedAt       DateTime? @map("viewed_at")
+  viewCount      Int       @default(0) @map("view_count")
+  sentAt         DateTime? @map("sent_at")
+  createdById    String?   @map("created_by_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   fecImport FecImport @relation(fields: [fecImportId], references: [id], onDelete: Cascade)
   client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
@@ -1133,17 +1134,17 @@ model FecChatMessage {
 }
 
 model FecOpportunity {
-  id          String    @id @default(uuid())
-  fecImportId String    @map("fec_import_id")
-  clientId    String    @map("client_id")
-  domain      String    @db.VarChar(30)
-  title       String    @db.VarChar(180)
-  description String
-  priority    String    @default("medium") @db.VarChar(20)
+  id             String   @id @default(uuid())
+  fecImportId    String   @map("fec_import_id")
+  clientId       String   @map("client_id")
+  domain         String   @db.VarChar(30)
+  title          String   @db.VarChar(180)
+  description    String
+  priority       String   @default("medium") @db.VarChar(20)
   estimatedValue Decimal? @map("estimated_value") @db.Decimal(12, 2)
-  status      String    @default("identified") @db.VarChar(30)
-  taskId      String?   @map("task_id")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  status         String   @default("identified") @db.VarChar(30)
+  taskId         String?  @map("task_id")
+  createdAt      DateTime @default(now()) @map("created_at")
 
   fecImport FecImport @relation(fields: [fecImportId], references: [id], onDelete: Cascade)
   client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
@@ -1168,33 +1169,37 @@ model Valuation {
   status        String    @default("draft") @db.VarChar(20)
   companyData   Json?     @map("company_data")
   createdById   String?   @map("created_by_id")
+  submittedAt   DateTime? @map("submitted_at")
+  validatedById String?   @map("validated_by_id")
+  validatedAt   DateTime? @map("validated_at")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  client     Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  fecImport  FecImport?         @relation(fields: [fecImportId], references: [id])
-  createdBy  User?              @relation(fields: [createdById], references: [id])
-  versions   ValuationVersion[]
-  comments   ValuationComment[]
+  client      Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  fecImport   FecImport?         @relation(fields: [fecImportId], references: [id])
+  createdBy   User?              @relation("ValuationCreatedBy", fields: [createdById], references: [id])
+  validatedBy User?              @relation("ValuationValidatedBy", fields: [validatedById], references: [id])
+  versions    ValuationVersion[]
+  comments    ValuationComment[]
 
   @@index([clientId])
   @@map("valuations")
 }
 
 model ValuationVersion {
-  id              String   @id @default(uuid())
-  valuationId     String   @map("valuation_id")
-  label           String   @db.VarChar(40)
-  inputs          Json
-  methodWeights   Json     @map("method_weights")
-  assumptions     Json
-  scenarios       Json
-  results         Json
-  sensitivity     Json?
-  aiRecommendation Json?   @map("ai_recommendation")
-  aiNarrative     Json?    @map("ai_narrative")
-  createdById     String?  @map("created_by_id")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id               String   @id @default(uuid())
+  valuationId      String   @map("valuation_id")
+  label            String   @db.VarChar(40)
+  inputs           Json
+  methodWeights    Json     @map("method_weights")
+  assumptions      Json
+  scenarios        Json
+  results          Json
+  sensitivity      Json?
+  aiRecommendation Json?    @map("ai_recommendation")
+  aiNarrative      Json?    @map("ai_narrative")
+  createdById      String?  @map("created_by_id")
+  createdAt        DateTime @default(now()) @map("created_at")
 
   valuation Valuation @relation(fields: [valuationId], references: [id], onDelete: Cascade)
   createdBy User?     @relation(fields: [createdById], references: [id])
@@ -1208,6 +1213,7 @@ model ValuationComment {
   valuationId String   @map("valuation_id")
   authorId    String?  @map("author_id")
   body        String
+  kind        String   @default("comment") @db.VarChar(20)
   createdAt   DateTime @default(now()) @map("created_at")
 
   valuation Valuation @relation(fields: [valuationId], references: [id], onDelete: Cascade)

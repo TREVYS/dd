@@ -14,6 +14,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       client: { select: { id: true, legalName: true } },
       fecImport: { select: { id: true, fiscalYear: true, metrics: true } },
       createdBy: { select: { firstName: true, lastName: true } },
+      validatedBy: { select: { firstName: true, lastName: true } },
       versions: { orderBy: { createdAt: "desc" }, include: { createdBy: { select: { firstName: true, lastName: true } } } },
       comments: { orderBy: { createdAt: "asc" }, include: { author: { select: { firstName: true, lastName: true } } } },
     },

@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { canManageValuations } from "@/lib/permissions";
 import { generateNarrative } from "@/lib/valuation/analyst";
 import { generateValuationDocx } from "@/lib/valuation/docx-report";
+import { getValuationBranding } from "@/lib/valuation/branding";
 import type { FinancialInputs, ValuationResults } from "@/lib/valuation/engine";
 
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -31,13 +32,14 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   const narrative =
     (version.aiNarrative as Awaited<ReturnType<typeof generateNarrative>> | null) ?? (await generateNarrative(inputs, results));
 
+  const branding = await getValuationBranding();
   const buffer = await generateValuationDocx({
     companyName: valuation.client.legalName,
-    cabinetName: "TREVYS",
     date: new Date(),
     inputs,
     results,
     narrative,
+    branding,
   });
 
   return new NextResponse(new Uint8Array(buffer), {

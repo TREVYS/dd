@@ -10,9 +10,14 @@ import {
   WidthType,
   AlignmentType,
   BorderStyle,
+  ImageRun,
 } from "docx";
+import { readFile } from "fs/promises";
+import path from "path";
 import type { FinancialInputs, ValuationResults } from "./engine";
 import type { ValuationNarrative } from "./analyst";
+import type { ValuationBranding } from "./branding";
+import { DEFAULT_VALUATION_BRANDING } from "./branding";
 
 const fmt = (n: number | null | undefined) =>
   n === null || n === undefined || !Number.isFinite(n)
@@ -53,17 +58,45 @@ export async function generateValuationDocx(opts: {
   inputs: FinancialInputs;
   results: ValuationResults;
   narrative: ValuationNarrative;
+  branding?: ValuationBranding;
 }): Promise<Buffer> {
-  const { companyName, cabinetName, date, inputs, results, narrative } = opts;
+  const { companyName, date, inputs, results, narrative } = opts;
+  const branding = opts.branding ?? DEFAULT_VALUATION_BRANDING;
+  const cabinetName = opts.cabinetName ?? branding.cabinetName;
+  const color = branding.primaryColor;
+  const font = branding.fontFamily;
+
+  let logoImage: ImageRun | null = null;
+  if (branding.logoUrl) {
+    try {
+      const filePath = path.join(process.cwd(), "public", branding.logoUrl.replace(/^\//, ""));
+      const data = await readFile(filePath);
+      logoImage = new ImageRun({
+        type: "png",
+        data,
+        transformation: { width: 120, height: 60 },
+      });
+    } catch {
+      logoImage = null;
+    }
+  }
 
   const doc = new Document({
+    styles: {
+      default: {
+        document: { run: { font } },
+      },
+    },
     sections: [
       {
         children: [
+          ...(logoImage
+            ? [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 800, after: 200 }, children: [logoImage] })]
+            : []),
           new Paragraph({
             alignment: AlignmentType.CENTER,
-            spacing: { before: 2400, after: 200 },
-            children: [new TextRun({ text: cabinetName ?? "TREVYS", bold: true, size: 28, color: "6D5BF6" })],
+            spacing: { before: logoImage ? 0 : 2400, after: 200 },
+            children: [new TextRun({ text: cabinetName, bold: true, size: 28, color })],
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -138,8 +171,35 @@ export async function generateValuationDocx(opts: {
           new Paragraph({ heading: HeadingLevel.HEADING_1, text: "Conclusion" }),
           ...paragraphsFromText(narrative.conclusion),
 
+          ...(branding.signatureName
+            ? [
+                new Paragraph({ spacing: { before: 800 }, text: "" }),
+                new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  children: [new TextRun({ text: branding.signatureName, bold: true })],
+                }),
+                ...(branding.signatureTitle
+                  ? [
+                      new Paragraph({
+                        alignment: AlignmentType.RIGHT,
+                        children: [new TextRun({ text: branding.signatureTitle, italics: true, size: 18 })],
+                      }),
+                    ]
+                  : []),
+              ]
+            : []),
+
+          ...(branding.legalMentions
+            ? [
+                new Paragraph({
+                  spacing: { before: 800 },
+                  children: [new TextRun({ text: branding.legalMentions, italics: true, size: 16 })],
+                }),
+              ]
+            : []),
+
           new Paragraph({
-            spacing: { before: 800 },
+            spacing: { before: 400 },
             children: [new TextRun({ text: "Document confidentiel à usage interne et du dirigeant.", italics: true, size: 18 })],
           }),
         ],
