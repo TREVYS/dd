@@ -17,8 +17,10 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Settings,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import { canManageCollaborators } from "@/lib/permissions";
 
 const NAV_GROUPS = [
   {
@@ -70,6 +72,16 @@ export function Sidebar() {
     localStorage.setItem("sidebar-pinned", String(next));
   }
 
+  const navGroups = canManageCollaborators(session?.user?.role)
+    ? [
+        ...NAV_GROUPS,
+        {
+          label: "Paramétrage",
+          items: [{ href: "/parametrage", label: "Paramétrage", icon: Settings }],
+        },
+      ]
+    : NAV_GROUPS;
+
   const expanded = mounted && (pinned || hovered);
   const initials = (session?.user?.name ?? "")
     .split(" ")
@@ -105,7 +117,7 @@ export function Sidebar() {
         </div>
 
         <nav className="flex-1 space-y-6 overflow-y-auto overflow-x-hidden">
-          {NAV_GROUPS.map((group) => (
+          {navGroups.map((group) => (
             <div key={group.label}>
               {expanded && (
                 <p className="text-xs font-medium text-gray-400 uppercase mb-2 px-1 whitespace-nowrap">

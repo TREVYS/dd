@@ -4,8 +4,27 @@ import { ensureClientFolderTree } from "../src/lib/ged";
 
 const prisma = new PrismaClient();
 
+const MODULES = [
+  { key: "crm", label: "CRM" },
+  { key: "production", label: "Production" },
+  { key: "ged", label: "GED" },
+  { key: "juridique", label: "Juridique" },
+  { key: "academy", label: "Academy" },
+  { key: "assistant_ia", label: "Assistant IA" },
+  { key: "knowledge_cabinet", label: "Knowledge Cabinet" },
+  { key: "ticketing", label: "Ticketing" },
+  { key: "reporting", label: "Reporting" },
+];
+
+const DEFAULT_ROLE_MODULES: Record<string, string[]> = {
+  Administrateur: MODULES.map((m) => m.key),
+  Associé: MODULES.map((m) => m.key),
+  Manager: ["crm", "production", "ged", "juridique", "assistant_ia", "knowledge_cabinet", "ticketing", "reporting"],
+  Collaborateur: ["crm", "production", "ged", "juridique", "assistant_ia", "knowledge_cabinet", "ticketing"],
+};
+
 async function main() {
-  const roleNames = ["Associé", "Manager", "Collaborateur"];
+  const roleNames = ["Associé", "Manager", "Collaborateur", "Administrateur"];
   const roles: Record<string, string> = {};
   for (const name of roleNames) {
     const role = await prisma.role.upsert({
@@ -16,7 +35,47 @@ async function main() {
     roles[name] = role.id;
   }
 
+  const permissions: Record<string, string> = {};
+  for (const m of MODULES) {
+    const code = `module:${m.key}:access`;
+    const permission = await prisma.permission.upsert({
+      where: { code },
+      update: { label: `Accès module ${m.label}`, module: m.key },
+      create: { code, label: `Accès module ${m.label}`, module: m.key },
+    });
+    permissions[m.key] = permission.id;
+  }
+
+  for (const [roleName, moduleKeys] of Object.entries(DEFAULT_ROLE_MODULES)) {
+    for (const key of moduleKeys) {
+      await prisma.rolePermission.upsert({
+        where: { roleId_permissionId: { roleId: roles[roleName], permissionId: permissions[key] } },
+        update: {},
+        create: { roleId: roles[roleName], permissionId: permissions[key] },
+      });
+    }
+  }
+
+  const team = await prisma.team.upsert({
+    where: { id: "00000000-0000-0000-0000-000000000900" },
+    update: { name: "Pôle Comptabilité" },
+    create: { id: "00000000-0000-0000-0000-000000000900", name: "Pôle Comptabilité" },
+  });
+
   const passwordHash = await bcrypt.hash("trevys2024", 10);
+
+  await prisma.user.upsert({
+    where: { email: "admin@trevys-advisory.fr" },
+    update: {},
+    create: {
+      firstName: "Admin",
+      lastName: "TREVYS",
+      email: "admin@trevys-advisory.fr",
+      passwordHash,
+      roleId: roles["Administrateur"],
+      jobTitle: "Administrateur système",
+    },
+  });
 
   const partner = await prisma.user.upsert({
     where: { email: "associe@trevys-advisory.fr" },
@@ -27,6 +86,7 @@ async function main() {
       email: "associe@trevys-advisory.fr",
       passwordHash,
       roleId: roles["Associé"],
+      jobTitle: "Associée fondatrice",
     },
   });
 
@@ -40,6 +100,10 @@ async function main() {
       passwordHash,
       roleId: roles["Manager"],
       managerId: partner.id,
+      jobTitle: "Manager comptable",
+      department: "Comptabilité",
+      office: "Lyon",
+      teamId: team.id,
     },
   });
 
@@ -53,6 +117,10 @@ async function main() {
       passwordHash,
       roleId: roles["Collaborateur"],
       managerId: manager.id,
+      jobTitle: "Collaborateur comptable",
+      department: "Comptabilité",
+      office: "Lyon",
+      teamId: team.id,
     },
   });
 
