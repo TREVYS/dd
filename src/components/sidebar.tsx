@@ -10,6 +10,7 @@ import {
   Inbox,
   FileText,
   Gauge,
+  Scale,
   LogOut,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -19,6 +20,7 @@ const NAV = [
   { href: "/clients", label: "Clients", icon: Users },
   { href: "/ged", label: "GED", icon: FolderOpen },
   { href: "/production", label: "Production", icon: KanbanSquare },
+  { href: "/assistant-juridique", label: "Assistant Juridique", icon: Scale },
   { href: "/tickets", label: "Tickets", icon: Inbox },
   { href: "/devis", label: "Devis", icon: FileText },
   { href: "/charge", label: "Plan de charge", icon: Gauge },

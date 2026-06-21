@@ -102,6 +102,7 @@ model User {
   mailReplies          MailReply[]
   contactNotes         ContactNote[]
   taskComments         TaskComment[]
+  legalCasesCreated    LegalCase[]
 
   @@map("users")
 }
@@ -222,6 +223,7 @@ model Client {
   profitabilitySnapshots ProfitabilitySnapshot[]
   qualityReviews         QualityReview[]
   risks                  Risk[]
+  legalCases             LegalCase[]
   clientUsers            ClientUser[]
   whatsappMessages       WhatsappMessage[]
 
@@ -807,4 +809,40 @@ model AuditLog {
   user User? @relation(fields: [userId], references: [id])
 
   @@map("audit_logs")
+}
+
+model LegalCase {
+  id          String    @id @default(uuid())
+  clientId    String    @map("client_id")
+  type        String    @db.VarChar(40)
+  title       String    @db.VarChar(255)
+  legalForm   String?   @map("legal_form") @db.VarChar(40)
+  fiscalYear  Int?      @map("fiscal_year")
+  status      String    @default("a_faire") @db.VarChar(30)
+  dueDate     DateTime? @map("due_date")
+  createdBy   String?   @map("created_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  completedAt DateTime? @map("completed_at")
+
+  client        Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdByUser User?           @relation(fields: [createdBy], references: [id])
+  steps         LegalCaseStep[]
+
+  @@index([clientId])
+  @@index([type])
+  @@index([status])
+  @@map("legal_cases")
+}
+
+model LegalCaseStep {
+  id          String    @id @default(uuid())
+  legalCaseId String    @map("legal_case_id")
+  label       String    @db.VarChar(255)
+  orderIndex  Int       @default(0) @map("order_index")
+  isDone      Boolean   @default(false) @map("is_done")
+  doneAt      DateTime? @map("done_at")
+
+  legalCase LegalCase @relation(fields: [legalCaseId], references: [id], onDelete: Cascade)
+
+  @@map("legal_case_steps")
 }
