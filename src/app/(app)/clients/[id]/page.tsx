@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Mail, Phone, MessageCircle, Star } from "lucide-react";
 import { NewContactButton } from "./new-contact-button";
+import { EnrichButton } from "./enrich-button";
 
 export default async function ClientDetailPage({
   params,
@@ -28,10 +29,15 @@ export default async function ClientDetailPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">
-          {client.commercialName || client.legalName}
-        </h1>
-        <p className="text-sm text-gray-500">{client.legalName}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold">
+              {client.commercialName || client.legalName}
+            </h1>
+            <p className="text-sm text-gray-500">{client.legalName}</p>
+          </div>
+          <EnrichButton clientId={client.id} />
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -110,7 +116,7 @@ export default async function ClientDetailPage({
                         )}
                       </p>
                       <p className="text-xs text-gray-400 truncate">
-                        {contact.role || "—"}
+                        {contact.role || contact.mandate || "—"}
                       </p>
                     </div>
                   </div>
