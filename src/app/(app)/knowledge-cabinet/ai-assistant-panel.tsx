@@ -3,14 +3,19 @@
 import { useState } from "react";
 import { Sparkles, Send, Loader2, Globe } from "lucide-react";
 
-type Exchange = {
+export type ArticleSource = { id: string; title: string };
+export type DocSource = { id: string; name: string; clientId: string | null; clientName: string | null };
+export type WebSource = { title: string; url: string };
+
+export type Exchange = {
   question: string;
   answer: string;
-  sources: { id: string; title: string }[];
-  webSources: { title: string; url: string }[];
+  sources: ArticleSource[];
+  docSources: DocSource[];
+  webSources: WebSource[];
 };
 
-export function AiAssistantPanel() {
+export function AiAssistantPanel({ onExchange }: { onExchange?: (exchange: Exchange) => void }) {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [useWeb, setUseWeb] = useState(false);
@@ -27,15 +32,15 @@ export function AiAssistantPanel() {
       body: JSON.stringify({ question: q, useWeb }),
     });
     const data = await res.json();
-    setHistory((prev) => [
-      ...prev,
-      {
-        question: q,
-        answer: data.answer,
-        sources: data.sources ?? [],
-        webSources: data.webSources ?? [],
-      },
-    ]);
+    const exchange: Exchange = {
+      question: q,
+      answer: data.answer,
+      sources: data.sources ?? [],
+      docSources: data.docSources ?? [],
+      webSources: data.webSources ?? [],
+    };
+    setHistory((prev) => [...prev, exchange]);
+    onExchange?.(exchange);
     setLoading(false);
   }
 
@@ -46,12 +51,12 @@ export function AiAssistantPanel() {
         Assistant IA — Knowledge Cabinet
       </div>
 
-      <div className="flex-1 space-y-3 overflow-y-auto max-h-[28rem] mb-3">
+      <div className="flex-1 space-y-3 overflow-y-auto mb-3">
         {history.length === 0 && (
           <p className="text-xs text-gray-400">
             Posez une question sur la fiscalité, la comptabilité, le social ou le juridique — l&apos;assistant
-            répond en priorité à partir de la documentation interne validée du cabinet. Activez « Internet »
-            pour compléter manuellement avec une recherche web.
+            répond en priorité à partir de la documentation interne validée du cabinet et des documents trouvés
+            dans la GED des clients. Activez « Internet » pour compléter manuellement avec une recherche web.
           </p>
         )}
         {history.map((h, i) => (
@@ -63,6 +68,11 @@ export function AiAssistantPanel() {
             {h.sources.length > 0 && (
               <p className="text-[11px] text-gray-400">
                 Documentation interne : {h.sources.map((s) => s.title).join(", ")}
+              </p>
+            )}
+            {h.docSources.length > 0 && (
+              <p className="text-[11px] text-gray-400">
+                Documents GED : {h.docSources.map((d) => d.name).join(", ")}
               </p>
             )}
             {h.webSources.length > 0 && (
@@ -87,7 +97,7 @@ export function AiAssistantPanel() {
         {loading && (
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <Loader2 size={14} className="animate-spin" />
-            {useWeb ? "Recherche interne + internet..." : "Recherche dans la documentation..."}
+            {useWeb ? "Recherche interne + GED + internet..." : "Recherche dans la documentation et la GED..."}
           </div>
         )}
       </div>

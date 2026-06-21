@@ -13,7 +13,15 @@ type Article = {
   creatorName: string | null;
 };
 
-export function ArticleList({ articles, isPartner }: { articles: Article[]; isPartner: boolean }) {
+export function ArticleList({
+  articles,
+  isPartner,
+  compact,
+}: {
+  articles: Article[];
+  isPartner: boolean;
+  compact?: boolean;
+}) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const active = articles.find((a) => a.id === activeId) ?? null;
 
@@ -22,7 +30,7 @@ export function ArticleList({ articles, isPartner }: { articles: Article[]; isPa
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className={compact ? "grid grid-cols-1 gap-2" : "grid grid-cols-2 gap-3"}>
       {articles.map((a) => (
         <button
           key={a.id}

@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-
-const CATEGORIES = ["Fiscalité", "Comptabilité", "Social", "Juridique", "Procédures internes"];
+import { CATEGORIES } from "@/lib/knowledge-categories";
 
 export function NewArticleButton() {
   const router = useRouter();
@@ -97,5 +96,3 @@ export function NewArticleButton() {
     </>
   );
 }
-
-export { CATEGORIES };

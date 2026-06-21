@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { searchKnowledge, askKnowledgeAI } from "@/lib/knowledge";
+import { searchKnowledge, searchDocuments, askKnowledgeAI } from "@/lib/knowledge";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -13,13 +13,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "question required" }, { status: 400 });
   }
 
-  const matches = await searchKnowledge(question);
-  const { answer, source, webResults } = await askKnowledgeAI(question, matches, !!useWeb);
+  const [matches, docMatches] = await Promise.all([searchKnowledge(question), searchDocuments(question)]);
+  const { answer, source, webResults } = await askKnowledgeAI(question, matches, !!useWeb, docMatches);
 
   return NextResponse.json({
     answer,
     source,
     sources: matches.map((m) => ({ id: m.id, title: m.title })),
+    docSources: docMatches.map((d) => ({ id: d.id, name: d.name, clientId: d.clientId, clientName: d.clientName })),
     webSources: webResults.map((w) => ({ title: w.title, url: w.url })),
   });
 }
