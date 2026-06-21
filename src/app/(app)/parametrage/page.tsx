@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Users, UsersRound, ShieldCheck } from "lucide-react";
-import { canManageCollaborators, canManageHabilitations } from "@/lib/permissions";
+import { Users, UsersRound, ShieldCheck, GraduationCap } from "lucide-react";
+import { canManageCollaborators, canManageHabilitations, canManageAcademy } from "@/lib/permissions";
 
 export default async function ParametragePage() {
   const session = await auth();
@@ -31,6 +31,13 @@ export default async function ParametragePage() {
       description: "Attribuer les rôles et activer les modules par profil.",
       icon: ShieldCheck,
       show: canManageHabilitations(session?.user?.role),
+    },
+    {
+      href: "/parametrage/academy",
+      title: "Academy TREVYS",
+      description: "Gérer les formations, parcours et le suivi des collaborateurs.",
+      icon: GraduationCap,
+      show: canManageAcademy(session?.user?.role),
     },
   ].filter((c) => c.show);
 

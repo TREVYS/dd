@@ -112,6 +112,8 @@ model User {
   prospectsSigned      Prospect[]         @relation("ProspectSignedBy")
   conversationMembers  ConversationMember[]
   chatMessagesSent     ChatMessage[]
+  formationsAuthored   Formation[]          @relation("FormationAuthor")
+  formationProgress    FormationProgress[]
 
   @@map("users")
 }
@@ -430,6 +432,7 @@ model Document {
   folder            DocumentFolder?    @relation(fields: [folderId], references: [id])
   uploadedByUser    User?              @relation(fields: [uploadedBy], references: [id])
   engagementLetters EngagementLetter[]
+  formationContents FormationContent[]
 
   @@index([clientId])
   @@index([fiscalYear])
@@ -929,4 +932,79 @@ model LegalCaseStep {
   legalCase LegalCase @relation(fields: [legalCaseId], references: [id], onDelete: Cascade)
 
   @@map("legal_case_steps")
+}
+
+model Formation {
+  id              String   @id @default(uuid())
+  title           String   @db.VarChar(180)
+  category        String?  @db.VarChar(80)
+  level           String?  @db.VarChar(40)
+  durationMinutes Int?     @map("duration_minutes")
+  authorId        String?  @map("author_id")
+  tags            String[] @default([])
+  isPublished     Boolean  @default(true) @map("is_published")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  author   User?               @relation("FormationAuthor", fields: [authorId], references: [id])
+  contents FormationContent[]
+  parcours ParcoursFormation[]
+  progress FormationProgress[]
+
+  @@map("formations")
+}
+
+model FormationContent {
+  id          String  @id @default(uuid())
+  formationId String  @map("formation_id")
+  type        String  @db.VarChar(30)
+  title       String  @db.VarChar(180)
+  body        String?
+  url         String?
+  documentId  String? @map("document_id")
+  orderIndex  Int     @default(0) @map("order_index")
+
+  formation Formation @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  document  Document? @relation(fields: [documentId], references: [id])
+
+  @@map("formation_contents")
+}
+
+model Parcours {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(180)
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  formations ParcoursFormation[]
+
+  @@map("parcours")
+}
+
+model ParcoursFormation {
+  parcoursId  String @map("parcours_id")
+  formationId String @map("formation_id")
+  orderIndex  Int    @default(0) @map("order_index")
+
+  parcours  Parcours  @relation(fields: [parcoursId], references: [id], onDelete: Cascade)
+  formation Formation @relation(fields: [formationId], references: [id], onDelete: Cascade)
+
+  @@id([parcoursId, formationId])
+  @@map("parcours_formations")
+}
+
+model FormationProgress {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  formationId String    @map("formation_id")
+  status      String    @default("not_started") @db.VarChar(20)
+  score       Int?
+  completedAt DateTime? @map("completed_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  formation Formation @relation(fields: [formationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, formationId])
+  @@map("formation_progress")
 }

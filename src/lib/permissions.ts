@@ -19,3 +19,7 @@ export function canManageCollaborators(role: string | null | undefined) {
 export function canManageHabilitations(role: string | null | undefined) {
   return role === "Administrateur";
 }
+
+export function canManageAcademy(role: string | null | undefined) {
+  return role === "Associé" || role === "Administrateur";
+}

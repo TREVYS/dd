@@ -18,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
+  GraduationCap,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { canManageCollaborators } from "@/lib/permissions";
@@ -25,7 +26,10 @@ import { canManageCollaborators } from "@/lib/permissions";
 const NAV_GROUPS = [
   {
     label: "Vue d'ensemble",
-    items: [{ href: "/", label: "Dashboard", icon: LayoutDashboard }],
+    items: [
+      { href: "/", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/academy", label: "Academy TREVYS", icon: GraduationCap },
+    ],
   },
   {
     label: "Assistant",
