@@ -52,7 +52,7 @@ export function Topbar({
     (data?.tasksToday.length ?? 0) + (data?.ticketsToTreat.length ?? 0);
 
   return (
-    <header className="flex items-center justify-between gap-4 px-8 py-4 border-b border-white/40 glass-panel rounded-none">
+    <header className="flex items-center justify-between gap-4 px-8 py-4 border-b border-white/40 glass-nav rounded-none">
       <div className="flex items-center gap-4 flex-1">
         <LogoIcon size={28} className="shrink-0 hidden md:block" />
         <GlobalSearch />

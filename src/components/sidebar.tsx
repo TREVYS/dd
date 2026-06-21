@@ -106,7 +106,7 @@ export function Sidebar() {
       <aside
         onMouseEnter={() => !pinned && setHovered(true)}
         onMouseLeave={() => !pinned && setHovered(false)}
-        className={`glass-panel border-r h-screen sticky top-0 flex flex-col py-6 rounded-none transition-all duration-200 z-40 ${
+        className={`glass-nav border-r h-screen sticky top-0 flex flex-col py-6 rounded-none transition-all duration-200 z-40 ${
           expanded ? "w-64 px-5" : "w-20 px-3"
         } ${!pinned ? "absolute left-0 top-0" : ""}`}
       >
