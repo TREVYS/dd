@@ -103,8 +103,34 @@ model User {
   contactNotes         ContactNote[]
   taskComments         TaskComment[]
   legalCasesCreated    LegalCase[]
+  prospectsAssigned    Prospect[]         @relation("ProspectAssignedTo")
+  prospectsSigned      Prospect[]         @relation("ProspectSignedBy")
 
   @@map("users")
+}
+
+model Prospect {
+  id                String    @id @default(uuid())
+  companyName       String    @map("company_name") @db.VarChar(255)
+  contactName       String?   @map("contact_name") @db.VarChar(180)
+  contactEmail      String?   @map("contact_email") @db.VarChar(180)
+  contactPhone      String?   @map("contact_phone") @db.VarChar(40)
+  source            String?   @db.VarChar(80)
+  estimatedValue    Decimal?  @map("estimated_value") @db.Decimal(12, 2)
+  notes             String?
+  pipelineStage     String    @default("prospects") @map("pipeline_stage") @db.VarChar(30)
+  assignedToId      String?   @map("assigned_to")
+  signedById        String?   @map("signed_by")
+  convertedClientId String?   @unique @map("converted_client_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  assignedTo      User?    @relation("ProspectAssignedTo", fields: [assignedToId], references: [id])
+  signedBy        User?    @relation("ProspectSignedBy", fields: [signedById], references: [id])
+  convertedClient Client?  @relation(fields: [convertedClientId], references: [id])
+
+  @@index([pipelineStage])
+  @@map("prospects")
 }
 
 model Announcement {
@@ -226,6 +252,7 @@ model Client {
   legalCases             LegalCase[]
   clientUsers            ClientUser[]
   whatsappMessages       WhatsappMessage[]
+  prospect               Prospect?
 
   @@index([siren])
   @@index([assignedCollaboratorId])

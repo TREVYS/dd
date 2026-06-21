@@ -12,6 +12,7 @@ import {
   Gauge,
   Scale,
   BrainCircuit,
+  TrendingUp,
   LogOut,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -19,6 +20,7 @@ import { signOut } from "next-auth/react";
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/clients", label: "Clients", icon: Users },
+  { href: "/pipeline-commercial", label: "Pipeline commercial", icon: TrendingUp },
   { href: "/ged", label: "GED", icon: FolderOpen },
   { href: "/production", label: "Production", icon: KanbanSquare },
   { href: "/assistant-juridique", label: "Assistant Juridique", icon: Scale },

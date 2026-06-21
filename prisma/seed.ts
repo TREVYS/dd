@@ -369,6 +369,45 @@ async function main() {
     });
   }
 
+  const prospectData = [
+    {
+      id: "00000000-0000-0000-0000-000000000200",
+      companyName: "Atelier Dubreuil SARL",
+      contactName: "Marc Dubreuil",
+      contactEmail: "m.dubreuil@atelier-dubreuil.fr",
+      source: "Recommandation",
+      estimatedValue: 3600,
+      pipelineStage: "prospects",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000201",
+      companyName: "NovaTech Consulting",
+      contactName: "Sophie Aubert",
+      contactEmail: "sophie.aubert@novatech.fr",
+      source: "Site web",
+      estimatedValue: 5200,
+      pipelineStage: "prospects",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000202",
+      companyName: "Boulangerie Les Blés d'Or",
+      contactName: "Hervé Mercier",
+      contactEmail: "contact@blesdor.fr",
+      source: "Salon professionnel",
+      estimatedValue: 1800,
+      pipelineStage: "en_attente",
+    },
+  ];
+
+  for (const p of prospectData) {
+    const data = { ...p, assignedToId: manager.id };
+    await prisma.prospect.upsert({
+      where: { id: p.id },
+      update: data,
+      create: data,
+    });
+  }
+
   console.log("Seed terminé.");
 }
 
