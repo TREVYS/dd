@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #f4f5fb;
@@ -24,6 +25,7 @@ body {
     var(--background);
   background-attachment: fixed;
   min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .glass-panel {
@@ -40,4 +42,54 @@ body {
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+}
+
+/* Dark mode */
+.dark body {
+  color: #e7e5f5;
+  background: radial-gradient(circle at 10% 0%, #211b3d 0%, transparent 45%),
+    radial-gradient(circle at 90% 10%, #142433 0%, transparent 40%),
+    radial-gradient(circle at 50% 100%, #2c1a28 0%, transparent 45%),
+    #0f0c1c;
+}
+
+.dark .glass-panel,
+.dark .glass-panel-strong {
+  background: rgba(30, 26, 51, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.dark .bg-white {
+  background-color: rgba(30, 26, 51, 0.6);
+}
+.dark .bg-gray-50 {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+.dark .bg-gray-100,
+.dark .bg-gray-200 {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.dark .border-gray-50,
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.dark .text-gray-300 {
+  color: #8b86a8;
+}
+.dark .text-gray-400 {
+  color: #9b96b8;
+}
+.dark .text-gray-500 {
+  color: #aca7c6;
+}
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: #e7e5f5;
+}
+.dark .hover\:bg-gray-50:hover {
+  background-color: rgba(255, 255, 255, 0.06);
 }

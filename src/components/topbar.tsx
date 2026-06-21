@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Bell, KanbanSquare, Inbox } from "lucide-react";
 import { GlobalSearch } from "@/app/(app)/global-search";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Notifications = {
   tasksToday: { id: string; title: string }[];
@@ -53,6 +54,7 @@ export function Topbar({
     <header className="flex items-center justify-between gap-4 px-8 py-4 border-b border-white/40 glass-panel rounded-none">
       <GlobalSearch />
       <div className="flex items-center gap-4">
+      <ThemeToggle />
       <div className="relative" ref={ref}>
         <button
           onClick={() => setOpen((o) => !o)}
