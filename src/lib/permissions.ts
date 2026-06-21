@@ -23,3 +23,12 @@ export function canManageHabilitations(role: string | null | undefined) {
 export function canManageAcademy(role: string | null | undefined) {
   return role === "Associé" || role === "Administrateur";
 }
+
+export function canManageFecAnalysis(role: string | null | undefined) {
+  return (
+    role === "Associé" ||
+    role === "Administrateur" ||
+    role === "Manager" ||
+    role === "Collaborateur"
+  );
+}

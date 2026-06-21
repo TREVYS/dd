@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Settings,
   GraduationCap,
+  LineChart,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { canManageCollaborators } from "@/lib/permissions";
@@ -43,7 +44,10 @@ const NAV_GROUPS = [
   },
   {
     label: "Production",
-    items: [{ href: "/production", label: "Production", icon: KanbanSquare }],
+    items: [
+      { href: "/production", label: "Production", icon: KanbanSquare },
+      { href: "/production/fec-analyse", label: "Analyse FEC & Reporting IA", icon: LineChart },
+    ],
   },
   {
     label: "GED",

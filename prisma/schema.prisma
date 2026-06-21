@@ -114,6 +114,9 @@ model User {
   chatMessagesSent     ChatMessage[]
   formationsAuthored   Formation[]          @relation("FormationAuthor")
   formationProgress    FormationProgress[]
+  fecImportsUploaded   FecImport[]
+  fecReportsCreated    FecReport[]
+  fecChatMessages      FecChatMessage[]
 
   @@map("users")
 }
@@ -312,6 +315,8 @@ model Client {
   clientUsers            ClientUser[]
   whatsappMessages       WhatsappMessage[]
   prospect               Prospect?
+  fecImports             FecImport[]
+  fecReports             FecReport[]
 
   @@index([siren])
   @@index([assignedCollaboratorId])
@@ -1007,4 +1012,81 @@ model FormationProgress {
 
   @@unique([userId, formationId])
   @@map("formation_progress")
+}
+
+model FecImport {
+  id            String    @id @default(uuid())
+  clientId      String    @map("client_id")
+  fiscalYear    Int       @map("fiscal_year")
+  fileUrl       String    @map("file_url")
+  fileName      String    @map("file_name") @db.VarChar(255)
+  lineCount     Int       @default(0) @map("line_count")
+  journalCount  Int       @default(0) @map("journal_count")
+  status        String    @default("imported") @db.VarChar(30)
+  metrics       Json?
+  uploadedById  String?   @map("uploaded_by_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  client     Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  uploadedBy User?        @relation(fields: [uploadedById], references: [id])
+  anomalies  FecAnomaly[]
+  reports    FecReport[]
+  chatLogs   FecChatMessage[]
+
+  @@index([clientId])
+  @@map("fec_imports")
+}
+
+model FecAnomaly {
+  id          String   @id @default(uuid())
+  fecImportId String   @map("fec_import_id")
+  type        String   @db.VarChar(60)
+  severity    String   @default("info") @db.VarChar(20)
+  message     String
+  accountCode String?  @map("account_code") @db.VarChar(30)
+  journalCode String?  @map("journal_code") @db.VarChar(30)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  fecImport FecImport @relation(fields: [fecImportId], references: [id], onDelete: Cascade)
+
+  @@map("fec_anomalies")
+}
+
+model FecReport {
+  id              String    @id @default(uuid())
+  fecImportId     String    @map("fec_import_id")
+  clientId        String    @map("client_id")
+  title           String    @db.VarChar(180)
+  type            String    @default("synthese_dirigeant") @db.VarChar(40)
+  tone            String    @default("dirigeant") @db.VarChar(30)
+  content         Json
+  status          String    @default("draft") @db.VarChar(20)
+  shareToken      String?   @unique @map("share_token")
+  shareExpiresAt  DateTime? @map("share_expires_at")
+  viewedAt        DateTime? @map("viewed_at")
+  viewCount       Int       @default(0) @map("view_count")
+  sentAt          DateTime? @map("sent_at")
+  createdById     String?   @map("created_by_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  fecImport FecImport @relation(fields: [fecImportId], references: [id], onDelete: Cascade)
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdBy User?     @relation(fields: [createdById], references: [id])
+
+  @@map("fec_reports")
+}
+
+model FecChatMessage {
+  id          String   @id @default(uuid())
+  fecImportId String   @map("fec_import_id")
+  userId      String?  @map("user_id")
+  role        String   @db.VarChar(20)
+  content     String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  fecImport FecImport @relation(fields: [fecImportId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id])
+
+  @@map("fec_chat_messages")
 }
