@@ -16,6 +16,8 @@ import {
   Wallet,
   MessageCircle,
   Network,
+  ShieldAlert,
+  ClipboardCheck,
 } from "lucide-react";
 import { NewAnnouncementButton } from "./new-announcement-button";
 import { LessonsCarousel } from "./lessons-carousel";
@@ -130,6 +132,57 @@ export default async function DashboardPage() {
       })
     : null;
 
+  const isManager = session?.user?.role === "Manager" && (me?.reports.length ?? 0) > 0;
+
+  let teamWorkload: {
+    id: string;
+    name: string;
+    openTasks: number;
+    overdueTasks: number;
+    capacity: number;
+  }[] = [];
+  let reviewQueue: { id: string; title: string; clientName: string; assigneeName: string }[] = [];
+  let teamTicketsOpen = 0;
+
+  if (isManager && me) {
+    const reportIds = me.reports.map((r) => r.id);
+
+    teamWorkload = await Promise.all(
+      me.reports.map(async (r) => {
+        const [openTasksCount, overdueCount] = await Promise.all([
+          prisma.task.count({ where: { assignedTo: r.id, status: { not: "done" } } }),
+          prisma.task.count({
+            where: { assignedTo: r.id, status: { not: "done" }, dueDate: { lt: now } },
+          }),
+        ]);
+        return {
+          id: r.id,
+          name: `${r.firstName} ${r.lastName}`,
+          openTasks: openTasksCount,
+          overdueTasks: overdueCount,
+          capacity: Number(r.weeklyCapacityHours),
+        };
+      })
+    );
+
+    const reviewTasks = await prisma.task.findMany({
+      where: { assignedTo: { in: reportIds }, kanbanColumn: "controle" },
+      include: { client: true, assignee: true },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
+    reviewQueue = reviewTasks.map((t) => ({
+      id: t.id,
+      title: t.title,
+      clientName: t.client.legalName,
+      assigneeName: t.assignee ? `${t.assignee.firstName} ${t.assignee.lastName}` : "—",
+    }));
+
+    teamTicketsOpen = await prisma.ticket.count({
+      where: { assignedTo: { in: reportIds }, status: { not: "closed" } },
+    });
+  }
+
   const isUpToDate = totalMonthly === 0 || progressPct >= 80;
   const avatarSeed = encodeURIComponent(session?.user?.email ?? session?.user?.name ?? "trevys");
   const avatarUrl = `https://api.dicebear.com/9.x/notionists/svg?seed=${avatarSeed}&backgroundColor=ede9fe`;
@@ -242,6 +295,85 @@ export default async function DashboardPage() {
           );
         })}
       </div>
+
+      {isManager && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-4">
+            <div className="bg-white rounded-2xl p-6">
+              <h2 className="font-semibold flex items-center gap-2 mb-4">
+                <ShieldAlert size={18} className="text-brand" />
+                Charge de l&apos;équipe
+              </h2>
+              {teamWorkload.length === 0 ? (
+                <p className="text-sm text-gray-400">Aucun collaborateur rattaché.</p>
+              ) : (
+                <div className="space-y-3">
+                  {teamWorkload.map((w) => {
+                    const ratio = w.capacity > 0 ? Math.min(100, Math.round((w.openTasks / w.capacity) * 100)) : 0;
+                    return (
+                      <Link
+                        key={w.id}
+                        href={`/charge`}
+                        className="block rounded-xl border border-gray-100 p-3 hover:bg-gray-50"
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <p className="text-sm font-medium">{w.name}</p>
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-gray-500">{w.openTasks} tâches</span>
+                            {w.overdueTasks > 0 && (
+                              <span className="text-red-500 font-medium">{w.overdueTasks} en retard</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${ratio >= 90 ? "bg-red-400" : "bg-brand"}`}
+                            style={{ width: `${ratio}%` }}
+                          />
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="bg-white rounded-2xl p-6">
+              <h2 className="font-semibold flex items-center gap-2 mb-4">
+                <ClipboardCheck size={18} className="text-brand" />
+                File de contrôle manager
+              </h2>
+              {reviewQueue.length === 0 ? (
+                <p className="text-sm text-gray-400">Aucune tâche en attente de contrôle.</p>
+              ) : (
+                <ul className="space-y-2 text-sm">
+                  {reviewQueue.map((t) => (
+                    <li key={t.id} className="flex justify-between border-b border-gray-50 pb-2">
+                      <div>
+                        <p className="font-medium">{t.title}</p>
+                        <p className="text-xs text-gray-400">{t.clientName} · {t.assigneeName}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link href="/production?board=gestion_mensuelle" className="text-xs text-brand mt-3 inline-block">
+                Voir le Kanban Production
+              </Link>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-4 flex items-center justify-between">
+            <p className="text-sm text-gray-500">
+              <Inbox size={14} className="inline mr-1.5 text-brand" />
+              {teamTicketsOpen} ticket(s) ouverts sur l&apos;équipe
+            </p>
+            <Link href="/tickets" className="text-xs text-brand font-medium">
+              Superviser les tickets
+            </Link>
+          </div>
+        </div>
+      )}
 
       {me && (
         <div className="bg-white rounded-2xl p-6">
