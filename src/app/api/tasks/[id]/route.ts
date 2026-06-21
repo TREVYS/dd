@@ -13,7 +13,15 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await req.json();
-  const { kanbanColumn, status } = body as { kanbanColumn?: string; status?: string };
+  const { kanbanColumn, status, title, priority, tags, assignedTo, dueDate } = body as {
+    kanbanColumn?: string;
+    status?: string;
+    title?: string;
+    priority?: string;
+    tags?: string[];
+    assignedTo?: string | null;
+    dueDate?: string | null;
+  };
 
   const existing = await prisma.task.findUnique({ where: { id } });
   if (!existing) {
@@ -22,7 +30,15 @@ export async function PATCH(
 
   const updated = await prisma.task.update({
     where: { id },
-    data: { kanbanColumn, status },
+    data: {
+      kanbanColumn,
+      status,
+      title,
+      priority,
+      tags,
+      assignedTo,
+      dueDate: dueDate !== undefined ? (dueDate ? new Date(dueDate) : null) : undefined,
+    },
   });
 
   if (status && status !== existing.status) {

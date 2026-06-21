@@ -101,6 +101,7 @@ model User {
   mailFolders          MailFolder[]
   mailReplies          MailReply[]
   contactNotes         ContactNote[]
+  taskComments         TaskComment[]
 
   @@map("users")
 }
@@ -401,6 +402,7 @@ model Task {
   estimatedHours Decimal?  @map("estimated_hours") @db.Decimal(6, 2)
   actualHours    Decimal?  @map("actual_hours") @db.Decimal(6, 2)
   kanbanColumn   String?   @map("kanban_column") @db.VarChar(80)
+  tags           String[]  @default([])
   createdAt      DateTime  @default(now()) @map("created_at")
   completedAt    DateTime? @map("completed_at")
 
@@ -411,6 +413,8 @@ model Task {
 
   statusHistory  TaskStatusHistory[]
   checklistItems TaskChecklistItem[]
+  subtasks       TaskSubtask[]
+  comments       TaskComment[]
   deadlines      Deadline[]
   timeEntries    TimeEntry[]
 
@@ -418,6 +422,32 @@ model Task {
   @@index([dueDate])
   @@index([status])
   @@map("tasks")
+}
+
+model TaskSubtask {
+  id         String   @id @default(uuid())
+  taskId     String   @map("task_id")
+  title      String   @db.VarChar(255)
+  isDone     Boolean  @default(false) @map("is_done")
+  orderIndex Int      @default(0) @map("order_index")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_subtasks")
+}
+
+model TaskComment {
+  id        String   @id @default(uuid())
+  taskId    String   @map("task_id")
+  authorId  String?  @map("author_id")
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  task   Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author User? @relation(fields: [authorId], references: [id])
+
+  @@map("task_comments")
 }
 
 model TaskStatusHistory {
