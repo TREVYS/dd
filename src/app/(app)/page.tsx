@@ -15,8 +15,11 @@ import {
   Calculator,
   Scale,
   Wallet,
+  MessageCircle,
+  Network,
 } from "lucide-react";
 import { NewAnnouncementButton } from "./new-announcement-button";
+import { LessonsCarousel } from "./lessons-carousel";
 
 const CATEGORY_META: Record<string, { label: string; icon: typeof Info; color: string }> = {
   fiscalite: { label: "Fiscalité", icon: Landmark, color: "bg-blue-50 text-blue-600" },
@@ -29,30 +32,44 @@ const LESSONS = [
   {
     title: "Bien calculer la TVA déductible",
     category: "Fiscalité",
-    icon: Landmark,
+    icon: "Landmark" as const,
     color: "bg-blue-50 text-blue-600",
     summary: "Les cas particuliers de récupération de TVA sur véhicules et notes de frais.",
   },
   {
     title: "Clôturer un exercice sans stress",
     category: "Comptabilité",
-    icon: Calculator,
+    icon: "Calculator" as const,
     color: "bg-emerald-50 text-emerald-600",
     summary: "Checklist du dossier de révision avant édition de la liasse fiscale.",
   },
   {
     title: "Rupture conventionnelle : les pièges",
     category: "Social",
-    icon: Wallet,
+    icon: "Wallet" as const,
     color: "bg-amber-50 text-amber-600",
     summary: "Les points de vigilance à vérifier avant signature de la convention.",
   },
   {
     title: "Dépôt des comptes au greffe",
     category: "Juridique",
-    icon: Scale,
+    icon: "Scale" as const,
     color: "bg-violet-50 text-violet-600",
     summary: "Le rappel des délais et pièces à fournir pour le dépôt annuel.",
+  },
+  {
+    title: "Optimiser le crédit d'impôt recherche",
+    category: "Fiscalité",
+    icon: "Landmark" as const,
+    color: "bg-blue-50 text-blue-600",
+    summary: "Les dépenses éligibles et le formalisme à respecter pour le CIR.",
+  },
+  {
+    title: "Gérer les acomptes d'IS",
+    category: "Comptabilité",
+    icon: "Calculator" as const,
+    color: "bg-emerald-50 text-emerald-600",
+    summary: "Calendrier et méthode de calcul des acomptes d'impôt sur les sociétés.",
   },
 ];
 
@@ -107,10 +124,19 @@ export default async function DashboardPage() {
     ? await prisma.ticket.count({ where: { assignedTo: userId, status: { not: "closed" } } })
     : 0;
 
+  const me = userId
+    ? await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          manager: { include: { manager: true } },
+          reports: true,
+        },
+      })
+    : null;
+
   const isUpToDate = totalMonthly === 0 || progressPct >= 80;
-  const initials = `${session?.user?.name?.[0] ?? ""}${
-    session?.user?.name?.split(" ")[1]?.[0] ?? ""
-  }`.toUpperCase();
+  const avatarSeed = encodeURIComponent(session?.user?.email ?? session?.user?.name ?? "trevys");
+  const avatarUrl = `https://api.dicebear.com/9.x/notionists/svg?seed=${avatarSeed}&backgroundColor=ede9fe`;
 
   const stats = [
     { label: "Clients actifs", value: clientCount, icon: Users, href: "/clients" },
@@ -169,9 +195,12 @@ export default async function DashboardPage() {
 
         <div className="bg-white rounded-3xl p-6 flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-brand/10 text-brand flex items-center justify-center font-semibold">
-              {initials || "?"}
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={avatarUrl}
+              alt={session?.user?.name ?? "Avatar"}
+              className="h-14 w-14 rounded-full bg-brand/10 shrink-0"
+            />
             <div>
               <p className="font-semibold leading-tight">{session?.user?.name}</p>
               <p className="text-xs text-gray-400">{session?.user?.role}</p>
@@ -223,28 +252,78 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      <div className="bg-white rounded-2xl p-6">
+      {me && (
+        <div className="bg-white rounded-2xl p-6">
+          <h2 className="font-semibold flex items-center gap-2 mb-4">
+            <Network size={18} className="text-brand" />
+            Mon équipe
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {me.manager && (
+              <div className="rounded-xl border border-gray-100 p-4 space-y-2">
+                <p className="text-[11px] uppercase tracking-wide text-gray-400">Mon mentor / responsable</p>
+                <div className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(me.manager.email)}&backgroundColor=ede9fe`}
+                    alt={`${me.manager.firstName} ${me.manager.lastName}`}
+                    className="h-10 w-10 rounded-full bg-brand/10 shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {me.manager.firstName} {me.manager.lastName}
+                    </p>
+                    {me.manager.manager && (
+                      <p className="text-xs text-gray-400 truncate">
+                        Rattaché à {me.manager.manager.firstName} {me.manager.manager.lastName}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <a
+                  href={`mailto:${me.manager.email}?subject=${encodeURIComponent("Échange")}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-brand bg-brand/10 rounded-full px-3 py-1.5 hover:bg-brand/20 transition"
+                >
+                  <MessageCircle size={13} />
+                  Discuter avec mon mentor
+                </a>
+              </div>
+            )}
+
+            <div className="rounded-xl border border-gray-100 p-4 space-y-2 md:col-span-2">
+              <p className="text-[11px] uppercase tracking-wide text-gray-400">
+                Mon équipe ({me.reports.length})
+              </p>
+              {me.reports.length === 0 ? (
+                <p className="text-sm text-gray-400">Aucun collaborateur rattaché.</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {me.reports.map((r) => (
+                    <div key={r.id} className="flex items-center gap-2 text-sm">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(r.email)}&backgroundColor=ede9fe`}
+                        alt={`${r.firstName} ${r.lastName}`}
+                        className="h-8 w-8 rounded-full bg-brand/10 shrink-0"
+                      />
+                      <span className="truncate">{r.firstName} {r.lastName}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl p-6 border-2 border-brand/10 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold flex items-center gap-2">
             <GraduationCap size={18} className="text-brand" />
             Académie TREVYS
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          {LESSONS.map((l) => {
-            const Icon = l.icon;
-            return (
-              <div key={l.title} className="rounded-2xl border border-gray-100 p-4 space-y-2">
-                <div className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${l.color}`}>
-                  <Icon size={12} />
-                  {l.category}
-                </div>
-                <p className="font-semibold text-sm">{l.title}</p>
-                <p className="text-xs text-gray-500 line-clamp-2">{l.summary}</p>
-              </div>
-            );
-          })}
-        </div>
+        <LessonsCarousel lessons={LESSONS} />
       </div>
 
       <div className="bg-white rounded-2xl p-6">

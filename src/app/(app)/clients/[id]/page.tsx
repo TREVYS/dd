@@ -95,7 +95,8 @@ export default async function ClientDetailPage({
               return (
                 <div
                   key={contact.id}
-                  className="rounded-xl border border-gray-100 p-4 space-y-2"
+                  id={`contact-${contact.id}`}
+                  className="rounded-xl border border-gray-100 p-4 space-y-2 target:ring-2 target:ring-brand"
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-full bg-brand/10 text-brand flex items-center justify-center text-sm font-semibold shrink-0">

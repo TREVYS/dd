@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Bell, KanbanSquare, Mail, Inbox } from "lucide-react";
+import { GlobalSearch } from "@/app/(app)/global-search";
 
 type Notifications = {
   tasksToday: { id: string; title: string }[];
@@ -52,7 +53,9 @@ export function Topbar({
     (data?.ticketsToTreat.length ?? 0);
 
   return (
-    <header className="flex items-center justify-end gap-4 px-8 py-4 border-b border-gray-100 bg-white">
+    <header className="flex items-center justify-between gap-4 px-8 py-4 border-b border-gray-100 bg-white">
+      <GlobalSearch />
+      <div className="flex items-center gap-4">
       <div className="relative" ref={ref}>
         <button
           onClick={() => setOpen((o) => !o)}
@@ -101,6 +104,7 @@ export function Topbar({
           <p className="text-sm font-medium">{userName}</p>
           <p className="text-xs text-gray-400">{userRole ?? "Utilisateur"}</p>
         </div>
+      </div>
       </div>
     </header>
   );
