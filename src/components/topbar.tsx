@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Bell, KanbanSquare, Mail, Inbox } from "lucide-react";
+import { Bell, KanbanSquare, Inbox } from "lucide-react";
 import { GlobalSearch } from "@/app/(app)/global-search";
 
 type Notifications = {
   tasksToday: { id: string; title: string }[];
-  mailsToTreat: { id: string; subject: string }[];
   ticketsToTreat: { id: string; subject: string }[];
 };
 
@@ -48,9 +47,7 @@ export function Topbar({
     .toUpperCase();
 
   const total =
-    (data?.tasksToday.length ?? 0) +
-    (data?.mailsToTreat.length ?? 0) +
-    (data?.ticketsToTreat.length ?? 0);
+    (data?.tasksToday.length ?? 0) + (data?.ticketsToTreat.length ?? 0);
 
   return (
     <header className="flex items-center justify-between gap-4 px-8 py-4 border-b border-gray-100 bg-white">
@@ -77,13 +74,6 @@ export function Topbar({
               items={data?.tasksToday.map((t) => ({ id: t.id, label: t.title })) ?? []}
               emptyLabel="Aucune tâche due aujourd'hui"
               href="/production"
-            />
-            <NotifSection
-              icon={Mail}
-              title="Mails à traiter"
-              items={data?.mailsToTreat.map((m) => ({ id: m.id, label: m.subject })) ?? []}
-              emptyLabel="Aucun mail à traiter"
-              href="/mails"
             />
             <NotifSection
               icon={Inbox}

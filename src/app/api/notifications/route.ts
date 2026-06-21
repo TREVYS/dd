@@ -13,7 +13,7 @@ export async function GET() {
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
-  const [tasksToday, mailsToTreat, ticketsToTreat] = await Promise.all([
+  const [tasksToday, ticketsToTreat] = await Promise.all([
     prisma.task.findMany({
       where: {
         assignedTo: userId,
@@ -24,12 +24,6 @@ export async function GET() {
       take: 10,
       select: { id: true, title: true },
     }),
-    prisma.mail.findMany({
-      where: { recipientId: userId, status: "a_traiter" },
-      orderBy: { receivedAt: "desc" },
-      take: 10,
-      select: { id: true, subject: true },
-    }),
     prisma.ticket.findMany({
       where: { assignedTo: userId, status: { not: "closed" } },
       orderBy: { createdAt: "desc" },
@@ -38,5 +32,5 @@ export async function GET() {
     }),
   ]);
 
-  return NextResponse.json({ tasksToday, mailsToTreat, ticketsToTreat });
+  return NextResponse.json({ tasksToday, ticketsToTreat });
 }

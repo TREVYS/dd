@@ -100,6 +100,7 @@ model User {
   mails                Mail[]             @relation("MailRecipient")
   mailFolders          MailFolder[]
   mailReplies          MailReply[]
+  contactNotes         ContactNote[]
 
   @@map("users")
 }
@@ -230,25 +231,49 @@ model Client {
 }
 
 model ClientContact {
-  id            String   @id @default(uuid())
-  clientId      String   @map("client_id")
-  firstName     String?  @map("first_name") @db.VarChar(100)
-  lastName      String?  @map("last_name") @db.VarChar(100)
-  role          String?  @db.VarChar(120)
-  email         String?  @db.VarChar(180)
-  phone         String?  @db.VarChar(40)
-  whatsappPhone String?  @map("whatsapp_phone") @db.VarChar(40)
-  isPrimary     Boolean  @default(false) @map("is_primary")
-  notes         String?
-  createdAt     DateTime @default(now()) @map("created_at")
+  id               String    @id @default(uuid())
+  clientId         String    @map("client_id")
+  firstName        String?   @map("first_name") @db.VarChar(100)
+  lastName         String?   @map("last_name") @db.VarChar(100)
+  role             String?   @db.VarChar(120)
+  email            String?   @db.VarChar(180)
+  email2           String?   @db.VarChar(180)
+  phone            String?   @db.VarChar(40)
+  phone2           String?   @db.VarChar(40)
+  whatsappPhone    String?   @map("whatsapp_phone") @db.VarChar(40)
+  isPrimary        Boolean   @default(false) @map("is_primary")
+  notes            String?
+  birthDate        DateTime? @map("birth_date")
+  nationality      String?   @db.VarChar(80)
+  personalAddress  String?   @map("personal_address")
+  linkedin         String?   @db.VarChar(255)
+  mandate          String?   @db.VarChar(120)
+  sharesPercent    Decimal?  @map("shares_percent") @db.Decimal(5, 2)
+  preferredChannel String?   @default("email") @map("preferred_channel") @db.VarChar(20)
+  createdAt        DateTime  @default(now()) @map("created_at")
 
   client           Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
   interactions     Interaction[]
   tickets          Ticket[]
   clientUsers      ClientUser[]
   whatsappMessages WhatsappMessage[]
+  contactNotes     ContactNote[]
 
   @@map("client_contacts")
+}
+
+model ContactNote {
+  id        String   @id @default(uuid())
+  contactId String   @map("contact_id")
+  authorId  String?  @map("author_id")
+  body      String
+  noteType  String   @default("general") @map("note_type") @db.VarChar(30)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  contact ClientContact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  author  User?         @relation(fields: [authorId], references: [id])
+
+  @@map("contact_notes")
 }
 
 model ClientNeed {

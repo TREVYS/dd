@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   Target,
   Info,
-  Mail,
   GraduationCap,
   Calculator,
   Scale,
@@ -83,15 +82,12 @@ export default async function DashboardPage() {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-  const [clientCount, openTasks, openTickets, draftQuotes, mailsToTreat, announcements] =
+  const [clientCount, openTasks, openTickets, draftQuotes, announcements] =
     await Promise.all([
       prisma.client.count({ where: { status: "active" } }),
       prisma.task.count({ where: { status: { not: "done" } } }),
       prisma.ticket.count({ where: { status: { not: "closed" } } }),
       prisma.quote.count({ where: { status: "draft" } }),
-      userId
-        ? prisma.mail.count({ where: { recipientId: userId, status: "a_traiter" } })
-        : Promise.resolve(0),
       prisma.announcement.findMany({
         where: { OR: [{ endsAt: null }, { endsAt: { gte: now } }] },
         orderBy: { createdAt: "desc" },
@@ -141,7 +137,6 @@ export default async function DashboardPage() {
   const stats = [
     { label: "Clients actifs", value: clientCount, icon: Users, href: "/clients" },
     { label: "Tâches en cours", value: openTasks, icon: KanbanSquare, href: "/production" },
-    { label: "Mails à traiter", value: mailsToTreat, icon: Mail, href: "/mails" },
     { label: "Tickets ouverts", value: openTickets, icon: Inbox, href: "/tickets" },
     { label: "Devis en brouillon", value: draftQuotes, icon: FileText, href: "/devis" },
   ];
@@ -216,14 +211,10 @@ export default async function DashboardPage() {
             <span>{progressPct}%</span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="grid grid-cols-2 gap-2 text-center">
             <Link href="/production" className="rounded-xl bg-gray-50 px-2 py-3 hover:bg-gray-100">
               <p className="text-lg font-semibold">{pendingMonthly < 0 ? 0 : pendingMonthly}</p>
               <p className="text-[11px] text-gray-400">Tâches/mois</p>
-            </Link>
-            <Link href="/mails" className="rounded-xl bg-gray-50 px-2 py-3 hover:bg-gray-100">
-              <p className="text-lg font-semibold">{mailsToTreat}</p>
-              <p className="text-[11px] text-gray-400">Mails</p>
             </Link>
             <Link href="/tickets" className="rounded-xl bg-gray-50 px-2 py-3 hover:bg-gray-100">
               <p className="text-lg font-semibold">{myTicketsOpen}</p>
@@ -233,7 +224,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {stats.map((s) => {
           const Icon = s.icon;
           return (

@@ -7,9 +7,15 @@ const DocumentSchema = z.object({
   clientId: z.string().min(1),
   folderId: z.string().optional(),
   name: z.string().min(1),
+  documentType: z.string().optional(),
   category: z.string().optional(),
   fiscalYear: z.coerce.number().optional(),
   fileUrl: z.string().min(1),
+  fileSize: z.coerce.number().optional(),
+  mimeType: z.string().optional(),
+  ocrText: z.string().optional(),
+  aiSummary: z.string().optional(),
+  source: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -24,8 +30,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
+  const { fileSize, ...rest } = parsed.data;
   const document = await prisma.document.create({
-    data: { ...parsed.data, uploadedBy: session.user.id, source: "manual" },
+    data: {
+      ...rest,
+      fileSize: fileSize !== undefined ? BigInt(fileSize) : undefined,
+      uploadedBy: session.user.id,
+      source: parsed.data.source ?? "manual",
+    },
   });
   return NextResponse.json(document, { status: 201 });
 }
