@@ -25,35 +25,40 @@ import { canManageCollaborators } from "@/lib/permissions";
 
 const NAV_GROUPS = [
   {
-    label: "Vue d'ensemble",
+    label: "HUB",
     items: [
-      { href: "/", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/", label: "Mon tableau de bord", icon: LayoutDashboard },
       { href: "/academy", label: "Academy TREVYS", icon: GraduationCap },
     ],
   },
   {
-    label: "Assistant",
-    items: [
-      { href: "/knowledge-cabinet", label: "Knowledge Cabinet", icon: BrainCircuit },
-      { href: "/assistant-juridique", label: "Assistant Juridique", icon: Scale },
-    ],
-  },
-  {
-    label: "Clients",
+    label: "CRM",
     items: [
       { href: "/clients", label: "Clients", icon: Users },
-      { href: "/pipeline-commercial", label: "Pipeline commercial", icon: TrendingUp },
+      { href: "/pipeline-commercial", label: "Prospects & opportunités", icon: TrendingUp },
       { href: "/tickets", label: "Tickets", icon: Inbox },
       { href: "/devis", label: "Devis", icon: FileText },
     ],
   },
   {
     label: "Production",
-    items: [
-      { href: "/production", label: "Production", icon: KanbanSquare },
-      { href: "/ged", label: "GED", icon: FolderOpen },
-      { href: "/chat", label: "Chat interne", icon: MessageCircle },
-    ],
+    items: [{ href: "/production", label: "Production", icon: KanbanSquare }],
+  },
+  {
+    label: "GED",
+    items: [{ href: "/ged", label: "GED", icon: FolderOpen }],
+  },
+  {
+    label: "Knowledge Cabinet",
+    items: [{ href: "/knowledge-cabinet", label: "Knowledge Cabinet", icon: BrainCircuit }],
+  },
+  {
+    label: "Assistant Juridique",
+    items: [{ href: "/assistant-juridique", label: "Assistant Juridique", icon: Scale }],
+  },
+  {
+    label: "Assistant IA Collaborateur",
+    items: [{ href: "/chat", label: "Chat métier", icon: MessageCircle }],
   },
 ];
 
