@@ -20,6 +20,7 @@ import {
   Settings,
   GraduationCap,
   LineChart,
+  Calculator,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { canManageCollaborators } from "@/lib/permissions";
@@ -47,6 +48,7 @@ const NAV_GROUPS = [
     items: [
       { href: "/production", label: "Production", icon: KanbanSquare },
       { href: "/production/fec-analyse", label: "Analyse FEC & Reporting IA", icon: LineChart },
+      { href: "/production/valorisation", label: "Valorisation d'entreprise", icon: Calculator },
     ],
   },
   {

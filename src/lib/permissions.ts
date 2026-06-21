@@ -46,3 +46,12 @@ export function canManageFecAnalysis(role: string | null | undefined) {
     role === "Collaborateur"
   );
 }
+
+export function canManageValuations(role: string | null | undefined) {
+  return (
+    role === "Associé" ||
+    role === "Administrateur" ||
+    role === "Manager" ||
+    role === "Collaborateur"
+  );
+}
