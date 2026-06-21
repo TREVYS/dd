@@ -18,7 +18,7 @@ export function LogoFull({ height = 32, className = "" }: { height?: number; cla
     <Image
       src="/brand/logo-full.svg"
       alt="TREVYS"
-      width={height * 3.8}
+      width={height * (640 / 180)}
       height={height}
       className={className}
       priority
