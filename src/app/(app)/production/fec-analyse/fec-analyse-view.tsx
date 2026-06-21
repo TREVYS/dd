@@ -55,6 +55,26 @@ type FecImportDetail = {
   chatLogs: { id: string; role: string; content: string }[];
 };
 
+type Opportunity = {
+  id: string;
+  domain: "fiscal" | "social" | "juridique" | "finance";
+  title: string;
+  description: string;
+  priority: "low" | "medium" | "high";
+  estimatedValue: number | null;
+  status: string;
+  taskId: string | null;
+};
+
+type MeetingPrep = {
+  pointsForts: string[];
+  pointsFaibles: string[];
+  questionsAPoser: string[];
+  planAction: { horizon30j: string[]; horizon90j: string[]; horizon12m: string[] };
+  pitchAssocie: string;
+  generatedAt: string;
+};
+
 type ReportItem = {
   id: string;
   title: string;
@@ -106,6 +126,11 @@ export function FecAnalyseView() {
   const [reportTone, setReportTone] = useState(TONES[0].value);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [shareInfo, setShareInfo] = useState<{ id: string; url: string } | null>(null);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [generatingOpportunities, setGeneratingOpportunities] = useState(false);
+  const [opportunitiesError, setOpportunitiesError] = useState<string | null>(null);
+  const [meetingPrep, setMeetingPrep] = useState<MeetingPrep | null>(null);
+  const [generatingMeetingPrep, setGeneratingMeetingPrep] = useState(false);
 
   useEffect(() => {
     fetch("/api/clients")
@@ -130,6 +155,45 @@ export function FecAnalyseView() {
     if (res.ok) {
       setSelectedImport(await res.json());
       setShareInfo(null);
+    }
+    const oppRes = await fetch(`/api/fec/imports/${id}/opportunities`);
+    if (oppRes.ok) setOpportunities(await oppRes.json());
+    setMeetingPrep(null);
+  }
+
+  async function handleGenerateMeetingPrep() {
+    if (!selectedImport) return;
+    setGeneratingMeetingPrep(true);
+    try {
+      const res = await fetch(`/api/fec/imports/${selectedImport.id}/meeting-prep`, { method: "POST" });
+      if (res.ok) setMeetingPrep(await res.json());
+    } finally {
+      setGeneratingMeetingPrep(false);
+    }
+  }
+
+  async function handleGenerateOpportunities() {
+    if (!selectedImport) return;
+    setGeneratingOpportunities(true);
+    setOpportunitiesError(null);
+    try {
+      const res = await fetch(`/api/fec/imports/${selectedImport.id}/opportunities`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setOpportunitiesError(data.error ?? "Erreur lors de la génération.");
+        return;
+      }
+      setOpportunities((prev) => [...data, ...prev]);
+    } finally {
+      setGeneratingOpportunities(false);
+    }
+  }
+
+  async function handleConvertOpportunity(id: string) {
+    const res = await fetch(`/api/fec/opportunities/${id}/convert`, { method: "POST" });
+    if (res.ok) {
+      const data = await res.json();
+      setOpportunities((prev) => prev.map((o) => (o.id === id ? data.opportunity : o)));
     }
   }
 
@@ -449,6 +513,134 @@ export function FecAnalyseView() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="glass-panel rounded-2xl p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">6. Opportunités de mission complémentaires</h2>
+              <button
+                onClick={handleGenerateOpportunities}
+                disabled={generatingOpportunities}
+                className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+              >
+                {generatingOpportunities ? "Analyse en cours..." : "Générer les opportunités"}
+              </button>
+            </div>
+            {opportunitiesError && <p className="text-sm text-red-600">{opportunitiesError}</p>}
+            {opportunities.length === 0 && !opportunitiesError && (
+              <p className="text-sm text-gray-500">
+                Aucune opportunité générée pour le moment. Cliquez sur « Générer les opportunités » pour que l&apos;IA
+                identifie des pistes fiscales, sociales, juridiques et financières à partir de cet exercice.
+              </p>
+            )}
+            <div className="space-y-2">
+              {opportunities.map((o) => (
+                <div key={o.id} className="border border-gray-200 rounded-xl p-3 bg-white/60 space-y-1">
+                  <div className="flex justify-between items-start gap-3">
+                    <div>
+                      <span className="text-xs uppercase tracking-wide text-brand font-medium">{o.domain}</span>
+                      <div className="font-medium">{o.title}</div>
+                    </div>
+                    {o.status === "converted" ? (
+                      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full shrink-0">
+                        Convertie en mission
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleConvertOpportunity(o.id)}
+                        className="text-xs bg-brand text-white px-3 py-1.5 rounded-lg shrink-0"
+                      >
+                        Convertir en mission
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600">{o.description}</p>
+                  <div className="text-xs text-gray-400">
+                    Priorité : {o.priority}
+                    {o.estimatedValue ? ` · Valeur estimée : ${fmt(o.estimatedValue)}` : ""}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass-panel rounded-2xl p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">7. Bouton magique — Préparer mon rendez-vous</h2>
+              <button
+                onClick={handleGenerateMeetingPrep}
+                disabled={generatingMeetingPrep}
+                className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+              >
+                {generatingMeetingPrep ? "Préparation en cours..." : "Préparer mon rendez-vous"}
+              </button>
+            </div>
+            {!meetingPrep && (
+              <p className="text-sm text-gray-500">
+                Génère en quelques secondes une synthèse complète (points forts/faibles, questions à poser,
+                plan d&apos;action, pitch) pour le rendez-vous bilan avec ce client.
+              </p>
+            )}
+            {meetingPrep && (
+              <div className="space-y-4 text-sm">
+                <div className="bg-white/70 rounded-xl p-4">
+                  <div className="font-medium mb-1">Pitch pour l&apos;associé</div>
+                  <p className="text-gray-700 whitespace-pre-wrap">{meetingPrep.pitchAssocie}</p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="font-medium mb-1 text-emerald-700">Points forts</div>
+                    <ul className="list-disc pl-4 space-y-1">
+                      {meetingPrep.pointsForts.map((p, i) => (
+                        <li key={i}>{p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="font-medium mb-1 text-red-700">Points faibles</div>
+                    <ul className="list-disc pl-4 space-y-1">
+                      {meetingPrep.pointsFaibles.map((p, i) => (
+                        <li key={i}>{p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div className="font-medium mb-1">Questions à poser au dirigeant</div>
+                  <ul className="list-disc pl-4 space-y-1">
+                    {meetingPrep.questionsAPoser.map((q, i) => (
+                      <li key={i}>{q}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <div className="font-medium mb-1">Plan d&apos;action — 30 jours</div>
+                    <ul className="list-disc pl-4 space-y-1">
+                      {meetingPrep.planAction.horizon30j.map((a, i) => (
+                        <li key={i}>{a}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="font-medium mb-1">90 jours</div>
+                    <ul className="list-disc pl-4 space-y-1">
+                      {meetingPrep.planAction.horizon90j.map((a, i) => (
+                        <li key={i}>{a}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="font-medium mb-1">12 mois</div>
+                    <ul className="list-disc pl-4 space-y-1">
+                      {meetingPrep.planAction.horizon12m.map((a, i) => (
+                        <li key={i}>{a}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}

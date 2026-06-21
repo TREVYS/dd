@@ -117,3 +117,136 @@ Inclus au minimum les sections: Chiffres clés, Analyse de l'activité, Marges e
     return fallback;
   }
 }
+
+export type OpportunityDraft = {
+  domain: "fiscal" | "social" | "juridique" | "finance";
+  title: string;
+  description: string;
+  priority: "low" | "medium" | "high";
+  estimatedValue: number | null;
+};
+
+export async function generateOpportunities(
+  metrics: FecMetrics,
+  anomalies: Anomaly[]
+): Promise<OpportunityDraft[]> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return [];
+
+  try {
+    const { default: Anthropic } = await import("@anthropic-ai/sdk");
+    const client = new Anthropic({ apiKey });
+
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      system: SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `À partir des données financières suivantes, identifie des opportunités de missions complémentaires
+pour le cabinet d'expertise comptable, dans les domaines fiscal, social, juridique et finance
+(ex: optimisation IS, intégration fiscale, crédits d'impôt, rémunération/dividendes/intéressement,
+pacte d'associés/holding/transmission, financement/levée de fonds/restructuration).
+
+${buildContext(metrics, anomalies)}
+
+Réponds UNIQUEMENT en JSON avec ce format exact (3 à 8 opportunités, priorisées) :
+{"opportunities": [{"domain": "fiscal|social|juridique|finance", "title": "...", "description": "...", "priority": "low|medium|high", "estimatedValue": 1500}]}`,
+        },
+      ],
+    });
+
+    const text = message.content.find((b) => b.type === "text")?.text ?? "";
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return [];
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(parsed.opportunities)) return [];
+    return parsed.opportunities.map((o: Record<string, unknown>) => ({
+      domain: ["fiscal", "social", "juridique", "finance"].includes(o.domain as string) ? o.domain : "finance",
+      title: String(o.title ?? "Opportunité de mission"),
+      description: String(o.description ?? ""),
+      priority: ["low", "medium", "high"].includes(o.priority as string) ? o.priority : "medium",
+      estimatedValue: typeof o.estimatedValue === "number" ? o.estimatedValue : null,
+    })) as OpportunityDraft[];
+  } catch {
+    return [];
+  }
+}
+
+export type MeetingPrep = {
+  pointsForts: string[];
+  pointsFaibles: string[];
+  questionsAPoser: string[];
+  planAction: { horizon30j: string[]; horizon90j: string[]; horizon12m: string[] };
+  pitchAssocie: string;
+  generatedAt: string;
+};
+
+const MEETING_PREP_FALLBACK: Omit<MeetingPrep, "generatedAt"> = {
+  pointsForts: [],
+  pointsFaibles: [],
+  questionsAPoser: [],
+  planAction: { horizon30j: [], horizon90j: [], horizon12m: [] },
+  pitchAssocie:
+    "Préparation indisponible : l'assistant IA n'est pas configuré (clé API manquante). Consultez les indicateurs et anomalies bruts ci-dessus.",
+};
+
+export async function generateMeetingPrep(
+  metrics: FecMetrics,
+  anomalies: Anomaly[],
+  opportunities: OpportunityDraft[]
+): Promise<MeetingPrep> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return { ...MEETING_PREP_FALLBACK, generatedAt: new Date().toISOString() };
+
+  try {
+    const { default: Anthropic } = await import("@anthropic-ai/sdk");
+    const client = new Anthropic({ apiKey });
+
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1800,
+      system: SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `Bouton magique TREVYS : prépare en quelques secondes le rendez-vous bilan de l'associé avec ce client,
+à partir des données ci-dessous et des opportunités de mission déjà identifiées.
+
+${buildContext(metrics, anomalies)}
+
+Opportunités de mission déjà identifiées: ${JSON.stringify(opportunities)}
+
+Réponds UNIQUEMENT en JSON avec ce format exact :
+{
+  "pointsForts": ["5 points qui vont bien"],
+  "pointsFaibles": ["5 points qui vont mal"],
+  "questionsAPoser": ["10 questions à poser au dirigeant"],
+  "planAction": {"horizon30j": ["..."], "horizon90j": ["..."], "horizon12m": ["..."]},
+  "pitchAssocie": "résumé exécutif de 10 lignes pour que l'associé arrive en rendez-vous avec une vision complète sans avoir à tout relire"
+}`,
+        },
+      ],
+    });
+
+    const text = message.content.find((b) => b.type === "text")?.text ?? "";
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return { ...MEETING_PREP_FALLBACK, generatedAt: new Date().toISOString() };
+    const parsed = JSON.parse(jsonMatch[0]);
+    return {
+      pointsForts: Array.isArray(parsed.pointsForts) ? parsed.pointsForts : [],
+      pointsFaibles: Array.isArray(parsed.pointsFaibles) ? parsed.pointsFaibles : [],
+      questionsAPoser: Array.isArray(parsed.questionsAPoser) ? parsed.questionsAPoser : [],
+      planAction: {
+        horizon30j: parsed.planAction?.horizon30j ?? [],
+        horizon90j: parsed.planAction?.horizon90j ?? [],
+        horizon12m: parsed.planAction?.horizon12m ?? [],
+      },
+      pitchAssocie: parsed.pitchAssocie ?? MEETING_PREP_FALLBACK.pitchAssocie,
+      generatedAt: new Date().toISOString(),
+    };
+  } catch {
+    return { ...MEETING_PREP_FALLBACK, generatedAt: new Date().toISOString() };
+  }
+}

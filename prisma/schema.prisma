@@ -317,6 +317,7 @@ model Client {
   prospect               Prospect?
   fecImports             FecImport[]
   fecReports             FecReport[]
+  fecOpportunities       FecOpportunity[]
 
   @@index([siren])
   @@index([assignedCollaboratorId])
@@ -511,6 +512,7 @@ model Task {
   comments       TaskComment[]
   deadlines      Deadline[]
   timeEntries    TimeEntry[]
+  fecOpportunities FecOpportunity[]
 
   @@index([assignedTo])
   @@index([dueDate])
@@ -1024,6 +1026,7 @@ model FecImport {
   journalCount  Int       @default(0) @map("journal_count")
   status        String    @default("imported") @db.VarChar(30)
   metrics       Json?
+  meetingPrep   Json?     @map("meeting_prep")
   uploadedById  String?   @map("uploaded_by_id")
   createdAt     DateTime  @default(now()) @map("created_at")
 
@@ -1032,6 +1035,7 @@ model FecImport {
   anomalies  FecAnomaly[]
   reports    FecReport[]
   chatLogs   FecChatMessage[]
+  opportunities FecOpportunity[]
 
   @@index([clientId])
   @@map("fec_imports")
@@ -1089,4 +1093,24 @@ model FecChatMessage {
   user      User?     @relation(fields: [userId], references: [id])
 
   @@map("fec_chat_messages")
+}
+
+model FecOpportunity {
+  id          String    @id @default(uuid())
+  fecImportId String    @map("fec_import_id")
+  clientId    String    @map("client_id")
+  domain      String    @db.VarChar(30)
+  title       String    @db.VarChar(180)
+  description String
+  priority    String    @default("medium") @db.VarChar(20)
+  estimatedValue Decimal? @map("estimated_value") @db.Decimal(12, 2)
+  status      String    @default("identified") @db.VarChar(30)
+  taskId      String?   @map("task_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  fecImport FecImport @relation(fields: [fecImportId], references: [id], onDelete: Cascade)
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  task      Task?     @relation(fields: [taskId], references: [id])
+
+  @@map("fec_opportunities")
 }
