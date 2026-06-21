@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { canManageCollaborators } from "@/lib/permissions";
+import { LogoIcon } from "@/components/logo";
 
 const NAV_GROUPS = [
   {
@@ -110,8 +111,8 @@ export function Sidebar() {
         } ${!pinned ? "absolute left-0 top-0" : ""}`}
       >
         <div className={`flex items-center gap-2 mb-8 ${expanded ? "" : "justify-center"}`}>
-          <div className="h-9 w-9 rounded-xl bg-brand flex items-center justify-center text-white font-bold shadow-lg shadow-brand/30 shrink-0">
-            T
+          <div className="shrink-0 transition-shadow rounded-full hover:shadow-[0_0_18px_rgba(109,91,246,0.55)]">
+            <LogoIcon size={36} />
           </div>
           {expanded && <span className="text-lg font-semibold flex-1 whitespace-nowrap">TREVYS OS</span>}
           {expanded && (

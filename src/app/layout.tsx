@@ -16,6 +16,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TREVYS OS",
   description: "Plateforme interne du cabinet TREVYS",
+  icons: {
+    icon: [
+      { url: "/brand/logo-icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+    apple: "/icons/icon-512.png",
+  },
 };
 
 export default function RootLayout({

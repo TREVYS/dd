@@ -1,0 +1,48 @@
+<svg width="760" height="200" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ringLightF" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c9b8ff"/>
+      <stop offset="100%" stop-color="#9b7bff"/>
+    </linearGradient>
+    <linearGradient id="ringDarkF" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6d5bf6"/>
+      <stop offset="100%" stop-color="#2e1f7a"/>
+    </linearGradient>
+    <linearGradient id="petalLeftF" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d6c8ff"/>
+      <stop offset="100%" stop-color="#8a68f5"/>
+    </linearGradient>
+    <linearGradient id="petalRightF" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a2a8f"/>
+      <stop offset="100%" stop-color="#15103a"/>
+    </linearGradient>
+    <radialGradient id="dotF" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#e8e0ff"/>
+      <stop offset="100%" stop-color="#a892f5"/>
+    </radialGradient>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9b7bff"/>
+      <stop offset="100%" stop-color="#6d5bf6"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(0,0)">
+    <circle cx="100" cy="100" r="92" fill="none" stroke="url(#ringDarkF)" stroke-width="14"
+            stroke-dasharray="289 289" stroke-dashoffset="72" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="92" fill="none" stroke="url(#ringLightF)" stroke-width="14"
+            stroke-dasharray="289 289" stroke-dashoffset="-217" stroke-linecap="round"/>
+    <path d="M96 56 C96 56 60 76 60 76 C56 78 54 82 54 87 L54 113 C54 118 56 122 60 124 C60 124 96 144 96 144 C100 146 104 143 104 138 L104 62 C104 57 100 54 96 56 Z" fill="url(#petalLeftF)"/>
+    <path d="M108 58 C108 58 142 80 142 80 C146 83 148 87 148 92 L148 108 C148 113 146 117 142 120 C142 120 108 142 108 142 C104 144 100 141 100 136 L100 64 C100 59 104 56 108 58 Z" fill="url(#petalRightF)"/>
+    <circle cx="120" cy="100" r="9" fill="url(#dotF)"/>
+  </g>
+
+  <g transform="translate(230,40)" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="92" fill="#f1edff" letter-spacing="-2">
+    <text x="0" y="92">TR</text>
+    <text x="300" y="92">VYS</text>
+  </g>
+  <g transform="translate(230,40)">
+    <rect x="190" y="16" width="86" height="15" rx="7.5" fill="url(#barGrad)"/>
+    <rect x="190" y="47" width="70" height="15" rx="7.5" fill="url(#barGrad)"/>
+    <rect x="190" y="78" width="86" height="15" rx="7.5" fill="url(#barGrad)"/>
+  </g>
+</svg>
