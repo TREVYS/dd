@@ -11,6 +11,7 @@ import {
   FileText,
   Gauge,
   Scale,
+  BrainCircuit,
   LogOut,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -21,6 +22,7 @@ const NAV = [
   { href: "/ged", label: "GED", icon: FolderOpen },
   { href: "/production", label: "Production", icon: KanbanSquare },
   { href: "/assistant-juridique", label: "Assistant Juridique", icon: Scale },
+  { href: "/knowledge-cabinet", label: "Knowledge Cabinet", icon: BrainCircuit },
   { href: "/tickets", label: "Tickets", icon: Inbox },
   { href: "/devis", label: "Devis", icon: FileText },
   { href: "/charge", label: "Plan de charge", icon: Gauge },

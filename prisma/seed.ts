@@ -269,6 +269,106 @@ async function main() {
     });
   }
 
+  const knowledgeArticleData = [
+    {
+      id: "00000000-0000-0000-0000-000000000100",
+      category: "Fiscalité",
+      title: "Régime micro-BIC : seuils et plafonds",
+      content:
+        "Le régime micro-BIC s'applique aux entreprises individuelles dont le chiffre d'affaires n'excède pas 188 700 € (vente de marchandises) ou 77 700 € (prestations de services et professions libérales BIC). L'abattement forfaitaire pour frais est de 71% pour la vente de marchandises et de 50% pour les prestations de services. Au-delà des seuils, le client bascule au régime réel simplifié dès le 1er janvier suivant le dépassement.",
+      tags: "micro-bic,seuils,régime réel,entreprise individuelle",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000101",
+      category: "Fiscalité",
+      title: "Acomptes d'impôt sur les sociétés : échéances",
+      content:
+        "Les sociétés soumises à l'IS versent quatre acomptes (15 mars, 15 juin, 15 septembre, 15 décembre) calculés sur le résultat de l'exercice précédent, sauf exonération la première année d'activité ou si l'IS dû est inférieur à 3 000 €. Le solde est régularisé au plus tard le 15 du 4e mois suivant la clôture de l'exercice via le relevé de solde n°2572.",
+      tags: "is,acompte,échéance,relevé de solde",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000102",
+      category: "Comptabilité",
+      title: "Procédure de clôture mensuelle des comptes clients",
+      content:
+        "Chaque clôture mensuelle suit les étapes suivantes : 1) rapprochement bancaire complet, 2) contrôle des comptes d'attente et de régularisation, 3) vérification des amortissements et provisions, 4) rapprochement de la TVA collectée/déductible avec la déclaration, 5) revue analytique (variations significatives vs mois précédent), 6) validation par le manager avant transmission au client.",
+      tags: "clôture,rapprochement bancaire,procédure,révision",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000103",
+      category: "Comptabilité",
+      title: "Traitement comptable des notes de frais",
+      content:
+        "Les notes de frais sont enregistrées au compte 625 (déplacements) ou 6256 (réceptions) selon leur nature, avec récupération de la TVA déductible si justificatif conforme (facture nominative, mention de la TVA). Les frais de réception et cadeaux clients sont plafonnés fiscalement (cadeaux > 73 € TTC par bénéficiaire et par an à déclarer sur le relevé des frais généraux n°2067 si le total dépasse 3 000 €).",
+      tags: "notes de frais,tva déductible,frais généraux",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000104",
+      category: "Social",
+      title: "Calcul des indemnités de rupture conventionnelle",
+      content:
+        "L'indemnité de rupture conventionnelle ne peut être inférieure à l'indemnité légale de licenciement : 1/4 de mois de salaire par année d'ancienneté jusqu'à 10 ans, puis 1/3 de mois par année au-delà. Elle est exonérée de cotisations sociales et de CSG/CRDS dans la limite du plus élevé entre 2 PASS et le montant légal ou conventionnel, sauf si le salarié peut faire liquider sa pension de retraite.",
+      tags: "rupture conventionnelle,indemnité,charges sociales",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000105",
+      category: "Social",
+      title: "Gestion des arrêts de travail et IJSS",
+      content:
+        "Lors d'un arrêt de travail, l'employeur doit transmettre l'attestation de salaire à la CPAM dans les 5 jours ouvrés. Le maintien de salaire conventionnel se calcule en complément des indemnités journalières de sécurité sociale (IJSS), généralement après un délai de carence de 7 jours pour la maladie. Les IJSS sont soumises à CSG/CRDS et imposables, à reporter en subrogation si l'employeur les perçoit directement.",
+      tags: "arrêt de travail,ijss,maintien de salaire,carence",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000106",
+      category: "Juridique",
+      title: "Choix de la forme juridique : SASU vs EURL",
+      content:
+        "La SASU offre un régime de protection sociale assimilé-salarié pour le président (sans cotisations chômage) et une grande souplesse statutaire, mais des charges sociales plus élevées sur la rémunération. L'EURL, soumise par défaut à l'IR, permet à son gérant associé unique de relever du régime des travailleurs non-salariés (TNS), moins coûteux en charges mais avec une couverture sociale moindre. Le choix dépend du niveau de rémunération souhaité et de la stratégie de distribution de dividendes.",
+      tags: "sasu,eurl,forme juridique,statut social",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000107",
+      category: "Juridique",
+      title: "Obligations légales d'approbation des comptes annuels",
+      content:
+        "Les comptes annuels doivent être approuvés par l'assemblée générale ordinaire dans les 6 mois suivant la clôture de l'exercice. Le dépôt au greffe du tribunal de commerce doit intervenir dans le mois suivant l'approbation (2 mois si dépôt électronique). Le défaut de dépôt expose à une injonction du président du tribunal et à une amende pouvant aller jusqu'à 1 500 €.",
+      tags: "comptes annuels,ago,dépôt greffe,délai",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000108",
+      category: "Procédures internes",
+      title: "Checklist d'onboarding d'un nouveau client",
+      content:
+        "1) Récupérer KBIS, statuts et pièce d'identité du dirigeant. 2) Créer la fiche client dans TREVYS OS et le dossier GED associé. 3) Recueillir lettre de mission signée et mandat de prélèvement si applicable. 4) Vérifier la conformité LCB-FT (lutte contre le blanchiment). 5) Récupérer les accès comptables existants (logiciel, banque). 6) Planifier le premier point avec le collaborateur référent dans les 15 jours.",
+      tags: "onboarding,nouveau client,lcb-ft,lettre de mission",
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000109",
+      category: "Procédures internes",
+      title: "Procédure de validation des devis et lettres de mission",
+      content:
+        "Tout devis ou lettre de mission doit être revu par un manager avant envoi au client. Les missions dépassant 10 000 € HT annuels nécessitent une validation par un associé. Le devis signé est archivé dans la GED du client sous la catégorie « Contractuel » et la mission est activée dans le module Production une fois le mandat de prélèvement reçu.",
+      tags: "devis,lettre de mission,validation,production",
+    },
+  ];
+
+  for (const k of knowledgeArticleData) {
+    const data = {
+      title: k.title,
+      category: k.category,
+      content: k.content,
+      tags: k.tags,
+      status: "validee",
+      createdBy: partner.id,
+      validatedBy: partner.id,
+    };
+    await prisma.knowledgeArticle.upsert({
+      where: { id: k.id },
+      update: data,
+      create: { id: k.id, ...data },
+    });
+  }
+
   console.log("Seed terminé.");
 }
 
