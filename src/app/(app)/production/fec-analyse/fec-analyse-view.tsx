@@ -126,6 +126,9 @@ export function FecAnalyseView() {
   const [reportTone, setReportTone] = useState(TONES[0].value);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [shareInfo, setShareInfo] = useState<{ id: string; url: string } | null>(null);
+  const [emailDrafts, setEmailDrafts] = useState<Record<string, string>>({});
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
+  const [emailFeedback, setEmailFeedback] = useState<{ id: string; message: string; ok: boolean } | null>(null);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [generatingOpportunities, setGeneratingOpportunities] = useState(false);
   const [opportunitiesError, setOpportunitiesError] = useState<string | null>(null);
@@ -281,6 +284,33 @@ export function FecAnalyseView() {
     });
     const data = await res.json();
     setShareInfo({ id: reportId, url: data.url });
+  }
+
+  async function handleSendEmail(reportId: string) {
+    const to = emailDrafts[reportId]?.trim();
+    if (!to) return;
+    setSendingEmail(reportId);
+    setEmailFeedback(null);
+    try {
+      const res = await fetch(`/api/fec/reports/${reportId}/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const message =
+          data.error === "smtp_not_configured"
+            ? "Envoi de mail non configuré (SMTP manquant)."
+            : "Erreur lors de l'envoi du mail.";
+        setEmailFeedback({ id: reportId, message, ok: false });
+        return;
+      }
+      setShareInfo({ id: reportId, url: data.url });
+      setEmailFeedback({ id: reportId, message: `Rapport envoyé à ${to}.`, ok: true });
+    } finally {
+      setSendingEmail(null);
+    }
   }
 
   const metrics = selectedImport?.metrics;
@@ -508,6 +538,33 @@ export function FecAnalyseView() {
                   {shareInfo?.id === report.id && (
                     <div className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg px-3 py-2">
                       Lien sécurisé généré : <span className="font-mono">{shareInfo.url}</span> (valable 30 jours)
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <input
+                      type="email"
+                      placeholder="email@client.fr"
+                      value={emailDrafts[report.id] ?? ""}
+                      onChange={(e) => setEmailDrafts((prev) => ({ ...prev, [report.id]: e.target.value }))}
+                      className="border rounded-lg px-3 py-1.5 text-xs flex-1 min-w-[180px]"
+                    />
+                    <button
+                      onClick={() => handleSendEmail(report.id)}
+                      disabled={sendingEmail === report.id || !emailDrafts[report.id]?.trim()}
+                      className="text-xs bg-brand text-white px-3 py-1.5 rounded-lg disabled:opacity-50"
+                    >
+                      {sendingEmail === report.id ? "Envoi..." : "Envoyer par mail"}
+                    </button>
+                  </div>
+                  {emailFeedback?.id === report.id && (
+                    <div
+                      className={`text-xs rounded-lg px-3 py-2 border ${
+                        emailFeedback.ok
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : "bg-red-50 text-red-700 border-red-200"
+                      }`}
+                    >
+                      {emailFeedback.message}
                     </div>
                   )}
                 </div>
