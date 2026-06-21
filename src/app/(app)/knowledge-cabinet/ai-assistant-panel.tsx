@@ -40,7 +40,7 @@ export function AiAssistantPanel() {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-4 flex flex-col h-full">
+    <div className="glass-panel rounded-2xl p-4 flex flex-col h-full">
       <div className="flex items-center gap-1.5 text-sm font-semibold mb-3">
         <Sparkles size={16} className="text-brand" />
         Assistant IA — Knowledge Cabinet

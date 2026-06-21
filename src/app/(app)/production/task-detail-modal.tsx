@@ -113,7 +113,7 @@ export function TaskDetailModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-5">
+      <div className="glass-panel rounded-2xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-5">
         <div className="flex items-start justify-between gap-3">
           <input
             value={title}

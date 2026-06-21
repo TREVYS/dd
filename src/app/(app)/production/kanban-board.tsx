@@ -133,7 +133,7 @@ export function KanbanBoard({
                     draggable
                     onDragStart={() => setDragId(task.id)}
                     onClick={() => setActiveTaskId(task.id)}
-                    className="bg-white rounded-xl p-3 shadow-sm cursor-grab space-y-2"
+                    className="glass-panel rounded-xl p-3 shadow-sm cursor-grab space-y-2"
                   >
                     {task.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
@@ -205,7 +205,7 @@ export function KanbanBoard({
             </div>
 
             {addingColumn === col.key ? (
-              <div className="mt-2 bg-white rounded-xl p-2 space-y-2">
+              <div className="mt-2 glass-panel rounded-xl p-2 space-y-2">
                 <input
                   autoFocus
                   value={newTitle}

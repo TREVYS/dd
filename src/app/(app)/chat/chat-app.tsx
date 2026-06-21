@@ -134,7 +134,7 @@ export function ChatApp({
   const active = conversations.find((c) => c.id === activeId);
 
   return (
-    <div className="flex h-full bg-white rounded-2xl overflow-hidden">
+    <div className="flex h-full glass-panel rounded-2xl overflow-hidden">
       <div className="w-72 border-r border-gray-100 flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <h2 className="font-semibold text-sm">Messages</h2>

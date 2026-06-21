@@ -17,7 +17,7 @@ export default async function DevisPage() {
         <NewQuoteButton clients={clients} />
       </div>
 
-      <div className="bg-white rounded-2xl overflow-hidden">
+      <div className="glass-panel rounded-2xl overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-gray-400 border-b border-gray-100">

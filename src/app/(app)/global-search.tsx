@@ -69,7 +69,7 @@ export function GlobalSearch() {
       </div>
 
       {open && q.trim().length >= 2 && (
-        <div className="absolute mt-1 w-full bg-white rounded-xl shadow-lg border border-gray-100 max-h-80 overflow-y-auto z-50">
+        <div className="absolute mt-1 w-full glass-panel rounded-xl shadow-lg border border-gray-100 max-h-80 overflow-y-auto z-50">
           {!hasResults && (
             <p className="text-sm text-gray-400 px-4 py-3">Aucun résultat.</p>
           )}

@@ -129,7 +129,7 @@ export function PipelineBoard({
                     key={p.id}
                     draggable
                     onDragStart={() => setDragId(p.id)}
-                    className="bg-white rounded-xl p-3 shadow-sm cursor-grab space-y-1.5"
+                    className="glass-panel rounded-xl p-3 shadow-sm cursor-grab space-y-1.5"
                   >
                     <p className="text-sm font-medium">{p.companyName}</p>
                     {p.contactName && <p className="text-xs text-gray-400">{p.contactName}</p>}
@@ -156,7 +156,7 @@ export function PipelineBoard({
               </div>
 
               {addingColumn === col.key ? (
-                <div className="mt-2 bg-white rounded-xl p-2 space-y-2">
+                <div className="mt-2 glass-panel rounded-xl p-2 space-y-2">
                   <input
                     autoFocus
                     value={newName}

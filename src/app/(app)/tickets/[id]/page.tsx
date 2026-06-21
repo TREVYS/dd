@@ -29,7 +29,7 @@ export default async function TicketDetailPage({
       </div>
 
       {ticket.description && (
-        <div className="bg-white rounded-2xl p-5 text-sm">{ticket.description}</div>
+        <div className="glass-panel rounded-2xl p-5 text-sm">{ticket.description}</div>
       )}
 
       <div className="space-y-3">

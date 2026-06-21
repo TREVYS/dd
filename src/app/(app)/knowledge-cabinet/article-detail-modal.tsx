@@ -46,7 +46,7 @@ export function ArticleDetailModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4">
+      <div className="glass-panel rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div>
             <span className="text-xs font-medium text-brand bg-brand/10 rounded-full px-2 py-0.5">

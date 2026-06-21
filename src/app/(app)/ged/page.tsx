@@ -95,7 +95,7 @@ export default async function GedPage({
         </div>
       </div>
 
-      <form className="flex gap-3 bg-white rounded-2xl p-4" method="get">
+      <form className="flex gap-3 glass-panel rounded-2xl p-4" method="get">
         <select
           name="client"
           defaultValue={clientId}
@@ -117,7 +117,7 @@ export default async function GedPage({
       </form>
 
       <div className="flex gap-4">
-        <div className="w-72 shrink-0 bg-white rounded-2xl p-4 overflow-y-auto max-h-[calc(100vh-20rem)]">
+        <div className="w-72 shrink-0 glass-panel rounded-2xl p-4 overflow-y-auto max-h-[calc(100vh-20rem)]">
           {tree.length === 0 ? (
             <p className="text-sm text-gray-400">
               Aucune arborescence pour ce client. Elle sera créée automatiquement.
@@ -127,7 +127,7 @@ export default async function GedPage({
           )}
         </div>
 
-        <div className="flex-1 bg-white rounded-2xl overflow-hidden">
+        <div className="flex-1 glass-panel rounded-2xl overflow-hidden">
           <div className="px-5 py-3 border-b border-gray-50 flex items-center justify-between">
             <p className="text-sm text-gray-500">
               {sp.q

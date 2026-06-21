@@ -39,7 +39,7 @@ export function LegalCasesBoard({ cases }: { cases: LegalCaseRow[] }) {
           <button
             key={c.id}
             onClick={() => setActiveId(c.id)}
-            className="w-full text-left bg-white rounded-2xl p-4 flex items-center gap-4 hover:shadow-md transition"
+            className="w-full text-left glass-panel rounded-2xl p-4 flex items-center gap-4 hover:shadow-md transition"
           >
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm truncate">{c.title}</p>

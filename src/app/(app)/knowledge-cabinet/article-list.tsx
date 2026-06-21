@@ -27,7 +27,7 @@ export function ArticleList({ articles, isPartner }: { articles: Article[]; isPa
         <button
           key={a.id}
           onClick={() => setActiveId(a.id)}
-          className="text-left bg-white rounded-2xl p-4 hover:shadow-md transition space-y-1.5"
+          className="text-left glass-panel rounded-2xl p-4 hover:shadow-md transition space-y-1.5"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-brand bg-brand/10 rounded-full px-2 py-0.5">

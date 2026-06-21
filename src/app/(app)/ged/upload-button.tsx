@@ -128,7 +128,7 @@ export function UploadDocumentButton({
 
       {open && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg">
+          <div className="glass-panel rounded-2xl p-6 w-full max-w-lg">
             <h2 className="text-lg font-semibold mb-4">Déposer un document</h2>
 
             {!result && (

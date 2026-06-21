@@ -43,7 +43,7 @@ export function NewArticleButton() {
 
       {open && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg">
+          <div className="glass-panel rounded-2xl p-6 w-full max-w-lg">
             <h2 className="text-lg font-semibold mb-4">Nouvel article</h2>
             <form onSubmit={handleSubmit} className="space-y-3">
               <input

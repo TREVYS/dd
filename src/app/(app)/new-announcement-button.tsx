@@ -48,7 +48,7 @@ export function NewAnnouncementButton() {
 
       {open && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md text-gray-900">
+          <div className="glass-panel rounded-2xl p-6 w-full max-w-md text-gray-900">
             <h2 className="text-lg font-semibold mb-4">Nouvelle actualité</h2>
             <form onSubmit={handleSubmit} className="space-y-3">
               <select

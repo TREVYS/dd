@@ -50,7 +50,7 @@ export function Topbar({
     (data?.tasksToday.length ?? 0) + (data?.ticketsToTreat.length ?? 0);
 
   return (
-    <header className="flex items-center justify-between gap-4 px-8 py-4 border-b border-gray-100 bg-white">
+    <header className="flex items-center justify-between gap-4 px-8 py-4 border-b border-white/40 glass-panel rounded-none">
       <GlobalSearch />
       <div className="flex items-center gap-4">
       <div className="relative" ref={ref}>
@@ -67,7 +67,7 @@ export function Topbar({
         </button>
 
         {open && (
-          <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-lg border border-gray-100 p-3 z-50 space-y-3">
+          <div className="absolute right-0 mt-2 w-80 glass-panel rounded-2xl shadow-lg border border-gray-100 p-3 z-50 space-y-3">
             <NotifSection
               icon={KanbanSquare}
               title="Tâches du jour"

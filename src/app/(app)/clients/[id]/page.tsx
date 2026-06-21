@@ -84,7 +84,7 @@ export default async function ClientDetailPage({
         </InfoCard>
       </div>
 
-      <div className="bg-white rounded-2xl p-5">
+      <div className="glass-panel rounded-2xl p-5">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold">Contacts</h2>
           <NewContactButton clientId={client.id} />
@@ -139,7 +139,7 @@ export default async function ClientDetailPage({
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl p-5">
+        <div className="glass-panel rounded-2xl p-5">
           <h2 className="font-semibold mb-3">Missions</h2>
           <ul className="space-y-2 text-sm">
             {client.clientMissions.map((cm) => (
@@ -154,7 +154,7 @@ export default async function ClientDetailPage({
           </ul>
         </div>
 
-        <div className="bg-white rounded-2xl p-5">
+        <div className="glass-panel rounded-2xl p-5">
           <h2 className="font-semibold mb-3">Tâches récentes</h2>
           <ul className="space-y-2 text-sm">
             {client.tasks.map((t) => (
@@ -169,7 +169,7 @@ export default async function ClientDetailPage({
           </ul>
         </div>
 
-        <div className="bg-white rounded-2xl p-5">
+        <div className="glass-panel rounded-2xl p-5">
           <h2 className="font-semibold mb-3">Documents récents</h2>
           <ul className="space-y-2 text-sm">
             {client.documents.map((d) => (
@@ -184,7 +184,7 @@ export default async function ClientDetailPage({
           </ul>
         </div>
 
-        <div className="bg-white rounded-2xl p-5">
+        <div className="glass-panel rounded-2xl p-5">
           <h2 className="font-semibold mb-3">Tickets</h2>
           <ul className="space-y-2 text-sm">
             {client.tickets.map((tk) => (
@@ -205,7 +205,7 @@ export default async function ClientDetailPage({
 
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl p-5">
+    <div className="glass-panel rounded-2xl p-5">
       <h2 className="font-semibold mb-3">{title}</h2>
       <div className="space-y-2">{children}</div>
     </div>

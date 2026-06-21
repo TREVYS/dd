@@ -241,7 +241,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <div className="bg-white rounded-3xl p-6 flex flex-col gap-4">
+        <div className="glass-panel rounded-3xl p-6 flex flex-col gap-4">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -284,7 +284,7 @@ export default async function DashboardPage() {
             <Link
               key={s.label}
               href={s.href}
-              className="bg-white rounded-2xl p-5 hover:shadow-md transition"
+              className="glass-panel rounded-2xl p-5 hover:shadow-md transition"
             >
               <div className="h-10 w-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center mb-3">
                 <Icon size={20} />
@@ -299,7 +299,7 @@ export default async function DashboardPage() {
       {isManager && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-4">
-            <div className="bg-white rounded-2xl p-6">
+            <div className="glass-panel rounded-2xl p-6">
               <h2 className="font-semibold flex items-center gap-2 mb-4">
                 <ShieldAlert size={18} className="text-brand" />
                 Charge de l&apos;équipe
@@ -311,10 +311,9 @@ export default async function DashboardPage() {
                   {teamWorkload.map((w) => {
                     const ratio = w.capacity > 0 ? Math.min(100, Math.round((w.openTasks / w.capacity) * 100)) : 0;
                     return (
-                      <Link
+                      <div
                         key={w.id}
-                        href={`/charge`}
-                        className="block rounded-xl border border-gray-100 p-3 hover:bg-gray-50"
+                        className="block rounded-xl border border-gray-100 p-3"
                       >
                         <div className="flex items-center justify-between mb-1.5">
                           <p className="text-sm font-medium">{w.name}</p>
@@ -331,14 +330,14 @@ export default async function DashboardPage() {
                             style={{ width: `${ratio}%` }}
                           />
                         </div>
-                      </Link>
+                      </div>
                     );
                   })}
                 </div>
               )}
             </div>
 
-            <div className="bg-white rounded-2xl p-6">
+            <div className="glass-panel rounded-2xl p-6">
               <h2 className="font-semibold flex items-center gap-2 mb-4">
                 <ClipboardCheck size={18} className="text-brand" />
                 File de contrôle manager
@@ -363,7 +362,7 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 flex items-center justify-between">
+          <div className="glass-panel rounded-2xl p-4 flex items-center justify-between">
             <p className="text-sm text-gray-500">
               <Inbox size={14} className="inline mr-1.5 text-brand" />
               {teamTicketsOpen} ticket(s) ouverts sur l&apos;équipe
@@ -376,7 +375,7 @@ export default async function DashboardPage() {
       )}
 
       {me && (
-        <div className="bg-white rounded-2xl p-6">
+        <div className="glass-panel rounded-2xl p-6">
           <h2 className="font-semibold flex items-center gap-2 mb-4">
             <Network size={18} className="text-brand" />
             Mon équipe
@@ -443,7 +442,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl p-6 border-2 border-brand/10 shadow-sm">
+      <div className="glass-panel rounded-2xl p-6 border-2 border-brand/10 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold flex items-center gap-2">
             <GraduationCap size={18} className="text-brand" />
@@ -453,7 +452,7 @@ export default async function DashboardPage() {
         <LessonsCarousel lessons={LESSONS} />
       </div>
 
-      <div className="bg-white rounded-2xl p-6">
+      <div className="glass-panel rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">Tâches récentes</h2>
           <Link href="/production" className="text-sm text-brand">
