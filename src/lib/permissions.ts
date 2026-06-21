@@ -24,6 +24,10 @@ export function canManageAcademy(role: string | null | undefined) {
   return role === "Associé" || role === "Administrateur";
 }
 
+export function canManageEmailSettings(role: string | null | undefined) {
+  return role === "Administrateur";
+}
+
 export function canManageFecAnalysis(role: string | null | undefined) {
   return (
     role === "Associé" ||

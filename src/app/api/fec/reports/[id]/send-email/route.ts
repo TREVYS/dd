@@ -11,7 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  if (!isMailerConfigured()) {
+  if (!(await isMailerConfigured())) {
     return NextResponse.json({ error: "smtp_not_configured" }, { status: 503 });
   }
 

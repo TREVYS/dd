@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Users, UsersRound, ShieldCheck, GraduationCap } from "lucide-react";
-import { canManageCollaborators, canManageHabilitations, canManageAcademy } from "@/lib/permissions";
+import { Users, UsersRound, ShieldCheck, GraduationCap, Mail } from "lucide-react";
+import { canManageCollaborators, canManageHabilitations, canManageAcademy, canManageEmailSettings } from "@/lib/permissions";
 
 export default async function ParametragePage() {
   const session = await auth();
@@ -38,6 +38,13 @@ export default async function ParametragePage() {
       description: "Gérer les formations, parcours et le suivi des collaborateurs.",
       icon: GraduationCap,
       show: canManageAcademy(session?.user?.role),
+    },
+    {
+      href: "/parametrage/email",
+      title: "Envoi de mail",
+      description: "Configurer le serveur SMTP utilisé pour l'envoi des rapports clients.",
+      icon: Mail,
+      show: canManageEmailSettings(session?.user?.role),
     },
   ].filter((c) => c.show);
 

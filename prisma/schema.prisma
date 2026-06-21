@@ -1114,3 +1114,11 @@ model FecOpportunity {
 
   @@map("fec_opportunities")
 }
+
+model AppSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("app_settings")
+}
