@@ -178,14 +178,14 @@ export function AcademyView() {
       {tab === "certificats" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {certificates.map((c) => (
-            <div key={c.id} className="glass-panel rounded-2xl p-5">
+            <a key={c.id} href={`/academy/certificates/${c.id}`} className="glass-panel rounded-2xl p-5 hover:shadow-md transition">
               <Award size={20} className="text-amber-500 mb-2" />
               <h3 className="font-semibold text-sm">{c.formation.title}</h3>
               <p className="text-xs text-gray-400 mt-1">
                 Obtenu le {new Date(c.issuedAt).toLocaleDateString("fr-FR")}
                 {c.score !== null ? ` · Score ${c.score}%` : ""}
               </p>
-            </div>
+            </a>
           ))}
           {certificates.length === 0 && <p className="text-sm text-gray-400">Aucun certificat obtenu pour le moment.</p>}
         </div>
