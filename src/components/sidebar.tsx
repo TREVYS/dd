@@ -104,6 +104,11 @@ export function Sidebar() {
       ]
     : NAV_GROUPS;
 
+  const allHrefs = navGroups.flatMap((g) => g.items.map((i) => i.href));
+  const activeHref = allHrefs
+    .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+    .sort((a, b) => b.length - a.length)[0];
+
   const expanded = mounted && (pinned || hovered);
   const initials = (session?.user?.name ?? "")
     .split(" ")
@@ -148,9 +153,7 @@ export function Sidebar() {
               )}
               <div className="space-y-1">
                 {group.items.map((item) => {
-                  const active =
-                    pathname === item.href ||
-                    (item.href !== "/" && pathname.startsWith(item.href));
+                  const active = item.href === activeHref;
                   const Icon = item.icon;
                   return (
                     <Link
