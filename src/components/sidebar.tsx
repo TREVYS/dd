@@ -22,6 +22,8 @@ import {
   LineChart,
   Calculator,
   ClipboardCheck,
+  Gauge,
+  ListTodo,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { canManageCollaborators } from "@/lib/permissions";
@@ -51,6 +53,8 @@ const NAV_GROUPS = [
       { href: "/production/fec-analyse", label: "Reporting", icon: LineChart },
       { href: "/production/valorisation", label: "Valorisation", icon: Calculator },
       { href: "/production/revision", label: "Révision comptable", icon: ClipboardCheck },
+      { href: "/production/pilotage", label: "Pilotage des travaux", icon: Gauge },
+      { href: "/production/mes-travaux", label: "Mes travaux", icon: ListTodo },
     ],
   },
   {

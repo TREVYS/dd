@@ -75,8 +75,9 @@ model User {
 
   clientMissions ClientMission[]
 
-  tasksAssigned Task[] @relation("TaskAssignedTo")
-  tasksManaged  Task[] @relation("TaskManagerOf")
+  tasksAssigned  Task[] @relation("TaskAssignedTo")
+  tasksManaged   Task[] @relation("TaskManagerOf")
+  tasksValidated Task[] @relation("TaskValidatedBy")
 
   taskStatusChanges TaskStatusHistory[]
 
@@ -499,29 +500,36 @@ model ClientMission {
 }
 
 model Task {
-  id             String    @id @default(uuid())
-  clientId       String    @map("client_id")
-  missionId      String?   @map("mission_id")
-  assignedTo     String?   @map("assigned_to")
-  managerId      String?   @map("manager_id")
-  title          String    @db.VarChar(255)
-  description    String?
-  taskType       String?   @map("task_type") @db.VarChar(80)
-  status         String    @default("todo") @db.VarChar(50)
-  priority       String    @default("normal") @db.VarChar(30)
-  dueDate        DateTime? @map("due_date")
-  estimatedHours Decimal?  @map("estimated_hours") @db.Decimal(6, 2)
-  actualHours    Decimal?  @map("actual_hours") @db.Decimal(6, 2)
-  kanbanColumn   String?   @map("kanban_column") @db.VarChar(80)
-  orderIndex     Int       @default(0) @map("order_index")
-  tags           String[]  @default([])
-  createdAt      DateTime  @default(now()) @map("created_at")
-  completedAt    DateTime? @map("completed_at")
+  id                   String    @id @default(uuid())
+  clientId             String    @map("client_id")
+  missionId            String?   @map("mission_id")
+  assignedTo           String?   @map("assigned_to")
+  managerId            String?   @map("manager_id")
+  title                String    @db.VarChar(255)
+  description          String?
+  taskType             String?   @map("task_type") @db.VarChar(80)
+  status               String    @default("todo") @db.VarChar(50)
+  priority             String    @default("normal") @db.VarChar(30)
+  dueDate              DateTime? @map("due_date")
+  estimatedHours       Decimal?  @map("estimated_hours") @db.Decimal(6, 2)
+  actualHours          Decimal?  @map("actual_hours") @db.Decimal(6, 2)
+  kanbanColumn         String?   @map("kanban_column") @db.VarChar(80)
+  orderIndex           Int       @default(0) @map("order_index")
+  tags                 String[]  @default([])
+  category             String?   @db.VarChar(60)
+  secondaryAssigneeIds String[]  @default([]) @map("secondary_assignee_ids")
+  requiresValidation   Boolean   @default(false) @map("requires_validation")
+  submittedAt          DateTime? @map("submitted_at")
+  validatedById        String?   @map("validated_by_id")
+  validatedAt          DateTime? @map("validated_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  completedAt          DateTime? @map("completed_at")
 
-  client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  mission  Mission? @relation(fields: [missionId], references: [id])
-  assignee User?    @relation("TaskAssignedTo", fields: [assignedTo], references: [id])
-  manager  User?    @relation("TaskManagerOf", fields: [managerId], references: [id])
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mission     Mission? @relation(fields: [missionId], references: [id])
+  assignee    User?    @relation("TaskAssignedTo", fields: [assignedTo], references: [id])
+  manager     User?    @relation("TaskManagerOf", fields: [managerId], references: [id])
+  validatedBy User?    @relation("TaskValidatedBy", fields: [validatedById], references: [id])
 
   statusHistory    TaskStatusHistory[]
   checklistItems   TaskChecklistItem[]

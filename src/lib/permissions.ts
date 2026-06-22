@@ -85,3 +85,11 @@ export function canValidateRevisionPartner(role: string | null | undefined) {
 export function canConfigureRevisionTemplates(role: string | null | undefined) {
   return role === "Administrateur";
 }
+
+export function canManageTaskPilotage(role: string | null | undefined) {
+  return role === "Associé" || role === "Administrateur" || role === "Manager";
+}
+
+export function canValidateTasks(role: string | null | undefined) {
+  return role === "Associé" || role === "Administrateur" || role === "Manager";
+}
