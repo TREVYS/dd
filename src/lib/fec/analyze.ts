@@ -51,7 +51,7 @@ function accountClass(compteNum: string): string {
   return compteNum?.charAt(0) ?? "";
 }
 
-function sumByPrefix(lines: FecLine[], prefixes: string[], side: "debit" | "credit" | "net") {
+export function sumByPrefix(lines: FecLine[], prefixes: string[], side: "debit" | "credit" | "net") {
   let total = 0;
   for (const line of lines) {
     if (prefixes.some((p) => line.compteNum.startsWith(p))) {

@@ -93,38 +93,42 @@ model User {
   quotesValidatedManager Quote[] @relation("QuoteValidatedByManager")
   quotesValidatedPartner Quote[] @relation("QuoteValidatedByPartner")
 
-  timeEntries              TimeEntry[]
-  capacityPlans            CapacityPlan[]
-  qualityReviews           QualityReview[]
-  risksDetected            Risk[]                 @relation("RiskDetectedBy")
-  risksAssigned            Risk[]                 @relation("RiskAssignedTo")
-  knowledgeAuthored        KnowledgeArticle[]     @relation("KnowledgeCreatedBy")
-  knowledgeValidated       KnowledgeArticle[]     @relation("KnowledgeValidatedBy")
-  auditLogs                AuditLog[]
-  announcementsCreated     Announcement[]         @relation("AnnouncementCreatedBy")
-  mails                    Mail[]                 @relation("MailRecipient")
-  mailFolders              MailFolder[]
-  mailReplies              MailReply[]
-  contactNotes             ContactNote[]
-  taskComments             TaskComment[]
-  legalCasesCreated        LegalCase[]
-  prospectsAssigned        Prospect[]             @relation("ProspectAssignedTo")
-  prospectsSigned          Prospect[]             @relation("ProspectSignedBy")
-  conversationMembers      ConversationMember[]
-  chatMessagesSent         ChatMessage[]
-  formationsAuthored       Formation[]            @relation("FormationAuthor")
-  formationProgress        FormationProgress[]
-  academyLessonProgress    LessonProgress[]
-  academyCertificates      Certificate[]
-  fecImportsUploaded       FecImport[]
-  fecReportsCreated        FecReport[]
-  fecChatMessages          FecChatMessage[]
-  valuationsCreated        Valuation[]            @relation("ValuationCreatedBy")
-  valuationsValidated      Valuation[]            @relation("ValuationValidatedBy")
-  valuationVersionsCreated ValuationVersion[]
-  valuationComments        ValuationComment[]
-  formationsAcquired       FormationAcquisition[] @relation("FormationAcquiredBy")
-  formationAccessGranted   FormationTeamAccess[]  @relation("FormationAccessGrantedBy")
+  timeEntries                    TimeEntry[]
+  capacityPlans                  CapacityPlan[]
+  qualityReviews                 QualityReview[]
+  risksDetected                  Risk[]                 @relation("RiskDetectedBy")
+  risksAssigned                  Risk[]                 @relation("RiskAssignedTo")
+  knowledgeAuthored              KnowledgeArticle[]     @relation("KnowledgeCreatedBy")
+  knowledgeValidated             KnowledgeArticle[]     @relation("KnowledgeValidatedBy")
+  auditLogs                      AuditLog[]
+  announcementsCreated           Announcement[]         @relation("AnnouncementCreatedBy")
+  mails                          Mail[]                 @relation("MailRecipient")
+  mailFolders                    MailFolder[]
+  mailReplies                    MailReply[]
+  contactNotes                   ContactNote[]
+  taskComments                   TaskComment[]
+  legalCasesCreated              LegalCase[]
+  prospectsAssigned              Prospect[]             @relation("ProspectAssignedTo")
+  prospectsSigned                Prospect[]             @relation("ProspectSignedBy")
+  conversationMembers            ConversationMember[]
+  chatMessagesSent               ChatMessage[]
+  formationsAuthored             Formation[]            @relation("FormationAuthor")
+  formationProgress              FormationProgress[]
+  academyLessonProgress          LessonProgress[]
+  academyCertificates            Certificate[]
+  fecImportsUploaded             FecImport[]
+  fecReportsCreated              FecReport[]
+  fecChatMessages                FecChatMessage[]
+  valuationsCreated              Valuation[]            @relation("ValuationCreatedBy")
+  valuationsValidated            Valuation[]            @relation("ValuationValidatedBy")
+  valuationVersionsCreated       ValuationVersion[]
+  valuationComments              ValuationComment[]
+  formationsAcquired             FormationAcquisition[] @relation("FormationAcquiredBy")
+  formationAccessGranted         FormationTeamAccess[]  @relation("FormationAccessGrantedBy")
+  revisionDossiersCreated        RevisionDossier[]      @relation("RevisionDossierCreatedBy")
+  revisionCyclesValidatedManager RevisionCycle[]        @relation("RevisionCycleValidatedByManager")
+  revisionCyclesValidatedPartner RevisionCycle[]        @relation("RevisionCycleValidatedByPartner")
+  revisionComments               RevisionComment[]
 
   @@map("users")
 }
@@ -328,6 +332,7 @@ model Client {
   fecReports             FecReport[]
   fecOpportunities       FecOpportunity[]
   valuations             Valuation[]
+  revisionDossiers       RevisionDossier[]
 
   @@index([siren])
   @@index([assignedCollaboratorId])
@@ -444,11 +449,12 @@ model Document {
   isDeleted    Boolean  @default(false) @map("is_deleted")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  client            Client?            @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  folder            DocumentFolder?    @relation(fields: [folderId], references: [id])
-  uploadedByUser    User?              @relation(fields: [uploadedBy], references: [id])
-  engagementLetters EngagementLetter[]
-  academyLessons    Lesson[]
+  client              Client?              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  folder              DocumentFolder?      @relation(fields: [folderId], references: [id])
+  uploadedByUser      User?                @relation(fields: [uploadedBy], references: [id])
+  engagementLetters   EngagementLetter[]
+  academyLessons      Lesson[]
+  revisionAttachments RevisionAttachment[]
 
   @@index([clientId])
   @@index([fiscalYear])
@@ -1143,13 +1149,14 @@ model FecImport {
   uploadedById String?  @map("uploaded_by_id")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  client        Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  uploadedBy    User?            @relation(fields: [uploadedById], references: [id])
-  anomalies     FecAnomaly[]
-  reports       FecReport[]
-  chatLogs      FecChatMessage[]
-  opportunities FecOpportunity[]
-  valuations    Valuation[]
+  client          Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  uploadedBy      User?             @relation(fields: [uploadedById], references: [id])
+  anomalies       FecAnomaly[]
+  reports         FecReport[]
+  chatLogs        FecChatMessage[]
+  opportunities   FecOpportunity[]
+  valuations      Valuation[]
+  RevisionDossier RevisionDossier[]
 
   @@index([clientId])
   @@map("fec_imports")
@@ -1297,4 +1304,100 @@ model ValuationComment {
 
   @@index([valuationId])
   @@map("valuation_comments")
+}
+
+model RevisionDossier {
+  id                   String    @id @default(uuid())
+  clientId             String    @map("client_id")
+  fiscalYear           Int       @map("fiscal_year")
+  openingDate          DateTime? @map("opening_date")
+  closingDate          DateTime? @map("closing_date")
+  sectorActivity       String?   @map("sector_activity") @db.VarChar(80)
+  clientTypology       String?   @map("client_typology") @db.VarChar(60)
+  taxRegime            String?   @map("tax_regime") @db.VarChar(60)
+  vatRegime            String?   @map("vat_regime") @db.VarChar(60)
+  hasEmployees         Boolean   @default(false) @map("has_employees")
+  hasStocks            Boolean   @default(false) @map("has_stocks")
+  hasLoans             Boolean   @default(false) @map("has_loans")
+  hasFixedAssets       Boolean   @default(false) @map("has_fixed_assets")
+  hasCurrentAccounts   Boolean   @default(false) @map("has_current_accounts")
+  hasTaxGroup          Boolean   @default(false) @map("has_tax_group")
+  riskLevel            String    @default("normal") @map("risk_level") @db.VarChar(20)
+  materialityBasis     String?   @map("materiality_basis") @db.VarChar(30)
+  materialityThreshold Decimal?  @map("materiality_threshold") @db.Decimal(14, 2)
+  fecImportId          String?   @map("fec_import_id")
+  status               String    @default("draft") @db.VarChar(30)
+  synthesisNote        Json?     @map("synthesis_note")
+  lockedAt             DateTime? @map("locked_at")
+  createdById          String?   @map("created_by_id")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  client    Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  fecImport FecImport?      @relation(fields: [fecImportId], references: [id])
+  createdBy User?           @relation("RevisionDossierCreatedBy", fields: [createdById], references: [id])
+  cycles    RevisionCycle[]
+
+  @@index([clientId])
+  @@map("revision_dossiers")
+}
+
+model RevisionCycle {
+  id                     String    @id @default(uuid())
+  dossierId              String    @map("dossier_id")
+  code                   String    @db.VarChar(40)
+  label                  String    @db.VarChar(120)
+  orderIndex             Int       @default(0) @map("order_index")
+  accountPrefixes        String[]  @default([]) @map("account_prefixes")
+  isApplicable           Boolean   @default(true) @map("is_applicable")
+  objectives             String?
+  commentCollaborator    String?   @map("comment_collaborator")
+  conclusionCollaborator String?   @map("conclusion_collaborator")
+  status                 String    @default("non_commence") @db.VarChar(30)
+  submittedAt            DateTime? @map("submitted_at")
+  validatedByManagerId   String?   @map("validated_by_manager_id")
+  validatedByManagerAt   DateTime? @map("validated_by_manager_at")
+  validatedByPartnerId   String?   @map("validated_by_partner_id")
+  validatedByPartnerAt   DateTime? @map("validated_by_partner_at")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  dossier            RevisionDossier      @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  validatedByManager User?                @relation("RevisionCycleValidatedByManager", fields: [validatedByManagerId], references: [id])
+  validatedByPartner User?                @relation("RevisionCycleValidatedByPartner", fields: [validatedByPartnerId], references: [id])
+  comments           RevisionComment[]
+  attachments        RevisionAttachment[]
+
+  @@unique([dossierId, code])
+  @@map("revision_cycles")
+}
+
+model RevisionComment {
+  id            String   @id @default(uuid())
+  cycleId       String   @map("cycle_id")
+  authorId      String?  @map("author_id")
+  body          String
+  mentionUserId String?  @map("mention_user_id")
+  resolved      Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  cycle  RevisionCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  author User?         @relation(fields: [authorId], references: [id])
+
+  @@index([cycleId])
+  @@map("revision_comments")
+}
+
+model RevisionAttachment {
+  id         String   @id @default(uuid())
+  cycleId    String   @map("cycle_id")
+  documentId String   @map("document_id")
+  label      String?  @db.VarChar(180)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  cycle    RevisionCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  document Document      @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([cycleId])
+  @@map("revision_attachments")
 }

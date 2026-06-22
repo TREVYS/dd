@@ -64,3 +64,24 @@ export function canValidateValuations(role: string | null | undefined) {
 export function canManageValuationBranding(role: string | null | undefined) {
   return role === "Administrateur";
 }
+
+export function canManageRevision(role: string | null | undefined) {
+  return (
+    role === "Associé" ||
+    role === "Administrateur" ||
+    role === "Manager" ||
+    role === "Collaborateur"
+  );
+}
+
+export function canValidateRevisionManager(role: string | null | undefined) {
+  return role === "Manager" || role === "Associé" || role === "Administrateur";
+}
+
+export function canValidateRevisionPartner(role: string | null | undefined) {
+  return role === "Associé" || role === "Administrateur";
+}
+
+export function canConfigureRevisionTemplates(role: string | null | undefined) {
+  return role === "Administrateur";
+}
