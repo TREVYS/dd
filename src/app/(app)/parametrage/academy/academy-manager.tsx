@@ -3,25 +3,32 @@
 import { useEffect, useState } from "react";
 import { Plus, Trash2, ChevronDown, ChevronUp, ShoppingCart, Users2, X } from "lucide-react";
 
-type Content = {
+type QuizOption = { id: string; text: string; isCorrect: boolean; orderIndex: number };
+type QuizQuestion = { id: string; question: string; orderIndex: number; options: QuizOption[] };
+type Lesson = {
   id: string;
   type: string;
   title: string;
   body: string | null;
-  url: string | null;
+  videoUrl: string | null;
+  durationMinutes: number | null;
   orderIndex: number;
+  quizQuestions: QuizQuestion[];
 };
+type Module = { id: string; title: string; orderIndex: number; lessons: Lesson[] };
 
 type Formation = {
   id: string;
   title: string;
+  description: string | null;
+  coverImageUrl: string | null;
   category: string | null;
   level: string | null;
   durationMinutes: number | null;
   tags: string[];
   isPublished: boolean;
   author: { firstName: string; lastName: string } | null;
-  contents: Content[];
+  modules: Module[];
   _count: { progress: number };
   acquisition: { id: string } | null;
   teamAccess: { id: string; teamId: string }[];
@@ -40,17 +47,15 @@ type Progress = {
   formation: { title: string };
 };
 
-const CONTENT_TYPES = [
-  { value: "text", label: "Texte" },
-  { value: "pdf", label: "PDF" },
-  { value: "word", label: "Word" },
-  { value: "excel", label: "Excel" },
-  { value: "powerpoint", label: "PowerPoint" },
-  { value: "video", label: "Vidéo" },
-  { value: "link", label: "Lien externe" },
+const LESSON_TYPES = [
+  { value: "video", label: "Vidéo MP4" },
+  { value: "pdf", label: "PDF téléchargeable" },
+  { value: "text", label: "Documentation (texte riche)" },
+  { value: "checklist", label: "Checklist" },
+  { value: "quiz", label: "QCM" },
+  { value: "case_study", label: "Étude de cas interactive" },
+  { value: "webinar", label: "Replay webinaire" },
 ];
-
-const FILE_TYPES = ["pdf", "word", "excel", "powerpoint"];
 
 const STATUS_LABELS: Record<string, string> = {
   not_started: "Non commencé",
@@ -58,7 +63,15 @@ const STATUS_LABELS: Record<string, string> = {
   completed: "Terminé",
 };
 
-const emptyFormation = { title: "", category: "", level: "", durationMinutes: "", tags: "" };
+const emptyFormation = {
+  title: "",
+  description: "",
+  coverImageUrl: "",
+  category: "",
+  level: "",
+  durationMinutes: "",
+  tags: "",
+};
 
 export function AcademyManager({ role }: { role: string | null }) {
   const canCreate = role === "Administrateur";
@@ -74,7 +87,17 @@ export function AcademyManager({ role }: { role: string | null }) {
   const [form, setForm] = useState(emptyFormation);
   const [loading, setLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [contentForm, setContentForm] = useState({ type: "text", title: "", body: "", url: "" });
+  const [expandedModuleId, setExpandedModuleId] = useState<string | null>(null);
+  const [moduleTitle, setModuleTitle] = useState("");
+  const [lessonForm, setLessonForm] = useState({
+    type: "text",
+    title: "",
+    body: "",
+    videoUrl: "",
+    documentUrl: "",
+    durationMinutes: "",
+  });
+  const [quizDraft, setQuizDraft] = useState<{ lessonId: string; question: string; options: string[]; correct: number } | null>(null);
   const [accessFormationId, setAccessFormationId] = useState<string | null>(null);
 
   const [parcoursOpen, setParcoursOpen] = useState(false);
@@ -129,6 +152,8 @@ export function AcademyManager({ role }: { role: string | null }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         title: form.title,
+        description: form.description || undefined,
+        coverImageUrl: form.coverImageUrl || undefined,
         category: form.category || undefined,
         level: form.level || undefined,
         durationMinutes: form.durationMinutes ? Number(form.durationMinutes) : undefined,
@@ -155,24 +180,65 @@ export function AcademyManager({ role }: { role: string | null }) {
     loadAll();
   }
 
-  async function handleAddContent(formationId: string, e: React.FormEvent) {
+  async function handleAddModule(formationId: string, e: React.FormEvent) {
     e.preventDefault();
-    await fetch(`/api/admin/academy/formations/${formationId}/contents`, {
+    if (!moduleTitle.trim()) return;
+    await fetch(`/api/admin/academy/formations/${formationId}/modules`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: contentForm.type,
-        title: contentForm.title,
-        body: contentForm.type === "text" ? contentForm.body : undefined,
-        url: contentForm.type !== "text" ? contentForm.url : undefined,
-      }),
+      body: JSON.stringify({ title: moduleTitle }),
     });
-    setContentForm({ type: "text", title: "", body: "", url: "" });
+    setModuleTitle("");
     loadAll();
   }
 
-  async function deleteContent(id: string) {
-    await fetch(`/api/admin/academy/contents/${id}`, { method: "DELETE" });
+  async function deleteModule(id: string) {
+    await fetch(`/api/admin/academy/modules/${id}`, { method: "DELETE" });
+    loadAll();
+  }
+
+  async function handleAddLesson(moduleId: string, e: React.FormEvent) {
+    e.preventDefault();
+    await fetch(`/api/admin/academy/modules/${moduleId}/lessons`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: lessonForm.type,
+        title: lessonForm.title,
+        body: lessonForm.type === "text" || lessonForm.type === "checklist" || lessonForm.type === "case_study" ? lessonForm.body : undefined,
+        videoUrl: lessonForm.type === "video" || lessonForm.type === "webinar" ? lessonForm.videoUrl : undefined,
+        documentUrl: lessonForm.type === "pdf" ? lessonForm.documentUrl : undefined,
+        durationMinutes: lessonForm.durationMinutes ? Number(lessonForm.durationMinutes) : undefined,
+      }),
+    });
+    setLessonForm({ type: "text", title: "", body: "", videoUrl: "", documentUrl: "", durationMinutes: "" });
+    loadAll();
+  }
+
+  async function deleteLesson(id: string) {
+    await fetch(`/api/admin/academy/lessons/${id}`, { method: "DELETE" });
+    loadAll();
+  }
+
+  async function handleAddQuizQuestion(e: React.FormEvent) {
+    e.preventDefault();
+    if (!quizDraft || !quizDraft.question.trim()) return;
+    const options = quizDraft.options.filter((o) => o.trim());
+    if (options.length < 2) return;
+    await fetch(`/api/admin/academy/lessons/${quizDraft.lessonId}/quiz`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question: quizDraft.question,
+        options: options.map((text, i) => ({ text, isCorrect: i === quizDraft.correct })),
+      }),
+    });
+    setQuizDraft(null);
+    loadAll();
+  }
+
+  async function deleteQuizQuestion(id: string) {
+    await fetch(`/api/admin/academy/quiz-questions/${id}`, { method: "DELETE" });
     loadAll();
   }
 
@@ -321,59 +387,179 @@ export function AcademyManager({ role }: { role: string | null }) {
 
                   {isExpanded && (
                     <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
-                      {f.contents.map((c) => (
-                        <div key={c.id} className="flex items-center justify-between text-sm bg-gray-50 rounded-xl px-3 py-2">
-                          <span>
-                            <span className="text-xs text-gray-400 uppercase mr-2">{c.type}</span>
-                            {c.title}
-                          </span>
-                          {canCreate && (
-                            <button onClick={() => deleteContent(c.id)} className="text-gray-400 hover:text-red-500">
-                              <Trash2 size={14} />
-                            </button>
-                          )}
-                        </div>
-                      ))}
+                      {f.modules.map((m) => {
+                        const moduleExpanded = expandedModuleId === m.id;
+                        return (
+                          <div key={m.id} className="bg-gray-50 rounded-xl p-3">
+                            <div className="flex items-center justify-between">
+                              <button
+                                onClick={() => setExpandedModuleId(moduleExpanded ? null : m.id)}
+                                className="flex items-center gap-2 text-sm font-medium"
+                              >
+                                {moduleExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                {m.title}
+                                <span className="text-xs text-gray-400">({m.lessons.length} leçon(s))</span>
+                              </button>
+                              {canCreate && (
+                                <button onClick={() => deleteModule(m.id)} className="text-gray-400 hover:text-red-500">
+                                  <Trash2 size={14} />
+                                </button>
+                              )}
+                            </div>
+                            {moduleExpanded && (
+                              <div className="mt-3 space-y-2 pl-2">
+                                {m.lessons.map((l) => (
+                                  <div key={l.id} className="bg-white rounded-lg px-3 py-2 text-sm space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <span>
+                                        <span className="text-xs text-gray-400 uppercase mr-2">{l.type}</span>
+                                        {l.title}
+                                        {l.durationMinutes ? <span className="text-xs text-gray-400 ml-2">{l.durationMinutes} min</span> : null}
+                                      </span>
+                                      {canCreate && (
+                                        <button onClick={() => deleteLesson(l.id)} className="text-gray-400 hover:text-red-500">
+                                          <Trash2 size={13} />
+                                        </button>
+                                      )}
+                                    </div>
+                                    {l.type === "quiz" && (
+                                      <div className="space-y-1 pl-2">
+                                        {l.quizQuestions.map((q) => (
+                                          <div key={q.id} className="flex items-center justify-between text-xs text-gray-500">
+                                            <span>
+                                              {q.question} —{" "}
+                                              {q.options.map((o) => (o.isCorrect ? `[${o.text}]` : o.text)).join(", ")}
+                                            </span>
+                                            {canCreate && (
+                                              <button onClick={() => deleteQuizQuestion(q.id)} className="text-gray-400 hover:text-red-500">
+                                                <Trash2 size={12} />
+                                              </button>
+                                            )}
+                                          </div>
+                                        ))}
+                                        {canCreate &&
+                                          (quizDraft?.lessonId === l.id ? (
+                                            <form onSubmit={handleAddQuizQuestion} className="space-y-1 pt-1">
+                                              <input
+                                                required
+                                                placeholder="Question *"
+                                                value={quizDraft.question}
+                                                onChange={(e) => setQuizDraft({ ...quizDraft, question: e.target.value })}
+                                                className="w-full rounded-lg border border-gray-200 px-2 py-1 text-xs"
+                                              />
+                                              {quizDraft.options.map((opt, i) => (
+                                                <div key={i} className="flex items-center gap-2">
+                                                  <input
+                                                    type="radio"
+                                                    checked={quizDraft.correct === i}
+                                                    onChange={() => setQuizDraft({ ...quizDraft, correct: i })}
+                                                  />
+                                                  <input
+                                                    placeholder={`Réponse ${i + 1}`}
+                                                    value={opt}
+                                                    onChange={(e) => {
+                                                      const options = [...quizDraft.options];
+                                                      options[i] = e.target.value;
+                                                      setQuizDraft({ ...quizDraft, options });
+                                                    }}
+                                                    className="flex-1 rounded-lg border border-gray-200 px-2 py-1 text-xs"
+                                                  />
+                                                </div>
+                                              ))}
+                                              <div className="flex justify-end gap-2 pt-1">
+                                                <button type="button" onClick={() => setQuizDraft(null)} className="text-xs text-gray-400">
+                                                  Annuler
+                                                </button>
+                                                <button type="submit" className="text-xs bg-brand text-white rounded-lg px-3 py-1">
+                                                  Ajouter la question
+                                                </button>
+                                              </div>
+                                            </form>
+                                          ) : (
+                                            <button
+                                              onClick={() =>
+                                                setQuizDraft({ lessonId: l.id, question: "", options: ["", "", "", ""], correct: 0 })
+                                              }
+                                              className="text-xs text-brand"
+                                            >
+                                              + Ajouter une question
+                                            </button>
+                                          ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                                {canCreate && (
+                                  <form onSubmit={(e) => handleAddLesson(m.id, e)} className="flex flex-wrap gap-2 items-end pt-1">
+                                    <select
+                                      value={lessonForm.type}
+                                      onChange={(e) => setLessonForm({ ...lessonForm, type: e.target.value })}
+                                      className="rounded-lg border border-gray-200 px-2 py-1.5 text-xs"
+                                    >
+                                      {LESSON_TYPES.map((lt) => (
+                                        <option key={lt.value} value={lt.value}>{lt.label}</option>
+                                      ))}
+                                    </select>
+                                    <input
+                                      required
+                                      placeholder="Titre de la leçon *"
+                                      value={lessonForm.title}
+                                      onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                                      className="rounded-lg border border-gray-200 px-2 py-1.5 text-xs flex-1 min-w-[140px]"
+                                    />
+                                    {(lessonForm.type === "video" || lessonForm.type === "webinar") && (
+                                      <input
+                                        placeholder="URL vidéo"
+                                        value={lessonForm.videoUrl}
+                                        onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
+                                        className="rounded-lg border border-gray-200 px-2 py-1.5 text-xs flex-1 min-w-[160px]"
+                                      />
+                                    )}
+                                    {lessonForm.type === "pdf" && (
+                                      <input
+                                        placeholder="URL du PDF"
+                                        value={lessonForm.documentUrl}
+                                        onChange={(e) => setLessonForm({ ...lessonForm, documentUrl: e.target.value })}
+                                        className="rounded-lg border border-gray-200 px-2 py-1.5 text-xs flex-1 min-w-[160px]"
+                                      />
+                                    )}
+                                    {(lessonForm.type === "text" || lessonForm.type === "checklist" || lessonForm.type === "case_study") && (
+                                      <input
+                                        placeholder="Contenu"
+                                        value={lessonForm.body}
+                                        onChange={(e) => setLessonForm({ ...lessonForm, body: e.target.value })}
+                                        className="rounded-lg border border-gray-200 px-2 py-1.5 text-xs flex-1 min-w-[160px]"
+                                      />
+                                    )}
+                                    <input
+                                      type="number"
+                                      placeholder="Durée (min)"
+                                      value={lessonForm.durationMinutes}
+                                      onChange={(e) => setLessonForm({ ...lessonForm, durationMinutes: e.target.value })}
+                                      className="rounded-lg border border-gray-200 px-2 py-1.5 text-xs w-24"
+                                    />
+                                    <button type="submit" className="bg-brand text-white rounded-lg px-3 py-1.5 text-xs font-medium">
+                                      Ajouter
+                                    </button>
+                                  </form>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                       {canCreate && (
-                      <form onSubmit={(e) => handleAddContent(f.id, e)} className="flex flex-wrap gap-2 items-end">
-                        <select
-                          value={contentForm.type}
-                          onChange={(e) => setContentForm({ ...contentForm, type: e.target.value })}
-                          className="rounded-xl border border-gray-200 px-3 py-2 text-sm"
-                        >
-                          {CONTENT_TYPES.map((ct) => (
-                            <option key={ct.value} value={ct.value}>{ct.label}</option>
-                          ))}
-                        </select>
-                        <input
-                          required
-                          placeholder="Titre du contenu *"
-                          value={contentForm.title}
-                          onChange={(e) => setContentForm({ ...contentForm, title: e.target.value })}
-                          className="rounded-xl border border-gray-200 px-3 py-2 text-sm flex-1 min-w-[160px]"
-                        />
-                        {contentForm.type === "text" ? (
+                        <form onSubmit={(e) => handleAddModule(f.id, e)} className="flex gap-2">
                           <input
-                            placeholder="Contenu texte"
-                            value={contentForm.body}
-                            onChange={(e) => setContentForm({ ...contentForm, body: e.target.value })}
-                            className="rounded-xl border border-gray-200 px-3 py-2 text-sm flex-1 min-w-[200px]"
+                            placeholder="Nom du module *"
+                            value={moduleTitle}
+                            onChange={(e) => setModuleTitle(e.target.value)}
+                            className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm"
                           />
-                        ) : (
-                          <input
-                            placeholder={FILE_TYPES.includes(contentForm.type) ? "URL du fichier" : "URL"}
-                            value={contentForm.url}
-                            onChange={(e) => setContentForm({ ...contentForm, url: e.target.value })}
-                            className="rounded-xl border border-gray-200 px-3 py-2 text-sm flex-1 min-w-[200px]"
-                          />
-                        )}
-                        <button
-                          type="submit"
-                          className="bg-brand text-white rounded-xl px-4 py-2 text-sm font-medium"
-                        >
-                          Ajouter
-                        </button>
-                      </form>
+                          <button type="submit" className="bg-brand text-white rounded-xl px-4 py-2 text-sm font-medium">
+                            + Module
+                          </button>
+                        </form>
                       )}
                     </div>
                   )}
@@ -459,6 +645,18 @@ export function AcademyManager({ role }: { role: string | null }) {
                 placeholder="Titre *"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+              />
+              <input
+                placeholder="Description"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+              />
+              <input
+                placeholder="URL image de couverture"
+                value={form.coverImageUrl}
+                onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })}
                 className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
               />
               <div className="grid grid-cols-2 gap-3">

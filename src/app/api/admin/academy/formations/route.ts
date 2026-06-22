@@ -6,6 +6,8 @@ import { z } from "zod";
 
 const FormationSchema = z.object({
   title: z.string().min(1),
+  description: z.string().optional(),
+  coverImageUrl: z.string().optional(),
   category: z.string().optional(),
   level: z.string().optional(),
   durationMinutes: z.coerce.number().optional(),
@@ -21,7 +23,18 @@ export async function GET() {
 
   const include = {
     author: { select: { firstName: true, lastName: true } },
-    contents: { orderBy: { orderIndex: "asc" as const } },
+    modules: {
+      orderBy: { orderIndex: "asc" as const },
+      include: {
+        lessons: {
+          orderBy: { orderIndex: "asc" as const },
+          include: {
+            document: { select: { fileUrl: true } },
+            quizQuestions: { include: { options: true }, orderBy: { orderIndex: "asc" as const } },
+          },
+        },
+      },
+    },
     _count: { select: { progress: true } },
     acquisition: true,
     teamAccess: true,

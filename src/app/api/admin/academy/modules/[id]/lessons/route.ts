@@ -4,14 +4,16 @@ import { auth } from "@/lib/auth";
 import { canCreateFormations } from "@/lib/permissions";
 import { z } from "zod";
 
-const FILE_TYPES = ["pdf", "word", "excel", "powerpoint"];
+const LESSON_TYPES = ["video", "text", "pdf", "checklist", "quiz", "case_study", "webinar"] as const;
 
-const ContentSchema = z.object({
-  type: z.enum(["text", "pdf", "word", "excel", "powerpoint", "video", "link"]),
+const LessonSchema = z.object({
+  type: z.enum(LESSON_TYPES),
   title: z.string().min(1),
   body: z.string().optional(),
-  url: z.string().optional(),
+  videoUrl: z.string().optional(),
+  durationMinutes: z.coerce.number().optional(),
   orderIndex: z.coerce.number().optional(),
+  documentUrl: z.string().optional(),
 });
 
 async function getAcademyFolderId() {
@@ -41,24 +43,24 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  const { id: formationId } = await params;
+  const { id: moduleId } = await params;
   const body = await req.json();
-  const parsed = ContentSchema.safeParse(body);
+  const parsed = LessonSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { type, title, body: textBody, url, orderIndex } = parsed.data;
+  const { type, title, body: textBody, videoUrl, durationMinutes, orderIndex, documentUrl } = parsed.data;
 
   let documentId: string | undefined;
-  if (FILE_TYPES.includes(type) && url) {
+  if (type === "pdf" && documentUrl) {
     const folderId = await getAcademyFolderId();
     const document = await prisma.document.create({
       data: {
         name: title,
         folderId,
-        documentType: type,
-        fileUrl: url,
+        documentType: "pdf",
+        fileUrl: documentUrl,
         uploadedBy: session.user.id,
         source: "academy",
       },
@@ -66,16 +68,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     documentId = document.id;
   }
 
-  const content = await prisma.formationContent.create({
+  const lesson = await prisma.lesson.create({
     data: {
-      formationId,
+      moduleId,
       type,
       title,
       body: textBody,
-      url: FILE_TYPES.includes(type) ? undefined : url,
+      videoUrl,
       documentId,
+      durationMinutes,
       orderIndex: orderIndex ?? 0,
     },
   });
-  return NextResponse.json(content, { status: 201 });
+  return NextResponse.json(lesson, { status: 201 });
 }

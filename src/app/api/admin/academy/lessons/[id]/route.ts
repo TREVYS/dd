@@ -4,15 +4,13 @@ import { auth } from "@/lib/auth";
 import { canCreateFormations } from "@/lib/permissions";
 import { z } from "zod";
 
-const FormationUpdateSchema = z.object({
+const LessonUpdateSchema = z.object({
+  type: z.enum(["video", "text", "pdf", "checklist", "quiz", "case_study", "webinar"]).optional(),
   title: z.string().min(1).optional(),
-  description: z.string().nullable().optional(),
-  coverImageUrl: z.string().nullable().optional(),
-  category: z.string().nullable().optional(),
-  level: z.string().nullable().optional(),
+  body: z.string().nullable().optional(),
+  videoUrl: z.string().nullable().optional(),
   durationMinutes: z.coerce.number().nullable().optional(),
-  tags: z.array(z.string()).optional(),
-  isPublished: z.boolean().optional(),
+  orderIndex: z.coerce.number().optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -23,13 +21,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   const body = await req.json();
-  const parsed = FormationUpdateSchema.safeParse(body);
+  const parsed = LessonUpdateSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const formation = await prisma.formation.update({ where: { id }, data: parsed.data });
-  return NextResponse.json(formation);
+  const lesson = await prisma.lesson.update({ where: { id }, data: parsed.data });
+  return NextResponse.json(lesson);
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -39,6 +37,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   }
 
   const { id } = await params;
-  await prisma.formation.delete({ where: { id } });
+  await prisma.lesson.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
