@@ -44,7 +44,7 @@ export default async function ProductionPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Production — Kanban</h1>
+      <h1 className="text-2xl font-semibold">Suivi — Kanban</h1>
 
       <div className="flex gap-2 border-b border-gray-100">
         {BOARDS.map((b) => (

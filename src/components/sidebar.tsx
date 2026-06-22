@@ -47,7 +47,7 @@ const NAV_GROUPS = [
   {
     label: "Production",
     items: [
-      { href: "/production", label: "Production", icon: KanbanSquare },
+      { href: "/production", label: "Suivi", icon: KanbanSquare },
       { href: "/production/fec-analyse", label: "Reporting", icon: LineChart },
       { href: "/production/valorisation", label: "Valorisation", icon: Calculator },
       { href: "/production/revision", label: "Révision comptable", icon: ClipboardCheck },
