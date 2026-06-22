@@ -19,7 +19,7 @@ export default async function PipelineCommercialPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Pipeline commercial</h1>
+      <h1 className="text-2xl font-semibold">Opportunités</h1>
 
       <PipelineBoard
         columns={COLUMNS}

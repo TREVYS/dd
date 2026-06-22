@@ -12,7 +12,7 @@ export default async function FecAnalysePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Analyse FEC &amp; Reporting IA</h1>
+        <h1 className="text-2xl font-semibold">Reporting</h1>
         <p className="text-sm text-gray-500">
           Importez un FEC client, laissez l&apos;IA contrôler et analyser les écritures, puis générez un rapport partageable.
         </p>

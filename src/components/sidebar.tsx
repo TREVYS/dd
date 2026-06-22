@@ -38,7 +38,7 @@ const NAV_GROUPS = [
     label: "CRM",
     items: [
       { href: "/clients", label: "Clients", icon: Users },
-      { href: "/pipeline-commercial", label: "Prospects & opportunités", icon: TrendingUp },
+      { href: "/pipeline-commercial", label: "Opportunités", icon: TrendingUp },
       { href: "/tickets", label: "Tickets", icon: Inbox },
       { href: "/devis", label: "Devis", icon: FileText },
     ],
@@ -47,8 +47,8 @@ const NAV_GROUPS = [
     label: "Production",
     items: [
       { href: "/production", label: "Production", icon: KanbanSquare },
-      { href: "/production/fec-analyse", label: "Analyse FEC & Reporting IA", icon: LineChart },
-      { href: "/production/valorisation", label: "Valorisation d'entreprise", icon: Calculator },
+      { href: "/production/fec-analyse", label: "Reporting", icon: LineChart },
+      { href: "/production/valorisation", label: "Valorisation", icon: Calculator },
     ],
   },
   {
