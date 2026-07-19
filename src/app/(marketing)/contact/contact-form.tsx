@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useActionState, useMemo } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { submitContact, type ContactState } from "./actions";
 
 const initial: ContactState = { ok: false, message: "" };
@@ -20,7 +20,12 @@ const fieldStyle: React.CSSProperties = {
 
 export function ContactForm() {
   const [state, action, pending] = useActionState(submitContact, initial);
-  const openedAt = useMemo(() => Date.now(), []);
+  const tRef = useRef<HTMLInputElement>(null);
+
+  // Horodatage posé côté client au montage (anti-bot : soumission trop rapide).
+  useEffect(() => {
+    if (tRef.current) tRef.current.value = String(Date.now());
+  }, []);
 
   return (
     <form
@@ -33,7 +38,7 @@ export function ContactForm() {
         boxShadow: "var(--glass-sh)",
       }}
     >
-      <input type="hidden" name="_t" value={openedAt} />
+      <input type="hidden" name="_t" ref={tRef} defaultValue="0" />
       {/* Honeypot anti-bot : caché aux humains */}
       <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", height: 0, width: 0, overflow: "hidden" }}>
         <label>Ne pas remplir</label>

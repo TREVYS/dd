@@ -26,10 +26,6 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
   const isCur = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
 
@@ -69,13 +65,22 @@ export function Nav() {
       </nav>
       <div className={`mkt-mobile${open ? " open" : ""}`}>
         {NAV_LINKS.map((l) => (
-          <Link key={l.href} href={l.href}>
+          <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>
             {l.label}
           </Link>
         ))}
-        <Link href="/references">Références</Link>
-        <Link href="/notre-ecosysteme">Notre écosystème</Link>
-        <Link className="btn btn-lg btn-gold" href="/contact" style={{ marginTop: "1.5rem" }}>
+        <Link href="/references" onClick={() => setOpen(false)}>
+          Références
+        </Link>
+        <Link href="/notre-ecosysteme" onClick={() => setOpen(false)}>
+          Notre écosystème
+        </Link>
+        <Link
+          className="btn btn-lg btn-gold"
+          href="/contact"
+          onClick={() => setOpen(false)}
+          style={{ marginTop: "1.5rem" }}
+        >
           Prendre rendez-vous
         </Link>
       </div>
