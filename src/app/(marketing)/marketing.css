@@ -180,3 +180,16 @@
 
 /* logo Ordre des experts-comptables */
 .mkt-oec{height:44px;width:auto;display:block}
+
+/* équipe — cadrage harmonisé des portraits */
+.mkt-team{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem}
+.mkt-team-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform .28s,box-shadow .28s}
+.mkt-team-card:hover{transform:translateY(-5px);box-shadow:var(--glass-sh)}
+.mkt-team-photo{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center top;display:block;
+  background:linear-gradient(160deg,#6f747c,#585c64);filter:grayscale(12%) contrast(1.02)}
+.mkt-team-fallback{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:2rem;letter-spacing:.02em;filter:none}
+.mkt-team-body{padding:1.2rem 1.3rem 1.4rem}
+.mkt-team-body .nm{font-weight:800;color:var(--ink);font-size:1.05rem}
+.mkt-team-body .rl{font-size:.82rem;color:var(--ink2);margin-top:.3rem;line-height:1.4}
+@media(max-width:860px){.mkt-team{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.mkt-team{grid-template-columns:1fr}}

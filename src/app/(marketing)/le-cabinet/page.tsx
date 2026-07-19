@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { OecLogo } from "../_components/oec-logo";
+import { TeamPhoto } from "../_components/team-photo";
 
 export const metadata: Metadata = {
   title: "Le cabinet",
@@ -18,10 +19,10 @@ const VALUES = [
 ];
 
 const TEAM = [
-  { i: "JL", n: "John Lévy", r: "Fondateur · Expert-comptable" },
-  { i: "OB", n: "Olivier Bonnin", r: "Commissaire aux comptes · Data analyste · Transformation digitale" },
-  { i: "WO", n: "Walther Ottgen", r: "Directeur de l'innovation" },
-  { i: "JR", n: "Jeremy Roch", r: "Directeur commercial" },
+  { i: "JL", n: "John Lévy", r: "Fondateur · Expert-comptable", photo: "/brand/team/john-levy.jpg" },
+  { i: "OB", n: "Olivier Bonnin", r: "Commissaire aux comptes · Data analyste · Transformation digitale", photo: "/brand/team/olivier-bonnin.jpg" },
+  { i: "WO", n: "Walther Ottgen", r: "Directeur de l'innovation", photo: "/brand/team/walther-ottgen.jpg" },
+  { i: "JR", n: "Jeremy Roch", r: "Directeur commercial", photo: "/brand/team/jeremy-roch.jpg" },
 ];
 
 const CRED = [
@@ -90,20 +91,14 @@ export default function Page() {
             <span className="eyebrow">L&apos;équipe</span>
             <h2>Les femmes et les hommes de <em>Trevys</em></h2>
           </div>
-          <div className="mkt-stats">
+          <div className="mkt-team">
             {TEAM.map((m) => (
-              <div className="mkt-stat" key={m.n}>
-                <div
-                  style={{
-                    width: 66, height: 66, borderRadius: "50%", margin: "0 auto 1.1rem",
-                    background: "var(--grad)", color: "#fff", display: "flex",
-                    alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "1.15rem",
-                  }}
-                >
-                  {m.i}
+              <div className="mkt-team-card" key={m.n}>
+                <TeamPhoto src={m.photo} initials={m.i} alt={m.n} />
+                <div className="mkt-team-body">
+                  <div className="nm">{m.n}</div>
+                  <div className="rl">{m.r}</div>
                 </div>
-                <div style={{ fontWeight: 800, color: "var(--ink)" }}>{m.n}</div>
-                <div className="sl">{m.r}</div>
               </div>
             ))}
           </div>

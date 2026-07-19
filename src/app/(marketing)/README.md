@@ -37,6 +37,17 @@ Comme le blog, les pages légales sont en MDX : `content/legal/<slug>.mdx`
 (frontmatter `title`, `updated`). `/mentions-legales` rend
 `content/legal/mentions-legales.mdx`. Éditer = modifier le fichier.
 
+## Photos de l'équipe
+
+La section « L'équipe » de `/le-cabinet` affiche des portraits harmonisés,
+avec repli automatique sur les initiales tant que le fichier n'existe pas.
+Déposer les images dans `public/brand/team/` :
+`john-levy.jpg`, `olivier-bonnin.jpg`, `walther-ottgen.jpg`, `jeremy-roch.jpg`.
+
+Pour un rendu studio cohérent (même cadrage 4:5, fond gris homogène — utile pour
+le portrait d'Olivier sur fond blanc), utiliser
+`scripts/harmonize-team-photos.sh` (ImageMagick).
+
 ## Logo Ordre des Experts-Comptables
 
 Rendu vectoriel de substitution dans `_components/oec-logo.tsx`. Pour le logo
