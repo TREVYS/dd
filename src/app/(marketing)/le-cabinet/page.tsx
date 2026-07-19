@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { OecLogo } from "../_components/oec-logo";
 
 export const metadata: Metadata = {
   title: "Le cabinet",
@@ -77,6 +78,9 @@ export default function Page() {
               </li>
             ))}
           </ul>
+          <div style={{ marginTop: "2.2rem" }}>
+            <OecLogo className="mkt-oec" />
+          </div>
         </div>
       </section>
 

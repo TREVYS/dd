@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandMark } from "./brand";
+import { OecLogo } from "./oec-logo";
 
 export function Footer() {
   return (
@@ -11,6 +12,19 @@ export function Footer() {
             <p>
               Cabinet d&apos;expertise comptable &amp; de conseil. Expertise,
               conseil et innovation au service des dirigeants.
+            </p>
+            <div
+              style={{
+                marginTop: "1.6rem",
+                display: "flex",
+                alignItems: "center",
+                gap: ".7rem",
+              }}
+            >
+              <OecLogo className="mkt-oec" />
+            </div>
+            <p style={{ fontSize: ".72rem", color: "var(--ink3)", marginTop: ".5rem" }}>
+              Membre de l&apos;Ordre des Experts-Comptables
             </p>
           </div>
           <div className="col">

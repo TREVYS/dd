@@ -177,3 +177,6 @@
 .mkt-article a{color:var(--violet);text-decoration:underline}
 .mkt-article blockquote{margin:1.6rem 0;padding:1.1rem 1.4rem;border-left:3px solid var(--violet);background:rgba(124,58,237,.06);border-radius:0 14px 14px 0;color:var(--ink)}
 .mkt-article blockquote p{margin:0}
+
+/* logo Ordre des experts-comptables */
+.mkt-oec{height:44px;width:auto;display:block}

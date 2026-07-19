@@ -31,6 +31,18 @@ Le corps en **Markdown / MDX** : titres, listes, > citations, [liens](https://�
 Le fichier apparaît automatiquement dans `/blog`, obtient sa page `/blog/<slug>`
 (prégénérée), ses métadonnées et son entrée `sitemap.xml`.
 
+## Pages légales (éditables)
+
+Comme le blog, les pages légales sont en MDX : `content/legal/<slug>.mdx`
+(frontmatter `title`, `updated`). `/mentions-legales` rend
+`content/legal/mentions-legales.mdx`. Éditer = modifier le fichier.
+
+## Logo Ordre des Experts-Comptables
+
+Rendu vectoriel de substitution dans `_components/oec-logo.tsx`. Pour le logo
+officiel exact, déposer `public/brand/oec.svg` (ou `.png`) et remplacer le
+composant par une balise `<img>`.
+
 ## SEO
 
 `generateMetadata` par page, `metadataBase`, Open Graph, JSON-LD
