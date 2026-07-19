@@ -8,10 +8,20 @@ import { BrandMark } from "./brand";
 export const NAV_LINKS = [
   { href: "/expertise-comptable", label: "Expertise comptable" },
   { href: "/consulting", label: "Consulting" },
+  { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
   { href: "/le-cabinet", label: "Le cabinet" },
   { href: "/blog", label: "Ressources" },
   { href: "/contact", label: "Contact" },
+];
+
+// Menu mobile : uniquement les entrées principales.
+export const MOBILE_LINKS = [
+  { href: "/expertise-comptable", label: "Expertise comptable" },
+  { href: "/consulting", label: "Consulting" },
+  { href: "/intelligence-artificielle", label: "IA" },
+  { href: "/facturation-electronique", label: "Facturation électronique" },
+  { href: "/le-cabinet", label: "Le cabinet" },
 ];
 
 export function Nav() {
@@ -64,25 +74,18 @@ export function Nav() {
         </div>
       </nav>
       <div className={`mkt-mobile${open ? " open" : ""}`}>
-        {NAV_LINKS.map((l) => (
+        <Link
+          className="btn btn-lg btn-gold mkt-mobile-cta"
+          href="/rendez-vous"
+          onClick={() => setOpen(false)}
+        >
+          Prendre rendez-vous
+        </Link>
+        {MOBILE_LINKS.map((l) => (
           <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>
             {l.label}
           </Link>
         ))}
-        <Link href="/references" onClick={() => setOpen(false)}>
-          Références
-        </Link>
-        <Link href="/notre-ecosysteme" onClick={() => setOpen(false)}>
-          Notre écosystème
-        </Link>
-        <Link
-          className="btn btn-lg btn-gold"
-          href="/rendez-vous"
-          onClick={() => setOpen(false)}
-          style={{ marginTop: "1.5rem" }}
-        >
-          Prendre rendez-vous
-        </Link>
       </div>
     </>
   );

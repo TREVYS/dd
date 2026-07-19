@@ -7,6 +7,7 @@ const ROUTES = [
   "",
   "/expertise-comptable",
   "/consulting",
+  "/intelligence-artificielle",
   "/facturation-electronique",
   "/le-cabinet",
   "/notre-ecosysteme",

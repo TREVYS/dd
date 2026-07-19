@@ -211,3 +211,6 @@
   padding:.75rem 1.2rem;font:inherit;font-size:.9rem;color:var(--ink)}
 .mkt-news-input:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(124,58,237,.14)}
 .mkt-news-msg{font-size:.82rem;margin-top:.6rem;font-weight:600}
+
+/* CTA rendez-vous en tête du menu mobile */
+.mkt-mobile-cta{width:100%;justify-content:center;margin-bottom:1.4rem;font-size:1.05rem;padding:1rem 1.8rem}
