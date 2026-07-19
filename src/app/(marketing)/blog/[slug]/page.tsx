@@ -8,6 +8,11 @@ export function generateStaticParams() {
   return getPostSlugs().map((slug) => ({ slug }));
 }
 
+function readingMinutes(content: string): number {
+  const words = content.trim().split(/\s+/).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -59,7 +64,10 @@ export default async function Page({
         <div className="mkt-phead-in" style={{ maxWidth: "780px" }}>
           <span className="eyebrow">{post.meta.category}</span>
           <h1 style={{ textTransform: "none" }}>{post.meta.title}</h1>
-          <p>{formatDateFr(post.meta.date)}</p>
+          <p>
+            {formatDateFr(post.meta.date)} · {post.meta.author ?? "Trevys"} ·{" "}
+            {readingMinutes(post.content)} min de lecture
+          </p>
         </div>
       </header>
 
