@@ -30,6 +30,7 @@ export async function generateMetadata({
       title: post.meta.title,
       description: post.meta.excerpt,
       url: `/blog/${slug}`,
+      images: post.meta.image ? [post.meta.image] : undefined,
     },
   };
 }
@@ -73,6 +74,15 @@ export default async function Page({
 
       <section className="sec" style={{ paddingTop: 0 }}>
         <div className="wrap" style={{ maxWidth: "780px" }}>
+          {post.meta.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className="mkt-article-hero"
+              src={post.meta.image}
+              alt=""
+              loading="lazy"
+            />
+          )}
           <article className="mkt-article">
             <MDXRemote source={post.content} />
           </article>

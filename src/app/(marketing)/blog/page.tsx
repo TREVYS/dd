@@ -40,7 +40,12 @@ export default function Page() {
                 href={`/blog/${p.slug}`}
                 className="mkt-postcard"
               >
-                <div className="thumb" />
+                {p.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="thumb" src={p.image} alt="" loading="lazy" />
+                ) : (
+                  <div className="thumb" />
+                )}
                 <div className="body">
                   <span className="cat">{p.category}</span>
                   <h3>{p.title}</h3>

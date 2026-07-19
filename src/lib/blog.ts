@@ -11,6 +11,7 @@ export type PostMeta = {
   category: string;
   excerpt: string;
   author?: string;
+  image?: string;
 };
 
 function readFiles(): string[] {
@@ -30,6 +31,7 @@ export function getAllPosts(): PostMeta[] {
         category: String(data.category ?? "Article"),
         excerpt: String(data.excerpt ?? ""),
         author: data.author ? String(data.author) : undefined,
+        image: data.image ? String(data.image) : undefined,
       } satisfies PostMeta;
     })
     .sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -51,6 +53,7 @@ export function getPost(slug: string): { meta: PostMeta; content: string } | nul
       category: String(data.category ?? "Article"),
       excerpt: String(data.excerpt ?? ""),
       author: data.author ? String(data.author) : undefined,
+      image: data.image ? String(data.image) : undefined,
     },
     content,
   };

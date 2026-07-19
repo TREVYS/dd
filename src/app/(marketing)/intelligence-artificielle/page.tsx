@@ -14,6 +14,13 @@ const CARDS = [
   { t: "Transparence", d: "Des usages explicables et documentés, au service de la qualité et de la sérénité." },
 ];
 
+const USECASES = [
+  { t: "CRM pour avocats", d: "Conception et déploiement d'un CRM métier adapté aux cabinets d'avocats." },
+  { t: "CRM pour experts-comptables", d: "Un CRM sur mesure pour la relation client et le pilotage d'un cabinet d'expertise comptable." },
+  { t: "Matching de compétences (ESN)", d: "Outil d'appariement des compétences pour optimiser le staffing d'une ESN." },
+  { t: "Analyse des compétences & mobilité interne", d: "Outil d'analyse des compétences au service des mobilités internes d'un grand groupe bancaire." },
+];
+
 export default function Page() {
   return (
     <>
@@ -65,6 +72,30 @@ export default function Page() {
               <div className="mkt-svc" key={c.t}>
                 <h3 style={{ fontSize: "1.2rem" }}>{c.t}</h3>
                 <p>{c.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="sec">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Nos réalisations</span>
+            <h2>Des solutions <em>conçues, développées et déployées</em></h2>
+            <p>
+              Nous participons activement à la conception, au développement et au
+              déploiement de solutions logicielles et d&apos;IA pour nos clients.
+            </p>
+          </div>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))" }}>
+            {USECASES.map((u) => (
+              <div className="mkt-svc" key={u.t}>
+                <div className="ico">
+                  <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 013 3 4 4 0 014 4 3 3 0 010 6 4 4 0 01-4 4 3 3 0 01-6 0 4 4 0 01-4-4 3 3 0 010-6 4 4 0 014-4 3 3 0 013-3z" /></svg>
+                </div>
+                <h3 style={{ fontSize: "1.15rem" }}>{u.t}</h3>
+                <p>{u.d}</p>
               </div>
             ))}
           </div>

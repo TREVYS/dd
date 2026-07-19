@@ -214,3 +214,8 @@
 
 /* CTA rendez-vous en tête du menu mobile */
 .mkt-mobile-cta{width:100%;justify-content:center;margin-bottom:1.4rem;font-size:1.05rem;padding:1rem 1.8rem}
+
+/* images d'articles */
+.mkt-postcard .thumb{width:100%;height:180px;object-fit:cover;display:block}
+.mkt-article-hero{width:100%;max-height:420px;object-fit:cover;border-radius:20px;margin-bottom:2.2rem;display:block}
+.mkt-article img{max-width:100%;height:auto;border-radius:14px;margin:1.5rem 0;display:block}
