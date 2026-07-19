@@ -10,7 +10,7 @@ export const NAV_LINKS = [
   { href: "/consulting", label: "Consulting" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
   { href: "/le-cabinet", label: "Le cabinet" },
-  { href: "/blog", label: "Journal" },
+  { href: "/blog", label: "Ressources" },
   { href: "/contact", label: "Contact" },
 ];
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getAllPosts, formatDateFr } from "@/lib/blog";
 
 export const metadata: Metadata = {
-  title: "Journal",
+  title: "Ressources",
   description:
     "Analyses, guides et décryptages de Trevys sur la facturation électronique, la fiscalité, la comptabilité et l'innovation.",
   alternates: { canonical: "/blog" },
@@ -15,8 +15,8 @@ export default function Page() {
     <>
       <header className="mkt-phead">
         <div className="mkt-phead-in">
-          <span className="eyebrow">Le journal</span>
-          <h1>Nous <em>décryptons</em> l&apos;actu du chiffre et de la réforme</h1>
+          <span className="eyebrow">Ressources</span>
+          <h1>Nos <em>ressources</em> : l&apos;actu du chiffre et de la réforme</h1>
           <p>
             Analyses, guides pratiques et décryptages de nos équipes sur la
             facturation électronique, la fiscalité, la comptabilité et

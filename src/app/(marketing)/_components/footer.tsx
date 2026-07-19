@@ -27,7 +27,7 @@ export function Footer() {
           </div>
           <div className="col">
             <h5>Ressources</h5>
-            <Link href="/blog">Journal</Link>
+            <Link href="/blog">Ressources</Link>
             <Link href="/contact">Contact</Link>
             <Link href="/app">Espace client</Link>
             <Link href="/mentions-legales">Mentions légales</Link>
