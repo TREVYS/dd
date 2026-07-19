@@ -13,8 +13,13 @@ const CLIENTS = [
   "Cardif", "La Banque Postale", "Edmond de Rothschild", "Publicis",
 ];
 const SECTORS = [
-  "Banque & finance", "Jeux vidéo", "Services", "Santé",
-  "Association", "Industrie", "Immobilier",
+  { t: "Banque & Assurance", u: "Direction de programme RFE, manager de transition, gestion de projet IT / Finance." },
+  { t: "Jeux vidéo", u: "Crédit d'impôt jeux vidéo, structuration financière et expertise comptable des studios." },
+  { t: "Services", u: "Expertise comptable, reporting et pilotage de la performance." },
+  { t: "Santé", u: "Expertise comptable, optimisation fiscale et accompagnement des professions libérales." },
+  { t: "Association", u: "Comptabilité, obligations spécifiques et sécurisation des comptes." },
+  { t: "Industrie", u: "Contrôle de gestion, reporting et transformation des systèmes d'information Finance." },
+  { t: "Immobilier", u: "SCI, fiscalité immobilière et structuration patrimoniale." },
 ];
 
 export default function Page() {
@@ -74,21 +79,37 @@ export default function Page() {
             <span className="eyebrow">Vos secteurs</span>
             <h2>Une expertise au service de <em>votre secteur</em></h2>
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: ".55rem" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))",
+              gap: "1.2rem",
+            }}
+          >
             {SECTORS.map((s) => (
-              <span
-                key={s}
+              <div
+                key={s.t}
                 style={{
-                  padding: ".55rem 1.15rem",
                   background: "var(--card)",
                   border: "1px solid var(--line)",
-                  borderRadius: "100px",
-                  fontSize: ".85rem",
-                  color: "var(--ink2)",
+                  borderRadius: "var(--r)",
+                  padding: "1.6rem 1.7rem",
                 }}
               >
-                {s}
-              </span>
+                <div
+                  style={{
+                    fontWeight: 800,
+                    color: "var(--ink)",
+                    fontSize: "1.08rem",
+                    marginBottom: ".55rem",
+                  }}
+                >
+                  {s.t}
+                </div>
+                <div style={{ fontSize: ".88rem", color: "var(--ink2)", lineHeight: 1.55 }}>
+                  {s.u}
+                </div>
+              </div>
             ))}
           </div>
         </div>
