@@ -13,6 +13,7 @@ const PUBLIC_PREFIXES = [
   "/references",
   "/blog",
   "/contact",
+  "/rendez-vous",
   "/mentions-legales",
   "/fec-partage", // partage de FEC par jeton
 ];

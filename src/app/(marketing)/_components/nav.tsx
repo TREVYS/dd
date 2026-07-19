@@ -48,7 +48,7 @@ export function Nav() {
           <Link className="btn btn-sm btn-ghost" href="/app">
             Espace client
           </Link>
-          <Link className="btn btn-sm btn-gold" href="/contact">
+          <Link className="btn btn-sm btn-gold" href="/rendez-vous">
             Prendre rendez-vous
           </Link>
           <button
@@ -77,7 +77,7 @@ export function Nav() {
         </Link>
         <Link
           className="btn btn-lg btn-gold"
-          href="/contact"
+          href="/rendez-vous"
           onClick={() => setOpen(false)}
           style={{ marginTop: "1.5rem" }}
         >

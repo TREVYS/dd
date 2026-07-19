@@ -193,3 +193,21 @@
 .mkt-team-body .rl{font-size:.82rem;color:var(--ink2);margin-top:.3rem;line-height:1.4}
 @media(max-width:860px){.mkt-team{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.mkt-team{grid-template-columns:1fr}}
+
+/* page rendez-vous (Calendly) */
+.mkt-rdv{display:grid;grid-template-columns:.85fr 1.4fr;gap:2.5rem;align-items:start}
+.mkt-rdv-info{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:2rem;box-shadow:var(--glass-sh)}
+.mkt-rdv-embed{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--glass-sh)}
+@media(max-width:900px){.mkt-rdv{grid-template-columns:1fr}}
+
+/* newsletter (footer) */
+.mkt-news-band{display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;
+  padding-bottom:2.5rem;margin-bottom:2.5rem;border-bottom:1px solid var(--line2)}
+.mkt-news-title{font-size:1.3rem;margin-bottom:.4rem}
+.mkt-news-sub{font-size:.9rem;color:var(--ink2);max-width:42ch;line-height:1.55}
+.mkt-news{min-width:min(360px,100%)}
+.mkt-news-row{display:flex;gap:.5rem;position:relative}
+.mkt-news-input{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:100px;
+  padding:.75rem 1.2rem;font:inherit;font-size:.9rem;color:var(--ink)}
+.mkt-news-input:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(124,58,237,.14)}
+.mkt-news-msg{font-size:.82rem;margin-top:.6rem;font-weight:600}

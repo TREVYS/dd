@@ -1,11 +1,22 @@
 import Link from "next/link";
 import { BrandMark } from "./brand";
 import { OecLogo } from "./oec-logo";
+import { Newsletter } from "./newsletter";
 
 export function Footer() {
   return (
     <footer className="mkt-foot">
       <div className="mkt-foot-in">
+        <div className="mkt-news-band">
+          <div>
+            <h4 className="mkt-news-title">Recevez nos analyses</h4>
+            <p className="mkt-news-sub">
+              Décryptages sur la réforme, la fiscalité et l&apos;innovation
+              comptable. Une inscription, pas de spam.
+            </p>
+          </div>
+          <Newsletter />
+        </div>
         <div className="mkt-foot-top">
           <div className="brand">
             <BrandMark />

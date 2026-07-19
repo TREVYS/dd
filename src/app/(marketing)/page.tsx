@@ -88,7 +88,7 @@ export default function HomePage() {
               parfaitement lisible.
             </p>
             <div className="mkt-act">
-              <Link className="btn btn-gold" href="/contact">
+              <Link className="btn btn-gold" href="/rendez-vous">
                 Prendre rendez-vous <ArrowRight />
               </Link>
               <Link className="btn btn-ghost" href="/le-cabinet">
@@ -220,7 +220,7 @@ export default function HomePage() {
             Un premier échange suffit à mesurer ce que Trevys peut changer pour
             votre entreprise.
           </p>
-          <Link className="btn btn-gold" href="/contact">
+          <Link className="btn btn-gold" href="/rendez-vous">
             Prendre rendez-vous <ArrowRight />
           </Link>
         </div>

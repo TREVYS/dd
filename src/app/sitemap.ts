@@ -13,6 +13,7 @@ const ROUTES = [
   "/references",
   "/blog",
   "/contact",
+  "/rendez-vous",
   "/mentions-legales",
 ];
 
