@@ -1,9 +1,11 @@
 "use client";
 
+import Script from "next/script";
 import { useActionState, useMemo } from "react";
 import { submitContact, type ContactState } from "./actions";
 
 const initial: ContactState = { ok: false, message: "" };
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 const fieldStyle: React.CSSProperties = {
   width: "100%",
@@ -71,6 +73,21 @@ export function ContactForm() {
         <span style={{ display: "block", fontSize: ".8rem", color: "var(--ink2)", marginBottom: ".45rem", fontWeight: 600 }}>Votre message</span>
         <textarea name="message" required placeholder="Décrivez-nous votre entreprise et votre projet…" style={{ ...fieldStyle, minHeight: 120, resize: "vertical" }} />
       </label>
+
+      {TURNSTILE_SITE_KEY && (
+        <>
+          <Script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+            async
+            defer
+          />
+          <div
+            className="cf-turnstile"
+            data-sitekey={TURNSTILE_SITE_KEY}
+            style={{ marginBottom: "1.25rem" }}
+          />
+        </>
+      )}
 
       <button type="submit" className="btn btn-gold" style={{ width: "100%" }} disabled={pending}>
         {pending ? "Envoi…" : "Envoyer ma demande"}

@@ -1,0 +1,91 @@
+---
+title: "Atelier 2 – Quelles données obligatoires pour une facture électronique conforme ?"
+date: "2025-06-12"
+category: "Actualité"
+excerpt: "La réussite d’un projet de facturation électronique repose en grande partie sur la maîtrise des données à transmettre. Le format, le contenu, la structure et la complétude des données sont désormais"
+author: "Trevys"
+---
+
+### Introduction
+
+La réussite d’un projet de facturation électronique repose en grande partie sur la **maîtrise des données** à transmettre. Le format, le contenu, la structure et la complétude des données sont désormais encadrés par la réglementation.
+
+Ce second atelier de cadrage doit permettre d’identifier les données attendues dans une **facture électronique normée**, mais aussi de vérifier si votre entreprise est aujourd’hui capable de les produire **de façon structurée, fiable et automatisable**.
+
+### 1. Le principe de la facture structurée
+
+Contrairement aux formats traditionnels (PDF libre, papier, etc.), la facture électronique exigée par la réforme doit respecter **un format structuré** ou **hybride structuré lisible** (type Factur-X).
+
+Ce format permet à l'administration fiscale d'exploiter directement les données, sans intervention humaine, ce qui suppose une **qualité et une complétude irréprochables**.
+
+### 2. Les données obligatoires d’une facture électronique : structure, formats et exigences
+
+Le format d’une facture électronique repose sur une structuration **normée et interopérable**, telle que définie par les normes européennes (UBL, CII, Factur-X). Ces formats précisent :
+
+- Les **données attendues** pour chaque bloc fonctionnel (vendeur, acheteur, TVA…),
+
+- Leur **cardinalité** : obligatoire (1..1), facultative (0..1) ou répétable (0..n),
+
+- Leur **position** dans la structure logique de la facture (entête, lignes, totaux…),
+
+- Leur **degré de granularité** (ex. : adresse ligne par ligne).
+
+#### 🧩 Principaux blocs de données obligatoires
+
+**Bloc****Éléments clés****Cardinalité****Remarques****Identifiants de la facture**Numéro (BT-1), Date d’émission (BT-2), Type (BT-3), Devise (BT-5), Exigibilité TVA (BT-8)1..1 ou 0..1Toujours présents pour traçabilité**Vendeur / Acheteur**SIREN (BT-30, BT-47), Identifiant TVA (BT-31, BT-48), Adresse (BG-5, BG-8)1..1Normes précises sur le format**Contrôle processus**Type de profil et de scénario (BT-23/24)1..1Profil = e-invoicing / e-reporting**Référence antérieure**Lien vers facture d’acompte ou avoir (BT-25 à BT-26)0..nGestion des reprises**Montants / TVA**Totaux (BT-109 à BT-111), Ventilation TVA (BT-116 à BT-121)1..1 à 0..1Base, taux, exonération**Lignes de facture**Quantité (BT-129), Prix (BT-146 à BT-148), Article (BT-153), TVA par ligne, adresse livraison1..nObligatoire pour chaque ligne**Remises / Charges**Remise globale (BT-92 à BT-96), Remise ligne (BT-136), Charges (BT-141)0..nÀ préciser en brut/HT**Livraison / Périodes**Adresse de livraison (BT-75 à BT-80), Période de facturation (BT-73, BT-74), livraison réelle0..1Crucial pour prestations de service**Extensions FR**Notes, références ligne, identifiants antérieurs, sous-adresses, articles sensibles (EXT-FR-FE-XXX)0..1 à 1..1Spécificités françaises à intégrer
+
+### 3. Cartographier la disponibilité des données
+
+L’objectif de cet atelier est de **recenser ces données dans vos systèmes** actuels :
+
+- Où sont-elles stockées ?
+
+- Sont-elles renseignées systématiquement ?
+
+- Dans quel format sont-elles disponibles (texte libre, codifié, champs multiples...) ?
+
+- Sont-elles intégrables dans un export automatisé vers la PDP ou le PPF ?
+
+Il est souvent nécessaire de faire appel à :
+
+- l’équipe **comptable / facturation**,
+
+- les responsables **ERP / SI**,
+
+- et les interlocuteurs **métier** (commerce, ADV, gestion…).
+
+-
+
+### 4. Les cas particuliers à anticiper
+
+Certaines opérations exigent des données spécifiques, souvent négligées :
+
+- **Facture d’acompte** → lien avec la facture finale
+
+- **Mandat de facturation** → identification du donneur d’ordre
+
+- **Auto-facturation** → émission à l’envers du schéma traditionnel
+
+- **Factures multi-taux de TVA** → ventilation détaillée par taux
+
+- **Sous-traitance / co-traitance** → précisions sur le donneur d’ordre
+
+- **Factures en devise étrangère** → obligation d’indiquer l’équivalent en €
+
+### Conclusion : la donnée, pilier technique et fiscal du e-invoicing
+
+L’étude des données obligatoires n’est pas une simple formalité. Elle conditionne directement la **conformité fiscale**, la **fluidité de transmission**, et la capacité de l’entreprise à répondre aux contrôles automatisés de l’administration.
+
+Mieux la donnée est maîtrisée, plus simple sera l’intégration de la plateforme de dématérialisation et l’automatisation des processus.
+
+### Comment TREVYS et son écosystème peuvent vous accompagner
+
+TREVYS vous accompagne pour :
+
+- **Auditer vos données** et identifier les écarts par rapport à la norme,
+
+- **Cartographier vos sources de données** dans le SI comptable, ERP ou outils métier,
+
+- **Élaborer un plan de fiabilisation** des données critiques pour la facture électronique,
+
+- **Préparer les exports automatisés** vers votre PDP ou le portail public.
