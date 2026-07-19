@@ -157,3 +157,23 @@
   .mkt-hero-in,.mkt-foot-in{padding:1.6rem}
   .mkt-cta-in{padding:3rem 1.4rem}
 }
+
+/* blog cards + article */
+.mkt-postcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform .3s,box-shadow .3s}
+.mkt-postcard:hover{transform:translateY(-6px);box-shadow:var(--glass-sh)}
+.mkt-postcard .thumb{height:150px;background:linear-gradient(140deg,#8B5CF6,#6D28D9 55%,#C81FD4)}
+.mkt-postcard .body{padding:1.7rem}
+.mkt-postcard .cat{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--violet);font-weight:700}
+.mkt-postcard h3{font-size:1.16rem;line-height:1.25;margin:.9rem 0 .7rem}
+.mkt-postcard .body p{font-size:.86rem;color:var(--ink2);line-height:1.6;margin-bottom:1.1rem}
+.mkt-postcard .meta{font-size:.75rem;color:var(--ink3)}
+.mkt-article{color:var(--ink2);font-size:1.02rem;line-height:1.8}
+.mkt-article h2{font-size:1.5rem;color:var(--ink);margin:2.2rem 0 .9rem;text-wrap:balance}
+.mkt-article h3{font-size:1.2rem;color:var(--ink);margin:1.8rem 0 .7rem}
+.mkt-article p{margin:0 0 1.1rem}
+.mkt-article ul,.mkt-article ol{margin:0 0 1.3rem;padding-left:1.3rem;display:flex;flex-direction:column;gap:.45rem}
+.mkt-article li{padding-left:.2rem}
+.mkt-article strong{color:var(--ink);font-weight:700}
+.mkt-article a{color:var(--violet);text-decoration:underline}
+.mkt-article blockquote{margin:1.6rem 0;padding:1.1rem 1.4rem;border-left:3px solid var(--violet);background:rgba(124,58,237,.06);border-radius:0 14px 14px 0;color:var(--ink)}
+.mkt-article blockquote p{margin:0}
