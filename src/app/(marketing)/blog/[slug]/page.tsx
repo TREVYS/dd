@@ -44,15 +44,32 @@ export default async function Page({
   const post = getPost(slug);
   if (!post) notFound();
 
+  const SITE = "https://www.trevys-advisory.fr";
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.meta.title,
-    description: post.meta.excerpt,
-    datePublished: post.meta.date,
-    author: { "@type": "Organization", name: post.meta.author ?? "Trevys" },
-    publisher: { "@type": "Organization", name: "Trevys Advisory" },
-    mainEntityOfPage: `https://www.trevys-advisory.fr/blog/${slug}`,
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: post.meta.title,
+        description: post.meta.excerpt,
+        datePublished: post.meta.date,
+        dateModified: post.meta.date,
+        image: post.meta.image ? [post.meta.image] : undefined,
+        articleSection: post.meta.category,
+        inLanguage: "fr-FR",
+        author: { "@type": "Organization", name: post.meta.author ?? "Trevys" },
+        publisher: { "@id": `${SITE}/#organization` },
+        mainEntityOfPage: `${SITE}/blog/${slug}`,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Accueil", item: SITE },
+          { "@type": "ListItem", position: 2, name: "Ressources", item: `${SITE}/blog` },
+          { "@type": "ListItem", position: 3, name: post.meta.title },
+        ],
+      },
+    ],
   };
 
   return (
@@ -79,7 +96,7 @@ export default async function Page({
             <img
               className="mkt-article-hero"
               src={post.meta.image}
-              alt=""
+              alt={post.meta.title}
               loading="lazy"
             />
           )}

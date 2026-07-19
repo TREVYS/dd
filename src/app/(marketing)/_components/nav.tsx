@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark } from "./brand";
@@ -20,7 +20,7 @@ const PRIMARY = [
 ];
 
 // Menu mobile : uniquement les entrées principales.
-export const MOBILE_LINKS = [
+const MOBILE_LINKS = [
   { href: "/expertise-comptable", label: "Expertise comptable" },
   { href: "/consulting", label: "Consulting" },
   { href: "/intelligence-artificielle", label: "IA" },
@@ -31,7 +31,9 @@ export const MOBILE_LINKS = [
 export function Nav() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [dropOpen, setDropOpen] = useState(false);
+  const dropRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -40,8 +42,26 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Fermer le dropdown au clic extérieur et à la touche Échap.
+  useEffect(() => {
+    if (!dropOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
+        setDropOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setDropOpen(false);
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [dropOpen]);
+
   const isCur = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
+  const expertiseActive = EXPERTISES.some((e) => isCur(e.href));
 
   return (
     <>
@@ -49,11 +69,20 @@ export function Nav() {
         <Link href="/" className="nlogo" aria-label="Trevys — Accueil">
           <BrandMark />
         </Link>
+
         <ul className="mkt-links">
-          <li className="mkt-has-drop">
+          <li
+            ref={dropRef}
+            className={`mkt-has-drop${dropOpen ? " open" : ""}`}
+            onMouseEnter={() => setDropOpen(true)}
+            onMouseLeave={() => setDropOpen(false)}
+          >
             <button
               type="button"
-              className={`mkt-drop-trigger${EXPERTISES.some((e) => isCur(e.href)) ? " cur" : ""}`}
+              className={`mkt-drop-trigger${expertiseActive ? " cur" : ""}`}
+              aria-expanded={dropOpen}
+              aria-haspopup="true"
+              onClick={() => setDropOpen((v) => !v)}
             >
               Expertises
               <svg viewBox="0 0 10 10" className="mkt-caret" aria-hidden="true">
@@ -62,7 +91,12 @@ export function Nav() {
             </button>
             <div className="mkt-drop">
               {EXPERTISES.map((e) => (
-                <Link key={e.href} href={e.href} className={isCur(e.href) ? "cur" : ""}>
+                <Link
+                  key={e.href}
+                  href={e.href}
+                  className={isCur(e.href) ? "cur" : ""}
+                  onClick={() => setDropOpen(false)}
+                >
                   {e.label}
                 </Link>
               ))}
@@ -76,6 +110,7 @@ export function Nav() {
             </li>
           ))}
         </ul>
+
         <div className="mkt-ncta">
           <Link className="btn btn-sm btn-ghost" href="/app">
             Espace client
@@ -86,8 +121,8 @@ export function Nav() {
           <button
             className="mkt-burger"
             aria-label="Menu"
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
           >
             <span />
             <span />
@@ -95,16 +130,17 @@ export function Nav() {
           </button>
         </div>
       </nav>
-      <div className={`mkt-mobile${open ? " open" : ""}`}>
+
+      <div className={`mkt-mobile${mobileOpen ? " open" : ""}`}>
         <Link
           className="btn btn-lg btn-gold mkt-mobile-cta"
           href="/rendez-vous"
-          onClick={() => setOpen(false)}
+          onClick={() => setMobileOpen(false)}
         >
           Prendre rendez-vous
         </Link>
         {MOBILE_LINKS.map((l) => (
-          <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>
+          <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)}>
             {l.label}
           </Link>
         ))}

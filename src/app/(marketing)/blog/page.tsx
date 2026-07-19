@@ -42,7 +42,7 @@ export default function Page() {
               >
                 {p.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img className="thumb" src={p.image} alt="" loading="lazy" />
+                  <img className="thumb" src={p.image} alt={p.title} loading="lazy" />
                 ) : (
                   <div className="thumb" />
                 )}
