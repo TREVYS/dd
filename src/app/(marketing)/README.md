@@ -50,6 +50,3 @@ vérification **Turnstile** (si `TURNSTILE_SECRET_KEY`) + envoi **nodemailer**
   `public/brand/clients/` et remplacer le rendu texte par des `<img>`.
 - **Logo Trevys** : recréé en vectoriel dans `_components/brand.tsx`. Pour le
   logo exact, fournir le PNG/SVG et l'y intégrer.
-- **Fonctions de l'équipe** : `le-cabinet/page.tsx` — préciser les fonctions
-  d'Olivier Bonnin, Walther Ottgen et Jeremy Roch (aujourd'hui « Trevys
-  Advisory » par défaut).

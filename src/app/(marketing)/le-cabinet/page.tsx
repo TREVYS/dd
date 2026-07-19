@@ -18,9 +18,9 @@ const VALUES = [
 
 const TEAM = [
   { i: "JL", n: "John Lévy", r: "Fondateur · Expert-comptable" },
-  { i: "OB", n: "Olivier Bonnin", r: "Trevys Advisory" },
-  { i: "WO", n: "Walther Ottgen", r: "Trevys Advisory" },
-  { i: "JR", n: "Jeremy Roch", r: "Trevys Advisory" },
+  { i: "OB", n: "Olivier Bonnin", r: "Commissaire aux comptes · Data analyste · Transformation digitale" },
+  { i: "WO", n: "Walther Ottgen", r: "Directeur de l'innovation" },
+  { i: "JR", n: "Jeremy Roch", r: "Directeur commercial" },
 ];
 
 const CRED = [
