@@ -235,3 +235,25 @@
 .mkt-drop a:hover,.mkt-drop a.cur{background:rgba(124,58,237,.08);color:var(--ink)}
 /* pont invisible pour ne pas perdre le survol entre le déclencheur et le menu */
 .mkt-has-drop::after{content:"";position:absolute;top:100%;left:0;right:0;height:12px}
+
+/* bandeau déroulant de logos (clients + outils) */
+.mkt-marq{padding:2.5rem 0 3rem}
+.mkt-marq .eyebrow{margin:0 auto 1.6rem;display:flex;justify-content:center;width:max-content}
+.mkt-marq-row{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);padding:.5rem 0}
+.mkt-marq-track{display:flex;gap:1.1rem;width:max-content;animation:mkt-marq 42s linear infinite}
+.mkt-marq-track.rev{animation-direction:reverse;animation-duration:52s}
+.mkt-marq:hover .mkt-marq-track{animation-play-state:paused}
+@keyframes mkt-marq{to{transform:translateX(-50%)}}
+.mkt-marq-logo{flex:0 0 auto;height:64px;width:150px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;display:flex;align-items:center;justify-content:center;padding:.9rem 1.2rem}
+.mkt-marq-logo img{max-height:100%;max-width:100%;width:auto;object-fit:contain;
+  filter:grayscale(100%);opacity:.72;transition:filter .25s,opacity .25s}
+.mkt-marq-logo:hover img{filter:none;opacity:1}
+@media(prefers-reduced-motion:reduce){.mkt-marq-track{animation:none;flex-wrap:wrap;justify-content:center}}
+
+/* en-tête page Ressources + bouton guide */
+.mkt-ressources-head{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.mkt-guide-btn{flex:0 0 auto;text-align:left}
+.mkt-guide-btn svg{width:18px;height:18px}
+@media(max-width:760px){.mkt-guide-btn{width:100%;justify-content:center}}

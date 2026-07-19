@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoMarquee } from "./_components/logo-marquee";
 
 const ArrowRight = () => (
   <svg viewBox="0 0 24 24">
@@ -114,6 +115,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* BANDEAU LOGOS (clients + outils) */}
+      <LogoMarquee />
 
       {/* EXPERTISES */}
       <section className="sec">
