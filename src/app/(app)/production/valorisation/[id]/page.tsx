@@ -6,7 +6,7 @@ import { ValuationWizard } from "./valuation-wizard";
 export default async function ValuationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session) redirect("/login");
-  if (!canManageValuations(session.user?.role)) redirect("/");
+  if (!canManageValuations(session.user?.role)) redirect("/app");
 
   const { id } = await params;
 

@@ -6,7 +6,7 @@ import { AcademyManager } from "./academy-manager";
 export default async function AcademyAdminPage() {
   const session = await auth();
   if (!canManageAcademy(session?.user?.role)) {
-    redirect("/");
+    redirect("/app");
   }
 
   return (

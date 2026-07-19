@@ -6,7 +6,7 @@ import { RevisionDossierView } from "./revision-dossier-view";
 export default async function RevisionDossierPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session) redirect("/login");
-  if (!canManageRevision(session.user?.role)) redirect("/");
+  if (!canManageRevision(session.user?.role)) redirect("/app");
 
   const { id } = await params;
 

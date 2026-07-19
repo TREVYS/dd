@@ -6,7 +6,7 @@ import { RevisionListView } from "./revision-list-view";
 export default async function RevisionPage() {
   const session = await auth();
   if (!session) redirect("/login");
-  if (!canManageRevision(session.user?.role)) redirect("/");
+  if (!canManageRevision(session.user?.role)) redirect("/app");
 
   return (
     <div className="space-y-6">

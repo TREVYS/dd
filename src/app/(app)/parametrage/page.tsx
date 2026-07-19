@@ -13,7 +13,7 @@ import {
 export default async function ParametragePage() {
   const session = await auth();
   if (!canManageCollaborators(session?.user?.role)) {
-    redirect("/");
+    redirect("/app");
   }
 
   const cards = [

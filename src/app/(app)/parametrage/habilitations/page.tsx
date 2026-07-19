@@ -6,7 +6,7 @@ import { HabilitationsManager } from "./habilitations-manager";
 export default async function HabilitationsPage() {
   const session = await auth();
   if (!canManageHabilitations(session?.user?.role)) {
-    redirect("/");
+    redirect("/app");
   }
 
   return (

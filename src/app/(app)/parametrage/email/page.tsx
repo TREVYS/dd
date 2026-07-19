@@ -6,7 +6,7 @@ import { EmailSettingsManager } from "./email-settings-manager";
 export default async function EmailSettingsPage() {
   const session = await auth();
   if (!canManageEmailSettings(session?.user?.role)) {
-    redirect("/");
+    redirect("/app");
   }
 
   return (

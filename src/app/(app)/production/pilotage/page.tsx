@@ -6,7 +6,7 @@ import { PilotageView } from "./pilotage-view";
 export default async function PilotagePage() {
   const session = await auth();
   if (!session) redirect("/login");
-  if (!canManageTaskPilotage(session.user?.role)) redirect("/");
+  if (!canManageTaskPilotage(session.user?.role)) redirect("/app");
 
   return (
     <div className="space-y-6">

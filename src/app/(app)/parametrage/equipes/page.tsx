@@ -6,7 +6,7 @@ import { TeamsManager } from "./teams-manager";
 export default async function EquipesPage() {
   const session = await auth();
   if (!canManageCollaborators(session?.user?.role)) {
-    redirect("/");
+    redirect("/app");
   }
 
   return (

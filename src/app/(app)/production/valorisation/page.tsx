@@ -6,7 +6,7 @@ import { ValorisationListView } from "./valorisation-list-view";
 export default async function ValorisationPage() {
   const session = await auth();
   if (!session) redirect("/login");
-  if (!canManageValuations(session.user?.role)) redirect("/");
+  if (!canManageValuations(session.user?.role)) redirect("/app");
 
   return (
     <div className="space-y-6">

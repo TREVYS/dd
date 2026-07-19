@@ -33,7 +33,7 @@ const NAV_GROUPS = [
   {
     label: "HUB",
     items: [
-      { href: "/", label: "Mon tableau de bord", icon: LayoutDashboard },
+      { href: "/app", label: "Mon tableau de bord", icon: LayoutDashboard },
       { href: "/academy", label: "Academy TREVYS", icon: GraduationCap },
     ],
   },

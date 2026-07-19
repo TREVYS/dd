@@ -6,7 +6,7 @@ import { FecAnalyseView } from "./fec-analyse-view";
 export default async function FecAnalysePage() {
   const session = await auth();
   if (!canManageFecAnalysis(session?.user?.role)) {
-    redirect("/");
+    redirect("/app");
   }
 
   return (

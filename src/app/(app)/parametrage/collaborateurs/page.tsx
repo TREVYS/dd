@@ -6,7 +6,7 @@ import { CollaboratorsManager } from "./collaborators-manager";
 export default async function CollaborateursPage() {
   const session = await auth();
   if (!canManageCollaborators(session?.user?.role)) {
-    redirect("/");
+    redirect("/app");
   }
 
   return (

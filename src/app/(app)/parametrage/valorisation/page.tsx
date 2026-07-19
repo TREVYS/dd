@@ -6,7 +6,7 @@ import { ValuationBrandingManager } from "./valuation-branding-manager";
 export default async function ValuationBrandingPage() {
   const session = await auth();
   if (!canManageValuationBranding(session?.user?.role)) {
-    redirect("/");
+    redirect("/app");
   }
 
   return (
