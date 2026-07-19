@@ -5,11 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark } from "./brand";
 
-export const NAV_LINKS = [
+const EXPERTISES = [
   { href: "/expertise-comptable", label: "Expertise comptable" },
   { href: "/consulting", label: "Consulting" },
   { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
+];
+
+// Liens de premier niveau (hors groupe « Expertises »).
+const PRIMARY = [
   { href: "/le-cabinet", label: "Le cabinet" },
   { href: "/blog", label: "Ressources" },
   { href: "/contact", label: "Contact" },
@@ -46,7 +50,25 @@ export function Nav() {
           <BrandMark />
         </Link>
         <ul className="mkt-links">
-          {NAV_LINKS.map((l) => (
+          <li className="mkt-has-drop">
+            <button
+              type="button"
+              className={`mkt-drop-trigger${EXPERTISES.some((e) => isCur(e.href)) ? " cur" : ""}`}
+            >
+              Expertises
+              <svg viewBox="0 0 10 10" className="mkt-caret" aria-hidden="true">
+                <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
+              </svg>
+            </button>
+            <div className="mkt-drop">
+              {EXPERTISES.map((e) => (
+                <Link key={e.href} href={e.href} className={isCur(e.href) ? "cur" : ""}>
+                  {e.label}
+                </Link>
+              ))}
+            </div>
+          </li>
+          {PRIMARY.map((l) => (
             <li key={l.href}>
               <Link href={l.href} className={isCur(l.href) ? "cur" : ""}>
                 {l.label}
