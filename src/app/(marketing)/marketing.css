@@ -55,6 +55,9 @@
 .mkt .btn-gold:hover{background:var(--grad);transform:translateY(-2px);box-shadow:0 14px 34px -10px rgba(245,129,31,.6)}
 .mkt .btn-ghost{background:var(--glass-bg);border-color:var(--glass-brd);color:var(--ink);backdrop-filter:blur(14px)}
 .mkt .btn-ghost:hover{border-color:var(--violet);color:var(--violet)}
+/* Bouton secondaire du hero : contour orange bien lisible */
+.mkt-act .btn-ghost{background:#fff;border-color:var(--violet);color:var(--violet);backdrop-filter:none}
+.mkt-act .btn-ghost:hover{background:var(--violet);color:#fff}
 .mkt .btn-sm{padding:.6rem 1.2rem;font-size:.84rem}
 
 /* nav */
@@ -104,7 +107,7 @@
 .mkt-gcard .b{display:flex;align-items:flex-end;justify-content:space-between;gap:.6rem}
 .mkt-gcard .val{font-size:1.02rem;font-weight:800;color:var(--ink)}
 .mkt-gcard svg.spark{width:56px;height:22px;fill:none;stroke-width:2}
-.mkt-gcard.c1{top:20%;left:-6%}.mkt-gcard.c2{top:48%;right:-7%;animation-delay:1.4s}.mkt-gcard.c3{bottom:7%;left:6%;animation-delay:2.6s}
+.mkt-gcard.c1{top:23%;left:4%}.mkt-gcard.c2{top:49%;right:4%;animation-delay:1.4s}.mkt-gcard.c3{bottom:7%;left:6%;animation-delay:2.6s}
 @keyframes mkt-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
 /* Notifications « activité en direct » dans le hero */
 .mkt-live{position:absolute;top:5%;right:5%;z-index:3;width:min(248px,72%)}
