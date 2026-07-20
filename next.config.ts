@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Sortie autonome : génère .next/standalone (serveur Node minimal + deps
-  // strictement nécessaires) pour un déploiement simple sur Gandi / VPS.
-  output: "standalone",
+  /* Démarrage via server.js (Gandi Simple Hosting) — pas de sortie standalone. */
 };
 
 export default nextConfig;
