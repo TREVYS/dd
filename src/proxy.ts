@@ -13,6 +13,7 @@ const PUBLIC_PREFIXES = [
   "/notre-ecosysteme",
   "/references",
   "/blog",
+  "/p", // pages personnalisées créées depuis le back-office
   "/contact",
   "/rendez-vous",
   "/mentions-legales",

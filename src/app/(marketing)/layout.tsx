@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./marketing.css";
 import { Nav } from "./_components/nav";
 import { Footer } from "./_components/footer";
+import { AnalyticsBeacon } from "./_components/analytics-beacon";
 
 const SITE = "https://www.trevys-advisory.fr";
 
@@ -121,6 +122,7 @@ export default function MarketingLayout({
       <Nav />
       {children}
       <Footer />
+      <AnalyticsBeacon />
     </div>
   );
 }
