@@ -29,17 +29,20 @@ const CLIENTS: Item[] = [
   { src: `${U}/2025/02/ulas-istanbul-logo-01.png`, alt: "Ulas Istanbul" },
 ];
 
+// Outils que nous maîtrisons et déployons chez nos clients.
 const TOOLS: Item[] = [
-  { src: `${U}/2024/12/1.png`, alt: "Outil partenaire" },
-  { src: `${U}/2025/08/2.png`, alt: "Outil partenaire" },
-  { src: `${U}/2025/08/3.png`, alt: "Outil partenaire" },
-  { src: `${U}/2025/01/4.png`, alt: "Outil partenaire" },
-  { src: `${U}/2024/12/5.png`, alt: "Outil partenaire" },
-  { src: `${U}/2024/12/6.png`, alt: "Outil partenaire" },
-  { src: `${U}/2024/12/7.png`, alt: "Outil partenaire" },
-  { src: `${U}/2024/12/8.png`, alt: "Outil partenaire" },
-  { src: `${U}/2024/12/9.png`, alt: "Outil partenaire" },
-  { src: `${U}/2024/12/10.png`, alt: "Outil partenaire" },
+  { text: "Tiime", alt: "Tiime" },
+  { text: "Sage", alt: "Sage" },
+  { text: "Pennylane", alt: "Pennylane" },
+  { text: "Fulll", alt: "Fulll" },
+  { text: "SAP", alt: "SAP" },
+  { text: "Cegid", alt: "Cegid" },
+  { text: "Yooz", alt: "Yooz" },
+  { text: "Oracle", alt: "Oracle" },
+  { text: "Microsoft Dynamics", alt: "Microsoft Dynamics" },
+  { text: "Trello", alt: "Trello" },
+  { text: "Jira", alt: "Jira" },
+  { text: "Power BI", alt: "Power BI" },
 ];
 
 function Row({ items, reverse, label }: { items: Item[]; reverse?: boolean; label: string }) {

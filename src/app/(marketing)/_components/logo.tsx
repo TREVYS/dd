@@ -1,28 +1,16 @@
-"use client";
-
-import { useState } from "react";
-import { BrandMark } from "./brand";
-
-// Logo officiel Trevys hébergé sur le WordPress du cabinet.
-const WP_LOGO =
-  "https://www.trevys-advisory.fr/wp-content/uploads/2023/05/logo.svg";
-
-/**
- * Affiche le vrai logo Trevys (SVG WordPress). En cas d'échec de chargement,
- * repli automatique sur la version vectorielle intégrée (BrandMark).
- */
-export function Logo({ className }: { className?: string }) {
-  const [failed, setFailed] = useState(false);
-
-  if (failed) return <BrandMark className={className} />;
-
-  // eslint-disable-next-line @next/next/no-img-element
+// Vrai logo Trevys (pack vectoriel officiel), servi depuis /public/brand.
+// variant "blanc" pour les fonds sombres (pied de page).
+export function Logo({
+  className,
+  variant = "couleur",
+}: {
+  className?: string;
+  variant?: "couleur" | "blanc";
+}) {
+  const src =
+    variant === "blanc" ? "/brand/trevys-logo-blanc.svg" : "/brand/trevys-logo.svg";
   return (
-    <img
-      className={className}
-      src={WP_LOGO}
-      alt="Trevys — Expertise comptable & conseil"
-      onError={() => setFailed(true)}
-    />
+    // eslint-disable-next-line @next/next/no-img-element
+    <img className={className} src={src} alt="Trevys — Expertise comptable & conseil" />
   );
 }
