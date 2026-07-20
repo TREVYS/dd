@@ -42,6 +42,14 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Bloquer le défilement de la page derrière le menu mobile ouvert.
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
   // Fermer le dropdown au clic extérieur et à la touche Échap.
   useEffect(() => {
     if (!dropOpen) return;
@@ -67,7 +75,7 @@ export function Nav() {
     <>
       <nav className={`mkt-nav${scrolled ? " s" : ""}${mobileOpen ? " open" : ""}`}>
         <Link href="/" className="nlogo" aria-label="Trevys — Accueil">
-          <Logo variant={mobileOpen ? "blanc" : "couleur"} />
+          <Logo />
         </Link>
 
         <ul className="mkt-links">
@@ -137,7 +145,6 @@ export function Nav() {
         aria-modal="true"
         aria-hidden={!mobileOpen}
       >
-        <span className="mkt-mobile-lbl">Navigation</span>
         {MOBILE_LINKS.map((l) => (
           <Link
             key={l.href}
