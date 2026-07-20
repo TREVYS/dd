@@ -69,8 +69,16 @@
 .mkt-burger{display:none;flex-direction:column;gap:5px;padding:.55rem;background:var(--glass-bg);border:1px solid var(--glass-brd);border-radius:14px}
 .mkt-burger span{width:20px;height:2px;background:var(--ink);border-radius:2px}
 .mkt-mobile{display:none}
-.mkt-mobile.open{display:flex;flex-direction:column;gap:.2rem;position:fixed;inset:var(--nh) 0 0;z-index:49;background:var(--bg2);padding:2rem var(--edge);overflow-y:auto}
-.mkt-mobile a{padding:.95rem 0;font-size:1.2rem;font-weight:700;color:var(--ink);border-bottom:1px solid var(--line2)}
+.mkt-mobile.open{display:flex;flex-direction:column;position:fixed;inset:var(--nh) 0 0;z-index:49;background:var(--bg2);padding:1.4rem var(--edge) calc(1.4rem + env(safe-area-inset-bottom));overflow-y:auto;animation:mktMobIn .28s ease}
+@keyframes mktMobIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.mkt-mobile-nav{display:flex;flex-direction:column;gap:.55rem}
+.mkt-mobile-nav a{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.05rem 1.2rem;font-size:1.12rem;font-weight:700;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:16px;transition:border-color .15s,background .15s,transform .15s}
+.mkt-mobile-nav a:active{transform:scale(.99)}
+.mkt-mobile-nav a svg{width:20px;height:20px;color:var(--ink3);flex:0 0 auto}
+.mkt-mobile-nav a.cur{border-color:var(--violet);background:rgba(245,129,31,.08);color:var(--violet)}
+.mkt-mobile-nav a.cur svg{color:var(--violet)}
+.mkt-mobile-foot{margin-top:auto;padding-top:1.6rem;display:flex;flex-direction:column;gap:.7rem}
+.mkt-mobile-mail{text-align:center;padding:.6rem 0 0;font-size:.92rem;font-weight:700;color:var(--violet)}
 
 /* hero */
 .mkt-hero{padding:calc(var(--nh) + 1.5rem) var(--edge) 3.5rem}
@@ -213,7 +221,8 @@
 .mkt-news-msg{font-size:.82rem;margin-top:.6rem;font-weight:600}
 
 /* CTA rendez-vous en tête du menu mobile */
-.mkt-mobile-cta{width:100%;justify-content:center;margin-bottom:1.4rem;font-size:1.05rem;padding:1rem 1.8rem}
+.mkt-mobile-cta{width:100%;justify-content:center;font-size:1.05rem;padding:1rem 1.8rem}
+.mkt-mobile-foot .btn-ghost{width:100%;justify-content:center;font-size:1rem;padding:.9rem 1.8rem}
 
 /* images d'articles */
 .mkt-postcard .thumb{width:100%;height:180px;object-fit:cover;display:block}
