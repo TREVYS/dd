@@ -21,11 +21,12 @@ const PRIMARY = [
 
 // Menu mobile : uniquement les entrées principales.
 const MOBILE_LINKS = [
+  { href: "/le-cabinet", label: "Le cabinet" },
   { href: "/expertise-comptable", label: "Expertise comptable" },
   { href: "/consulting", label: "Consulting" },
-  { href: "/intelligence-artificielle", label: "IA" },
+  { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
-  { href: "/le-cabinet", label: "Le cabinet" },
+  { href: "/blog", label: "Ressources" },
 ];
 
 export function Nav() {
