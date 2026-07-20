@@ -133,7 +133,7 @@ export function Nav() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Télécharger le guide RFE
+            Télécharger le guide facturation électronique
           </a>
           <button
             className="mkt-burger"
