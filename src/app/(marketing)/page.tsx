@@ -178,15 +178,30 @@ export default function HomePage() {
       <section className="sec">
         <div className="wrap">
           <div className="shead">
-            <span className="eyebrow">Notre écosystème</span>
+            <span className="eyebrow">Le Groupe TREVYS</span>
             <h2>
-              Un écosystème mobilisé pour votre <em>réussite</em>
+              Un groupe mobilisé pour votre <em>réussite</em>
             </h2>
             <p>
-              Autour du cabinet, un réseau d&apos;entités indépendantes —
-              pilotage prédictif, commissariat aux comptes, financement,
-              expertises freelances et accompagnement à l&apos;international.
+              Autour du cabinet, les sociétés du Groupe TREVYS et ses partenaires
+              couvrent l&apos;ensemble de vos enjeux — du pilotage prédictif à
+              l&apos;édition de logiciels IA, jusqu&apos;au droit social.
             </p>
+          </div>
+          <div className="mkt-eco-grid">
+            {[
+              { t: "KLARE STUDIO", d: "Pilotage prédictif" },
+              { t: "WELL&WIZ", d: "Conseil & freelances" },
+              { t: "URCA", d: "Commissariat aux comptes" },
+              { t: "SONAM IA", d: "Édition de logiciels IA" },
+              { t: "PHOENIX", d: "Expertise comptable · international" },
+              { t: "DECA Paris", d: "Avocats en droit social" },
+            ].map((e) => (
+              <div className="mkt-eco-item" key={e.t}>
+                <span className="t">{e.t}</span>
+                <span className="d">{e.d}</span>
+              </div>
+            ))}
           </div>
           <Link className="btn btn-ghost" href="/notre-ecosysteme">
             Découvrir l&apos;écosystème <ArrowRight />

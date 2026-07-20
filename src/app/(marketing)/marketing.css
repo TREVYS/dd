@@ -109,6 +109,15 @@
 .mkt-gcard svg.spark{width:56px;height:22px;fill:none;stroke-width:2}
 .mkt-gcard.c1{top:23%;left:4%}.mkt-gcard.c2{top:49%;right:4%;animation-delay:1.4s}.mkt-gcard.c3{bottom:7%;left:6%;animation-delay:2.6s}
 @keyframes mkt-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
+/* Écosystème (accueil) : grille des sociétés du groupe */
+.mkt-eco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0 2.2rem}
+.mkt-eco-item{display:flex;flex-direction:column;gap:.25rem;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.3rem;transition:border-color .2s,transform .2s}
+.mkt-eco-item:hover{border-color:var(--violet);transform:translateY(-3px)}
+.mkt-eco-item .t{font-weight:800;color:var(--ink);font-size:1.02rem}
+.mkt-eco-item .d{font-size:.82rem;color:var(--ink2)}
+@media(max-width:860px){.mkt-eco-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.mkt-eco-grid{grid-template-columns:1fr}}
+
 /* Notifications « activité en direct » dans le hero */
 .mkt-live{position:absolute;top:5%;right:5%;z-index:3;width:min(248px,72%)}
 .mkt-live-card{display:flex;align-items:center;gap:.7rem;background:var(--glass-bg);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);border:1px solid var(--glass-brd);border-radius:16px;padding:.7rem .85rem;box-shadow:0 16px 34px -14px rgba(140,60,15,.5);animation:mkt-live-in .5s cubic-bezier(.2,.8,.2,1)}
