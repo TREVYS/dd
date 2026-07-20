@@ -174,30 +174,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* STATS */}
-      <section className="sec band">
-        <div className="wrap">
-          <div className="mkt-stats">
-            <div className="mkt-stat">
-              <div className="sn">2018</div>
-              <div className="sl">Cabinet indépendant</div>
-            </div>
-            <div className="mkt-stat">
-              <div className="sn">2</div>
-              <div className="sl">Métiers complémentaires</div>
-            </div>
-            <div className="mkt-stat">
-              <div className="sn">6</div>
-              <div className="sl">Domaines d&apos;expertise</div>
-            </div>
-            <div className="mkt-stat">
-              <div className="sn">Paris</div>
-              <div className="sl">Île-de-France</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ÉCOSYSTÈME */}
       <section className="sec">
         <div className="wrap">
