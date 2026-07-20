@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { savePageAction } from "../actions";
+import { MarkdownEditor } from "../markdown-editor";
 import type { PageInput } from "@/lib/content-admin";
 
 export function PageForm({ page }: { page?: PageInput }) {
@@ -20,8 +21,14 @@ export function PageForm({ page }: { page?: PageInput }) {
         <textarea name="description" style={{ minHeight: 80 }} defaultValue={page?.description ?? ""} />
       </div>
       <div className="adm-field">
+        <label style={{ flexDirection: "row", display: "flex", alignItems: "center", gap: ".6rem" }}>
+          <input type="checkbox" name="menu" value="1" defaultChecked={page?.menu} style={{ width: "auto" }} />
+          Afficher cette page dans le menu du site
+        </label>
+      </div>
+      <div className="adm-field">
         <label>Contenu <small>(Markdown)</small></label>
-        <textarea name="body" defaultValue={page?.body ?? ""} placeholder={"## Titre\n\nVotre contenu…"} />
+        <MarkdownEditor name="body" defaultValue={page?.body ?? ""} placeholder={"## Titre\n\nVotre contenu…"} />
       </div>
       <div className="adm-actions">
         <button className="adm-btn" type="submit">{isEdit ? "Enregistrer" : "Créer la page"}</button>

@@ -76,10 +76,11 @@ export type PageInput = {
   slug?: string;
   title: string;
   description?: string;
+  menu?: boolean;
   body: string;
 };
 
-export type PageMeta = { slug: string; title: string; description: string };
+export type PageMeta = { slug: string; title: string; description: string; menu: boolean };
 
 export function listPages(): PageMeta[] {
   if (!fs.existsSync(PAGES_DIR)) return [];
@@ -89,9 +90,21 @@ export function listPages(): PageMeta[] {
     .map((f) => {
       const slug = f.replace(/\.mdx$/, "");
       const { data } = matter(fs.readFileSync(path.join(PAGES_DIR, f), "utf8"));
-      return { slug, title: String(data.title ?? slug), description: String(data.description ?? "") };
+      return {
+        slug,
+        title: String(data.title ?? slug),
+        description: String(data.description ?? ""),
+        menu: data.menu === true || data.menu === "true",
+      };
     })
     .sort((a, b) => a.title.localeCompare(b.title));
+}
+
+// Pages à afficher dans le menu du site.
+export function menuPages(): { href: string; label: string }[] {
+  return listPages()
+    .filter((p) => p.menu)
+    .map((p) => ({ href: `/p/${p.slug}`, label: p.title }));
 }
 
 export function getPage(slug: string): { meta: PageMeta; body: string } | null {
@@ -99,7 +112,12 @@ export function getPage(slug: string): { meta: PageMeta; body: string } | null {
   if (!fs.existsSync(full)) return null;
   const { data, content } = matter(fs.readFileSync(full, "utf8"));
   return {
-    meta: { slug, title: String(data.title ?? slug), description: String(data.description ?? "") },
+    meta: {
+      slug,
+      title: String(data.title ?? slug),
+      description: String(data.description ?? ""),
+      menu: data.menu === true || data.menu === "true",
+    },
     body: content.trim(),
   };
 }
@@ -108,8 +126,9 @@ export function savePage(input: PageInput, originalSlug?: string): string {
   if (!fs.existsSync(PAGES_DIR)) fs.mkdirSync(PAGES_DIR, { recursive: true });
   const slug = (input.slug && input.slug.trim()) || slugify(input.title);
   if (!slug) throw new Error("Titre ou slug requis.");
-  const fm: Record<string, string> = { title: input.title.trim() };
+  const fm: Record<string, string | boolean> = { title: input.title.trim() };
   if (input.description?.trim()) fm.description = input.description.trim();
+  if (input.menu) fm.menu = true;
   fs.writeFileSync(
     path.join(PAGES_DIR, `${slug}.mdx`),
     matter.stringify(`\n${input.body.trim()}\n`, fm),

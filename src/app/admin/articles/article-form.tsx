@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { saveArticleAction } from "../actions";
+import { MarkdownEditor } from "../markdown-editor";
 import type { ArticleInput } from "@/lib/content-admin";
 
 export function ArticleForm({ article }: { article?: ArticleInput }) {
@@ -47,7 +48,7 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
 
       <div className="adm-field">
         <label>Contenu <small>(Markdown : ## Titre, - liste, **gras**, [lien](url))</small></label>
-        <textarea name="body" defaultValue={article?.body ?? ""} placeholder={"## Introduction\n\nVotre texte…"} />
+        <MarkdownEditor name="body" defaultValue={article?.body ?? ""} placeholder={"## Introduction\n\nVotre texte…"} />
       </div>
 
       <div className="adm-actions">

@@ -29,7 +29,9 @@ const MOBILE_LINKS = [
   { href: "/blog", label: "Ressources" },
 ];
 
-export function Nav() {
+type NavLink = { href: string; label: string };
+
+export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -111,7 +113,7 @@ export function Nav() {
               ))}
             </div>
           </li>
-          {PRIMARY.map((l) => (
+          {[...PRIMARY, ...extraLinks].map((l) => (
             <li key={l.href}>
               <Link href={l.href} className={isCur(l.href) ? "cur" : ""}>
                 {l.label}
@@ -154,7 +156,7 @@ export function Nav() {
         aria-modal="true"
         aria-hidden={!mobileOpen}
       >
-        {MOBILE_LINKS.map((l) => (
+        {[...MOBILE_LINKS, ...extraLinks].map((l) => (
           <Link
             key={l.href}
             href={l.href}

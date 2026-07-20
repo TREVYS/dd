@@ -16,7 +16,7 @@ export default async function EditPage({ params }: { params: Promise<{ slug: str
           <p>/p/{slug}</p>
         </div>
       </div>
-      <PageForm page={{ slug, title: page.meta.title, description: page.meta.description, body: page.body }} />
+      <PageForm page={{ slug, title: page.meta.title, description: page.meta.description, menu: page.meta.menu, body: page.body }} />
     </>
   );
 }

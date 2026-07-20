@@ -9,6 +9,7 @@ import {
   savePage,
   deletePage,
 } from "@/lib/content-admin";
+import { saveLegalDoc } from "@/lib/legal";
 
 async function requireUser() {
   const session = await auth();
@@ -53,10 +54,12 @@ export async function savePageAction(formData: FormData) {
       slug: (formData.get("slug") as string) || undefined,
       title: (formData.get("title") as string) ?? "",
       description: (formData.get("description") as string) ?? "",
+      menu: formData.get("menu") === "1",
       body: (formData.get("body") as string) ?? "",
     },
     originalSlug,
   );
+  revalidatePath("/", "layout");
   revalidatePath(`/p/${slug}`);
   revalidatePath("/admin/pages");
   redirect("/admin/pages");
@@ -65,6 +68,16 @@ export async function savePageAction(formData: FormData) {
 export async function deletePageAction(formData: FormData) {
   await requireUser();
   deletePage(formData.get("slug") as string);
+  revalidatePath("/", "layout");
   revalidatePath("/admin/pages");
   redirect("/admin/pages");
+}
+
+export async function saveLegalAction(formData: FormData) {
+  await requireUser();
+  const slug = formData.get("slug") as string;
+  saveLegalDoc(slug, (formData.get("title") as string) ?? "", (formData.get("body") as string) ?? "");
+  revalidatePath(`/${slug}`);
+  revalidatePath("/admin/legal");
+  redirect("/admin/legal");
 }

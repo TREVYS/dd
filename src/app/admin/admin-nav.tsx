@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/admin", label: "Tableau de bord", exact: true },
   { href: "/admin/articles", label: "Articles" },
   { href: "/admin/pages", label: "Pages" },
+  { href: "/admin/legal", label: "Pages légales" },
   { href: "/admin/medias", label: "Médias" },
   { href: "/admin/statistiques", label: "Statistiques" },
 ];

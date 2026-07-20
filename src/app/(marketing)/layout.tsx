@@ -3,6 +3,7 @@ import "./marketing.css";
 import { Nav } from "./_components/nav";
 import { Footer } from "./_components/footer";
 import { AnalyticsBeacon } from "./_components/analytics-beacon";
+import { menuPages } from "@/lib/content-admin";
 
 const SITE = "https://www.trevys-advisory.fr";
 
@@ -113,13 +114,14 @@ export default function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const extraLinks = menuPages();
   return (
     <div className="mkt">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
-      <Nav />
+      <Nav extraLinks={extraLinks} />
       {children}
       <Footer />
       <AnalyticsBeacon />
