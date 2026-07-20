@@ -65,9 +65,9 @@ export function Nav() {
 
   return (
     <>
-      <nav className={`mkt-nav${scrolled ? " s" : ""}`}>
+      <nav className={`mkt-nav${scrolled ? " s" : ""}${mobileOpen ? " open" : ""}`}>
         <Link href="/" className="nlogo" aria-label="Trevys — Accueil">
-          <Logo />
+          <Logo variant={mobileOpen ? "blanc" : "couleur"} />
         </Link>
 
         <ul className="mkt-links">
@@ -137,6 +137,7 @@ export function Nav() {
         aria-modal="true"
         aria-hidden={!mobileOpen}
       >
+        <span className="mkt-mobile-lbl">Navigation</span>
         {MOBILE_LINKS.map((l) => (
           <Link
             key={l.href}
@@ -154,6 +155,9 @@ export function Nav() {
         >
           Prendre rendez-vous
         </Link>
+        <a className="mkt-mobile-mail" href="mailto:contact@trevys-advisory.fr">
+          contact@trevys-advisory.fr
+        </a>
       </div>
     </>
   );
