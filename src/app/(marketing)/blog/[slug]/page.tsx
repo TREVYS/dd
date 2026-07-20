@@ -115,17 +115,18 @@ export default async function Page({
       </header>
 
       <section className="sec" style={{ paddingTop: "1.5rem" }}>
-        <div className="wrap mkt-artview">
+        <div className="wrap">
+          {post.meta.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className="mkt-article-hero"
+              src={post.meta.image}
+              alt={post.meta.title}
+              loading="lazy"
+            />
+          )}
+          <div className="mkt-artview">
           <div className="mkt-artmain">
-            {post.meta.image && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                className="mkt-article-hero"
-                src={post.meta.image}
-                alt={post.meta.title}
-                loading="lazy"
-              />
-            )}
             <article className="mkt-article">
               <MDXRemote source={post.content} components={mdxComponents} />
             </article>
@@ -189,6 +190,7 @@ export default async function Page({
               )}
             </div>
           </aside>
+          </div>
         </div>
       </section>
     </>
