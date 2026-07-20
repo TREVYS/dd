@@ -12,6 +12,7 @@ export type PostMeta = {
   excerpt: string;
   author?: string;
   image?: string;
+  readingTime?: number; // minutes
 };
 
 function readFiles(): string[] {
@@ -23,7 +24,8 @@ export function getAllPosts(): PostMeta[] {
   return readFiles()
     .map((file) => {
       const slug = file.replace(/\.mdx$/, "");
-      const { data } = matter(fs.readFileSync(path.join(BLOG_DIR, file), "utf8"));
+      const { data, content } = matter(fs.readFileSync(path.join(BLOG_DIR, file), "utf8"));
+      const words = content.trim().split(/\s+/).length;
       return {
         slug,
         title: String(data.title ?? slug),
@@ -32,6 +34,7 @@ export function getAllPosts(): PostMeta[] {
         excerpt: String(data.excerpt ?? ""),
         author: data.author ? String(data.author) : undefined,
         image: data.image ? String(data.image) : undefined,
+        readingTime: Math.max(1, Math.round(words / 200)),
       } satisfies PostMeta;
     })
     .sort((a, b) => (a.date < b.date ? 1 : -1));

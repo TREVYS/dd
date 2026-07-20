@@ -297,6 +297,32 @@
 .mkt-postcard .lire{color:var(--violet);font-weight:700;opacity:0;transform:translateX(-4px);transition:.2s}
 .mkt-postcard:hover .lire{opacity:1;transform:none}
 
+/* liste éditoriale : cartes horizontales, illustration à droite */
+.mkt-artlist{display:flex;flex-direction:column;gap:1.4rem}
+.mkt-artcard{display:grid;grid-template-columns:1fr 300px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform .3s,box-shadow .3s,border-color .3s}
+.mkt-artcard:hover{transform:translateY(-4px);box-shadow:var(--glass-sh);border-color:var(--violet)}
+.mkt-artcard.feat{grid-template-columns:1fr 460px}
+.mkt-artcard .ac-body{padding:1.9rem 2.1rem;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.mkt-artcard.feat .ac-body{padding:2.6rem 2.8rem}
+.mkt-artcard .ac-cat{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--violet);font-weight:800}
+.mkt-artcard .ac-title{font-size:1.3rem;line-height:1.24;margin:.75rem 0 .7rem;color:var(--ink)}
+.mkt-artcard.feat .ac-title{font-size:1.8rem}
+.mkt-artcard .ac-syn{font-size:.92rem;color:var(--ink2);line-height:1.62;margin:0 0 1.2rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mkt-artcard.feat .ac-syn{-webkit-line-clamp:4;font-size:1rem}
+.mkt-artcard .ac-meta{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;font-size:.78rem;color:var(--ink3);margin-top:auto}
+.mkt-artcard .ac-lire{margin-left:auto;color:var(--violet);font-weight:800;opacity:0;transform:translateX(-4px);transition:.2s}
+.mkt-artcard:hover .ac-lire{opacity:1;transform:none}
+.mkt-artcard .ac-media{position:relative;overflow:hidden;background:linear-gradient(140deg,#FBB040,#E26A0F 55%,#C2410C)}
+.mkt-artcard .ac-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.mkt-artcard:hover .ac-media img{transform:scale(1.05)}
+.mkt-artcard .ac-ph{position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.35),transparent 60%)}
+@media(max-width:820px){
+  .mkt-artcard,.mkt-artcard.feat{grid-template-columns:1fr}
+  .mkt-artcard .ac-media{order:-1;min-height:190px}
+  .mkt-artcard .ac-body,.mkt-artcard.feat .ac-body{padding:1.6rem 1.7rem}
+  .mkt-artcard.feat .ac-title{font-size:1.4rem}
+}
+
 /* barre d'outils Ressources : filtres + recherche */
 .mkt-blog-toolbar{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;margin-bottom:2.2rem}
 .mkt-blog-toolbar .mkt-filters{margin-bottom:0}

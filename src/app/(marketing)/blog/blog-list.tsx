@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { PostMeta } from "@/lib/blog";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 10;
 
 function formatDateFr(iso: string): string {
   if (!iso) return "";
@@ -21,7 +21,32 @@ function normalize(s: string): string {
   return s
     .toLowerCase()
     .normalize("NFD")
-    .replace(new RegExp("[\u0300-\u036f]", "g"), "");
+    .replace(new RegExp("[̀-ͯ]", "g"), "");
+}
+
+function Card({ p, featured }: { p: PostMeta; featured?: boolean }) {
+  return (
+    <Link href={`/blog/${p.slug}`} className={`mkt-artcard${featured ? " feat" : ""}`}>
+      <div className="ac-body">
+        <span className="ac-cat">{p.category}</span>
+        <h3 className="ac-title">{p.title}</h3>
+        <p className="ac-syn">{p.excerpt}</p>
+        <div className="ac-meta">
+          <span>{formatDateFr(p.date)}</span>
+          {p.readingTime ? <span>· {p.readingTime} min de lecture</span> : null}
+          <span className="ac-lire">Lire l&apos;article →</span>
+        </div>
+      </div>
+      <div className="ac-media">
+        {p.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={p.image} alt={p.title} loading="lazy" />
+        ) : (
+          <div className="ac-ph" aria-hidden="true" />
+        )}
+      </div>
+    </Link>
+  );
 }
 
 export function BlogList({ posts }: { posts: PostMeta[] }) {
@@ -82,25 +107,9 @@ export function BlogList({ posts }: { posts: PostMeta[] }) {
         </div>
       </div>
 
-      <div className="mkt-blog-grid">
-        {shown.map((p) => (
-          <Link key={p.slug} href={`/blog/${p.slug}`} className="mkt-postcard">
-            {p.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img className="thumb" src={p.image} alt={p.title} loading="lazy" />
-            ) : (
-              <div className="thumb" />
-            )}
-            <div className="body">
-              <span className="cat">{p.category}</span>
-              <h3>{p.title}</h3>
-              <p>{p.excerpt}</p>
-              <div className="meta">
-                {formatDateFr(p.date)}
-                <span className="lire">Lire l&apos;article →</span>
-              </div>
-            </div>
-          </Link>
+      <div className="mkt-artlist">
+        {shown.map((p, i) => (
+          <Card key={p.slug} p={p} featured={i === 0 && active === "Tous" && !query} />
         ))}
       </div>
 
