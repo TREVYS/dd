@@ -137,41 +137,23 @@ export function Nav() {
         aria-modal="true"
         aria-hidden={!mobileOpen}
       >
-        <nav className="mkt-mobile-nav" aria-label="Navigation principale">
-          {MOBILE_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setMobileOpen(false)}
-              className={isCur(l.href) ? "cur" : ""}
-            >
-              <span>{l.label}</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
-          ))}
-        </nav>
-
-        <div className="mkt-mobile-foot">
+        {MOBILE_LINKS.map((l) => (
           <Link
-            className="btn btn-lg btn-gold mkt-mobile-cta"
-            href="/rendez-vous"
+            key={l.href}
+            href={l.href}
             onClick={() => setMobileOpen(false)}
+            className={isCur(l.href) ? "cur" : ""}
           >
-            Prendre rendez-vous
+            {l.label}
           </Link>
-          <Link
-            className="btn btn-lg btn-ghost"
-            href="/app"
-            onClick={() => setMobileOpen(false)}
-          >
-            Espace client
-          </Link>
-          <a className="mkt-mobile-mail" href="mailto:contact@trevys-advisory.fr">
-            contact@trevys-advisory.fr
-          </a>
-        </div>
+        ))}
+        <Link
+          className="btn btn-lg btn-gold mkt-mobile-cta"
+          href="/rendez-vous"
+          onClick={() => setMobileOpen(false)}
+        >
+          Prendre rendez-vous
+        </Link>
       </div>
     </>
   );
