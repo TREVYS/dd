@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LogoMarquee } from "./_components/logo-marquee";
+import { LiveFeed } from "./_components/live-feed";
 
 const ArrowRight = () => (
   <svg viewBox="0 0 24 24">
@@ -72,6 +73,7 @@ export default function HomePage() {
                 </svg>
               </div>
             </div>
+            <LiveFeed />
           </div>
           <div className="mkt-copy">
             <div className="hb">

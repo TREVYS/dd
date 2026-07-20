@@ -96,6 +96,16 @@
 .mkt-gcard svg.spark{width:56px;height:22px;fill:none;stroke-width:2}
 .mkt-gcard.c1{top:20%;left:-6%}.mkt-gcard.c2{top:48%;right:-7%;animation-delay:1.4s}.mkt-gcard.c3{bottom:7%;left:6%;animation-delay:2.6s}
 @keyframes mkt-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
+/* Notifications « activité en direct » dans le hero */
+.mkt-live{position:absolute;bottom:9%;right:5%;z-index:3;width:min(248px,72%)}
+.mkt-live-card{display:flex;align-items:center;gap:.7rem;background:var(--glass-bg);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);border:1px solid var(--glass-brd);border-radius:16px;padding:.7rem .85rem;box-shadow:0 16px 34px -14px rgba(140,60,15,.5);animation:mkt-live-in .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes mkt-live-in{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+.mkt-live-dot{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:grid;place-items:center}
+.mkt-live-dot svg{width:15px;height:15px}
+.mkt-live-txt{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.mkt-live-txt strong{font-size:.82rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mkt-live-txt em{font-size:.68rem;font-style:normal;color:var(--ink3);margin-top:.15rem}
+@media(prefers-reduced-motion:reduce){.mkt-live-card{animation:none}}
 .mkt-copy{display:flex;flex-direction:column;justify-content:center;padding:.5rem .5rem .5rem 0}
 .mkt-copy .hb{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600;line-height:1.5;margin-bottom:1.1rem}
 .mkt-hero h1{font-size:clamp(2.3rem,4.6vw,4rem);text-transform:uppercase;line-height:1.02;margin-bottom:1.4rem;text-wrap:balance}
