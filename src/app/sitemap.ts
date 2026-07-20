@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/blog";
+import { SITE_URL } from "@/lib/site";
 
-const BASE = "https://www.trevys-advisory.fr";
+const BASE = SITE_URL;
 
 const ROUTES = [
   "",

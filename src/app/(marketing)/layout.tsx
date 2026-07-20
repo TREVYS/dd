@@ -4,8 +4,9 @@ import { Nav } from "./_components/nav";
 import { Footer } from "./_components/footer";
 import { AnalyticsBeacon } from "./_components/analytics-beacon";
 import { menuPages } from "@/lib/content-admin";
+import { SITE_URL } from "@/lib/site";
 
-const SITE = "https://www.trevys-advisory.fr";
+const SITE = SITE_URL;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

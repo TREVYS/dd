@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/app", "/api/", "/login", "/fec-partage"],
+      disallow: ["/app", "/admin", "/api/", "/login", "/fec-partage"],
     },
-    sitemap: "https://www.trevys-advisory.fr/sitemap.xml",
-    host: "https://www.trevys-advisory.fr",
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

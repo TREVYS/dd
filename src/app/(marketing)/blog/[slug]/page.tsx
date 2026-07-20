@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPost, getPostSlugs, getAllPosts, extractHeadings, formatDateFr } from "@/lib/blog";
+import { SITE_URL } from "@/lib/site";
 import { TableOfContents, ShareButtons } from "./article-tools";
 
 export function generateStaticParams() {
@@ -58,7 +59,7 @@ export default async function Page({
     .filter((p) => p.slug !== slug && p.category === post.meta.category)
     .slice(0, 3);
 
-  const SITE = "https://www.trevys-advisory.fr";
+  const SITE = SITE_URL;
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
