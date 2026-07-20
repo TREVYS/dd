@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { getAllPosts, formatDateFr } from "@/lib/blog";
+import { getAllPosts } from "@/lib/blog";
+import { BlogList } from "./blog-list";
 
 export const metadata: Metadata = {
   title: "Ressources",
@@ -40,34 +40,7 @@ export default function Page() {
 
       <section className="sec">
         <div className="wrap">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))",
-              gap: "1.6rem",
-            }}
-          >
-            {posts.map((p) => (
-              <Link
-                key={p.slug}
-                href={`/blog/${p.slug}`}
-                className="mkt-postcard"
-              >
-                {p.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className="thumb" src={p.image} alt={p.title} loading="lazy" />
-                ) : (
-                  <div className="thumb" />
-                )}
-                <div className="body">
-                  <span className="cat">{p.category}</span>
-                  <h3>{p.title}</h3>
-                  <p>{p.excerpt}</p>
-                  <div className="meta">{formatDateFr(p.date)}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <BlogList posts={posts} />
         </div>
       </section>
     </>

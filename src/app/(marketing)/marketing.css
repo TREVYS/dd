@@ -285,3 +285,14 @@
 /* vrai logo (img) — mêmes dimensions que la version vectorielle */
 .mkt-nav .nlogo img{height:34px;width:auto;display:block}
 .mkt-foot .brand img{height:38px;width:auto;display:block}
+
+/* Ressources : filtres par thème + grille */
+.mkt-filters{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2.2rem}
+.mkt-filter{padding:.5rem 1.15rem;border-radius:100px;font:inherit;font-size:.85rem;font-weight:600;
+  background:var(--card);border:1px solid var(--line);color:var(--ink2);cursor:pointer;transition:all .2s}
+.mkt-filter:hover{border-color:var(--violet);color:var(--violet)}
+.mkt-filter.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.mkt-blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.6rem}
+.mkt-postcard .meta{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+.mkt-postcard .lire{color:var(--violet);font-weight:700;opacity:0;transform:translateX(-4px);transition:.2s}
+.mkt-postcard:hover .lire{opacity:1;transform:none}
