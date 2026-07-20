@@ -159,7 +159,7 @@
 
 /* cta */
 .mkt-cta{padding:5rem var(--edge)}
-.mkt-cta-in{position:relative;max-width:var(--max);margin:0 auto;text-align:center;background:var(--grad);border-radius:44px;padding:4.5rem 2rem;overflow:hidden;box-shadow:var(--glass-sh)}
+.mkt-cta-in{position:relative;max-width:var(--max);margin:0 auto;text-align:center;background:linear-gradient(105deg,#C2410C 0%,#E26A0F 55%,#F5811F 100%);border-radius:44px;padding:4.5rem 2rem;overflow:hidden;box-shadow:var(--glass-sh)}
 .mkt-cta-in h2{font-size:clamp(2rem,4.4vw,3rem);margin-bottom:1.1rem;text-wrap:balance;color:#fff;text-transform:uppercase}
 .mkt-cta-in p{font-size:1.05rem;color:rgba(255,255,255,.9);margin-bottom:2rem;max-width:520px;margin-inline:auto}
 .mkt-cta-in .btn-gold{background:#fff;color:var(--ink)}
