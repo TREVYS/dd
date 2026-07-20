@@ -9,8 +9,12 @@ export const metadata: Metadata = {
 };
 
 const CLIENTS = [
-  "BNP AM", "BPCE", "Natixis", "LCL",
-  "Cardif", "La Banque Postale", "Edmond de Rothschild", "Publicis",
+  "AG2R La Mondiale", "Banque Populaire", "Caisse d'Épargne", "BPCE Groupe",
+  "BPCE SI", "BRED", "BNP AM", "Natixis",
+  "LCL", "La Banque Postale", "Cardif", "Oney",
+  "Edmond de Rothschild", "Roole Assurance", "Sportfive France", "Publicis",
+  "Lapeyre", "Handy'Up", "Leano", "Jeux&Co",
+  "Ekin", "Ulas Istanbul", "Jaji",
 ];
 const SECTORS = [
   { t: "Banque & Assurance", u: "Direction de programme RFE, manager de transition, gestion de projet IT / Finance." },
