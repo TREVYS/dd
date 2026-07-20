@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BrandMark } from "./brand";
+import { Logo } from "./logo";
 
 const EXPERTISES = [
   { href: "/expertise-comptable", label: "Expertise comptable" },
@@ -67,7 +67,7 @@ export function Nav() {
     <>
       <nav className={`mkt-nav${scrolled ? " s" : ""}`}>
         <Link href="/" className="nlogo" aria-label="Trevys — Accueil">
-          <BrandMark />
+          <Logo />
         </Link>
 
         <ul className="mkt-links">

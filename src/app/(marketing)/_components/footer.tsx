@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandMark } from "./brand";
+import { Logo } from "./logo";
 import { OecLogo } from "./oec-logo";
 import { Newsletter } from "./newsletter";
 
@@ -19,7 +19,7 @@ export function Footer() {
         </div>
         <div className="mkt-foot-top">
           <div className="brand">
-            <BrandMark />
+            <Logo />
             <p>
               Cabinet d&apos;expertise comptable &amp; de conseil. Expertise,
               conseil et innovation au service des dirigeants.
