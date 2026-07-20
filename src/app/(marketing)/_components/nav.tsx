@@ -124,9 +124,17 @@ export function Nav() {
           <Link className="btn btn-sm btn-ghost" href="/app">
             Espace client
           </Link>
-          <Link className="btn btn-sm btn-gold" href="/rendez-vous">
+          <Link className="btn btn-sm btn-gold mkt-ncta-rdv" href="/rendez-vous">
             Prendre rendez-vous
           </Link>
+          <a
+            className="btn btn-sm btn-gold mkt-ncta-guide"
+            href="https://forms.cloud.microsoft/e/mr63uL9LsU"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Télécharger le guide RFE
+          </a>
           <button
             className="mkt-burger"
             aria-label="Menu"
