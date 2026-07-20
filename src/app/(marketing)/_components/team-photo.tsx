@@ -20,7 +20,7 @@ export function TeamPhoto({
   if (failed) {
     return (
       <div className="mkt-team-photo mkt-team-fallback" aria-hidden="true">
-        {initials}
+        <span>{initials}</span>
       </div>
     );
   }

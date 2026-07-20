@@ -205,7 +205,13 @@
 .mkt-team-card:hover{transform:translateY(-5px);box-shadow:var(--glass-sh)}
 .mkt-team-photo{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center top;display:block;
   background:linear-gradient(160deg,#6f747c,#585c64);filter:grayscale(12%) contrast(1.02)}
-.mkt-team-fallback{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:2rem;letter-spacing:.02em;filter:none}
+.mkt-team-fallback{position:relative;display:flex;align-items:center;justify-content:center;filter:none;
+  background:radial-gradient(120% 120% at 50% 22%,#6b6f77 0%,#4c4f56 48%,#2b2d31 100%)}
+.mkt-team-fallback::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(105deg,rgba(255,255,255,.05) 0 2px,transparent 2px 20px)}
+.mkt-team-fallback span{position:relative;z-index:1;display:grid;place-items:center;width:88px;height:88px;border-radius:50%;
+  color:#fff;font-weight:800;font-size:1.9rem;letter-spacing:.03em;
+  background:linear-gradient(150deg,#FBB040,#E26A0F 60%,#C2410C);
+  box-shadow:0 12px 30px -10px rgba(226,106,15,.7),inset 0 0 0 4px rgba(255,255,255,.14)}
 .mkt-team-body{padding:1.2rem 1.3rem 1.4rem}
 .mkt-team-body .nm{font-weight:800;color:var(--ink);font-size:1.05rem}
 .mkt-team-body .rl{font-size:.82rem;color:var(--ink2);margin-top:.3rem;line-height:1.4}
