@@ -1,22 +1,35 @@
 const U = "https://www.trevys-advisory.fr/wp-content/uploads";
 
-const CLIENTS = [
+type Item = { src?: string; text?: string; alt: string };
+
+// Mix : logos-images (hébergés sur le WordPress) + marques en toutes-lettres
+// (celles sans fichier logo à ce stade).
+const CLIENTS: Item[] = [
+  { text: "AG2R La Mondiale", alt: "AG2R La Mondiale" },
   { src: `${U}/2025/02/BNP-AM.png`, alt: "BNP AM" },
+  { text: "Banque Populaire", alt: "Banque Populaire" },
   { src: `${U}/2025/02/BPCE-GROUPE.png`, alt: "BPCE Groupe" },
-  { src: `${U}/2025/02/BPCE-SI.png`, alt: "BPCE SI" },
+  { text: "Caisse d'Épargne", alt: "Caisse d'Épargne" },
   { src: `${U}/2025/02/natixis.png`, alt: "Natixis" },
+  { text: "BRED", alt: "BRED" },
+  { src: `${U}/2025/02/BPCE-SI.png`, alt: "BPCE SI" },
   { src: `${U}/2025/02/LCL.png`, alt: "LCL" },
+  { text: "Oney", alt: "Oney" },
   { src: `${U}/2025/02/cardif.png`, alt: "Cardif" },
   { src: `${U}/2025/02/LBP.png`, alt: "La Banque Postale" },
+  { text: "Roole Assurance", alt: "Roole Assurance" },
   { src: `${U}/2025/02/Edmon-de.png`, alt: "Edmond de Rothschild" },
+  { text: "Sportfive France", alt: "Sportfive France" },
   { src: `${U}/2025/02/Publicis.png`, alt: "Publicis" },
+  { text: "Lapeyre", alt: "Lapeyre" },
+  { text: "Handy'Up", alt: "Handy'Up" },
   { src: `${U}/2025/02/Leano-LOGO.png`, alt: "Leano" },
   { src: `${U}/2025/02/logo_jeuxAndCo_small.png`, alt: "Jeux&Co" },
   { src: `${U}/2025/02/Logo_Ekin_Noir.png`, alt: "Ekin" },
   { src: `${U}/2025/02/ulas-istanbul-logo-01.png`, alt: "Ulas Istanbul" },
 ];
 
-const TOOLS = [
+const TOOLS: Item[] = [
   { src: `${U}/2024/12/1.png`, alt: "Outil partenaire" },
   { src: `${U}/2025/08/2.png`, alt: "Outil partenaire" },
   { src: `${U}/2025/08/3.png`, alt: "Outil partenaire" },
@@ -29,24 +42,22 @@ const TOOLS = [
   { src: `${U}/2024/12/10.png`, alt: "Outil partenaire" },
 ];
 
-function Row({
-  items,
-  reverse,
-  label,
-}: {
-  items: { src: string; alt: string }[];
-  reverse?: boolean;
-  label: string;
-}) {
-  // Liste dupliquée pour un défilement en boucle continu.
+function Row({ items, reverse, label }: { items: Item[]; reverse?: boolean; label: string }) {
   const loop = [...items, ...items];
   return (
     <div className="mkt-marq-row" aria-label={label}>
       <div className={`mkt-marq-track${reverse ? " rev" : ""}`}>
         {loop.map((it, i) => (
-          <span className="mkt-marq-logo" key={`${it.src}-${i}`}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={it.src} alt={i < items.length ? it.alt : ""} loading="lazy" />
+          <span
+            className={`mkt-marq-logo${it.text ? " txt" : ""}`}
+            key={`${it.alt}-${i}`}
+          >
+            {it.src ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={it.src} alt={i < items.length ? it.alt : ""} loading="lazy" />
+            ) : (
+              it.text
+            )}
           </span>
         ))}
       </div>
