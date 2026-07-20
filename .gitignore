@@ -45,3 +45,7 @@ next-env.d.ts
 # uploaded client documents
 /public/uploads/
 data/analytics.json
+
+# Médias importés via le back-office
+public/uploads/*
+!public/uploads/README.md

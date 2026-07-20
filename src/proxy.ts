@@ -18,6 +18,7 @@ const PUBLIC_PREFIXES = [
   "/rendez-vous",
   "/mentions-legales",
   "/fec-partage", // partage de FEC par jeton
+  "/uploads", // médias importés depuis le back-office
 ];
 
 const PUBLIC_FILES = ["/sitemap.xml", "/robots.txt"];
