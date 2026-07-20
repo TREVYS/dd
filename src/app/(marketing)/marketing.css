@@ -221,7 +221,8 @@
 .mkt-article img{max-width:100%;height:auto;border-radius:14px;margin:1.5rem 0;display:block}
 
 /* --- Page article : mise en page 2 colonnes + volet résumé --- */
-.mkt-arthead{padding:2.6rem 0 1.4rem;border-bottom:1px solid var(--line)}
+.mkt-arthead{padding:calc(var(--nh) + 3rem) var(--edge) 1.8rem;border-bottom:1px solid var(--line)}
+.mkt-arthead .wrap{max-width:var(--max);margin:0 auto}
 .mkt-artcrumb{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;font-size:.78rem;color:var(--ink3);margin-bottom:1.1rem}
 .mkt-artcrumb a{color:var(--ink3);text-decoration:none}
 .mkt-artcrumb a:hover{color:var(--violet)}
@@ -246,6 +247,20 @@
 .mkt-artrel ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.85rem}
 .mkt-artrel a{color:var(--ink);text-decoration:none;font-size:.9rem;font-weight:700;line-height:1.35;display:block}
 .mkt-artrel a:hover{color:var(--violet)}
+.mkt-article h2,.mkt-article h3{scroll-margin-top:90px}
+.mkt-arttoc{border:1px solid var(--line);border-radius:20px;padding:1.4rem 1.5rem;background:var(--card)}
+.mkt-arttoc ul{list-style:none;margin:.4rem 0 0;padding:0;display:flex;flex-direction:column;gap:.15rem}
+.mkt-arttoc li.sub{padding-left:.9rem}
+.mkt-arttoc a{display:block;padding:.34rem .6rem;border-radius:8px;border-left:2px solid transparent;color:var(--ink2);text-decoration:none;font-size:.84rem;line-height:1.35;transition:.15s}
+.mkt-arttoc li.sub a{font-size:.8rem;color:var(--ink3)}
+.mkt-arttoc a:hover{color:var(--ink);background:rgba(245,129,31,.06)}
+.mkt-arttoc a.on{color:var(--violet);font-weight:700;border-left-color:var(--violet);background:rgba(245,129,31,.08)}
+.mkt-artshare{border:1px solid var(--line);border-radius:20px;padding:1.4rem 1.5rem;background:var(--card)}
+.mkt-artshare-row{display:flex;flex-direction:column;gap:.6rem;margin-top:.7rem}
+.mkt-artshare button{display:inline-flex;align-items:center;gap:.6rem;padding:.6rem .9rem;border:1px solid var(--line);border-radius:12px;background:var(--bg2);color:var(--ink);font-weight:700;font-size:.85rem;cursor:pointer;transition:.15s;font-family:inherit}
+.mkt-artshare button:hover{border-color:var(--violet);color:var(--violet)}
+.mkt-artshare svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;flex:0 0 auto}
+.mkt-artshare button:first-child svg{fill:currentColor;stroke:none}
 @media(max-width:960px){
   .mkt-artview{grid-template-columns:1fr;gap:2.2rem}
   .mkt-artside-in{position:static}

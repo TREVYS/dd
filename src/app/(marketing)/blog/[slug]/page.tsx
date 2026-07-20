@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getPost, getPostSlugs, getAllPosts, formatDateFr } from "@/lib/blog";
+import { getPost, getPostSlugs, getAllPosts, extractHeadings, formatDateFr } from "@/lib/blog";
+import { TableOfContents, ShareButtons } from "./article-tools";
 
 export function generateStaticParams() {
   return getPostSlugs().map((slug) => ({ slug }));
@@ -45,6 +46,14 @@ export default async function Page({
   if (!post) notFound();
 
   const minutes = readingMinutes(post.content);
+  const headings = extractHeadings(post.content);
+  // Attribue à chaque titre rendu l'id du sommaire, dans l'ordre du document.
+  let headIdx = 0;
+  const nextHeadingId = () => headings[headIdx++]?.id;
+  const mdxComponents = {
+    h2: (props: React.ComponentProps<"h2">) => <h2 id={nextHeadingId()} {...props} />,
+    h3: (props: React.ComponentProps<"h3">) => <h3 id={nextHeadingId()} {...props} />,
+  };
   const related = getAllPosts()
     .filter((p) => p.slug !== slug && p.category === post.meta.category)
     .slice(0, 3);
@@ -118,7 +127,7 @@ export default async function Page({
               />
             )}
             <article className="mkt-article">
-              <MDXRemote source={post.content} />
+              <MDXRemote source={post.content} components={mdxComponents} />
             </article>
             <div style={{ marginTop: "3rem" }}>
               <Link className="btn btn-ghost" href="/blog">
@@ -135,6 +144,8 @@ export default async function Page({
                   <p>{post.meta.excerpt}</p>
                 </div>
               )}
+
+              <TableOfContents headings={headings} />
 
               <dl className="mkt-artfacts">
                 <div>
@@ -154,6 +165,8 @@ export default async function Page({
                   <dd>{post.meta.author ?? "Trevys"}</dd>
                 </div>
               </dl>
+
+              <ShareButtons title={post.meta.title} />
 
               <div className="mkt-artcta">
                 <p>Une question sur ce sujet ?</p>

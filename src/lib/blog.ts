@@ -62,6 +62,37 @@ export function getPost(slug: string): { meta: PostMeta; content: string } | nul
   };
 }
 
+export type Heading = { id: string; text: string; level: 2 | 3 };
+
+export function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(new RegExp("[̀-ͯ]", "g"), "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Extrait les titres H2/H3 du markdown pour construire une table des matières.
+export function extractHeadings(content: string): Heading[] {
+  const out: Heading[] = [];
+  const seen = new Map<string, number>();
+  for (const raw of content.split(/\r?\n/)) {
+    const m = /^(#{2,3})\s+(.+?)\s*#*\s*$/.exec(raw);
+    if (!m) continue;
+    const level = m[1].length as 2 | 3;
+    const text = m[2].replace(/[*_`]/g, "").trim();
+    if (!text) continue;
+    let id = slugify(text);
+    if (!id) continue;
+    const n = seen.get(id) ?? 0;
+    seen.set(id, n + 1);
+    if (n > 0) id = `${id}-${n}`;
+    out.push({ id, text, level });
+  }
+  return out;
+}
+
 export function formatDateFr(iso: string): string {
   if (!iso) return "";
   const d = new Date(iso);
