@@ -296,3 +296,12 @@
 .mkt-postcard .meta{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
 .mkt-postcard .lire{color:var(--violet);font-weight:700;opacity:0;transform:translateX(-4px);transition:.2s}
 .mkt-postcard:hover .lire{opacity:1;transform:none}
+
+/* barre d'outils Ressources : filtres + recherche */
+.mkt-blog-toolbar{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;margin-bottom:2.2rem}
+.mkt-blog-toolbar .mkt-filters{margin-bottom:0}
+.mkt-search{display:flex;align-items:center;gap:.5rem;background:var(--card);border:1px solid var(--line);
+  border-radius:100px;padding:.55rem 1.1rem;min-width:min(280px,100%);transition:border-color .2s}
+.mkt-search:focus-within{border-color:var(--violet)}
+.mkt-search svg{width:17px;height:17px;stroke:var(--ink3);stroke-width:2;fill:none;flex-shrink:0}
+.mkt-search input{border:none;background:none;outline:none;font:inherit;font-size:.9rem;color:var(--ink);width:100%}

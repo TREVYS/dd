@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { PostMeta } from "@/lib/blog";
+
+const PAGE_SIZE = 12;
 
 function formatDateFr(iso: string): string {
   if (!iso) return "";
@@ -15,6 +17,13 @@ function formatDateFr(iso: string): string {
   }).format(d);
 }
 
+function normalize(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(new RegExp("[\u0300-\u036f]", "g"), "");
+}
+
 export function BlogList({ posts }: { posts: PostMeta[] }) {
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -23,31 +32,58 @@ export function BlogList({ posts }: { posts: PostMeta[] }) {
   }, [posts]);
 
   const [active, setActive] = useState("Tous");
+  const [query, setQuery] = useState("");
+  const [visible, setVisible] = useState(PAGE_SIZE);
 
-  const filtered = useMemo(
-    () => (active === "Tous" ? posts : posts.filter((p) => p.category === active)),
-    [active, posts],
-  );
+  // Réinitialiser la pagination quand le filtre ou la recherche change.
+  useEffect(() => {
+    setVisible(PAGE_SIZE);
+  }, [active, query]);
+
+  const filtered = useMemo(() => {
+    const q = normalize(query.trim());
+    return posts.filter((p) => {
+      if (active !== "Tous" && p.category !== active) return false;
+      if (!q) return true;
+      return normalize(`${p.title} ${p.excerpt} ${p.category}`).includes(q);
+    });
+  }, [active, query, posts]);
+
+  const shown = filtered.slice(0, visible);
 
   return (
     <>
-      <div className="mkt-filters" role="tablist" aria-label="Filtrer par thème">
-        {categories.map((c) => (
-          <button
-            key={c}
-            type="button"
-            role="tab"
-            aria-selected={active === c}
-            className={`mkt-filter${active === c ? " on" : ""}`}
-            onClick={() => setActive(c)}
-          >
-            {c}
-          </button>
-        ))}
+      <div className="mkt-blog-toolbar">
+        <div className="mkt-filters" role="tablist" aria-label="Filtrer par thème">
+          {categories.map((c) => (
+            <button
+              key={c}
+              type="button"
+              role="tab"
+              aria-selected={active === c}
+              className={`mkt-filter${active === c ? " on" : ""}`}
+              onClick={() => setActive(c)}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+        <div className="mkt-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 21l-4.3-4.3M11 19a8 8 0 100-16 8 8 0 000 16z" />
+          </svg>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Rechercher un article…"
+            aria-label="Rechercher un article"
+          />
+        </div>
       </div>
 
       <div className="mkt-blog-grid">
-        {filtered.map((p) => (
+        {shown.map((p) => (
           <Link key={p.slug} href={`/blog/${p.slug}`} className="mkt-postcard">
             {p.image ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -70,8 +106,20 @@ export function BlogList({ posts }: { posts: PostMeta[] }) {
 
       {filtered.length === 0 && (
         <p style={{ color: "var(--ink2)", marginTop: "1.5rem" }}>
-          Aucun article dans ce thème pour le moment.
+          Aucun article ne correspond à votre recherche.
         </p>
+      )}
+
+      {visible < filtered.length && (
+        <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => setVisible((v) => v + PAGE_SIZE)}
+          >
+            Voir plus d&apos;articles ({filtered.length - visible})
+          </button>
+        </div>
       )}
     </>
   );
