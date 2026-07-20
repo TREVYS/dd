@@ -31,6 +31,7 @@ const CRED = [
   "Intervenant régulier auprès d'organisations professionnelles et de directions financières.",
   "Enseignant en Master CCA, engagé dans l'évolution de la profession.",
 ];
+// Ces engagements sont portés par le fondateur du cabinet.
 
 export default function Page() {
   return (
@@ -70,6 +71,10 @@ export default function Page() {
           <div className="shead">
             <span className="eyebrow">Une expertise reconnue</span>
             <h2>Une légitimité au service de la <em>profession</em></h2>
+            <p>
+              Notre fondateur, <strong>John Lévy</strong>, expert-comptable,
+              s&apos;engage activement dans la vie de la profession :
+            </p>
           </div>
           <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: ".9rem", maxWidth: "760px" }}>
             {CRED.map((c) => (
