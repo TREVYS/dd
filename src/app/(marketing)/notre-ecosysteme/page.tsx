@@ -4,17 +4,22 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Notre écosystème",
   description:
-    "Un écosystème unique d'entités indépendantes — KLARE STUDIO, WELL&WIZ, URCA, KDL INVEST, PHOENIX, DECA Paris — au service de nos clients, en France et à l'international.",
+    "Le Groupe TREVYS — KLARE STUDIO, WELL&WIZ, URCA, SONAM IA — et ses partenaires PHOENIX et DECA Paris, au service de nos clients en France et à l'international.",
   alternates: { canonical: "/notre-ecosysteme" },
 };
 
-const PARTNERS = [
+// Sociétés du Groupe TREVYS
+const GROUP = [
   { t: "KLARE STUDIO", d: "Solutions de pilotage prédictif pour anticiper les tendances, optimiser la performance et éclairer la décision." },
   { t: "WELL&WIZ", d: "Société de conseil mobilisant une communauté d'experts freelances, de la stratégie à l'opérationnel." },
   { t: "URCA", d: "Commissariat aux comptes : un accompagnement rigoureux pour sécuriser vos processus et vos obligations légales." },
-  { t: "KDL INVEST", d: "Recherche de financement : des solutions stratégiques pour faciliter l'accès aux ressources de vos projets." },
-  { t: "PHOENIX", d: "Basée à Dakar, notre société d'expertise comptable accompagne votre développement à l'international." },
-  { t: "DECA Paris", d: "Partenaire de l'écosystème, au service de la qualité et de la complémentarité de nos expertises." },
+  { t: "SONAM IA", d: "Éditeur de logiciels à base d'intelligence artificielle, au service de la performance et de l'automatisation." },
+];
+
+// Sociétés partenaires
+const PARTNERS = [
+  { t: "PHOENIX", d: "Société d'expertise comptable basée à Dakar, pour accompagner votre développement à l'international." },
+  { t: "DECA Paris", d: "Cabinet d'avocats en droit social, partenaire pour sécuriser vos problématiques sociales et RH." },
 ];
 
 export default function Page() {
@@ -35,6 +40,26 @@ export default function Page() {
       <section className="sec">
         <div className="wrap">
           <div className="shead">
+            <span className="eyebrow">Le Groupe TREVYS</span>
+            <h2>Les <em>sociétés</em> du groupe</h2>
+          </div>
+          <div className="mkt-svc-grid">
+            {GROUP.map((p) => (
+              <div className="mkt-svc" key={p.t}>
+                <div className="ico">
+                  <svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 100 8 4 4 0 000-8zM4 22a8 8 0 0116 0" /></svg>
+                </div>
+                <h3>{p.t}</h3>
+                <p>{p.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
             <span className="eyebrow">Nos partenaires</span>
             <h2>Des expertises <em>complémentaires</em></h2>
           </div>
@@ -42,7 +67,7 @@ export default function Page() {
             {PARTNERS.map((p) => (
               <div className="mkt-svc" key={p.t}>
                 <div className="ico">
-                  <svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 100 8 4 4 0 000-8zM4 22a8 8 0 0116 0" /></svg>
+                  <svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 10-8 0M4 22a8 8 0 0116 0" /></svg>
                 </div>
                 <h3>{p.t}</h3>
                 <p>{p.d}</p>
