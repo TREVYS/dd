@@ -93,6 +93,33 @@ export default function Page() {
       <section className="sec">
         <div className="wrap">
           <div className="shead">
+            <span className="eyebrow">Le mot du fondateur</span>
+          </div>
+          <figure className="mkt-fq">
+            <blockquote>
+              Lorsque j&apos;ai créé Trevys, je ne voulais pas construire un
+              cabinet d&apos;expertise comptable supplémentaire. Je voulais un
+              cabinet capable d&apos;accompagner les dirigeants face aux
+              transformations profondes de leur environnement. Les attentes ont
+              changé, les métiers évoluent, les technologies ouvrent de nouvelles
+              perspectives. Notre rôle est d&apos;aider les entreprises à en
+              tirer parti, sans jamais perdre de vue l&apos;essentiel : la
+              relation humaine, le conseil et la confiance.
+            </blockquote>
+            <figcaption>
+              <TeamPhoto src="/brand/team/john-levy.jpg" initials="JL" alt="John Lévy" />
+              <span>
+                <strong>John Lévy</strong>
+                <em>Fondateur — Expert-comptable</em>
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
             <span className="eyebrow">L&apos;équipe</span>
             <h2>Les femmes et les hommes de <em>Trevys</em></h2>
           </div>
