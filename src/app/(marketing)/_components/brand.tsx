@@ -19,7 +19,7 @@ export function BrandMark({ className }: { className?: string }) {
       >
         Trevys
       </text>
-      <path d="M190 26 L190 6 L204 6 A20 20 0 0 1 224 26 Z" fill="#E3A63C" />
+      <path d="M190 26 L190 6 L204 6 A20 20 0 0 1 224 26 Z" fill="#F59E0B" />
       <text
         x="1.5"
         y="76"
