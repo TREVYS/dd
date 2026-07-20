@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TeamPhoto } from "../_components/team-photo";
 
 export const metadata: Metadata = {
   title: "Facturation électronique",
@@ -48,6 +49,40 @@ export default function Page() {
                 <p>{s.d}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="sec">
+        <div className="wrap">
+          <div className="mkt-founder">
+            <div className="mkt-founder-media">
+              <TeamPhoto
+                src="/brand/team/john-levy.jpg"
+                initials="JL"
+                alt="John Lévy, fondateur de Trevys"
+              />
+              <div className="mkt-founder-id">
+                <div className="nm">John Lévy</div>
+                <div className="rl">Fondateur · Expert-comptable</div>
+              </div>
+            </div>
+            <div className="mkt-founder-body">
+              <span className="eyebrow">Au cœur de la réforme</span>
+              <h2>Un cabinet connecté aux instances qui <em>construisent</em> la réforme</h2>
+              <blockquote className="mkt-founder-quote">
+                « Je participe activement aux échanges de place autour de la
+                facturation électronique. Cet engagement me donne accès aux
+                dernières informations — et me permet de porter la voix des
+                entreprises auprès des instances qui façonnent la réforme. »
+              </blockquote>
+              <ul className="mkt-founder-cred">
+                <li><span className="k">AFNOR</span> Membre, au sein des travaux de normalisation</li>
+                <li><span className="k">Communauté des relais</span> Engagé dès le lancement</li>
+                <li><span className="k">Ordre des experts-comptables</span> Élu au Conseil régional de Paris Île-de-France</li>
+                <li><span className="k">Relais des enjeux terrain</span> Accès aux dernières informations et transmission des besoins des entreprises</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
