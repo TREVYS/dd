@@ -21,10 +21,10 @@ const GROUPS: Group[] = [
   {
     title: "Communication",
     items: [
-      { href: "#", label: "Calendrier éditorial", soon: true },
+      { href: "/admin/communication", label: "Directeur de comm", exact: true },
+      { href: "/admin/communication/calendrier", label: "Calendrier éditorial" },
       { href: "#", label: "Réseaux sociaux", soon: true },
       { href: "#", label: "Newsletter", soon: true },
-      { href: "#", label: "Directeur de comm", soon: true },
     ],
   },
   {

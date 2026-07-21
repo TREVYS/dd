@@ -52,6 +52,28 @@
 .adm-tag{display:inline-block;font-size:.72rem;font-weight:700;color:var(--o);background:rgba(245,129,31,.1);border:1px solid rgba(245,129,31,.22);border-radius:100px;padding:.2rem .6rem}
 .adm-note{background:#fff8f2;border:1px solid #f3ddc5;border-radius:12px;padding:1rem 1.2rem;font-size:.86rem;color:var(--ink2);line-height:1.55}
 .adm-thumb{width:64px;height:40px;object-fit:cover;border-radius:6px;background:linear-gradient(140deg,#FBB040,#C2410C);display:block}
+/* Statuts (calendrier éditorial) */
+.adm-chipst{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;background:var(--o-tint);color:var(--o2)}
+.adm-chipst.pub{color:#2E9E6B;background:#E6F4EC}
+.adm-chipst.draft{color:#C9820C;background:#FBF0DA}
+
+/* Chat Directeur de communication */
+.adm-chat{display:flex;flex-direction:column;height:calc(100vh - 190px);min-height:440px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
+.adm-chat-log{flex:1;overflow-y:auto;padding:1.4rem;display:flex;flex-direction:column;gap:1rem}
+.adm-chat-empty{margin:auto;text-align:center;display:flex;flex-direction:column;align-items:center}
+.adm-chat-ava,.adm-msg-ava{width:40px;height:40px;border-radius:50%;background:linear-gradient(140deg,#FBB040,var(--o2));color:#fff;display:grid;place-items:center;font-weight:800;font-size:.8rem;flex:0 0 auto}
+.adm-chat-sugg{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1.2rem;max-width:560px}
+.adm-chat-sugg button{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:100px;padding:.5rem .9rem;font:inherit;font-size:.82rem;cursor:pointer}
+.adm-chat-sugg button:hover{border-color:var(--o);color:var(--o)}
+.adm-msg{display:flex;gap:.7rem;max-width:82%}
+.adm-msg.user{margin-left:auto;flex-direction:row-reverse}
+.adm-msg-body{background:var(--bg);border-radius:14px;padding:.8rem 1rem;font-size:.9rem;line-height:1.55}
+.adm-msg.user .adm-msg-body{background:linear-gradient(100deg,var(--o),var(--o2));color:#fff}
+.adm-msg-actions{margin-top:.5rem;display:flex;flex-direction:column;gap:.25rem;font-size:.8rem;color:#2E9E6B;font-weight:600}
+.adm-chat-bar{display:flex;gap:.6rem;padding:.8rem;border-top:1px solid var(--line);background:var(--card)}
+.adm-chat-bar input{flex:1;border:1px solid var(--line);border-radius:12px;padding:.75rem 1rem;font:inherit;font-size:.92rem;background:var(--card);color:var(--ink)}
+.adm-chat-bar input:focus{outline:none;border-color:var(--o)}
+
 /* Médias : import + bibliothèque */
 .adm-drop{display:flex;align-items:center;gap:1rem;border:2px dashed var(--line);border-radius:16px;padding:1.4rem 1.6rem;background:#fff;cursor:pointer;transition:.15s}
 .adm-drop:hover,.adm-drop.on{border-color:var(--o);background:#fff8f2}
