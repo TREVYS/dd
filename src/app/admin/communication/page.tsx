@@ -8,12 +8,13 @@ export default function CommunicationPage() {
     <>
       <div className="adm-h">
         <div>
-          <h1>Directeur de communication</h1>
-          <p>Votre agent IA : rédaction d&apos;articles, calendrier éditorial, réseaux sociaux.</p>
+          <h1>Alfred 🎩</h1>
+          <p>Votre directeur de communication : rédaction d&apos;articles, calendrier éditorial, réseaux sociaux.</p>
         </div>
-        <Link className="adm-btn ghost" href="/admin/communication/calendrier">
-          Voir le calendrier éditorial
-        </Link>
+        <div className="adm-actions">
+          <Link className="adm-btn ghost" href="/admin/communication/alfred">Éduquer Alfred</Link>
+          <Link className="adm-btn ghost" href="/admin/communication/calendrier">Calendrier</Link>
+        </div>
       </div>
       <CommsChat />
     </>

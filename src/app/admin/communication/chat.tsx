@@ -45,11 +45,12 @@ export function CommsChat() {
       <div className="adm-chat-log" ref={scrollRef}>
         {turns.length === 0 && (
           <div className="adm-chat-empty">
-            <div className="adm-chat-ava">IA</div>
-            <p style={{ fontWeight: 700, margin: ".6rem 0 .2rem" }}>Bonjour John 👋</p>
+            <div className="adm-chat-ava">🎩</div>
+            <p style={{ fontWeight: 700, margin: ".6rem 0 .2rem" }}>Bonjour John, je suis Alfred 🎩</p>
             <p style={{ color: "var(--ink2)", fontSize: ".9rem", maxWidth: 460 }}>
-              Je suis votre Directeur de communication. Je peux <b>rédiger des articles</b>,
-              <b> planifier</b> vos publications et proposer un <b>calendrier éditorial</b>.
+              Votre directeur de communication. Je peux <b>rédiger des articles</b>,
+              <b> planifier</b> vos publications et proposer un <b>calendrier éditorial</b>,
+              dans votre style. Éduquez-moi via « Éduquer Alfred » pour que j&apos;écrive comme vous.
             </p>
             <div className="adm-chat-sugg">
               {SUGGESTIONS.map((s) => (
@@ -60,7 +61,7 @@ export function CommsChat() {
         )}
         {turns.map((t, i) => (
           <div key={i} className={`adm-msg ${t.role}`}>
-            {t.role === "assistant" && <div className="adm-msg-ava">IA</div>}
+            {t.role === "assistant" && <div className="adm-msg-ava">A</div>}
             <div className="adm-msg-body">
               {t.content.split("\n").map((line, j) => (
                 <p key={j} style={{ margin: line ? "0 0 .5rem" : 0 }}>{line}</p>
@@ -77,7 +78,7 @@ export function CommsChat() {
         ))}
         {busy && (
           <div className="adm-msg assistant">
-            <div className="adm-msg-ava">IA</div>
+            <div className="adm-msg-ava">A</div>
             <div className="adm-msg-body" style={{ color: "var(--ink3)" }}>Le directeur réfléchit…</div>
           </div>
         )}

@@ -1,21 +1,22 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { addItem, listItems } from "@/lib/editorial";
+import { alfredSystemBlock } from "@/lib/alfred-config";
 
 export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type AgentResult = { reply: string; actions: string[] };
 
-const SYSTEM = `Tu es le « Directeur de communication » de Trevys — cabinet d'expertise comptable et de conseil à Paris (expertise comptable, consulting, IA, facturation électronique).
-
-Ton rôle : aider John Lévy à piloter la communication du cabinet — calendrier éditorial, rédaction d'articles pour le site, déclinaison en posts réseaux (LinkedIn surtout) et newsletters.
-
-Ta voix : professionnelle, claire, crédible, orientée dirigeants et DAF. Français impeccable. Jamais de promesse d'« optimisation fiscale » (parle de « fiscalité maîtrisée », « juste imposition »).
+const OPERATING = `Tu aides John Lévy à piloter la communication du cabinet : calendrier éditorial, rédaction d'articles pour le site, déclinaison en posts réseaux (LinkedIn surtout) et newsletters. Français impeccable.
 
 Tes moyens d'action (outils) :
 - rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement.
 - planifier_publication : ajoute une échéance au calendrier éditorial (article, post LinkedIn, newsletter…).
 - lister_calendrier : consulte le calendrier existant.
 
-Règles : propose toujours des sujets ancrés dans l'actualité du métier. Après une action, confirme brièvement ce que tu as fait et propose la prochaine étape. Tu prépares, l'humain valide et publie.`;
+Règles : respecte scrupuleusement le ton, la ligne éditoriale et les mots à éviter ci-dessus. Inspire-toi des exemples de publications passées pour retrouver le style « maison ». Après une action, confirme brièvement et propose la suite. Tu prépares, l'humain valide et publie.`;
+
+function buildSystem(): string {
+  return `${alfredSystemBlock()}\n\n---\n\n${OPERATING}`;
+}
 
 const TOOLS = [
   {
@@ -111,7 +112,7 @@ export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
     const res = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 4000,
-      system: SYSTEM,
+      system: buildSystem(),
       tools: TOOLS,
       messages,
     });
