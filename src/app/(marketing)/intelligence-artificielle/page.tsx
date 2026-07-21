@@ -88,6 +88,33 @@ export default function Page() {
               déploiement de solutions logicielles et d&apos;IA pour nos clients.
             </p>
           </div>
+
+          <div
+            style={{
+              background: "linear-gradient(180deg,#FFF7F0,#FFFFFF)",
+              border: "1px solid #F5D9BE",
+              borderLeft: "4px solid #F5811F",
+              borderRadius: "16px",
+              padding: "1.75rem 2rem",
+              maxWidth: "860px",
+              margin: "0 auto 2.5rem",
+            }}
+          >
+            <h3 style={{ fontSize: "1.25rem", margin: "0 0 .75rem" }}>
+              Pourquoi confier ces projets à votre expert-comptable&nbsp;?
+            </h3>
+            <p style={{ margin: 0 }}>
+              Parce que la réussite d&apos;un projet logiciel ou d&apos;IA se joue
+              d&apos;abord sur la compréhension du <strong>métier</strong>. Qui,
+              mieux que votre expert-comptable, connaît vos chiffres, vos processus,
+              vos contraintes réglementaires et vos enjeux opérationnels&nbsp;? Cette
+              connaissance intime de votre activité nous permet de traduire un besoin
+              métier en une solution <strong>juste&nbsp;: utile, fiable et réellement
+              adoptée</strong> par vos équipes. Là où d&apos;autres livrent une
+              technologie, nous concevons une réponse ancrée dans la réalité de votre
+              entreprise — parce que nous la comprenons de l&apos;intérieur.
+            </p>
+          </div>
           <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))" }}>
             {USECASES.map((u) => (
               <div className="mkt-svc" key={u.t}>
