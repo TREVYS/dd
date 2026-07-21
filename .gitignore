@@ -51,3 +51,5 @@ data/analytics.json
 # Médias importés via le back-office
 public/uploads/*
 !public/uploads/README.md
+
+data/social.json

@@ -10,9 +10,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// Seuls ces rôles accèdent au back-office.
+const ALLOWED_ROLES = ["Administrateur", "Associé"];
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user) redirect("/login");
+  const role = (session.user as { role?: string | null }).role ?? "";
+  if (!ALLOWED_ROLES.includes(role)) redirect("/app");
 
   return (
     <div className="adm">
