@@ -9,7 +9,7 @@
     "start": "node server.js",
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate && next build"
+    "postinstall": "prisma generate && node scripts/gandi-build.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
