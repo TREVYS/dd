@@ -19,13 +19,13 @@ const PRIMARY = [
   { href: "/contact", label: "Contact" },
 ];
 
-// Menu mobile : uniquement les entrées principales.
+// Menu mobile : nos deux métiers en tête, puis le reste.
 const MOBILE_LINKS = [
-  { href: "/le-cabinet", label: "Le cabinet" },
   { href: "/expertise-comptable", label: "Expertise comptable" },
-  { href: "/consulting", label: "Consulting" },
+  { href: "/consulting", label: "Conseil" },
   { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
+  { href: "/le-cabinet", label: "Le cabinet" },
   { href: "/blog", label: "Ressources" },
 ];
 
@@ -135,7 +135,7 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Télécharger le guide facturation électronique
+            Guide RFE
           </a>
           <button
             className="mkt-burger"

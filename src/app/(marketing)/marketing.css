@@ -367,6 +367,8 @@
 .mkt-guide-btn{flex:0 0 auto;text-align:left}
 .mkt-guide-btn svg{width:18px;height:18px}
 @media(max-width:760px){.mkt-guide-btn{width:100%;justify-content:center}}
+/* Sur mobile, la nav propose déjà « Guide RFE » : on masque le doublon en page */
+@media(max-width:1000px){.mkt-guide-btn{display:none}}
 
 /* encart fondateur / expert reconnu (page facturation électronique) */
 .mkt-founder{display:grid;grid-template-columns:280px 1fr;gap:2.5rem;align-items:center;

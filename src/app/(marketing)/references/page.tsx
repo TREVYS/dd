@@ -20,7 +20,7 @@ const SECTORS = [
   { t: "Banque & Assurance", u: "Direction de programme RFE, manager de transition, gestion de projet IT / Finance." },
   { t: "Jeux vidéo", u: "Crédit d'impôt jeux vidéo, structuration financière et expertise comptable des studios." },
   { t: "Services", u: "Expertise comptable, reporting et pilotage de la performance." },
-  { t: "Santé", u: "Expertise comptable, optimisation fiscale et accompagnement des professions libérales." },
+  { t: "Santé", u: "Expertise comptable, fiscalité maîtrisée et accompagnement des professions libérales." },
   { t: "Association", u: "Comptabilité, obligations spécifiques et sécurisation des comptes." },
   { t: "Industrie", u: "Contrôle de gestion, reporting et transformation des systèmes d'information Finance." },
   { t: "Immobilier", u: "SCI, fiscalité immobilière et structuration patrimoniale." },
