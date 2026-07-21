@@ -63,7 +63,7 @@ export default function Page() {
               <div
                 className="calendly-inline-widget"
                 data-url={CALENDLY_URL}
-                style={{ minWidth: "320px", height: "720px" }}
+                style={{ minWidth: "320px", width: "100%", height: "700px" }}
               />
               <Script
                 src="https://assets.calendly.com/assets/external/widget.js"
