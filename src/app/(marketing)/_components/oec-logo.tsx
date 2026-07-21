@@ -8,7 +8,7 @@ export function OecLogo({ className }: { className?: string }) {
     // eslint-disable-next-line @next/next/no-img-element
     <img
       className={className}
-      src="/brand/oec-logo.png"
+      src="/uploads/oec-logo.png"
       alt="Ordre des Experts-Comptables — Région Paris Île-de-France"
     />
   );
