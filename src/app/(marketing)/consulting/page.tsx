@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
+import { TeamPhoto } from "../_components/team-photo";
+import { CONSULTANTS } from "@/lib/consultants";
 
 export const metadata: Metadata = {
   title: "Consulting",
@@ -21,17 +23,6 @@ const TAGS = [
   "Transformation digitale", "Conduite du changement", "Gouvernance des processus",
   "Optimisation des organisations", "Réforme de la facturation électronique",
 ];
-
-// Équipe de consultants. Ajoutez une photo en renseignant `img`
-// (ex. "/brand/consultants/franck.jpg") — sinon un monogramme s'affiche.
-const CONSULTANTS = [
-  { n: "Franck", r: "Manager de transition — Direction financière", img: "" },
-  { n: "Patrick", r: "Direction financière & performance", img: "" },
-];
-
-function initials(name: string) {
-  return name.trim().slice(0, 1).toUpperCase();
-}
 
 export default function Page() {
   return (
@@ -105,52 +96,24 @@ export default function Page() {
             <h2>Une <em>équipe</em> de consultants à vos côtés</h2>
             <p>
               Derrière chaque mission, des experts aux parcours complémentaires —
-              finance, systèmes d&apos;information et conduite du changement — pour
-              répondre concrètement à vos enjeux métiers.
+              finance, systèmes d&apos;information, contrôle de gestion et conduite du
+              changement. Cliquez sur un profil pour en savoir plus.
             </p>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))",
-              gap: "1.25rem",
-            }}
-          >
+          <div className="mkt-team">
             {CONSULTANTS.map((c) => (
-              <div
-                key={c.n}
-                style={{
-                  background: "var(--card)",
-                  border: "1px solid var(--line)",
-                  borderRadius: "18px",
-                  padding: "1.75rem 1.5rem",
-                  textAlign: "center",
-                  transition: "transform .2s, box-shadow .2s",
-                }}
-              >
-                <div
-                  style={{
-                    width: "84px",
-                    height: "84px",
-                    margin: "0 auto .9rem",
-                    borderRadius: "50%",
-                    display: "grid",
-                    placeItems: "center",
-                    color: "#fff",
-                    fontSize: "1.9rem",
-                    fontWeight: 800,
-                    background: c.img
-                      ? `center/cover no-repeat url(${c.img})`
-                      : "linear-gradient(140deg,#FBB040,#C2410C)",
-                  }}
-                >
-                  {!c.img && initials(c.n)}
+              <Link className="mkt-team-card mkt-consultant" href={`/consulting/${c.slug}`} key={c.slug}>
+                <TeamPhoto
+                  src={`/brand/team/${c.slug}.jpg`}
+                  initials={c.initials}
+                  alt={`${c.firstName} ${c.lastName}`}
+                />
+                <div className="mkt-team-body">
+                  <div className="nm">{c.firstName}</div>
+                  <div className="rl">{c.role}</div>
+                  <span className="mkt-consultant-more">Voir le profil →</span>
                 </div>
-                <div style={{ fontWeight: 800, fontSize: "1.1rem" }}>{c.n}</div>
-                <div style={{ color: "var(--ink2)", fontSize: ".9rem", marginTop: ".35rem" }}>
-                  {c.r}
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -253,7 +253,14 @@
 .mkt-team-body{padding:1.2rem 1.3rem 1.4rem}
 .mkt-team-body .nm{font-weight:800;color:var(--ink);font-size:1.05rem}
 .mkt-team-body .rl{font-size:.82rem;color:var(--ink2);margin-top:.3rem;line-height:1.4}
-@media(max-width:860px){.mkt-team{grid-template-columns:1fr 1fr}}
+/* Cartes consultants cliquables (page Consulting) */
+.mkt-consultant{display:block;color:inherit;text-decoration:none;position:relative}
+.mkt-consultant .mkt-team-name,.mkt-consultant .nm{transition:color .2s}
+.mkt-consultant:hover .nm{color:var(--violet)}
+.mkt-consultant-more{display:inline-flex;align-items:center;margin-top:.85rem;font-size:.8rem;font-weight:700;color:var(--violet);opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s}
+.mkt-consultant:hover .mkt-consultant-more{opacity:1;transform:none}
+@media(max-width:860px){.mkt-team{grid-template-columns:1fr 1fr}.mkt-consultant-more{opacity:1;transform:none}}
+@media(max-width:760px){.mkt-consultant-view{grid-template-columns:1fr !important}}
 @media(max-width:520px){.mkt-team{grid-template-columns:1fr}}
 
 /* page rendez-vous (Calendly) */
