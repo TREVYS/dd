@@ -11,6 +11,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   /* Démarrage via server.js (Gandi Simple Hosting) — pas de sortie standalone. */
+  // Hébergement mutualisé : on limite le parallélisme de génération des pages
+  // (sinon 15 workers → dépassement de ressources / SIGSEGV au build).
+  experimental: { cpus: 2 },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
