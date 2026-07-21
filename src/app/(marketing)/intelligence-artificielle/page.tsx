@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 
 export const metadata: Metadata = {
   title: "Intelligence artificielle",
@@ -24,6 +25,13 @@ const USECASES = [
 export default function Page() {
   return (
     <>
+      <BreadcrumbJsonLd items={[{ name: "Accueil", path: "/" }, { name: "Intelligence artificielle" }]} />
+      <ServiceJsonLd
+        name="Solutions d'intelligence artificielle"
+        description="Conception, développement et déploiement de solutions logicielles et d'IA au service des métiers."
+        path="/intelligence-artificielle"
+        serviceType="Intelligence artificielle"
+      />
       <header className="mkt-phead">
         <div className="mkt-phead-in">
           <span className="eyebrow">Intelligence artificielle</span>

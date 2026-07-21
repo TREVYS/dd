@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 
 export const metadata: Metadata = {
   title: "Consulting",
@@ -35,6 +36,13 @@ function initials(name: string) {
 export default function Page() {
   return (
     <>
+      <BreadcrumbJsonLd items={[{ name: "Accueil", path: "/" }, { name: "Conseil" }]} />
+      <ServiceJsonLd
+        name="Conseil & transformation"
+        description="Conseil en transformation, systèmes d'information Finance, ERP, AMOA et facturation électronique."
+        path="/consulting"
+        serviceType="Conseil en management"
+      />
       <header className="mkt-phead">
         <div className="mkt-phead-in">
           <span className="eyebrow">Consulting</span>

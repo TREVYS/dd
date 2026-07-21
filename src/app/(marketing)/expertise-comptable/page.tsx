@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 
 export const metadata: Metadata = {
   title: "Expertise comptable",
@@ -34,6 +35,13 @@ const POLES = [
 export default function Page() {
   return (
     <>
+      <BreadcrumbJsonLd items={[{ name: "Accueil", path: "/" }, { name: "Expertise comptable" }]} />
+      <ServiceJsonLd
+        name="Expertise comptable"
+        description="Tenue et révision comptable, établissement des comptes annuels, conseil et accompagnement du dirigeant."
+        path="/expertise-comptable"
+        serviceType="Expertise comptable"
+      />
       <header className="mkt-phead">
         <div className="mkt-phead-in">
           <span className="eyebrow">Expertise comptable</span>

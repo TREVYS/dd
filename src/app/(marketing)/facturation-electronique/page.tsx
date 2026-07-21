@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TeamPhoto } from "../_components/team-photo";
+import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 
 export const metadata: Metadata = {
   title: "Facturation électronique",
@@ -19,6 +20,13 @@ const STEPS = [
 export default function Page() {
   return (
     <>
+      <BreadcrumbJsonLd items={[{ name: "Accueil", path: "/" }, { name: "Facturation électronique" }]} />
+      <ServiceJsonLd
+        name="Accompagnement à la facturation électronique"
+        description="Accompagnement de bout en bout de la réforme de la facturation électronique (RFE) pour dirigeants, DAF et groupes."
+        path="/facturation-electronique"
+        serviceType="Facturation électronique"
+      />
       <header className="mkt-phead">
         <div className="mkt-phead-in">
           <span className="eyebrow">Facturation électronique</span>
