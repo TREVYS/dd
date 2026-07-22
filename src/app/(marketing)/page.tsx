@@ -190,17 +190,17 @@ export default function HomePage() {
           </div>
           <div className="mkt-eco-grid">
             {[
-              { t: "KLARE STUDIO", d: "Pilotage prédictif" },
-              { t: "WELL&WIZ", d: "Conseil & freelances" },
-              { t: "URCA", d: "Commissariat aux comptes" },
-              { t: "SONAM IA", d: "Édition de logiciels IA" },
-              { t: "PHOENIX", d: "Expertise comptable · international" },
-              { t: "DECA Paris", d: "Avocats en droit social" },
+              { t: "KLARE STUDIO", d: "Pilotage prédictif", u: "https://klare-studio.io/" },
+              { t: "WELL&WIZ", d: "Conseil & freelances", u: "https://wellandwiz.com/" },
+              { t: "URCA", d: "Commissariat aux comptes", u: "http://urca.io/" },
+              { t: "SONAM IA", d: "Édition de logiciels IA", u: "https://wellandwiz-ai-site.vercel.app/" },
+              { t: "PHOENIX", d: "Expertise comptable · international", u: "https://www.phoenix-conseil.net/" },
+              { t: "DECA Paris", d: "Avocats en droit social", u: "https://www.decaparis.fr/" },
             ].map((e) => (
-              <div className="mkt-eco-item" key={e.t}>
+              <a className="mkt-eco-item" href={e.u} target="_blank" rel="noopener noreferrer" key={e.t}>
                 <span className="t">{e.t}</span>
                 <span className="d">{e.d}</span>
-              </div>
+              </a>
             ))}
           </div>
           <Link className="btn btn-ghost" href="/notre-ecosysteme">
