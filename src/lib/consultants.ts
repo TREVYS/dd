@@ -10,6 +10,8 @@ export type Consultant = {
   intro: string; // phrase d'accroche
   expertises: string[];
   bio: string[];
+  linkedin?: string; // profil LinkedIn (optionnel)
+  photo?: string; // photo (démonstration) — remplaçable par public/brand/team/<slug>.jpg
 };
 
 export const CONSULTANTS: Consultant[] = [
@@ -182,6 +184,27 @@ export const CONSULTANTS: Consultant[] = [
     ],
   },
 ];
+
+// Photos de démonstration ("fake") hébergées en ligne, le temps de disposer des
+// vrais portraits (à déposer dans public/brand/team/<slug>.jpg).
+const PHOTOS: Record<string, string> = {
+  franck: "https://randomuser.me/api/portraits/men/11.jpg",
+  laurence: "https://randomuser.me/api/portraits/women/24.jpg",
+  marwa: "https://randomuser.me/api/portraits/women/68.jpg",
+  karim: "https://randomuser.me/api/portraits/men/41.jpg",
+  sophie: "https://randomuser.me/api/portraits/women/12.jpg",
+  thomas: "https://randomuser.me/api/portraits/men/22.jpg",
+  frederic: "https://randomuser.me/api/portraits/men/55.jpg",
+  olivier: "https://randomuser.me/api/portraits/men/60.jpg",
+  ali: "https://randomuser.me/api/portraits/men/36.jpg",
+  sonia: "https://randomuser.me/api/portraits/women/45.jpg",
+  david: "https://randomuser.me/api/portraits/men/85.jpg",
+  jonathan: "https://randomuser.me/api/portraits/men/3.jpg",
+  raphael: "https://randomuser.me/api/portraits/men/17.jpg",
+  constant: "https://randomuser.me/api/portraits/men/91.jpg",
+};
+
+for (const c of CONSULTANTS) c.photo = PHOTOS[c.slug];
 
 export function getConsultant(slug: string): Consultant | undefined {
   return CONSULTANTS.find((c) => c.slug === slug);

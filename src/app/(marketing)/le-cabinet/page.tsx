@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { OecLogo } from "../_components/oec-logo";
 import { TeamPhoto } from "../_components/team-photo";
+import { LinkedinLink } from "../_components/linkedin-link";
+import { TEAM } from "@/lib/team";
 
 export const metadata: Metadata = {
   title: "Le cabinet",
@@ -18,11 +20,10 @@ const VALUES = [
   { t: "Transmission", d: "Nous partageons nos connaissances pour aider nos clients à mieux comprendre leurs enjeux et à décider." },
 ];
 
-const TEAM = [
-  { i: "JL", n: "John Lévy", r: "Fondateur · Expert-comptable", photo: "/brand/team/john-levy.jpg" },
-  { i: "OB", n: "Olivier Bonnin", r: "Commissaire aux comptes · Data analyste · Transformation digitale", photo: "/brand/team/olivier-bonnin.jpg" },
-  { i: "WO", n: "Walther Ottgen", r: "Directeur de l'innovation", photo: "/brand/team/walther-ottgen.jpg" },
-  { i: "JR", n: "Jeremy Roch", r: "Directeur commercial", photo: "/brand/team/jeremy-roch.jpg" },
+const GENESE = [
+  "Tout commence en 2018. Après plusieurs années passées au sein de cabinets et de directions financières, John Lévy fait un constat simple : les dirigeants n'ont pas seulement besoin d'un cabinet qui produit des comptes, mais d'un partenaire qui les éclaire dans leurs décisions.",
+  "Trevys naît de cette conviction. Le cabinet se construit autour de deux métiers indissociables — l'expertise comptable et le conseil — avec l'ambition d'accompagner les entreprises au-delà de la conformité : dans leurs transformations, leur pilotage et leur croissance.",
+  "Au fil des années, le cabinet s'entoure d'un écosystème de sociétés et d'experts complémentaires, et fait le pari de la technologie — data, automatisation, intelligence artificielle — pour augmenter la valeur délivrée à ses clients, sans jamais perdre de vue l'essentiel : la relation humaine et la confiance.",
 ];
 
 const CRED = [
@@ -48,6 +49,25 @@ export default function Page() {
           </p>
         </div>
       </header>
+
+      <section className="sec">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Notre genèse</span>
+            <h2>L&apos;histoire d&apos;un cabinet <em>augmenté</em></h2>
+          </div>
+          <div className="mkt-genese">
+            {GENESE.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+            <div className="mkt-genese-stats">
+              <div><b>2018</b><span>Création du cabinet</span></div>
+              <div><b>2 métiers</b><span>Expertise comptable &amp; conseil</span></div>
+              <div><b>1 écosystème</b><span>De sociétés &amp; d&apos;experts</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="sec">
         <div className="wrap">
@@ -107,7 +127,7 @@ export default function Page() {
               relation humaine, le conseil et la confiance.
             </blockquote>
             <figcaption>
-              <TeamPhoto src="/brand/team/john-levy.jpg" initials="JL" alt="John Lévy" />
+              <TeamPhoto src={TEAM.find((m) => m.slug === "john-levy")?.photo ?? "/brand/team/john-levy.jpg"} initials="JL" alt="John Lévy" />
               <span>
                 <strong>John Lévy</strong>
                 <em>Fondateur — Expert-comptable</em>
@@ -125,11 +145,16 @@ export default function Page() {
           </div>
           <div className="mkt-team">
             {TEAM.map((m) => (
-              <div className="mkt-team-card" key={m.n}>
-                <TeamPhoto src={m.photo} initials={m.i} alt={m.n} />
+              <div className="mkt-team-card mkt-consultant" key={m.slug}>
+                <TeamPhoto src={m.photo} initials={m.initials} alt={m.name} />
                 <div className="mkt-team-body">
-                  <div className="nm">{m.n}</div>
-                  <div className="rl">{m.r}</div>
+                  <div className="nm">{m.firstName}</div>
+                  <div className="rl">{m.role}</div>
+                  <div className="mkt-team-apport">{m.apport}</div>
+                  <div className="mkt-team-foot">
+                    <Link className="mkt-consultant-more mkt-stretch" href={`/le-cabinet/${m.slug}`}>En savoir plus →</Link>
+                    <LinkedinLink href={m.linkedin} name={m.firstName} className="mkt-li-ic" compact />
+                  </div>
                 </div>
               </div>
             ))}

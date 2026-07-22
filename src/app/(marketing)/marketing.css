@@ -269,6 +269,33 @@
   font-weight:700;color:var(--violet);background:rgba(245,129,31,.09);border:1px solid rgba(245,129,31,.28);
   border-radius:100px;transition:background .2s,color .2s,transform .2s}
 .mkt-consultant:hover .mkt-consultant-more{background:var(--grad);color:#fff;border-color:transparent;transform:translateX(2px)}
+.mkt-team-body .mkt-team-apport{margin-top:.55rem;font-size:.75rem;font-weight:800;letter-spacing:.02em;color:var(--violet);text-transform:uppercase}
+.mkt-consultant{position:relative}
+.mkt-team-foot{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.9rem}
+.mkt-team-foot .mkt-consultant-more{margin-top:0}
+/* lien étiré : toute la carte est cliquable via « En savoir plus » */
+.mkt-stretch::after{content:"";position:absolute;inset:0;z-index:1}
+.mkt-team-foot .mkt-li-ic{position:relative;z-index:2}
+/* icône LinkedIn sur les cartes */
+.mkt-li-ic{display:inline-grid;place-items:center;width:30px;height:30px;flex:0 0 auto;border-radius:8px;color:#0A66C2;
+  background:rgba(10,102,194,.1);transition:background .2s,color .2s}
+.mkt-li-ic:hover{background:#0A66C2;color:#fff}
+/* bouton LinkedIn sur les fiches */
+.mkt-li-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;padding:.5rem 1rem;border-radius:10px;
+  font-size:.85rem;font-weight:700;color:#0A66C2;background:rgba(10,102,194,.1);transition:background .2s,color .2s}
+.mkt-li-btn:hover{background:#0A66C2;color:#fff}
+/* bloc « apport dans le groupe » sur les fiches */
+.mkt-apport{display:inline-flex;flex-direction:column;gap:.3rem;padding:.9rem 1.2rem;border-radius:14px;
+  background:linear-gradient(135deg,rgba(245,129,31,.1),rgba(194,65,12,.06));border:1px solid rgba(245,129,31,.25)}
+.mkt-apport strong{font-size:1.3rem;color:var(--ink);font-weight:800}
+/* genèse du cabinet */
+.mkt-genese{max-width:820px}
+.mkt-genese p{font-size:1.08rem;line-height:1.8;color:var(--ink2);margin:0 0 1.1rem}
+.mkt-genese-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.6rem}
+.mkt-genese-stats>div{padding:1.1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.mkt-genese-stats b{display:block;font-size:1.35rem;color:var(--ink);font-weight:800}
+.mkt-genese-stats span{font-size:.82rem;color:var(--ink3)}
+@media(max-width:640px){.mkt-genese-stats{grid-template-columns:1fr}}
 /* En-tête « Notre équipe » mis en avant */
 .mkt-team-head{text-align:center;max-width:760px;margin-left:auto;margin-right:auto}
 .mkt-team-head .eyebrow{justify-content:center;display:flex;width:max-content;margin-left:auto;margin-right:auto}

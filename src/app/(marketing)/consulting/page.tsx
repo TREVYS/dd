@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 import { TeamPhoto } from "../_components/team-photo";
+import { LinkedinLink } from "../_components/linkedin-link";
 import { CONSULTANTS } from "@/lib/consultants";
 
 export const metadata: Metadata = {
@@ -103,18 +104,21 @@ export default function Page() {
           </div>
           <div className="mkt-team">
             {CONSULTANTS.map((c) => (
-              <Link className="mkt-team-card mkt-consultant" href={`/consulting/${c.slug}`} key={c.slug}>
+              <div className="mkt-team-card mkt-consultant" key={c.slug}>
                 <TeamPhoto
-                  src={`/brand/team/${c.slug}.jpg`}
+                  src={c.photo ?? `/brand/team/${c.slug}.jpg`}
                   initials={c.initials}
                   alt={c.firstName}
                 />
                 <div className="mkt-team-body">
                   <div className="nm">{c.firstName}</div>
                   <div className="rl">{c.role}</div>
-                  <span className="mkt-consultant-more">En savoir plus →</span>
+                  <div className="mkt-team-foot">
+                    <Link className="mkt-consultant-more mkt-stretch" href={`/consulting/${c.slug}`}>En savoir plus →</Link>
+                    <LinkedinLink href={c.linkedin ?? "https://www.linkedin.com/company/trevys-advisory/"} name={c.firstName} className="mkt-li-ic" compact />
+                  </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
