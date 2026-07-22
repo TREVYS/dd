@@ -54,7 +54,7 @@ export function Footer() {
             <h5>Ressources</h5>
             <Link href="/blog">Ressources</Link>
             <Link href="/contact">Contact</Link>
-            <Link href="/app">Espace client</Link>
+            <Link href="/espace-client">Espace client</Link>
             <Link href="/mentions-legales">Mentions légales</Link>
           </div>
         </div>
@@ -63,6 +63,18 @@ export function Footer() {
             © {new Date().getFullYear()} T.A. Trevys Advisory · EURL · 13 avenue
             Bugeaud, 75116 Paris · SIREN 839&nbsp;267&nbsp;804 · RCS Paris
           </p>
+          <div className="mkt-foot-social">
+            <a
+              href="https://www.linkedin.com/company/trevys-advisory/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Trevys sur LinkedIn"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.3c0-1.27-.02-2.9-1.77-2.9-1.77 0-2.04 1.38-2.04 2.8V21h-4z" />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </footer>

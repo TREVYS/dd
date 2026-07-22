@@ -193,6 +193,10 @@
 .mkt-foot .col a:hover{color:var(--violet)}
 .mkt-foot-bot{display:flex;justify-content:space-between;align-items:center;padding-top:2rem;flex-wrap:wrap;gap:1rem}
 .mkt-foot-bot p{font-size:.8rem;color:var(--ink3)}
+.mkt-foot-social{display:flex;gap:.6rem}
+.mkt-foot-social a{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);display:grid;place-items:center;color:var(--ink2);transition:.2s}
+.mkt-foot-social a:hover{background:var(--grad);border-color:transparent;color:#fff}
+.mkt-foot-social svg{width:18px;height:18px}
 
 /* generic page header */
 .mkt-phead{padding:calc(var(--nh) + 4.5rem) var(--edge) 3rem}

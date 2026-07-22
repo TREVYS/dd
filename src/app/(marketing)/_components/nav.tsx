@@ -123,7 +123,7 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         </ul>
 
         <div className="mkt-ncta">
-          <Link className="btn btn-sm btn-ghost" href="/app">
+          <Link className="btn btn-sm btn-ghost" href="/espace-client">
             Espace client
           </Link>
           <Link className="btn btn-sm btn-gold mkt-ncta-rdv" href="/rendez-vous">

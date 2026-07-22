@@ -16,6 +16,7 @@ const PUBLIC_PREFIXES = [
   "/p", // pages personnalisées créées depuis le back-office
   "/contact",
   "/rendez-vous",
+  "/espace-client",
   "/mentions-legales",
   "/fec-partage", // partage de FEC par jeton
   "/uploads", // médias importés depuis le back-office
