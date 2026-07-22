@@ -50,7 +50,7 @@ export default function Page() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))",
+              gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
               gap: "1rem",
             }}
           >
@@ -86,7 +86,7 @@ export default function Page() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))",
+              gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
               gap: "1.2rem",
             }}
           >

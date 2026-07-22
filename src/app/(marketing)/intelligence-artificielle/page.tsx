@@ -75,7 +75,7 @@ export default function Page() {
             <span className="eyebrow">Un cadre de confiance</span>
             <h2>Une IA <em>maîtrisée</em> et responsable</h2>
           </div>
-          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))" }}>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
             {CARDS.map((c) => (
               <div className="mkt-svc" key={c.t}>
                 <h3 style={{ fontSize: "1.2rem" }}>{c.t}</h3>
@@ -126,7 +126,7 @@ export default function Page() {
               l&apos;intérieur.
             </p>
           </div>
-          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))" }}>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
             {USECASES.map((u) => (
               <div className="mkt-svc" key={u.t}>
                 <div className="ico">
