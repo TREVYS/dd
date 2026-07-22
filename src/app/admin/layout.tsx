@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import "./admin.css";
 import { AdminNav } from "./admin-nav";
+import { unreadCount } from "@/lib/newsletter";
 
 export const metadata: Metadata = {
   title: "Back-office · Trevys",
@@ -21,6 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const name = session.user.name ?? session.user.email ?? "Admin";
   const initials = name.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
+  const badges = { "/admin/communication/newsletter": unreadCount() };
 
   return (
     <div className="adm">
@@ -28,7 +30,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="adm-brand">
           <span className="adm-brandmark">TA</span> Cockpit <b>Trevys</b>
         </div>
-        <AdminNav />
+        <AdminNav badges={badges} />
         <div className="sp">
           <Link href="/">← Voir le site</Link>
           <Link href="/app">Aller à l&apos;ERP</Link>

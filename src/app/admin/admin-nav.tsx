@@ -33,7 +33,7 @@ const GROUPS: Group[] = [
   },
 ];
 
-export function AdminNav() {
+export function AdminNav({ badges = {} }: { badges?: Record<string, number> }) {
   const pathname = usePathname();
   const alfredOn = pathname === "/admin/communication";
   return (
@@ -64,9 +64,11 @@ export function AdminNav() {
               );
             }
             const on = l.exact ? pathname === l.href : pathname.startsWith(l.href);
+            const badge = badges[l.href] ?? 0;
             return (
               <Link key={l.href} href={l.href} className={on ? "on" : ""}>
                 {l.label}
+                {badge > 0 && <span className="adm-badge">{badge}</span>}
               </Link>
             );
           })}

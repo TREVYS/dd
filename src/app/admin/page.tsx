@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAllPosts, formatDateFr } from "@/lib/blog";
 import { listPages } from "@/lib/content-admin";
 import { readAnalytics, lastDays } from "@/lib/analytics";
+import { unreadCount } from "@/lib/newsletter";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,7 @@ export default function AdminDashboard() {
   const posts = getAllPosts();
   const pages = listPages();
   const a = readAnalytics();
+  const newSubs = unreadCount();
   const days = lastDays(a, 7);
   const max = Math.max(1, ...days.map((d) => d.views));
   const recent = posts.slice(0, 3);
@@ -26,6 +28,16 @@ export default function AdminDashboard() {
           <h2>Bonjour John 👋 pilotez votre site & votre communication</h2>
           <Link className="cta" href="/admin/communication">Parler à Alfred →</Link>
         </div>
+
+        {newSubs > 0 && (
+          <Link href="/admin/communication/newsletter" className="ck-notif">
+            <span className="ck-notif-ic">🔔</span>
+            <span>
+              <b>{newSubs} nouvelle{newSubs > 1 ? "s" : ""} inscription{newSubs > 1 ? "s" : ""}</b> à la newsletter « Recevez nos analyses »
+            </span>
+            <span className="ck-notif-go">Voir →</span>
+          </Link>
+        )}
 
         <div className="ck-stats">
           <div className="ck-stat">
