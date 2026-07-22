@@ -6,15 +6,20 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 
 const EXPERTISES = [
-  { href: "/expertise-comptable", label: "Expertise comptable" },
-  { href: "/consulting", label: "Consulting" },
-  { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
-  { href: "/facturation-electronique", label: "Facturation électronique" },
+  { href: "/expertise-comptable", label: "Expertise comptable", d: "Tenue, révision, bilan augmenté" },
+  { href: "/consulting", label: "Consulting", d: "Pilotage, valorisation, stratégie" },
+  { href: "/intelligence-artificielle", label: "Intelligence artificielle", d: "Automatisation & agents métier" },
+  { href: "/facturation-electronique", label: "Facturation électronique", d: "Mise en conformité 2026" },
 ];
 
-// Liens de premier niveau (hors groupe « Expertises »).
+const CABINET = [
+  { href: "/le-cabinet", label: "À propos", d: "La maison Trevys" },
+  { href: "/notre-ecosysteme", label: "Notre écosystème", d: "Nos partenaires & le groupe" },
+  { href: "/references", label: "Références", d: "Ils nous font confiance" },
+];
+
+// Liens de premier niveau (hors groupes déroulants).
 const PRIMARY = [
-  { href: "/le-cabinet", label: "Le cabinet" },
   { href: "/blog", label: "Ressources" },
   { href: "/contact", label: "Contact" },
 ];
@@ -26,17 +31,20 @@ const MOBILE_LINKS = [
   { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
   { href: "/le-cabinet", label: "Le cabinet" },
+  { href: "/notre-ecosysteme", label: "Notre écosystème" },
+  { href: "/references", label: "Références" },
   { href: "/blog", label: "Ressources" },
 ];
 
 type NavLink = { href: string; label: string };
+type DropItem = { href: string; label: string; d: string };
 
 export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dropOpen, setDropOpen] = useState(false);
-  const dropRef = useRef<HTMLLIElement>(null);
+  const [openDrop, setOpenDrop] = useState<string | null>(null);
+  const dropsRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -53,26 +61,63 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
     };
   }, [mobileOpen]);
 
-  // Fermer le dropdown au clic extérieur et à la touche Échap.
+  // Fermer les dropdowns au clic extérieur et à la touche Échap.
   useEffect(() => {
-    if (!dropOpen) return;
+    if (!openDrop) return;
     const onDoc = (e: MouseEvent) => {
-      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
-        setDropOpen(false);
+      if (dropsRef.current && !dropsRef.current.contains(e.target as Node)) {
+        setOpenDrop(null);
       }
     };
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setDropOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenDrop(null);
     document.addEventListener("mousedown", onDoc);
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("mousedown", onDoc);
       document.removeEventListener("keydown", onKey);
     };
-  }, [dropOpen]);
+  }, [openDrop]);
 
   const isCur = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
-  const expertiseActive = EXPERTISES.some((e) => isCur(e.href));
+
+  const renderDrop = (id: string, label: string, items: DropItem[]) => {
+    const open = openDrop === id;
+    const active = items.some((i) => isCur(i.href));
+    return (
+      <li
+        className={`mkt-has-drop${open ? " open" : ""}`}
+        onMouseEnter={() => setOpenDrop(id)}
+        onMouseLeave={() => setOpenDrop((v) => (v === id ? null : v))}
+      >
+        <button
+          type="button"
+          className={`mkt-drop-trigger${active ? " cur" : ""}`}
+          aria-expanded={open}
+          aria-haspopup="true"
+          onClick={() => setOpenDrop((v) => (v === id ? null : id))}
+        >
+          {label}
+          <svg viewBox="0 0 10 10" className="mkt-caret" aria-hidden="true">
+            <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
+          </svg>
+        </button>
+        <div className="mkt-drop">
+          {items.map((i) => (
+            <Link
+              key={i.label}
+              href={i.href}
+              className={isCur(i.href) ? "cur" : ""}
+              onClick={() => setOpenDrop(null)}
+            >
+              <span className="dt">{i.label}</span>
+              <span className="dd">{i.d}</span>
+            </Link>
+          ))}
+        </div>
+      </li>
+    );
+  };
 
   return (
     <>
@@ -81,38 +126,9 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
           <Logo />
         </Link>
 
-        <ul className="mkt-links">
-          <li
-            ref={dropRef}
-            className={`mkt-has-drop${dropOpen ? " open" : ""}`}
-            onMouseEnter={() => setDropOpen(true)}
-            onMouseLeave={() => setDropOpen(false)}
-          >
-            <button
-              type="button"
-              className={`mkt-drop-trigger${expertiseActive ? " cur" : ""}`}
-              aria-expanded={dropOpen}
-              aria-haspopup="true"
-              onClick={() => setDropOpen((v) => !v)}
-            >
-              Expertises
-              <svg viewBox="0 0 10 10" className="mkt-caret" aria-hidden="true">
-                <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
-              </svg>
-            </button>
-            <div className="mkt-drop">
-              {EXPERTISES.map((e) => (
-                <Link
-                  key={e.href}
-                  href={e.href}
-                  className={isCur(e.href) ? "cur" : ""}
-                  onClick={() => setDropOpen(false)}
-                >
-                  {e.label}
-                </Link>
-              ))}
-            </div>
-          </li>
+        <ul className="mkt-links" ref={dropsRef}>
+          {renderDrop("cabinet", "Le cabinet", CABINET)}
+          {renderDrop("expertises", "Expertises", EXPERTISES)}
           {[...PRIMARY, ...extraLinks].map((l) => (
             <li key={l.href}>
               <Link href={l.href} className={isCur(l.href) ? "cur" : ""}>
