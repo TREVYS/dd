@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { saveArticleAction } from "../actions";
 import { MarkdownEditor } from "../markdown-editor";
+import { ImageField } from "../image-field";
 import type { ArticleInput } from "@/lib/content-admin";
 
 export function ArticleForm({ article }: { article?: ArticleInput }) {
@@ -37,8 +38,8 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
       </div>
 
       <div className="adm-field">
-        <label>Image (URL) <small>— ex. média WordPress</small></label>
-        <input name="image" defaultValue={article?.image ?? ""} placeholder="https://www.trevys-advisory.fr/wp-content/uploads/…" />
+        <label>Image de couverture <small>— importez un fichier ou collez une URL</small></label>
+        <ImageField name="image" defaultValue={article?.image ?? ""} />
       </div>
 
       <div className="adm-field">

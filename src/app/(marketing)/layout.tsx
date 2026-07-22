@@ -56,7 +56,12 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const JSON_LD = {
   "@context": "https://schema.org",
@@ -122,6 +127,17 @@ export default function MarketingLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
+      {GA_ID && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
+            }}
+          />
+        </>
+      )}
       <Nav extraLinks={extraLinks} />
       {children}
       <Footer />

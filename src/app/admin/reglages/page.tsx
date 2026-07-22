@@ -10,6 +10,8 @@ export default async function AdminReglages({
 }) {
   const sp = await searchParams;
   const accounts = publicStatus();
+  const alfredKey = !!process.env.ANTHROPIC_API_KEY;
+  const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
 
   return (
     <>
@@ -32,6 +34,41 @@ export default async function AdminReglages({
       )}
 
       <div className="adm-card">
+        <h2>Alfred — clé API (Intelligence artificielle)</h2>
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: ".7rem", margin: ".2rem 0 1rem",
+            fontWeight: 700, color: alfredKey ? "#2E9E6B" : "#C2410C",
+          }}
+        >
+          <span
+            style={{
+              width: 10, height: 10, borderRadius: "50%",
+              background: alfredKey ? "#2E9E6B" : "#E26A0F",
+            }}
+          />
+          {alfredKey ? "Alfred est actif — clé API détectée." : "Alfred est en veille — aucune clé API détectée."}
+        </div>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".88rem", lineHeight: 1.6, margin: "0 0 .6rem" }}>
+          Alfred utilise l&apos;IA Claude (Anthropic). Pour l&apos;activer, ajoutez votre clé
+          <code> ANTHROPIC_API_KEY </code> sur l&apos;instance Gandi (elle n&apos;est jamais stockée dans le code) :
+        </p>
+        <ol style={{ margin: 0, paddingLeft: "1.2rem", fontSize: ".88rem", lineHeight: 1.7, color: "var(--ink2)" }}>
+          <li>Créez une clé sur <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> (rubrique <b>API Keys</b>).</li>
+          <li>Ouvrez la <b>console SSH</b> de votre instance Gandi (<code>hosting-user@…</code>).</li>
+          <li>
+            Ajoutez la ligne au fichier d&apos;environnement, puis redémarrez :
+            <pre style={{ background: "#faf8f5", border: "1px solid var(--line)", borderRadius: 8, padding: ".7rem .9rem", overflowX: "auto", margin: ".4rem 0 0", fontSize: ".82rem" }}>
+{`echo 'ANTHROPIC_API_KEY=sk-ant-…' >> ~/.env.trevys`}</pre>
+          </li>
+          <li>Redéployez (ou redémarrez l&apos;instance) pour qu&apos;Alfred prenne la clé en compte.</li>
+        </ol>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".8rem", marginTop: ".8rem" }}>
+          ⚠️ Ne collez jamais votre clé dans le chat ni dans un fichier versionné (Git).
+        </p>
+      </div>
+
+      <div className="adm-card" style={{ marginTop: "1.2rem" }}>
         <h2>Comptes réseaux sociaux</h2>
         <p className="muted" style={{ margin: "0 0 1.2rem", color: "var(--ink3)", fontSize: ".88rem" }}>
           Connectez vos comptes pour publier depuis le Pôle communication (à venir).

@@ -7,6 +7,8 @@ export default function AdminStats() {
   const days = lastDays(a, 30);
   const paths = Object.entries(a.paths).sort((x, y) => y[1] - x[1]);
   const events = Object.entries(a.events).sort((x, y) => y[1] - x[1]);
+  const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
+  const gscOn = !!process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 
   return (
     <>
@@ -15,6 +17,43 @@ export default function AdminStats() {
           <h1>Statistiques</h1>
           <p>Audience et interactions. {a.updatedAt && `Dernière mesure : ${new Date(a.updatedAt).toLocaleString("fr-FR")}.`}</p>
         </div>
+      </div>
+
+      <div className="adm-card">
+        <h2>Google Analytics &amp; Search Console</h2>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".88rem", lineHeight: 1.6, margin: "0 0 1rem" }}>
+          Reliez votre site aux outils Google pour un suivi d&apos;audience détaillé (visiteurs, sources, conversions)
+          et le référencement (mots-clés, indexation).
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div style={{ border: "1px solid var(--line)", borderRadius: 14, padding: "1.1rem 1.2rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: ".6rem", fontWeight: 800 }}>
+              <span style={{ width: 9, height: 9, borderRadius: "50%", background: gaId ? "#2E9E6B" : "#E26A0F" }} />
+              Google Analytics 4
+            </div>
+            <p className="muted" style={{ fontSize: ".84rem", color: "var(--ink3)", margin: ".5rem 0 .8rem", lineHeight: 1.55 }}>
+              {gaId
+                ? <>Connecté — identifiant <code>{gaId}</code>. Consultez vos données dans Google.</>
+                : <>Ajoutez la variable <code>NEXT_PUBLIC_GA_ID=G-XXXXXXX</code> sur l&apos;instance (<code>~/.env.trevys</code>), puis redéployez.</>}
+            </p>
+            <a className="adm-btn ghost sm" href="https://analytics.google.com/" target="_blank" rel="noopener">Ouvrir Analytics</a>
+          </div>
+          <div style={{ border: "1px solid var(--line)", borderRadius: 14, padding: "1.1rem 1.2rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: ".6rem", fontWeight: 800 }}>
+              <span style={{ width: 9, height: 9, borderRadius: "50%", background: gscOn ? "#2E9E6B" : "#E26A0F" }} />
+              Search Console
+            </div>
+            <p className="muted" style={{ fontSize: ".84rem", color: "var(--ink3)", margin: ".5rem 0 .8rem", lineHeight: 1.55 }}>
+              {gscOn
+                ? <>Balise de vérification en place. Validez la propriété dans Search Console.</>
+                : <>Ajoutez <code>NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=…</code> (code fourni par Google), redéployez, puis validez.</>}
+            </p>
+            <a className="adm-btn ghost sm" href="https://search.google.com/search-console" target="_blank" rel="noopener">Ouvrir Search Console</a>
+          </div>
+        </div>
+        <p className="muted" style={{ fontSize: ".8rem", color: "var(--ink3)", marginTop: "1rem" }}>
+          Les compteurs ci-dessous restent alimentés en direct par votre site (sans cookie tiers), en complément de Google.
+        </p>
       </div>
 
       <div className="adm-grid">

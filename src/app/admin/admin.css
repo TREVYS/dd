@@ -6,6 +6,20 @@
 .adm-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.05rem;padding:.3rem .6rem 1rem}
 .adm-brand b{color:var(--o)}
 .adm-grp{font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);font-weight:700;padding:.95rem .7rem .4rem}
+/* Carte Alfred mise en avant, tout en haut de la navigation */
+.adm-alfred{display:flex;align-items:center;gap:.7rem;padding:.7rem;margin:0 0 .5rem;border-radius:14px;text-decoration:none;
+  background:linear-gradient(135deg,#FBB040,#C2410C);color:#fff;box-shadow:0 12px 26px -12px rgba(226,106,15,.7);
+  border:1px solid rgba(255,255,255,.15);transition:transform .15s,box-shadow .15s}
+.adm-alfred:hover{transform:translateY(-1px);box-shadow:0 16px 30px -12px rgba(226,106,15,.8)}
+.adm-alfred.on{outline:2px solid #fff;outline-offset:-4px}
+.adm-alfred-av{position:relative;width:44px;height:44px;flex:0 0 auto;border-radius:50%;overflow:hidden;
+  background:rgba(255,255,255,.22);display:grid;place-items:center}
+.adm-alfred-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.adm-alfred-ini{font-weight:800;font-size:1.1rem;color:#fff}
+.adm-alfred-tx{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.adm-alfred-tx b{font-size:.98rem;font-weight:800}
+.adm-alfred-tx small{font-size:.7rem;opacity:.9}
+.adm-alfred-dot{margin-left:auto;width:9px;height:9px;border-radius:50%;background:#7CF29B;box-shadow:0 0 0 3px rgba(124,242,155,.3)}
 .adm-side a{display:flex;align-items:center;gap:.7rem;padding:.66rem .78rem;border-radius:12px;color:var(--ink2);text-decoration:none;font-size:.9rem;font-weight:600;transition:.15s;position:relative}
 .adm-side a:hover{background:var(--o-tint);color:var(--ink)}
 .adm-side a.on{background:var(--o-tint);color:var(--o2)}
@@ -149,6 +163,13 @@
 
 /* Éditeur Markdown avec aperçu */
 .adm-md{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.adm-md-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:.3rem;padding:.45rem .5rem;border-bottom:1px solid var(--line);background:#faf8f5}
+.adm-md-tool{border:1px solid var(--line);background:#fff;font:inherit;font-size:.8rem;font-weight:700;color:var(--ink2);
+  padding:.32rem .6rem;border-radius:8px;cursor:pointer;line-height:1;transition:background .15s,color .15s}
+.adm-md-tool:hover{background:var(--o);color:#fff;border-color:var(--o)}
+.adm-md-tool.img{margin-left:.2rem;border-style:dashed}
+.adm-md-tool:disabled{opacity:.6;cursor:default}
+.adm-md-toolbar .adm-md-tabs{margin-left:auto;padding:0;border:none;background:none}
 .adm-md-tabs{display:flex;gap:.2rem;padding:.4rem;border-bottom:1px solid var(--line);background:#faf8f5}
 .adm-md-tabs button{border:none;background:none;font:inherit;font-size:.82rem;font-weight:700;color:var(--ink2);padding:.4rem .9rem;border-radius:8px;cursor:pointer}
 .adm-md-tabs button.on{background:var(--o);color:#fff}

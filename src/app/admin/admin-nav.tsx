@@ -8,6 +8,15 @@ type Group = { title: string; items: Item[] };
 
 const GROUPS: Group[] = [
   {
+    title: "Communication",
+    items: [
+      { href: "/admin/communication/alfred", label: "Éduquer Alfred" },
+      { href: "/admin/communication/calendrier", label: "Calendrier éditorial" },
+      { href: "#", label: "Réseaux sociaux", soon: true },
+      { href: "#", label: "Newsletter", soon: true },
+    ],
+  },
+  {
     title: "Site web",
     items: [
       { href: "/admin", label: "Tableau de bord", exact: true },
@@ -19,16 +28,6 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    title: "Communication",
-    items: [
-      { href: "/admin/communication", label: "Alfred", exact: true },
-      { href: "/admin/communication/alfred", label: "Éduquer Alfred" },
-      { href: "/admin/communication/calendrier", label: "Calendrier éditorial" },
-      { href: "#", label: "Réseaux sociaux", soon: true },
-      { href: "#", label: "Newsletter", soon: true },
-    ],
-  },
-  {
     title: "Général",
     items: [{ href: "/admin/reglages", label: "Réglages" }],
   },
@@ -36,8 +35,21 @@ const GROUPS: Group[] = [
 
 export function AdminNav() {
   const pathname = usePathname();
+  const alfredOn = pathname === "/admin/communication";
   return (
     <nav style={{ display: "flex", flexDirection: "column" }}>
+      <Link href="/admin/communication" className={`adm-alfred${alfredOn ? " on" : ""}`}>
+        <span className="adm-alfred-av">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/uploads/alfred.png" alt="" onError={(e) => { (e.currentTarget.style.display = "none"); }} />
+          <span className="adm-alfred-ini">A</span>
+        </span>
+        <span className="adm-alfred-tx">
+          <b>Alfred</b>
+          <small>Directeur de communication</small>
+        </span>
+        <span className="adm-alfred-dot" />
+      </Link>
       {GROUPS.map((g) => (
         <div key={g.title}>
           <div className="adm-grp">{g.title}</div>
