@@ -1,10 +1,27 @@
 "use server";
 
 import { z } from "zod";
+import { addSubscriber } from "@/lib/newsletter";
+import { sendTelegram } from "@/lib/notify";
 
 export type NewsletterState = { ok: boolean; message: string };
 
 const schema = z.object({ email: z.string().email().max(160) });
+
+// Enregistre l'inscription côté cabinet (cockpit + Telegram), sans bloquer la
+// réponse à l'utilisateur en cas d'échec d'une notification.
+async function recordAndNotify(email: string) {
+  try {
+    const isNew = addSubscriber(email, "Recevez nos analyses");
+    if (isNew) {
+      await sendTelegram(
+        `📩 <b>Nouvelle inscription newsletter</b>\n${email}\n<i>« Recevez nos analyses » — trevys.fr</i>`,
+      );
+    }
+  } catch (e) {
+    console.error("[newsletter] notification échouée:", e);
+  }
+}
 
 export async function subscribeNewsletter(
   _prev: NewsletterState,
@@ -23,6 +40,7 @@ export async function subscribeNewsletter(
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
     console.info("[newsletter] inscription (Brevo non configuré):", parsed.data.email);
+    await recordAndNotify(parsed.data.email);
     return { ok: true, message: "Merci ! Votre inscription a bien été prise en compte." };
   }
 
@@ -45,6 +63,7 @@ export async function subscribeNewsletter(
 
     // 201 créé, 204 mis à jour ; 400 "already associated" = déjà inscrit.
     if (res.ok) {
+      await recordAndNotify(parsed.data.email);
       return { ok: true, message: "Merci ! Votre inscription est confirmée." };
     }
     const data = (await res.json().catch(() => ({}))) as { code?: string };

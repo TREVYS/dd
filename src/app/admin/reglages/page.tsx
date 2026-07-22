@@ -12,6 +12,7 @@ export default async function AdminReglages({
   const accounts = publicStatus();
   const alfredKey = !!process.env.ANTHROPIC_API_KEY;
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
+  const tgOn = !!(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID);
 
   return (
     <>
@@ -66,6 +67,33 @@ export default async function AdminReglages({
         <p className="muted" style={{ color: "var(--ink3)", fontSize: ".8rem", marginTop: ".8rem" }}>
           ⚠️ Ne collez jamais votre clé dans le chat ni dans un fichier versionné (Git).
         </p>
+      </div>
+
+      <div className="adm-card" style={{ marginTop: "1.2rem" }}>
+        <h2>Notifications Telegram</h2>
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: ".7rem", margin: ".2rem 0 1rem",
+            fontWeight: 700, color: tgOn ? "#2E9E6B" : "#C2410C",
+          }}
+        >
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: tgOn ? "#2E9E6B" : "#E26A0F" }} />
+          {tgOn ? "Actives — vous recevez une alerte à chaque inscription newsletter." : "Non configurées."}
+        </div>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".88rem", lineHeight: 1.6, margin: "0 0 .6rem" }}>
+          Recevez une notification sur Telegram dès qu&apos;un visiteur s&apos;inscrit à « Recevez nos analyses ».
+        </p>
+        <ol style={{ margin: 0, paddingLeft: "1.2rem", fontSize: ".88rem", lineHeight: 1.7, color: "var(--ink2)" }}>
+          <li>Sur Telegram, écrivez à <b>@BotFather</b> → <code>/newbot</code> → suivez les étapes → vous obtenez un <b>jeton de bot</b>.</li>
+          <li>Démarrez une conversation avec votre bot (envoyez-lui « Bonjour »).</li>
+          <li>Récupérez votre <b>chat id</b> : écrivez à <b>@userinfobot</b>, il vous le donne.</li>
+          <li>
+            Ajoutez les deux variables sur l&apos;instance (console SSH), puis redéployez :
+            <pre style={{ background: "#faf8f5", border: "1px solid var(--line)", borderRadius: 8, padding: ".7rem .9rem", overflowX: "auto", margin: ".4rem 0 0", fontSize: ".82rem" }}>
+{`echo 'TELEGRAM_BOT_TOKEN=123456:ABC…' >> ~/.env.trevys
+echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
+          </li>
+        </ol>
       </div>
 
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>

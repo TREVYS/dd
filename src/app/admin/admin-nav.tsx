@@ -12,8 +12,8 @@ const GROUPS: Group[] = [
     items: [
       { href: "/admin/communication/alfred", label: "Éduquer Alfred" },
       { href: "/admin/communication/calendrier", label: "Calendrier éditorial" },
+      { href: "/admin/communication/newsletter", label: "Newsletter" },
       { href: "#", label: "Réseaux sociaux", soon: true },
-      { href: "#", label: "Newsletter", soon: true },
     ],
   },
   {

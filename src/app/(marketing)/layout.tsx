@@ -3,6 +3,7 @@ import "./marketing.css";
 import { Nav } from "./_components/nav";
 import { Footer } from "./_components/footer";
 import { AnalyticsBeacon } from "./_components/analytics-beacon";
+import { WhatsappFab } from "./_components/whatsapp";
 import { menuPages } from "@/lib/content-admin";
 import { SITE_URL } from "@/lib/site";
 
@@ -141,6 +142,7 @@ export default function MarketingLayout({
       <Nav extraLinks={extraLinks} />
       {children}
       <Footer />
+      <WhatsappFab />
       <AnalyticsBeacon />
     </div>
   );

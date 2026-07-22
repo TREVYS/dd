@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ContactForm } from "./contact-form";
+import { WhatsappButton, WA_DISPLAY } from "../_components/whatsapp";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 const WAYS = [
-  { l: "Téléphone", v: "+33 7 68 05 04 65" },
+  { l: "Téléphone / WhatsApp", v: WA_DISPLAY },
   { l: "E-mail", v: "contact@trevys-advisory.fr" },
   { l: "Adresse", v: "13 avenue Bugeaud, 75116 Paris" },
   { l: "Rendez-vous", v: "En cabinet ou à distance" },
@@ -59,6 +60,10 @@ export default function Page() {
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="mkt-wa-hint" style={{ marginTop: "1.8rem" }}>
+                <span>Plutôt WhatsApp ? Écrivez-nous, on répond vite 👋</span>
+                <WhatsappButton context="contact" />
               </div>
             </div>
             <ContactForm />

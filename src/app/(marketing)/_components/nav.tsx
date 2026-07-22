@@ -19,9 +19,9 @@ const CABINET = [
 ];
 
 // Liens de premier niveau (hors groupes déroulants).
+// « Contact » est retiré du menu PC : « Prendre rendez-vous » joue ce rôle.
 const PRIMARY = [
   { href: "/blog", label: "Ressources" },
-  { href: "/contact", label: "Contact" },
 ];
 
 // Menu mobile : nos deux métiers en tête, puis le reste.
