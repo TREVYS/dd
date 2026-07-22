@@ -52,6 +52,68 @@
 .adm-tag{display:inline-block;font-size:.72rem;font-weight:700;color:var(--o);background:rgba(245,129,31,.1);border:1px solid rgba(245,129,31,.22);border-radius:100px;padding:.2rem .6rem}
 .adm-note{background:#fff8f2;border:1px solid #f3ddc5;border-radius:12px;padding:1rem 1.2rem;font-size:.86rem;color:var(--ink2);line-height:1.55}
 .adm-thumb{width:64px;height:40px;object-fit:cover;border-radius:6px;background:linear-gradient(140deg,#FBB040,#C2410C);display:block}
+/* Marque + barre du haut du cockpit */
+.adm-brandmark{width:30px;height:30px;border-radius:9px;background:linear-gradient(140deg,var(--o),var(--o2));display:inline-grid;place-items:center;color:#fff;font-size:.72rem;font-weight:800;margin-right:.15rem}
+.ck-top{display:flex;align-items:center;gap:1rem;margin:-1.6rem -1.9rem 1.4rem;padding:1rem 1.9rem;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:5;border-radius:22px 22px 0 0}
+.ck-search{flex:1;max-width:440px;display:flex;align-items:center;gap:.6rem;background:var(--bg);border-radius:12px;padding:.6rem .9rem}
+.ck-search svg{width:17px;height:17px;stroke:var(--ink3);fill:none;stroke-width:2}
+.ck-search input{border:none;background:none;outline:none;font:inherit;font-size:.9rem;color:var(--ink);width:100%}
+.ck-topuser{margin-left:auto;display:flex;align-items:center;gap:.6rem}
+.ck-topuser .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(140deg,#FBB040,var(--o2));color:#fff;display:grid;place-items:center;font-weight:800;font-size:.82rem}
+.ck-topuser .nm{font-size:.88rem;font-weight:700}
+@media(max-width:600px){.ck-topuser .nm{display:none}}
+
+/* ===== Cockpit : tableau de bord (style Coursue, couleurs Trevys) ===== */
+.ck-grid{display:grid;grid-template-columns:1fr 340px;gap:1.3rem;align-items:start}
+.ck-main{display:flex;flex-direction:column;gap:1.3rem;min-width:0}
+.ck-aside{display:flex;flex-direction:column;gap:1.3rem}
+
+.ck-hero{position:relative;overflow:hidden;border-radius:22px;padding:2.2rem 2.3rem;color:#fff;
+  background:linear-gradient(115deg,var(--o2) 0%,var(--o) 60%,#FBB040 120%)}
+.ck-hero::after{content:"✦";position:absolute;right:2.5rem;top:50%;transform:translateY(-50%);font-size:8rem;opacity:.18;line-height:0}
+.ck-hero .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.9}
+.ck-hero h2{font-size:1.9rem;font-weight:800;line-height:1.1;margin:.6rem 0 1.2rem;max-width:22ch}
+.ck-hero .cta{display:inline-flex;align-items:center;gap:.5rem;background:#161009;color:#fff;border-radius:100px;padding:.7rem 1.3rem;font-weight:700;font-size:.9rem;text-decoration:none}
+.ck-hero .cta:hover{background:#000}
+
+.ck-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.ck-stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem;display:flex;align-items:center;gap:.9rem}
+.ck-stat .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;background:var(--o-tint)}
+.ck-stat .ic svg{width:20px;height:20px;stroke:var(--o2);fill:none;stroke-width:2}
+.ck-stat .k{font-size:.76rem;color:var(--ink3);font-weight:600}
+.ck-stat .v{font-size:1.35rem;font-weight:800;line-height:1.1;margin-top:.15rem}
+
+.ck-sec-h{display:flex;align-items:center;justify-content:space-between;margin:.2rem 0 .1rem}
+.ck-sec-h h2{font-size:1.1rem;font-weight:800;margin:0}
+.ck-sec-h a{font-size:.82rem;font-weight:700;color:var(--o)}
+
+.ck-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.ck-cc{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
+.ck-cc:hover{transform:translateY(-4px);box-shadow:0 16px 34px -22px rgba(27,23,18,.45)}
+.ck-cc .th{height:120px;background:linear-gradient(140deg,#FBB040,var(--o2));position:relative}
+.ck-cc .th img{width:100%;height:100%;object-fit:cover;display:block}
+.ck-cc .bd{padding:.9rem 1rem 1.1rem}
+.ck-cc .cat{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;font-weight:800;color:var(--o)}
+.ck-cc .ti{font-size:.92rem;font-weight:700;line-height:1.3;margin:.35rem 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ck-cc .mt{font-size:.74rem;color:var(--ink3)}
+
+.ck-acard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.3rem 1.4rem;box-shadow:var(--sh,0 10px 30px -22px rgba(27,23,18,.4))}
+.ck-acard h3{font-size:1rem;font-weight:800;margin:0 0 1rem}
+.ck-gaugewrap{display:flex;flex-direction:column;align-items:center;text-align:center}
+.ck-gaugewrap .nm{font-weight:800;font-size:1.05rem;margin-top:.6rem}
+.ck-gaugewrap .sb{font-size:.8rem;color:var(--ink3);margin-top:.2rem;line-height:1.4}
+.ck-bars2{display:flex;align-items:flex-end;gap:.5rem;height:110px;margin-top:.5rem}
+.ck-bars2 .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;height:100%;justify-content:flex-end}
+.ck-bars2 .bar{width:64%;border-radius:8px 8px 0 0;min-height:6px;background:var(--o-soft)}
+.ck-bars2 .bar.on{background:linear-gradient(180deg,var(--o),var(--o2))}
+.ck-bars2 .lb{font-size:.64rem;color:var(--ink3)}
+.ck-ql{display:flex;flex-direction:column;gap:.55rem}
+.ck-ql a{display:flex;align-items:center;gap:.7rem;padding:.7rem .8rem;border-radius:12px;border:1px solid var(--line);text-decoration:none;color:var(--ink);font-weight:600;font-size:.88rem;transition:.15s}
+.ck-ql a:hover{border-color:var(--o);background:var(--o-tint)}
+.ck-ql a .qi{width:30px;height:30px;border-radius:9px;background:var(--o-tint);display:grid;place-items:center;flex:0 0 auto;font-size:1rem}
+@media(max-width:1050px){.ck-grid{grid-template-columns:1fr}.ck-stats,.ck-cards{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.ck-stats,.ck-cards{grid-template-columns:1fr}}
+
 /* Statuts (calendrier éditorial) */
 .adm-chipst{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;background:var(--o-tint);color:var(--o2)}
 .adm-chipst.pub{color:#2E9E6B;background:#E6F4EC}

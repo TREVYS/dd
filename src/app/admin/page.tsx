@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, formatDateFr } from "@/lib/blog";
 import { listPages } from "@/lib/content-admin";
 import { readAnalytics, lastDays } from "@/lib/analytics";
 
@@ -9,70 +9,110 @@ export default function AdminDashboard() {
   const posts = getAllPosts();
   const pages = listPages();
   const a = readAnalytics();
-  const days = lastDays(a, 14);
+  const days = lastDays(a, 7);
   const max = Math.max(1, ...days.map((d) => d.views));
-  const topPaths = Object.entries(a.paths).sort((x, y) => y[1] - x[1]).slice(0, 6);
-  const events = Object.entries(a.events).sort((x, y) => y[1] - x[1]);
+  const recent = posts.slice(0, 3);
+  const engagement = a.totals.views ? Math.min(100, Math.round((a.totals.events / a.totals.views) * 100)) : 0;
+
+  const R = 34, C = 2 * Math.PI * R;
+  const dash = (engagement / 100) * C;
 
   return (
-    <>
-      <div className="adm-h">
+    <div className="ck-grid">
+      {/* Colonne principale */}
+      <div className="ck-main">
+        <div className="ck-hero">
+          <div className="lbl">Cockpit Trevys</div>
+          <h2>Bonjour John 👋 pilotez votre site & votre communication</h2>
+          <Link className="cta" href="/admin/communication">Parler à Alfred →</Link>
+        </div>
+
+        <div className="ck-stats">
+          <div className="ck-stat">
+            <span className="ic"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg></span>
+            <div><div className="k">Vues du site</div><div className="v">{a.totals.views.toLocaleString("fr-FR")}</div></div>
+          </div>
+          <div className="ck-stat">
+            <span className="ic"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z" /></svg></span>
+            <div><div className="k">Interactions</div><div className="v">{a.totals.events.toLocaleString("fr-FR")}</div></div>
+          </div>
+          <div className="ck-stat">
+            <span className="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h10" /></svg></span>
+            <div><div className="k">Articles</div><div className="v">{posts.length}</div></div>
+          </div>
+        </div>
+
         <div>
-          <h1>Tableau de bord</h1>
-          <p>Pilotage de votre site — contenu et audience.</p>
+          <div className="ck-sec-h">
+            <h2>Contenus récents</h2>
+            <Link href="/admin/articles">Tout voir</Link>
+          </div>
+          <div className="ck-cards">
+            {recent.map((p) => (
+              <Link className="ck-cc" href={`/admin/articles/${p.slug}`} key={p.slug}>
+                <div className="th">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {p.image && <img src={p.image} alt="" />}
+                </div>
+                <div className="bd">
+                  <div className="cat">{p.category}</div>
+                  <div className="ti">{p.title}</div>
+                  <div className="mt">{formatDateFr(p.date)}</div>
+                </div>
+              </Link>
+            ))}
+            {recent.length === 0 && <p className="muted">Aucun article pour l&apos;instant.</p>}
+          </div>
         </div>
-        <Link className="adm-btn" href="/admin/articles/new">+ Nouvel article</Link>
+
+        <div className="adm-card" style={{ margin: 0 }}>
+          <h2>Audience — 7 derniers jours</h2>
+          <div className="ck-bars2">
+            {days.map((d, i) => (
+              <div className="col" key={d.day}>
+                <div className={`bar${i === days.length - 1 ? " on" : ""}`} style={{ height: `${(d.views / max) * 100}%` }} title={`${d.day} · ${d.views} vues`} />
+                <div className="lb">{d.day.slice(8)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="adm-grid">
-        <div className="adm-kpi"><div className="k">Vues (total)</div><div className="v o">{a.totals.views.toLocaleString("fr-FR")}</div></div>
-        <div className="adm-kpi"><div className="k">Interactions</div><div className="v">{a.totals.events.toLocaleString("fr-FR")}</div></div>
-        <div className="adm-kpi"><div className="k">Articles publiés</div><div className="v">{posts.length}</div></div>
-        <div className="adm-kpi"><div className="k">Pages personnalisées</div><div className="v">{pages.length}</div></div>
-      </div>
+      {/* Colonne latérale */}
+      <div className="ck-aside">
+        <div className="ck-acard">
+          <div className="ck-sec-h" style={{ marginBottom: ".8rem" }}><h3>Statistiques</h3></div>
+          <div className="ck-gaugewrap">
+            <svg width="130" height="130" viewBox="0 0 90 90">
+              <circle cx="45" cy="45" r={R} fill="none" stroke="var(--o-soft)" strokeWidth="8" />
+              <circle cx="45" cy="45" r={R} fill="none" stroke="var(--o)" strokeWidth="8" strokeLinecap="round"
+                strokeDasharray={`${dash} ${C}`} transform="rotate(-90 45 45)" />
+              <text x="45" y="49" textAnchor="middle" fontSize="15" fontWeight="800" fill="var(--ink)">{engagement}%</text>
+            </svg>
+            <div className="nm">Bonjour John 🔥</div>
+            <div className="sb">Taux d&apos;engagement des visiteurs sur votre site.</div>
+          </div>
+        </div>
 
-      <div className="adm-card">
-        <h2>Vues des 14 derniers jours</h2>
-        <div className="adm-bars">
-          {days.map((d) => (
-            <div key={d.day} style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-              <div className="adm-bar" style={{ height: `${(d.views / max) * 100}%` }} title={`${d.day} · ${d.views} vues`} />
-              <div className="lbl">{d.day.slice(8)}</div>
-            </div>
-          ))}
+        <div className="ck-acard">
+          <h3>Pôle communication</h3>
+          <div className="ck-ql">
+            <Link href="/admin/communication"><span className="qi">🎩</span> Parler à Alfred</Link>
+            <Link href="/admin/communication/calendrier"><span className="qi">📅</span> Calendrier éditorial</Link>
+            <Link href="/admin/articles/new"><span className="qi">✍️</span> Nouvel article</Link>
+            <Link href="/admin/medias"><span className="qi">🖼️</span> Médias</Link>
+          </div>
         </div>
-      </div>
 
-      <div className="adm-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-        <div className="adm-card">
-          <h2>Pages les plus vues</h2>
-          {topPaths.length === 0 ? (
-            <p className="muted" style={{ color: "var(--ink3)" }}>Aucune donnée pour l&apos;instant.</p>
-          ) : (
-            <table className="adm-table">
-              <tbody>
-                {topPaths.map(([p, n]) => (
-                  <tr key={p}><td>{p}</td><td style={{ textAlign: "right", fontWeight: 700 }}>{n}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-        <div className="adm-card">
-          <h2>Interactions clés</h2>
-          {events.length === 0 ? (
-            <p className="muted" style={{ color: "var(--ink3)" }}>Aucune interaction enregistrée.</p>
-          ) : (
-            <table className="adm-table">
-              <tbody>
-                {events.map(([e, n]) => (
-                  <tr key={e}><td>{e}</td><td style={{ textAlign: "right", fontWeight: 700 }}>{n}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+        <div className="ck-acard">
+          <h3>Aperçu</h3>
+          <div className="ck-ql">
+            <Link href="/admin/statistiques"><span className="qi">📊</span> Statistiques détaillées</Link>
+            <Link href="/admin/pages"><span className="qi">📄</span> {pages.length} page{pages.length > 1 ? "s" : ""} personnalisée{pages.length > 1 ? "s" : ""}</Link>
+            <Link href="/"><span className="qi">🌐</span> Voir le site</Link>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
