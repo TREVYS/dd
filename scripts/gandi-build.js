@@ -10,8 +10,14 @@ const result = spawnSync(process.execPath, [nextBin, "build"], {
   stdio: "inherit",
   env: {
     ...process.env,
+    // Limite le parallélisme (threads) — évite "can't spawn worker thread".
     RAYON_NUM_THREADS: process.env.RAYON_NUM_THREADS || "1",
     TOKIO_WORKER_THREADS: process.env.TOKIO_WORKER_THREADS || "1",
+    UV_THREADPOOL_SIZE: process.env.UV_THREADPOOL_SIZE || "2",
+    // Plafonne la mémoire du build sous la limite de l'instance (2 Go) pour
+    // éviter que le processus soit tué (OOM) en pleine compilation.
+    NODE_OPTIONS: `${process.env.NODE_OPTIONS || ""} --max-old-space-size=1536`.trim(),
+    NEXT_TELEMETRY_DISABLED: "1",
   },
 });
 
