@@ -113,14 +113,17 @@ export default function Page() {
             </h3>
             <p style={{ margin: 0 }}>
               Parce que la réussite d&apos;un projet logiciel ou d&apos;IA se joue
-              d&apos;abord sur la compréhension du <strong>métier</strong>. Qui,
-              mieux que votre expert-comptable, connaît vos chiffres, vos processus,
-              vos contraintes réglementaires et vos enjeux opérationnels&nbsp;? Cette
-              connaissance intime de votre activité nous permet de traduire un besoin
-              métier en une solution <strong>juste&nbsp;: utile, fiable et réellement
-              adoptée</strong> par vos équipes. Là où d&apos;autres livrent une
-              technologie, nous concevons une réponse ancrée dans la réalité de votre
-              entreprise — parce que nous la comprenons de l&apos;intérieur.
+              d&apos;abord sur la compréhension du <strong>métier</strong>. C&apos;est
+              pourquoi <strong>nous intégrons ces projets en tant qu&apos;expert
+              métier</strong>&nbsp;: qui, mieux que votre expert-comptable, connaît vos
+              chiffres, vos processus, vos contraintes réglementaires et vos enjeux
+              opérationnels&nbsp;? Cette connaissance intime de votre activité nous
+              permet de traduire un besoin métier en une solution <strong>juste&nbsp;:
+              utile, fiable et réellement adoptée</strong> par vos équipes. Là où
+              d&apos;autres livrent une technologie, <strong>nous intervenons au cœur du
+              projet comme référent métier</strong> et concevons une réponse ancrée dans
+              la réalité de votre entreprise — parce que nous la comprenons de
+              l&apos;intérieur.
             </p>
           </div>
           <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))" }}>
