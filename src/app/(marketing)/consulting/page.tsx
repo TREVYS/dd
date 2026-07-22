@@ -91,13 +91,14 @@ export default function Page() {
 
       <section className="sec">
         <div className="wrap">
-          <div className="shead">
+          <div className="shead mkt-team-head">
             <span className="eyebrow">Notre équipe</span>
             <h2>Une <em>équipe</em> de consultants à vos côtés</h2>
-            <p>
+            <p className="mkt-team-lead">
               Derrière chaque mission, des experts aux parcours complémentaires —
-              finance, systèmes d&apos;information, contrôle de gestion et conduite du
-              changement. Cliquez sur un profil pour en savoir plus.
+              finance, systèmes d&apos;information, contrôle de gestion, RH,
+              cybersécurité et conduite du changement. Une équipe pluridisciplinaire,
+              mobilisable au plus près de vos enjeux.
             </p>
           </div>
           <div className="mkt-team">
@@ -106,12 +107,12 @@ export default function Page() {
                 <TeamPhoto
                   src={`/brand/team/${c.slug}.jpg`}
                   initials={c.initials}
-                  alt={`${c.firstName} ${c.lastName}`}
+                  alt={c.firstName}
                 />
                 <div className="mkt-team-body">
                   <div className="nm">{c.firstName}</div>
                   <div className="rl">{c.role}</div>
-                  <span className="mkt-consultant-more">Voir le profil →</span>
+                  <span className="mkt-consultant-more">En savoir plus →</span>
                 </div>
               </Link>
             ))}

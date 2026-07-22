@@ -18,7 +18,7 @@ export async function generateMetadata({
   const c = getConsultant(slug);
   if (!c) return {};
   return {
-    title: `${c.firstName} ${c.lastName} — ${c.role}`,
+    title: `${c.firstName} — ${c.role}`,
     description: c.intro,
     alternates: { canonical: `/consulting/${slug}` },
   };
@@ -39,7 +39,7 @@ export default async function ConsultantPage({
         items={[
           { name: "Accueil", path: "/" },
           { name: "Conseil", path: "/consulting" },
-          { name: `${c.firstName} ${c.lastName}` },
+          { name: c.firstName },
         ]}
       />
 
@@ -50,7 +50,7 @@ export default async function ConsultantPage({
           </nav>
           <span className="eyebrow">Consultant</span>
           <h1 style={{ textTransform: "none" }}>
-            {c.firstName} <em>{c.lastName}</em>
+            <em>{c.firstName}</em>
           </h1>
           <p>{c.role}</p>
         </div>
@@ -68,9 +68,9 @@ export default async function ConsultantPage({
             className="mkt-consultant-view"
           >
             <div className="mkt-team-card" style={{ maxWidth: 300 }}>
-              <TeamPhoto src={`/brand/team/${c.slug}.jpg`} initials={c.initials} alt={`${c.firstName} ${c.lastName}`} />
+              <TeamPhoto src={`/brand/team/${c.slug}.jpg`} initials={c.initials} alt={c.firstName} />
               <div className="mkt-team-body">
-                <div className="nm">{c.firstName} {c.lastName}</div>
+                <div className="nm">{c.firstName}</div>
                 <div className="rl">{c.role}</div>
               </div>
             </div>
