@@ -198,21 +198,24 @@ export default function Page() {
             }}
           >
             <h3 style={{ fontSize: "1.25rem", margin: "0 0 .75rem" }}>
-              Pourquoi confier ces projets à votre expert-comptable&nbsp;?
+              Pourquoi Trevys s&apos;empare de ces sujets&nbsp;?
             </h3>
             <p style={{ margin: 0 }}>
-              Parce que la réussite d&apos;un projet logiciel ou d&apos;IA se joue
-              d&apos;abord sur la compréhension du <strong>métier</strong>. C&apos;est
-              pourquoi <strong>nous intégrons ces projets en tant qu&apos;expert
-              métier</strong>&nbsp;: qui, mieux que votre expert-comptable, connaît vos
-              chiffres, vos processus, vos contraintes réglementaires et vos enjeux
-              opérationnels&nbsp;? Cette connaissance intime de votre activité nous
-              permet de traduire un besoin métier en une solution <strong>juste&nbsp;:
-              utile, fiable et réellement adoptée</strong>{" "}par vos équipes. Là où
-              d&apos;autres livrent une technologie, <strong>nous intervenons au cœur du
-              projet comme référent métier</strong>{" "}et concevons une réponse ancrée dans
-              la réalité de votre entreprise — parce que nous la comprenons de
-              l&apos;intérieur.
+              Parce que c&apos;est dans notre ADN. Nos équipes de{" "}
+              <strong>transformation digitale</strong> vont naturellement vers ces
+              problématiques&nbsp;: nous suivons de près les sujets d&apos;actualité et
+              cherchons, comme nous l&apos;avons fait pour la{" "}
+              <strong>réforme de la facturation électronique</strong>, à être l&apos;un des
+              cabinets <strong>pionniers</strong> plutôt que de subir le changement. Et
+              parce que nous portons aussi la <strong>casquette d&apos;expert-comptable</strong>,
+              nous savons à quel point la <strong>rigueur</strong> est déterminante&nbsp;: qui,
+              mieux que nous, connaît vos chiffres, vos processus et l&apos;organisation de
+              votre entreprise&nbsp;? Cette connaissance intime de votre activité nous permet
+              de traduire un besoin métier en une solution <strong>juste&nbsp;: utile, fiable et
+              réellement adoptée</strong>{" "}par vos équipes. Là où d&apos;autres livrent une
+              technologie, <strong>nous intervenons au cœur du projet comme référent métier</strong>{" "}
+              et concevons une réponse ancrée dans la réalité de votre entreprise — parce que
+              nous la comprenons de l&apos;intérieur.
             </p>
           </div>
           <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
