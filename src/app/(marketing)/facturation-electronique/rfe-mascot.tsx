@@ -1,9 +1,8 @@
-// Mascotte animée de la réforme — robot aux couleurs Trevys tenant le drapeau
-// français (la réforme est d'abord nationale) et le drapeau européen (elle
-// s'inscrit dans le cadre européen ViDA). SVG autonome + animations CSS.
+// Mascotte de la réforme — un CHEF D'ORCHESTRE stylisé aux couleurs Trevys,
+// tenant le drapeau français (réforme d'abord nationale) et le drapeau européen
+// (cadre européen ViDA). SVG autonome + animations CSS (notes, drapeaux, flottement).
 
-// Positions des 12 étoiles du drapeau européen, en cercle (repère local du
-// drapeau : centre ≈ (22,16), rayon 10).
+// Positions des 12 étoiles du drapeau européen (repère local ≈ centre (22,16), rayon 10).
 const EU_STARS = [
   [22, 6], [27, 7.3], [30.7, 11], [32, 16], [30.7, 21], [27, 24.7],
   [22, 26], [17, 24.7], [13.3, 21], [12, 16], [13.3, 11], [17, 7.3],
@@ -23,24 +22,29 @@ export function RfeMascot({ className = "" }: { className?: string }) {
   return (
     <div className={`mkt-rfe-mascot ${className}`} aria-hidden="true">
       <div className="mkt-ai-glow" />
-      <svg viewBox="0 0 320 300" className="mkt-rfe-svg" role="img" aria-label="Mascotte Trevys tenant les drapeaux français et européen">
+      <svg viewBox="0 0 320 300" className="mkt-rfe-svg" role="img" aria-label="Chef d'orchestre Trevys tenant les drapeaux français et européen">
         <defs>
           <linearGradient id="rfe-body" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor="#FBB040" />
             <stop offset="1" stopColor="#C2410C" />
           </linearGradient>
-          <radialGradient id="rfe-eye" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0" stopColor="#FFE7C2" />
-            <stop offset="0.6" stopColor="#FBB040" />
-            <stop offset="1" stopColor="#F5811F" />
+          <radialGradient id="rfe-skin" cx="0.5" cy="0.4" r="0.6">
+            <stop offset="0" stopColor="#FFD9A8" />
+            <stop offset="1" stopColor="#F5A65B" />
           </radialGradient>
         </defs>
 
-        {/* Mâts */}
-        <line x1="120" y1="212" x2="96" y2="48" stroke="#7a5a3a" strokeWidth="4" strokeLinecap="round" />
-        <line x1="200" y1="212" x2="224" y2="48" stroke="#7a5a3a" strokeWidth="4" strokeLinecap="round" />
+        {/* Notes de musique flottantes */}
+        <text className="mkt-note n1" x="44" y="150" fill="#F5811F" fontSize="20">♪</text>
+        <text className="mkt-note n2" x="262" y="130" fill="#C2410C" fontSize="24">♫</text>
+        <text className="mkt-note n3" x="70" y="96" fill="#FBB040" fontSize="16">♩</text>
+        <text className="mkt-note n4" x="240" y="182" fill="#F5811F" fontSize="18">♪</text>
 
-        {/* Drapeau français (mât gauche, flotte vers la gauche) */}
+        {/* Mâts */}
+        <line x1="112" y1="118" x2="96" y2="48" stroke="#7a5a3a" strokeWidth="4" strokeLinecap="round" />
+        <line x1="208" y1="118" x2="224" y2="48" stroke="#7a5a3a" strokeWidth="4" strokeLinecap="round" />
+
+        {/* Drapeau français (mât gauche) */}
         <g className="mkt-rfe-flag fr">
           <g transform="translate(50 44)">
             <rect x="0" y="0" width="46" height="32" rx="2" fill="#ED2939" />
@@ -49,7 +53,7 @@ export function RfeMascot({ className = "" }: { className?: string }) {
           </g>
         </g>
 
-        {/* Drapeau européen (mât droit, flotte vers la droite) */}
+        {/* Drapeau européen (mât droit) */}
         <g className="mkt-rfe-flag eu">
           <g transform="translate(224 44)">
             <rect x="0" y="0" width="46" height="32" rx="2" fill="#003399" />
@@ -59,35 +63,37 @@ export function RfeMascot({ className = "" }: { className?: string }) {
           </g>
         </g>
 
-        {/* Orbite décorative */}
-        <g className="mkt-ai-orbit">
-          <ellipse cx="160" cy="180" rx="96" ry="30" fill="none" stroke="#F5811F" strokeOpacity="0.3" strokeWidth="1.5" />
-          <circle className="mkt-ai-orbit-dot" cx="256" cy="180" r="3.5" fill="#F5811F" />
-        </g>
+        {/* Estrade du chef d'orchestre */}
+        <ellipse cx="160" cy="266" rx="70" ry="12" fill="#1f1206" opacity="0.12" />
+        <rect x="120" y="250" width="80" height="16" rx="4" fill="url(#rfe-body)" />
+        <rect x="120" y="250" width="80" height="6" rx="3" fill="#fff" fillOpacity="0.15" />
 
-        {/* Antenne */}
-        <line x1="160" y1="118" x2="160" y2="96" stroke="url(#rfe-body)" strokeWidth="4" strokeLinecap="round" />
-        <circle className="mkt-ai-antenna" cx="160" cy="92" r="6" fill="url(#rfe-eye)" />
+        {/* Queue-de-pie (corps) */}
+        <path d="M130 150 L120 248 L145 236 L160 220 L175 236 L200 248 L190 150 Z" fill="url(#rfe-body)" />
+        {/* Plastron / chemise */}
+        <path d="M150 150 L150 214 L160 224 L170 214 L170 150 Z" fill="#fff" fillOpacity="0.9" />
+        <circle cx="160" cy="176" r="1.8" fill="#C2410C" />
+        <circle cx="160" cy="190" r="1.8" fill="#C2410C" />
+        {/* Nœud papillon */}
+        <path d="M160 150 L151 145 L151 155 Z" fill="#1f1206" />
+        <path d="M160 150 L169 145 L169 155 Z" fill="#1f1206" />
 
-        {/* Tête */}
-        <rect x="112" y="118" width="96" height="80" rx="26" fill="url(#rfe-body)" />
-        <rect x="112" y="118" width="96" height="80" rx="26" fill="#fff" fillOpacity="0.06" />
-        <rect x="102" y="144" width="10" height="28" rx="5" fill="url(#rfe-body)" />
-        <rect x="208" y="144" width="10" height="28" rx="5" fill="url(#rfe-body)" />
+        {/* Bras levés qui tiennent les mâts */}
+        <line x1="140" y1="152" x2="112" y2="118" stroke="url(#rfe-body)" strokeWidth="11" strokeLinecap="round" />
+        <line x1="180" y1="152" x2="208" y2="118" stroke="url(#rfe-body)" strokeWidth="11" strokeLinecap="round" />
+        {/* Mains */}
+        <circle cx="112" cy="116" r="6.5" fill="url(#rfe-skin)" />
+        <circle cx="208" cy="116" r="6.5" fill="url(#rfe-skin)" />
 
-        {/* Visière + yeux */}
-        <rect x="124" y="134" width="72" height="48" rx="20" fill="#1f1206" />
-        <circle className="mkt-ai-eye" cx="146" cy="158" r="9" fill="url(#rfe-eye)" />
-        <circle className="mkt-ai-eye d2" cx="174" cy="158" r="9" fill="url(#rfe-eye)" />
-        <path d="M146 174 Q160 182 174 174" fill="none" stroke="#FBB040" strokeOpacity="0.7" strokeWidth="2.2" strokeLinecap="round" />
-
-        {/* Corps */}
-        <rect x="128" y="204" width="64" height="54" rx="18" fill="url(#rfe-body)" />
-        <rect className="mkt-ai-core" x="150" y="222" width="20" height="20" rx="6" fill="url(#rfe-eye)" />
-
-        {/* Bras qui tiennent les mâts */}
-        <line x1="132" y1="212" x2="120" y2="212" stroke="url(#rfe-body)" strokeWidth="12" strokeLinecap="round" />
-        <line x1="188" y1="212" x2="200" y2="212" stroke="url(#rfe-body)" strokeWidth="12" strokeLinecap="round" />
+        {/* Cou + tête */}
+        <rect x="153" y="126" width="14" height="12" rx="4" fill="url(#rfe-skin)" />
+        <circle cx="160" cy="108" r="23" fill="url(#rfe-skin)" />
+        {/* Cheveux */}
+        <path d="M138 104 A23 23 0 0 1 182 104 C176 96 168 92 160 92 C152 92 144 96 138 104 Z" fill="#3a2408" />
+        {/* Yeux + sourire discret */}
+        <circle cx="152" cy="108" r="2.1" fill="#3a2408" />
+        <circle cx="168" cy="108" r="2.1" fill="#3a2408" />
+        <path d="M153 116 Q160 121 167 116" fill="none" stroke="#8a4b1e" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     </div>
   );
