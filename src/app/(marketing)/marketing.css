@@ -420,6 +420,9 @@
 .mkt-flow-s{font-size:12px;fill:var(--ink3)}
 .mkt-flow-legend{display:flex;gap:1.4rem;flex-wrap:wrap;justify-content:center;margin:1rem 0 0;font-size:.82rem;color:var(--ink3)}
 .mkt-flow-legend .dash{color:var(--violet)}
+/* Badge de durée sur les cartes de méthode */
+.mkt-svc-dur{display:inline-block;margin-bottom:.5rem;padding:.22rem .7rem;border-radius:100px;font-size:.72rem;font-weight:700;
+  color:var(--violet);background:rgba(245,129,31,.1);border:1px solid rgba(245,129,31,.25)}
 /* Chef d'orchestre */
 .mkt-orch{display:grid;grid-template-columns:1.2fr .8fr;gap:2.5rem;align-items:center}
 .mkt-orch-txt h2{margin:1rem 0 1.1rem}

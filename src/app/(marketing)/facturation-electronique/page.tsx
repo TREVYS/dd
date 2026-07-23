@@ -7,15 +7,17 @@ import { RfeFlow } from "./rfe-visuals";
 export const metadata: Metadata = {
   title: "Facturation électronique",
   description:
-    "Tout savoir sur la réforme de la facturation électronique (2026-2027) : e-invoicing, e-reporting, calendrier, plateformes agréées, format Factur-X. Trevys, chef d'orchestre de votre mise en conformité.",
+    "Tout savoir sur la réforme de la facturation électronique (2026-2027) : e-invoicing, e-reporting, calendrier, plateformes agréées, Factur-X. Trevys, chef d'orchestre de votre mise en conformité — au-delà de la contrainte, un levier de transformation.",
   alternates: { canonical: "/facturation-electronique" },
 };
 
-const STEPS = [
-  { n: "01", t: "Analyse d'impact", d: "Cartographie de vos flux de facturation (clients, fournisseurs, B2B, B2C, international) et évaluation des impacts sur votre organisation et vos outils." },
-  { n: "02", t: "Organisation & gouvernance", d: "Définition de la cible, des rôles et de la gouvernance des processus de facturation, émission comme réception." },
-  { n: "03", t: "Choix de la plateforme (PA)", d: "Sélection objective de la Plateforme Agréée adaptée à votre volumétrie, votre secteur et votre système d'information — en toute indépendance." },
-  { n: "04", t: "Intégration & conduite du changement", d: "Raccordement au SI, paramétrage, formation des équipes et déploiement opérationnel jusqu'aux échéances." },
+// Notre méthode : la démarche projet en 5 phases (issue de notre parcours RFE).
+const METHOD = [
+  { n: "01", t: "Cadrage — état des lieux", dur: "2 à 3 semaines", d: "Périmètre, objectifs, gouvernance et risques. Cartographie complète de vos flux (O2C, P2P, clôture), identification des points de friction, matrice RACI et registre des risques." },
+  { n: "02", t: "Conception", dur: "4 à 6 semaines", d: "Traduction des besoins en spécifications, conception de l'architecture cible, choix de la plateforme agréée (PA) et schémas d'intégration avec votre SI existant." },
+  { n: "03", t: "Réalisation & intégration", dur: "6 à 8 semaines", d: "Paramétrage des connecteurs (ERP ↔ PA), transformation des données (Factur-X, UBL, CII), tests unitaires et de bout en bout, recette et documentation." },
+  { n: "04", t: "Déploiement", dur: "3 à 4 semaines", d: "Bascule en production, formation des équipes (DAF, comptables, ADV, IT), support de démarrage et surveillance des premiers flux et rejets." },
+  { n: "05", t: "Pilotage & conformité continue", dur: "en continu", d: "Tableau de bord (rejets, délais, statuts), veille réglementaire, ajustement des paramétrages et amélioration continue. « La conformité n'est pas un état, c'est une discipline. »" },
 ];
 
 const CAL = [
@@ -23,10 +25,23 @@ const CAL = [
   { d: "1ᵉʳ sept. 2027", t: "Émission obligatoire pour les PME, TPE et micro-entreprises", s: "Toutes les entreprises assujetties à la TVA sont alors concernées", on: false },
 ];
 
+const FLUX = [
+  { t: "E-invoicing", d: "Transmettre une facture au format structuré à un client B2B assujetti à la TVA, via une plateforme agréée." },
+  { t: "Cycle de vie", d: "Suivre et remonter les statuts d'une facture à chaque étape, de l'émission jusqu'à la mise en paiement." },
+  { t: "E-reporting", d: "Transmettre à l'administration les données des transactions hors e-invoicing : B2C, export, certains encaissements." },
+  { t: "Annuaire", d: "Consulter le registre national des entreprises et leur code d'adressage, pour router la facture au bon destinataire." },
+];
+
 const FORMATS = [
   { t: "Factur-X", d: "Le format hybride : un PDF lisible par l'humain, contenant les données structurées. Le plus adapté aux TPE/PME, appelé à devenir la norme." },
   { t: "UBL", d: "Format 100 % structuré (XML), lisible par les machines. Plutôt réservé aux grands volumes et aux systèmes automatisés." },
   { t: "CII", d: "Autre format structuré XML conforme à la norme européenne EN 16931, utilisé dans les échanges automatisés." },
+];
+
+const TAILLE = [
+  { t: "Grandes entreprises", d: "Des ERP et SI structurés : un atout, mais aussi le défi d'adapter les flux, gérer la multiplicité des outils, l'interopérabilité et la conduite du changement à grande échelle." },
+  { t: "ETI", d: "Un entre-deux exposé : systèmes hétérogènes, effort souvent sous-estimé. Bien anticipée, la réforme devient un levier pour fiabiliser la donnée et gagner en compétitivité." },
+  { t: "TPE / PME", d: "Le plus grand saut (encore beaucoup de papier et de PDF), mais l'opportunité la plus forte : moins de ressaisies, délais de paiement réduits, traçabilité complète." },
 ];
 
 const FAQ = [
@@ -39,6 +54,10 @@ const FAQ = [
     a: "L'e-invoicing concerne l'émission et la réception des factures entre entreprises françaises assujetties à la TVA (B2B). L'e-reporting est la transmission à l'administration des données de transactions non couvertes par la facture électronique : ventes aux particuliers (B2C) et opérations avec l'étranger. Les deux suivent le même calendrier.",
   },
   {
+    q: "Combien de temps faut-il pour se préparer ?",
+    a: "Une préparation efficace demande généralement 10 à 18 mois selon la taille et la complexité de l'organisation. C'est pourquoi il faut anticiper dès maintenant : agir pour ne pas subir. Un projet lancé doit être un projet piloté.",
+  },
+  {
     q: "Mon entreprise est-elle concernée ?",
     a: "Oui, dès lors qu'elle est assujettie à la TVA et établie en France. Toutes les entreprises devront pouvoir recevoir des factures électroniques dès le 1ᵉʳ septembre 2026. L'obligation d'émettre s'applique par vagues, selon la taille de l'entreprise, jusqu'en septembre 2027.",
   },
@@ -49,10 +68,6 @@ const FAQ = [
   {
     q: "Que devient le Portail Public de Facturation (PPF) ?",
     a: "Le PPF ne transmet plus directement les factures (fin du « schéma en Y »). Il joue désormais le rôle d'annuaire des entreprises et de concentrateur des données de transactions, qu'il relaie à l'administration fiscale.",
-  },
-  {
-    q: "Que faut-il faire dès maintenant ?",
-    a: "Cartographier vos flux, vérifier la compatibilité de vos outils, choisir votre plateforme et préparer vos équipes. Anticiper, c'est éviter de subir l'échéance : c'est précisément le rôle que nous jouons à vos côtés.",
   },
 ];
 
@@ -72,11 +87,10 @@ export default function Page() {
           <span className="eyebrow">Facturation électronique</span>
           <h1>Votre <em>chef d&apos;orchestre</em> de la réforme</h1>
           <p>
-            La facturation électronique est l&apos;une des plus importantes
-            transformations des entreprises françaises. Entre plateformes,
-            formats, échéances et outils, nous coordonnons tous les acteurs et
-            vous guidons — en toute indépendance — vers une mise en conformité
-            sereine et créatrice de valeur.
+            Entre plateformes, formats, échéances et outils, la facturation
+            électronique est un projet à part entière. Nous coordonnons tous les
+            acteurs et vous guidons — en toute indépendance — pour en faire, bien
+            au-delà de la conformité, un véritable levier de transformation.
           </p>
           <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
             <a className="btn btn-gold" href="https://forms.cloud.microsoft/e/mr63uL9LsU" target="_blank" rel="noopener noreferrer">Recevoir le Guide RFE</a>
@@ -120,13 +134,42 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Calendrier */}
+      {/* Au-delà de la conformité */}
       <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Une opportunité, pas seulement une contrainte</span>
+            <h2>Au-delà de la conformité, <em>les opportunités de demain</em></h2>
+            <p>
+              La réforme structure la donnée et automatise la production comptable.
+              Bien menée, elle libère du temps pour ce qui compte vraiment : le
+              pilotage et le conseil.
+            </p>
+          </div>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
+            <div className="mkt-svc">
+              <h3 style={{ fontSize: "1.12rem" }}>Une donnée structurée</h3>
+              <p>Fini les flux hétérogènes (papier, mails, PDF) : un tunnel d&apos;entrée homogène, sans erreur de ressaisie.</p>
+            </div>
+            <div className="mkt-svc">
+              <h3 style={{ fontSize: "1.12rem" }}>Une production automatisée</h3>
+              <p>Comptabilité automatisée dans sa majeure partie et, à terme, pré-remplissage des déclarations de TVA.</p>
+            </div>
+            <div className="mkt-svc">
+              <h3 style={{ fontSize: "1.12rem" }}>Plus de temps pour le conseil</h3>
+              <p>La valeur se déplace vers le pilotage, l&apos;analyse et l&apos;accompagnement du dirigeant.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Calendrier */}
+      <section className="sec">
         <div className="wrap">
           <div className="shead">
             <span className="eyebrow">Le calendrier</span>
             <h2>Une entrée en vigueur <em>progressive</em></h2>
-            <p>L&apos;adoption s&apos;échelonne de 2026 à 2027, selon la taille des entreprises.</p>
+            <p>L&apos;adoption s&apos;échelonne de 2026 à 2027, selon la taille des entreprises. Une préparation efficace demande 10 à 18 mois : <strong>anticiper, c&apos;est agir pour ne pas subir</strong>.</p>
           </div>
           <div className="mkt-timeline">
             {CAL.map((c) => (
@@ -142,7 +185,7 @@ export default function Page() {
       </section>
 
       {/* Comment ça marche */}
-      <section className="sec">
+      <section className="sec band">
         <div className="wrap">
           <div className="shead">
             <span className="eyebrow">Comment ça marche</span>
@@ -154,6 +197,19 @@ export default function Page() {
             </p>
           </div>
           <RfeFlow />
+
+          <div className="shead" style={{ marginTop: "3rem" }}>
+            <span className="eyebrow">Les 4 flux de l&apos;écosystème</span>
+            <h2>Ce qui <em>circule</em> réellement</h2>
+          </div>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))" }}>
+            {FLUX.map((f) => (
+              <div className="mkt-svc" key={f.t}>
+                <h3 style={{ fontSize: "1.1rem" }}>{f.t}</h3>
+                <p>{f.d}</p>
+              </div>
+            ))}
+          </div>
 
           <div className="shead" style={{ marginTop: "3rem" }}>
             <span className="eyebrow">Les formats</span>
@@ -170,8 +226,8 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Notre méthode — chef d'orchestre */}
-      <section className="sec band">
+      {/* Notre positionnement — chef d'orchestre */}
+      <section className="sec">
         <div className="wrap">
           <div className="mkt-orch">
             <div className="mkt-orch-txt">
@@ -180,30 +236,38 @@ export default function Page() {
               <p>
                 Éditeurs, plateformes agréées, DSI, équipes comptables, dirigeants :
                 une mise en conformité réussie fait intervenir de nombreux acteurs.
-                Notre rôle est de les <strong>coordonner</strong>.
+                Notre rôle est de les <strong>coordonner</strong> et d&apos;être le
+                garant d&apos;une évolution maîtrisée.
               </p>
               <p>
                 Nous ne vendons aucune plateforme : nous vous aidons à choisir la
                 bonne, à l&apos;intégrer à votre système d&apos;information et à
-                embarquer vos équipes. Une position <strong>indépendante</strong>,
-                au service de votre seul intérêt — avec un regard 360° sur
-                l&apos;organisation, les outils, la donnée et la conformité.
+                embarquer vos équipes — gouvernance claire (COPIL, comité projet,
+                équipe), rôles définis (matrice RACI) et jalons maîtrisés.
               </p>
             </div>
             <ul className="mkt-orch-list">
               <li><b>Indépendance</b><span>Aucun lien commercial avec un éditeur : nos recommandations sont objectives.</span></li>
               <li><b>Vision d&apos;ensemble</b><span>Flux, outils, équipes, échéances : nous tenons tous les fils du projet.</span></li>
-              <li><b>Ancrage métier</b><span>Nous parlons le langage de la comptabilité et de la TVA, pas seulement de la technique.</span></li>
+              <li><b>Garant de la conformité</b><span>Expert-comptable, garant de la conformité fiscale et documentaire de bout en bout.</span></li>
             </ul>
           </div>
+        </div>
+      </section>
 
-          <div className="mkt-svc-grid" style={{ marginTop: "2.5rem" }}>
-            {STEPS.map((s) => (
+      {/* Notre méthode en 5 phases */}
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Notre méthode</span>
+            <h2>Une démarche projet en <em>5 phases</em></h2>
+            <p>Une méthodologie éprouvée, rythmée par des jalons clairs et des livrables concrets à chaque étape.</p>
+          </div>
+          <div className="mkt-svc-grid">
+            {METHOD.map((s) => (
               <div className="mkt-svc" key={s.n}>
                 <span className="num">{s.n}</span>
-                <div className="ico">
-                  <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM15 2v5h5M9 13h6M9 17h6" /></svg>
-                </div>
+                <span className="mkt-svc-dur">{s.dur}</span>
                 <h3>{s.t}</h3>
                 <p>{s.d}</p>
               </div>
@@ -212,8 +276,27 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Crédibilité fondateur */}
+      {/* Selon la taille */}
       <section className="sec">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Un accompagnement sur mesure</span>
+            <h2>Adapté à <em>votre organisation</em></h2>
+            <p>Grande entreprise, ETI ou TPE/PME : les enjeux diffèrent, notre méthode s&apos;ajuste à votre réalité.</p>
+          </div>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
+            {TAILLE.map((t) => (
+              <div className="mkt-svc" key={t.t}>
+                <h3 style={{ fontSize: "1.15rem" }}>{t.t}</h3>
+                <p>{t.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Crédibilité fondateur */}
+      <section className="sec band">
         <div className="wrap">
           <div className="mkt-founder">
             <div className="mkt-founder-media">
@@ -240,7 +323,7 @@ export default function Page() {
                 <li><span className="k">AFNOR</span> Membre, au sein des travaux de normalisation</li>
                 <li><span className="k">Communauté des relais</span> Engagé dès le lancement</li>
                 <li><span className="k">Ordre des experts-comptables</span> Élu au Conseil régional de Paris Île-de-France</li>
-                <li><span className="k">Relais des enjeux terrain</span> Accès aux dernières informations et transmission des besoins des entreprises</li>
+                <li><span className="k">Formations RFE</span> Concepteur d&apos;un parcours de formation à la conduite de projet facturation électronique</li>
               </ul>
             </div>
           </div>
@@ -248,7 +331,7 @@ export default function Page() {
       </section>
 
       {/* FAQ */}
-      <section className="sec band">
+      <section className="sec">
         <div className="wrap">
           <div className="shead">
             <span className="eyebrow">Questions fréquentes</span>
