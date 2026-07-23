@@ -742,3 +742,13 @@
   .mkt-consultant .mkt-more-txt{display:none}
   .mkt-consultant .mkt-consultant-more{padding:.45rem .6rem}
 }
+
+/* Anti-débordement horizontal (décalage d'écran sur mobile) */
+html,body{overflow-x:hidden}
+.mkt{max-width:100%}
+/* Repli texte du logo si l'image ne charge pas */
+.mkt-logo-fallback{display:inline-block;font-weight:800;font-size:1.4rem;letter-spacing:-.02em;color:var(--ink);line-height:1}
+.mkt-logo-fallback.blanc{color:#fff}
+.mkt-foot .brand .mkt-logo-fallback{font-size:1.5rem;margin-bottom:1.3rem}
+.mkt-nav .nlogo .mkt-logo-fallback{font-size:1.3rem}
+.mkt-nav .nlogo span.mkt-logo-mark{width:auto;height:auto;border-radius:0;font-size:1.2rem}
