@@ -1,5 +1,6 @@
 import { publicStatus, PROVIDERS } from "@/lib/social";
 import { isSet, settingsStatus } from "@/lib/settings";
+import { mailerConfigured } from "@/lib/mailer";
 import { disconnectSocialAction, saveSettingsAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,12 @@ const CFG_GROUPS = [
   { title: "Newsletter (Brevo)", fields: [
     { k: "brevoApiKey", label: "Clé API Brevo", ph: "xkeysib-…", secret: true },
     { k: "brevoListId", label: "ID de liste", ph: "ex. 3", secret: false },
+  ] },
+  { title: "E-mailing Microsoft 365 (Office 365)", fields: [
+    { k: "msSender", label: "Adresse d'envoi", ph: "contact@trevys-advisory.fr", secret: false },
+    { k: "msTenantId", label: "Tenant ID (Directory)", ph: "xxxxxxxx-xxxx-…", secret: false },
+    { k: "msClientId", label: "Client ID (Application)", ph: "xxxxxxxx-xxxx-…", secret: false },
+    { k: "msClientSecret", label: "Client Secret", ph: "", secret: true },
   ] },
   { title: "Prise de rendez-vous (Calendly)", fields: [
     { k: "calendlyUrl", label: "URL Calendly", ph: "https://calendly.com/…", secret: false },
@@ -40,6 +47,7 @@ export default async function AdminReglages({
   const alfredKey = isSet("anthropicApiKey");
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
   const tgOn = isSet("telegramBotToken") && isSet("telegramChatId");
+  const mailOn = mailerConfigured();
   const status = Object.fromEntries(settingsStatus().map((s) => [s.key, s]));
 
   return (
@@ -168,6 +176,34 @@ export default async function AdminReglages({
 echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
           </li>
         </ol>
+      </div>
+
+      <div className="adm-card" style={{ marginTop: "1.2rem" }}>
+        <h2>E-mailing depuis Microsoft 365 (contact@trevys-advisory.fr)</h2>
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: ".7rem", margin: ".2rem 0 1rem",
+            fontWeight: 700, color: mailOn ? "#2E9E6B" : "#C2410C",
+          }}
+        >
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: mailOn ? "#2E9E6B" : "#E26A0F" }} />
+          {mailOn ? "Actif — vous pouvez envoyer vos mailings depuis l'adresse du cabinet." : "Non configuré."}
+        </div>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".88rem", lineHeight: 1.6, margin: "0 0 .6rem" }}>
+          Les mailings partent directement de votre boîte Microsoft 365, via Microsoft Graph
+          (aucun mot de passe SMTP à stocker). Configuration en une fois par un administrateur du tenant :
+        </p>
+        <ol style={{ margin: 0, paddingLeft: "1.2rem", fontSize: ".88rem", lineHeight: 1.7, color: "var(--ink2)" }}>
+          <li>Dans <a href="https://entra.microsoft.com" target="_blank" rel="noopener">Microsoft Entra ID</a> → <b>App registrations</b> → <b>New registration</b> (ex. « Trevys Mailing »).</li>
+          <li>Notez le <b>Application (client) ID</b> et le <b>Directory (tenant) ID</b>.</li>
+          <li><b>Certificates &amp; secrets</b> → <b>New client secret</b> → copiez la <b>valeur</b> (visible une seule fois).</li>
+          <li><b>API permissions</b> → <b>Add a permission</b> → Microsoft Graph → <b>Application permissions</b> → <code>Mail.Send</code> → puis <b>Grant admin consent</b>.</li>
+          <li>Renseignez ci-dessus l&apos;adresse d&apos;envoi, le tenant, le client ID et le secret. C&apos;est prêt.</li>
+        </ol>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".8rem", marginTop: ".8rem" }}>
+          Astuce sécurité : pour limiter l&apos;envoi à la seule boîte du cabinet, un administrateur peut ajouter
+          une <i>Application Access Policy</i> Exchange restreignant l&apos;app à <code>contact@trevys-advisory.fr</code>.
+        </p>
       </div>
 
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>

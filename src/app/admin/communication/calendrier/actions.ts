@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { addItem, getItem, removeItem, updateItem, type ItemType } from "@/lib/editorial";
 import { saveArticle } from "@/lib/content-admin";
@@ -25,6 +26,21 @@ export async function deleteCalendarAction(formData: FormData) {
   await guard();
   removeItem(formData.get("id") as string);
   revalidatePath("/admin/communication/calendrier");
+}
+
+// Enregistre les modifications d'un brouillon d'article (titre, contenu…).
+export async function updateDraftAction(formData: FormData) {
+  await guard();
+  const id = formData.get("id") as string;
+  if (!id) return;
+  updateItem(id, {
+    title: (formData.get("title") as string) || "Sans titre",
+    category: (formData.get("category") as string) || undefined,
+    excerpt: (formData.get("excerpt") as string) || undefined,
+    body: (formData.get("body") as string) || undefined,
+  });
+  revalidatePath("/admin/communication/calendrier");
+  redirect("/admin/communication/calendrier?saved=1");
 }
 
 // Publie un brouillon d'article rédigé par l'IA vers le site (crée le MDX).

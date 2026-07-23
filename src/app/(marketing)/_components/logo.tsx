@@ -16,9 +16,12 @@ export function Logo({
 }) {
   const [badgeFail, setBadgeFail] = useState(false);
 
+  // Le monogramme « TS » n'est utilisé qu'en version mobile compacte
+  // (à gauche du menu). Partout ailleurs — desktop, pied de page — on
+  // affiche uniquement le mot « Trevys ».
   return (
     <span className={`mkt-logo-lockup${variant === "blanc" ? " blanc" : ""}`}>
-      {!badgeFail && (
+      {compactOnMobile && !badgeFail && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           className="mkt-logo-badge"

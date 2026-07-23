@@ -9,6 +9,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/expertise-comptable" },
 };
 
+// Outils que nous maîtrisons — nous nous adaptons à votre environnement.
+const TOOLS = [
+  { t: "Tiime", d: "Comptabilité et facturation en temps réel pour les TPE et indépendants." },
+  { t: "Pennylane", d: "Plateforme de gestion financière collaborative dirigeant / expert-comptable." },
+  { t: "Sage", d: "Suite de gestion comptable et paie, du poste de travail à l'entreprise." },
+  { t: "Cegid", d: "Solutions comptables et fiscales pour cabinets, ETI et grands comptes." },
+  { t: "Oracle", d: "ERP et systèmes financiers pour les organisations complexes et internationales." },
+  { t: "Power BI", d: "Tableaux de bord et reporting décisionnel connectés à vos données." },
+];
+
 const POLES = [
   {
     n: "01",
@@ -79,6 +89,39 @@ export default function Page() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Nos outils</span>
+            <h2>
+              Nous nous adaptons à <em>votre organisation</em>
+            </h2>
+            <p>
+              Nous ne vous imposons pas notre outil : nous travaillons dans le
+              vôtre. Tiime, Pennylane, Sage, Cegid, Oracle, Power BI… nous
+              maîtrisons les principales plateformes du marché et nous connectons
+              à votre système d&apos;information existant, sans rupture pour vos
+              équipes. L&apos;objectif : fiabiliser vos données et vous rendre du
+              temps, quel que soit votre environnement.
+            </p>
+          </div>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
+            {TOOLS.map((tool) => (
+              <div className="mkt-svc" key={tool.t}>
+                <div className="ico">
+                  <svg viewBox="0 0 24 24"><path d="M12 2l3 3-3 3-3-3 3-3zM4 12l3-3 3 3-3 3-3-3zM14 12l3-3 3 3-3 3-3-3zM12 14l3 3-3 3-3-3 3-3z" /></svg>
+                </div>
+                <h3 style={{ fontSize: "1.12rem" }}>{tool.t}</h3>
+                <p>{tool.d}</p>
+              </div>
+            ))}
+          </div>
+          <p className="muted" style={{ textAlign: "center", marginTop: "1.4rem", color: "var(--ink3)", fontSize: ".92rem" }}>
+            Un autre outil ? Nous nous y adaptons également — dites-nous lequel.
+          </p>
         </div>
       </section>
 

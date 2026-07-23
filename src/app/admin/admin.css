@@ -56,6 +56,8 @@
 .adm-table td{padding:.75rem .5rem;border-bottom:1px solid var(--line);vertical-align:middle}
 .adm-table tr:last-child td{border-bottom:none}
 .adm-table .muted{color:var(--ink3);font-size:.82rem}
+.adm-link{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent}
+.adm-link:hover{color:var(--o);border-bottom-color:var(--o)}
 .adm-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--o);color:#fff;border:none;border-radius:10px;padding:.6rem 1.1rem;font-weight:700;font-size:.88rem;cursor:pointer;text-decoration:none;font-family:inherit}
 .adm-btn:hover{background:var(--o2)}
 .adm-btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
@@ -202,7 +204,7 @@
 .adm-md-panes.preview textarea{display:none}
 .adm-md-panes.preview .adm-md-preview{display:block}
 @media(min-width:900px){.adm-md-panes.write .adm-md-preview,.adm-md-panes.preview textarea{display:block}.adm-md-panes.preview textarea{display:block}.adm-md-tabs{display:none}}
-@media(max-width:900px){.adm-md-panes{grid-template-columns:1fr}}
+@media(max-width:900px){.adm-md-panes{grid-template-columns:1fr}.ck-mail-grid{grid-template-columns:1fr!important}}
 /* Bouton menu + fond, masqués sur desktop */
 .adm-burger{display:none;flex-direction:column;gap:4px;padding:.55rem;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
 .adm-burger span{width:18px;height:2px;background:var(--ink);border-radius:2px}

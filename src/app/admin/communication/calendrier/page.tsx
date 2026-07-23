@@ -63,12 +63,24 @@ export default function CalendrierPage() {
                 <td className="muted" style={{ paddingLeft: "1.1rem", whiteSpace: "nowrap" }}>{it.date}</td>
                 <td><span className="adm-tag">{TYPE_LABEL[it.type] ?? it.type}</span></td>
                 <td style={{ fontWeight: 600 }}>
-                  {it.title}
+                  {it.type === "article" && it.status === "publie" && it.slug ? (
+                    <Link href={`/admin/articles/${it.slug}`} className="adm-link">{it.title}</Link>
+                  ) : it.type === "article" ? (
+                    <Link href={`/admin/communication/calendrier/${it.id}`} className="adm-link">{it.title}</Link>
+                  ) : (
+                    it.title
+                  )}
                   {it.slug && <span className="muted"> · /blog/{it.slug}</span>}
                 </td>
                 <td><span className={`adm-chipst ${statusClass(it.status)}`}>{STATUS_LABEL[it.status] ?? it.status}</span></td>
                 <td>
                   <div className="adm-actions" style={{ justifyContent: "flex-end" }}>
+                    {it.type === "article" && it.status === "publie" && it.slug && (
+                      <Link className="adm-btn ghost sm" href={`/admin/articles/${it.slug}`}>Ouvrir</Link>
+                    )}
+                    {it.type === "article" && it.status !== "publie" && (
+                      <Link className="adm-btn ghost sm" href={`/admin/communication/calendrier/${it.id}`}>Éditer</Link>
+                    )}
                     {it.type === "article" && it.body && it.status !== "publie" && (
                       <form action={publishDraftAction}>
                         <input type="hidden" name="id" value={it.id} />

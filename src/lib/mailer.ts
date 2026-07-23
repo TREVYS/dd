@@ -1,70 +1,105 @@
-import nodemailer from "nodemailer";
-import { prisma } from "@/lib/prisma";
+import { getSetting } from "@/lib/settings";
 
-export type SmtpConfig = {
-  host: string;
-  port: number;
-  secure: boolean;
-  user: string;
-  pass: string;
-  from: string;
+// Envoi d'e-mails via Microsoft 365 (Office 365) avec Microsoft Graph.
+// Authentification « client credentials » (application Entra ID / Azure AD)
+// avec la permission applicative Mail.Send. Les mails partent de l'adresse
+// du cabinet (contact@trevys-advisory.fr) sans mot de passe SMTP.
+
+export function mailerConfigured(): boolean {
+  return (
+    !!getSetting("msTenantId") &&
+    !!getSetting("msClientId") &&
+    !!getSetting("msClientSecret") &&
+    !!getSetting("msSender")
+  );
+}
+
+export function senderAddress(): string {
+  return getSetting("msSender") || "contact@trevys-advisory.fr";
+}
+
+let cachedToken: { value: string; exp: number } | null = null;
+
+async function getToken(): Promise<string> {
+  if (cachedToken && cachedToken.exp > Date.now() + 60_000) return cachedToken.value;
+
+  const tenant = getSetting("msTenantId");
+  const clientId = getSetting("msClientId");
+  const clientSecret = getSetting("msClientSecret");
+  if (!tenant || !clientId || !clientSecret) {
+    throw new Error("Microsoft 365 non configuré (tenant / client / secret manquants).");
+  }
+
+  const body = new URLSearchParams({
+    client_id: clientId,
+    client_secret: clientSecret,
+    grant_type: "client_credentials",
+    scope: "https://graph.microsoft.com/.default",
+  });
+
+  const res = await fetch(`https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Échec de l'authentification Microsoft 365 (${res.status}). ${txt.slice(0, 300)}`);
+  }
+  const json = (await res.json()) as { access_token: string; expires_in: number };
+  cachedToken = { value: json.access_token, exp: Date.now() + json.expires_in * 1000 };
+  return json.access_token;
+}
+
+export type MailInput = {
+  to: string[];
+  subject: string;
+  html: string;
+  replyTo?: string;
 };
 
-const SETTINGS_KEY = "smtp";
+// Envoie un e-mail via Graph depuis l'adresse du cabinet.
+// Les destinataires sont mis en Cci (bcc) pour un envoi de masse discret.
+export async function sendMail({ to, subject, html, replyTo }: MailInput): Promise<void> {
+  const token = await getToken();
+  const sender = senderAddress();
 
-export async function getSmtpConfig(): Promise<SmtpConfig | null> {
-  const stored = await prisma.appSetting.findUnique({ where: { key: SETTINGS_KEY } });
-  const saved = (stored?.value as Partial<SmtpConfig>) ?? {};
-
-  const host = saved.host ?? process.env.SMTP_HOST ?? "";
-  const user = saved.user ?? process.env.SMTP_USER ?? "";
-  const pass = saved.pass ?? process.env.SMTP_PASS ?? "";
-  if (!host || !user || !pass) return null;
-
-  return {
-    host,
-    port: Number(saved.port ?? process.env.SMTP_PORT ?? 587),
-    secure: saved.secure ?? process.env.SMTP_SECURE === "true",
-    user,
-    pass,
-    from: saved.from ?? process.env.SMTP_FROM ?? user,
+  const message: Record<string, unknown> = {
+    subject,
+    body: { contentType: "HTML", content: html },
+    toRecipients: [{ emailAddress: { address: sender } }],
+    bccRecipients: to.map((address) => ({ emailAddress: { address } })),
   };
+  if (replyTo) message.replyTo = [{ emailAddress: { address: replyTo } }];
+
+  const res = await fetch(
+    `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(sender)}/sendMail`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ message, saveToSentItems: true }),
+    },
+  );
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Échec de l'envoi Microsoft 365 (${res.status}). ${txt.slice(0, 300)}`);
+  }
 }
 
-export async function saveSmtpConfig(config: Omit<SmtpConfig, "pass"> & { pass?: string }) {
-  const existing = await prisma.appSetting.findUnique({ where: { key: SETTINGS_KEY } });
-  const existingValue = (existing?.value as Partial<SmtpConfig>) ?? {};
-  const value: SmtpConfig = {
-    host: config.host,
-    port: config.port,
-    secure: config.secure,
-    user: config.user,
-    from: config.from,
-    pass: config.pass || existingValue.pass || "",
-  };
-
-  await prisma.appSetting.upsert({
-    where: { key: SETTINGS_KEY },
-    create: { key: SETTINGS_KEY, value },
-    update: { value },
-  });
-  return value;
-}
-
-export async function isMailerConfigured() {
-  return (await getSmtpConfig()) !== null;
-}
-
-export async function sendMail(to: string, subject: string, html: string) {
-  const config = await getSmtpConfig();
-  if (!config) throw new Error("smtp_not_configured");
-
-  const transporter = nodemailer.createTransport({
-    host: config.host,
-    port: config.port,
-    secure: config.secure,
-    auth: { user: config.user, pass: config.pass },
-  });
-
-  await transporter.sendMail({ from: config.from, to, subject, html });
+// Envoi d'une campagne à une liste, par lots (Graph limite le nombre de
+// destinataires par message). Renvoie le nombre d'e-mails traités.
+export async function sendCampaign(
+  recipients: string[],
+  subject: string,
+  html: string,
+  replyTo?: string,
+  batchSize = 400,
+): Promise<number> {
+  let sent = 0;
+  for (let i = 0; i < recipients.length; i += batchSize) {
+    const batch = recipients.slice(i, i + batchSize);
+    await sendMail({ to: batch, subject, html, replyTo });
+    sent += batch.length;
+  }
+  return sent;
 }

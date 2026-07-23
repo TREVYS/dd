@@ -16,7 +16,11 @@ export type SettingKey =
   | "linkedinClientId"
   | "linkedinClientSecret"
   | "instagramClientId"
-  | "instagramClientSecret";
+  | "instagramClientSecret"
+  | "msTenantId"
+  | "msClientId"
+  | "msClientSecret"
+  | "msSender";
 
 // Correspondance avec les variables d'environnement (repli).
 const ENV: Record<SettingKey, string> = {
@@ -30,6 +34,10 @@ const ENV: Record<SettingKey, string> = {
   linkedinClientSecret: "LINKEDIN_CLIENT_SECRET",
   instagramClientId: "INSTAGRAM_CLIENT_ID",
   instagramClientSecret: "INSTAGRAM_CLIENT_SECRET",
+  msTenantId: "MS_TENANT_ID",
+  msClientId: "MS_CLIENT_ID",
+  msClientSecret: "MS_CLIENT_SECRET",
+  msSender: "MS_SENDER",
 };
 
 // Champs sensibles (masqués à l'affichage).
@@ -39,6 +47,7 @@ export const SECRET_KEYS: SettingKey[] = [
   "brevoApiKey",
   "linkedinClientSecret",
   "instagramClientSecret",
+  "msClientSecret",
 ];
 
 type Store = Partial<Record<SettingKey, string>>;
