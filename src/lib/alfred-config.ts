@@ -8,6 +8,7 @@ import crypto from "node:crypto";
 const FILE = path.join(process.cwd(), "data", "alfred.json");
 
 export type AlfredExample = { id: string; label: string; content: string };
+export type AlfredDoc = { id: string; title: string; source: string; text: string; addedAt: string };
 
 export type AlfredConfig = {
   ton: string;
@@ -16,6 +17,7 @@ export type AlfredConfig = {
   motsInterdits: string;
   signature: string;
   exemples: AlfredExample[];
+  knowledge: AlfredDoc[];
 };
 
 const DEFAULTS: AlfredConfig = {
@@ -28,6 +30,7 @@ const DEFAULTS: AlfredConfig = {
     "optimisation fiscale (dire plutôt « fiscalité maîtrisée » / « juste imposition »)",
   signature: "Trevys — Cabinet d'expertise comptable & de conseil",
   exemples: [],
+  knowledge: [],
 };
 
 export function readAlfred(): AlfredConfig {
@@ -61,6 +64,26 @@ export function removeExample(id: string) {
   write(cfg);
 }
 
+export function addKnowledge(title: string, source: string, text: string): AlfredDoc {
+  const cfg = readAlfred();
+  const doc: AlfredDoc = {
+    id: crypto.randomBytes(5).toString("hex"),
+    title: title || source || "Document",
+    source,
+    text,
+    addedAt: new Date().toISOString(),
+  };
+  cfg.knowledge = [...(cfg.knowledge ?? []), doc];
+  write(cfg);
+  return doc;
+}
+
+export function removeKnowledge(id: string) {
+  const cfg = readAlfred();
+  cfg.knowledge = (cfg.knowledge ?? []).filter((d) => d.id !== id);
+  write(cfg);
+}
+
 // Compose la partie « personnalité + savoir » du prompt système d'Alfred.
 export function alfredSystemBlock(): string {
   const c = readAlfred();
@@ -69,6 +92,25 @@ export function alfredSystemBlock(): string {
         .map((e, i) => `Exemple ${i + 1}${e.label ? ` (${e.label})` : ""} :\n${e.content}`)
         .join("\n\n")
     : "(aucun exemple fourni pour l'instant)";
+
+  // Base de connaissance : on borne la taille totale injectée dans le prompt.
+  const docs = c.knowledge ?? [];
+  let budget = 24_000;
+  const knowledge = docs.length
+    ? docs
+        .map((d) => {
+          const slice = d.text.slice(0, Math.max(0, budget));
+          budget -= slice.length;
+          return slice ? `### ${d.title} (source : ${d.source})\n${slice}` : "";
+        })
+        .filter(Boolean)
+        .join("\n\n")
+    : "";
+
+  const knowledgeBlock = knowledge
+    ? `\n\nBASE DE CONNAISSANCE (documents fournis par le cabinet — appuie-toi dessus pour les faits, la terminologie et les positions officielles) :\n${knowledge}`
+    : "";
+
   return `Tu t'appelles **Alfred**, le directeur de communication du cabinet Trevys. Tu es fin, cultivé, fiable et bienveillant — un véritable bras droit éditorial, à la manière d'un journaliste chevronné.
 
 TON :
@@ -87,5 +129,5 @@ SIGNATURE :
 ${c.signature}
 
 EXEMPLES DE PUBLICATIONS PASSÉES (inspire-toi de ce style, sans les copier) :
-${ex}`;
+${ex}${knowledgeBlock}`;
 }

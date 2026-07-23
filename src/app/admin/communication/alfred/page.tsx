@@ -1,11 +1,33 @@
 import Link from "next/link";
 import { readAlfred } from "@/lib/alfred-config";
-import { saveAlfredAction, addExampleAction, removeExampleAction } from "./actions";
+import {
+  saveAlfredAction,
+  addExampleAction,
+  removeExampleAction,
+  addKnowledgeFileAction,
+  addKnowledgeUrlAction,
+  addKnowledgeTextAction,
+  removeKnowledgeAction,
+} from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default function AlfredConfigPage() {
+const KERR: Record<string, string> = {
+  file: "Sélectionnez un fichier valide.",
+  extract: "Impossible d'extraire le texte de ce document (essayez un PDF, un Word .docx, ou collez le texte).",
+  url: "Entrez une URL valide (https://…).",
+  fetch: "Impossible de charger cette page web.",
+  empty: "Le contenu est vide.",
+};
+
+export default async function AlfredConfigPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ kok?: string; kerr?: string }>;
+}) {
+  const sp = await searchParams;
   const c = readAlfred();
+  const docs = c.knowledge ?? [];
   return (
     <>
       <div className="adm-h">
@@ -48,6 +70,77 @@ export default function AlfredConfigPage() {
           <button className="adm-btn" type="submit">Enregistrer l&apos;éducation d&apos;Alfred</button>
         </div>
       </form>
+
+      <div className="adm-card" style={{ marginTop: "1.6rem" }}>
+        <h2>Base de connaissance ({docs.length})</h2>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: "0 0 1rem" }}>
+          Nourrissez Alfred de documentation : PDF, Word (.docx), notes ou pages web (ex. textes officiels
+          DGFiP, guides, supports internes). Alfred s&apos;appuiera sur ces sources pour ses rédactions.
+        </p>
+
+        {sp.kok && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Document ajouté à la base de connaissance d&apos;Alfred.</div>}
+        {sp.kerr && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>{KERR[sp.kerr] ?? "Une erreur est survenue."}</div>}
+
+        <div className="adm-row2">
+          <form action={addKnowledgeFileAction} className="adm-form">
+            <div className="adm-field">
+              <label>Importer un document <small>(PDF, Word .docx, .txt, .md)</small></label>
+              <input type="file" name="file" accept=".pdf,.docx,.txt,.md,application/pdf" required />
+            </div>
+            <div className="adm-field">
+              <label>Titre <small>(optionnel)</small></label>
+              <input name="title" placeholder="Ex. Guide DGFiP facturation électronique" />
+            </div>
+            <div className="adm-actions">
+              <button className="adm-btn ghost" type="submit">+ Ajouter le document</button>
+            </div>
+          </form>
+
+          <form action={addKnowledgeUrlAction} className="adm-form">
+            <div className="adm-field">
+              <label>Depuis un lien web</label>
+              <input name="url" type="url" placeholder="https://…" required />
+            </div>
+            <div className="adm-field">
+              <label>Titre <small>(optionnel)</small></label>
+              <input name="title" placeholder="Ex. Page impots.gouv.fr" />
+            </div>
+            <div className="adm-actions">
+              <button className="adm-btn ghost" type="submit">+ Ajouter la page</button>
+            </div>
+          </form>
+        </div>
+
+        <form action={addKnowledgeTextAction} className="adm-form" style={{ marginTop: ".6rem" }}>
+          <div className="adm-field">
+            <label>…ou coller du texte directement</label>
+            <textarea name="text" style={{ minHeight: 90 }} placeholder="Collez ici une note, un extrait de documentation…" />
+          </div>
+          <input type="hidden" name="title" value="Note collée" />
+          <div className="adm-actions">
+            <button className="adm-btn ghost" type="submit">+ Ajouter la note</button>
+          </div>
+        </form>
+
+        {docs.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: ".7rem", marginTop: "1.2rem" }}>
+            {docs.map((d) => (
+              <div key={d.id} style={{ border: "1px solid var(--line)", borderRadius: "12px", padding: ".9rem 1.1rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+                <div style={{ minWidth: 0 }}>
+                  <b>{d.title}</b>
+                  <div className="muted" style={{ fontSize: ".78rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {d.source} · {Math.round(d.text.length / 1000)} k caractères
+                  </div>
+                </div>
+                <form action={removeKnowledgeAction}>
+                  <input type="hidden" name="id" value={d.id} />
+                  <button className="adm-btn danger sm" type="submit">Retirer</button>
+                </form>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="adm-card" style={{ marginTop: "1.6rem" }}>
         <h2>Exemples de publications passées ({c.exemples.length})</h2>
