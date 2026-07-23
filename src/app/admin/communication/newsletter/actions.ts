@@ -25,6 +25,45 @@ export async function markNewsletterReadAction() {
   revalidatePath("/admin/communication/newsletter");
 }
 
+// Compose un mailing à partir d'articles publiés sélectionnés (diffusion).
+export async function createArticlesCampaignAction(formData: FormData) {
+  await guard();
+  const slugs = formData.getAll("slugs").map(String);
+  if (slugs.length === 0) {
+    redirect("/admin/communication/newsletter?error=noselection");
+  }
+
+  const { getPost } = await import("@/lib/blog");
+  const { SITE_URL } = await import("@/lib/site");
+  const posts = slugs
+    .map((s) => getPost(s))
+    .filter((p): p is NonNullable<ReturnType<typeof getPost>> => !!p);
+
+  const subject =
+    ((formData.get("subject") as string) || "").trim() ||
+    (posts.length === 1
+      ? posts[0].meta.title
+      : "Nos dernières analyses — Trevys");
+
+  const intro =
+    posts.length === 1
+      ? "Bonjour,\n\nNotre dernière analyse pourrait vous intéresser :"
+      : "Bonjour,\n\nVoici nos dernières analyses, sélectionnées pour vous :";
+
+  const body =
+    `${intro}\n\n` +
+    posts
+      .map(
+        (p) =>
+          `## ${p.meta.title}\n\n${p.meta.excerpt ?? ""}\n\n[Lire l'article →](${SITE_URL}/blog/${p.meta.slug})`,
+      )
+      .join("\n\n---\n\n") +
+    `\n\nBonne lecture,\n\nL'équipe Trevys\n[www.trevys.fr](${SITE_URL})`;
+
+  const c = addCampaign(subject, body);
+  redirect(`/admin/communication/newsletter/${c.id}`);
+}
+
 export async function createCampaignAction(formData: FormData) {
   await guard();
   const c = addCampaign(

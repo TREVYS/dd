@@ -3,16 +3,23 @@ import { listSubscribers, unreadCount } from "@/lib/newsletter";
 import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
-import { markNewsletterReadAction, createCampaignAction } from "./actions";
+import { getAllPosts, formatDateFr } from "@/lib/blog";
+import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default function NewsletterAdmin() {
+export default async function NewsletterAdmin({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const sp = await searchParams;
   const subs = listSubscribers();
   const unread = unreadCount();
   const tg = telegramConfigured();
   const campaigns = listCampaigns();
   const mailOn = mailerConfigured();
+  const posts = getAllPosts().slice(0, 24);
 
   return (
     <>
@@ -44,9 +51,47 @@ export default function NewsletterAdmin() {
         <Link href="/admin/reglages" className="adm-link">Réglages →</Link>
       </div>
 
+      {sp.error === "noselection" && (
+        <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+          Sélectionnez au moins un article à diffuser.
+        </div>
+      )}
+
+      {/* Diffuser des articles publiés */}
+      <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
+        <h2>Diffuser des articles à vos clients</h2>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: ".2rem 0 1rem" }}>
+          Cochez les articles à pousser : le mailing est composé automatiquement (titres, résumés,
+          boutons « Lire l&apos;article »). Vous le relisez, l&apos;ajustez, puis l&apos;envoyez.
+        </p>
+        <form action={createArticlesCampaignAction}>
+          <div className="ck-artpick">
+            {posts.map((p) => (
+              <label key={p.slug} className="ck-artpick-item">
+                <input type="checkbox" name="slugs" value={p.slug} />
+                <span className="ck-artpick-body">
+                  <span className="t">{p.title}</span>
+                  <span className="m">
+                    <span className="adm-tag">{p.category}</span> {formatDateFr(p.date)}
+                  </span>
+                </span>
+              </label>
+            ))}
+            {posts.length === 0 && <p className="muted">Aucun article publié pour l&apos;instant.</p>}
+          </div>
+          <div className="adm-field" style={{ marginTop: "1rem", maxWidth: 520 }}>
+            <label>Objet de l&apos;e-mail <small>(optionnel — proposé automatiquement)</small></label>
+            <input name="subject" placeholder="Ex. Nos dernières analyses — Trevys" />
+          </div>
+          <div className="adm-actions" style={{ marginTop: ".8rem" }}>
+            <button className="adm-btn" type="submit">Composer le mailing</button>
+          </div>
+        </form>
+      </div>
+
       {/* Nouveau mailing */}
       <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
-        <h2>Préparer un mailing</h2>
+        <h2>Préparer un mailing libre</h2>
         <form action={createCampaignAction} className="adm-form" style={{ marginTop: ".6rem" }}>
           <div className="adm-field">
             <label>Objet de l&apos;e-mail</label>
