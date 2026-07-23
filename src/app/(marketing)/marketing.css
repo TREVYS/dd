@@ -84,13 +84,36 @@
   background:radial-gradient(120% 55% at 88% 2%,rgba(245,129,31,.12),transparent 60%),var(--bg2);
   animation:mktMobIn .3s ease}
 @keyframes mktMobIn{from{opacity:0}to{opacity:1}}
-.mkt-mobile a:not(.btn):not(.mkt-mobile-mail){display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  padding:1.2rem .3rem;font-size:1.4rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;
-  border-bottom:1px solid var(--line)}
-.mkt-mobile a:not(.btn):not(.mkt-mobile-mail)::after{content:"";width:9px;height:9px;border-right:2px solid #F5811F;border-top:2px solid #F5811F;transform:rotate(45deg);flex:0 0 auto;opacity:.9}
-.mkt-mobile a:not(.btn):not(.mkt-mobile-mail):active{color:var(--violet)}
+/* Deux univers côte à côte (jeu de couleurs) */
+.mkt-mcols{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.4rem}
+.mkt-mgroup{border-radius:18px;padding:1rem 1.1rem 1.15rem;border:1px solid var(--line)}
+.mkt-mgroup-h{display:block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;margin-bottom:.5rem}
+.mkt-mobile .mkt-mgroup a:not(.btn){display:block;padding:.6rem 0;font-size:1.02rem;font-weight:700;letter-spacing:-.01em}
+.mkt-mobile .mkt-mgroup a:not(.btn)::after{display:none}
+/* Nos métiers : carte chaude claire */
+.mkt-mgroup.metiers{background:linear-gradient(160deg,#FFF2E6,#FFE3C9);border-color:rgba(245,129,31,.32)}
+.mkt-mgroup.metiers .mkt-mgroup-h{color:#C2410C}
+.mkt-mgroup.metiers a:not(.btn){color:#5c2d0b;border-bottom:1px solid rgba(194,65,12,.16)}
+.mkt-mgroup.metiers a:not(.btn):last-child{border-bottom:none}
+/* Expertises : carte sombre contrastée */
+.mkt-mgroup.expertises{background:linear-gradient(160deg,#261606,#3c2609);border-color:transparent}
+.mkt-mgroup.expertises .mkt-mgroup-h{color:#FBB040}
+.mkt-mgroup.expertises a:not(.btn){color:#fff;border-bottom:1px solid rgba(255,255,255,.12)}
+.mkt-mgroup.expertises a:not(.btn):last-child{border-bottom:none}
+.mkt-mgroup.expertises a:not(.btn).cur{color:#FBB040}
+/* Le cabinet : carte neutre pleine largeur, liens en ligne */
+.mkt-mgroup.cabinet{margin-top:.8rem;background:var(--card)}
+.mkt-mgroup.cabinet .mkt-mgroup-h{color:var(--ink3)}
+.mkt-mobile .mkt-mgroup.cabinet a:not(.btn){color:var(--ink);border-bottom:1px solid var(--line)}
+.mkt-mobile .mkt-mgroup.cabinet a:not(.btn):last-child{border-bottom:none}
+/* Références / Ressources : pastilles */
+.mkt-msolo{display:flex;gap:.7rem;margin-top:.8rem;flex-wrap:wrap}
+.mkt-mobile .mkt-msolo a:not(.btn){flex:1 1 40%;text-align:center;padding:.95rem;border:1px solid var(--line);
+  border-radius:14px;font-weight:800;font-size:1rem;color:var(--ink);background:var(--card)}
+.mkt-mobile .mkt-msolo a:not(.btn)::after{display:none}
 .mkt-mobile a:not(.btn).cur{color:var(--violet)}
-.mkt-mobile a:not(.btn).cur::after{border-color:var(--violet)}
+.mkt-mcta-row{display:flex;gap:.7rem;margin-top:1.4rem;flex-wrap:wrap}
+.mkt-mcta-row .btn{flex:1 1 45%}
 
 /* hero */
 .mkt-hero{padding:calc(var(--nh) + 1.5rem) var(--edge) 3.5rem}
@@ -206,11 +229,11 @@
 .mkt-phead p{font-size:1.1rem;color:var(--ink2);max-width:600px;line-height:1.65}
 
 .mkt-ncta-guide{display:inline-flex}
-@media(max-width:1000px){.mkt-ncta-guide{font-size:.78rem;line-height:1.12;padding:.5rem .85rem;max-width:44vw;text-align:center}}
-@media(max-width:430px){.mkt-ncta-guide{font-size:.72rem;padding:.45rem .7rem;max-width:52vw}}
+.mkt-ncta-rdvm{display:none}
 @media(max-width:1000px){
-  .mkt-links,.mkt-ncta .btn-ghost,.mkt-ncta-rdv{display:none}
-  .mkt-ncta-guide{display:inline-flex}
+  /* Sur mobile : bouton compact « Un rdv ? », le reste passe dans le menu */
+  .mkt-links,.mkt-ncta .btn-ghost,.mkt-ncta-rdv,.mkt-ncta-guide{display:none}
+  .mkt-ncta-rdvm{display:inline-flex;white-space:nowrap}
   .mkt-burger{display:flex}
   .mkt-hero-in{grid-template-columns:1fr}
   .mkt-visual{min-height:380px;order:2}.mkt-copy{order:1}
@@ -345,8 +368,9 @@
 .mkt-news-msg{font-size:.82rem;margin-top:.6rem;font-weight:600}
 
 /* CTA rendez-vous en tête du menu mobile */
-.mkt-mobile-cta{width:100%;justify-content:center;font-size:1.05rem;padding:1.05rem 1.8rem;margin-top:1.8rem;box-shadow:0 16px 34px -14px rgba(245,129,31,.7)}
-.mkt-mobile-mail{text-align:center;margin-top:1.1rem;font-size:.92rem;font-weight:700;color:var(--violet)}
+.mkt-mcta-row .mkt-mobile-cta{justify-content:center;font-size:1rem;padding:1rem 1.4rem;box-shadow:0 16px 34px -14px rgba(245,129,31,.7)}
+.mkt-mcta-row .mkt-mobile-guide{justify-content:center;font-size:1rem;padding:1rem 1.4rem}
+.mkt-mobile-mail{text-align:center;margin-top:1.2rem;font-size:.92rem;font-weight:700;color:var(--violet)}
 
 /* images d'articles */
 .mkt-postcard .thumb{width:100%;height:180px;object-fit:cover;display:block}

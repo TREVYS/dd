@@ -31,18 +31,20 @@ const PRIMARY = [
   { href: "/blog", label: "Ressources" },
 ];
 
-// Menu mobile : nos deux métiers en tête, puis le reste.
-const MOBILE_LINKS = [
+// Menu mobile : regroupé par univers, avec un jeu de couleurs.
+const M_METIERS = [
   { href: "/expertise-comptable", label: "Expertise comptable" },
   { href: "/consulting", label: "Conseil" },
+];
+const M_EXPERTISES = [
   { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
   { href: "/audit-it", label: "Audit IT" },
   { href: "/audit-organisationnel", label: "Audit organisationnel" },
+];
+const M_CABINET = [
   { href: "/le-cabinet", label: "Le cabinet" },
   { href: "/notre-ecosysteme", label: "Notre écosystème" },
-  { href: "/references", label: "Références" },
-  { href: "/blog", label: "Ressources" },
 ];
 
 type NavLink = { href: string; label: string };
@@ -163,6 +165,10 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
           >
             Guide RFE
           </a>
+          {/* Version compacte mobile de la prise de rendez-vous */}
+          <Link className="btn btn-sm btn-gold mkt-ncta-rdvm" href="/rendez-vous">
+            Un rdv&nbsp;?
+          </Link>
           <button
             className="mkt-burger"
             aria-label="Menu"
@@ -182,23 +188,55 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         aria-modal="true"
         aria-hidden={!mobileOpen}
       >
-        {[...MOBILE_LINKS, ...extraLinks].map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            onClick={() => setMobileOpen(false)}
-            className={isCur(l.href) ? "cur" : ""}
-          >
-            {l.label}
+        {/* Deux univers côte à côte, jeu de couleurs */}
+        <div className="mkt-mcols">
+          <div className="mkt-mgroup metiers">
+            <span className="mkt-mgroup-h">Nos métiers</span>
+            {M_METIERS.map((l) => (
+              <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className={isCur(l.href) ? "cur" : ""}>
+                {l.label}
+              </Link>
+            ))}
+          </div>
+          <div className="mkt-mgroup expertises">
+            <span className="mkt-mgroup-h">Expertises</span>
+            {M_EXPERTISES.map((l) => (
+              <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className={isCur(l.href) ? "cur" : ""}>
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Le cabinet (regroupe cabinet + écosystème) */}
+        <div className="mkt-mgroup cabinet">
+          <span className="mkt-mgroup-h">Le cabinet</span>
+          {M_CABINET.map((l) => (
+            <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className={isCur(l.href) ? "cur" : ""}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
+
+        {/* Liens seuls */}
+        <div className="mkt-msolo">
+          <Link href="/references" onClick={() => setMobileOpen(false)} className={isCur("/references") ? "cur" : ""}>Références</Link>
+          <Link href="/blog" onClick={() => setMobileOpen(false)} className={isCur("/blog") ? "cur" : ""}>Ressources</Link>
+          {extraLinks.map((l) => (
+            <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className={isCur(l.href) ? "cur" : ""}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="mkt-mcta-row">
+          <Link className="btn btn-lg btn-gold mkt-mobile-cta" href="/rendez-vous" onClick={() => setMobileOpen(false)}>
+            Prendre rendez-vous
           </Link>
-        ))}
-        <Link
-          className="btn btn-lg btn-gold mkt-mobile-cta"
-          href="/rendez-vous"
-          onClick={() => setMobileOpen(false)}
-        >
-          Prendre rendez-vous
-        </Link>
+          <a className="btn btn-lg btn-ghost mkt-mobile-guide" href="https://forms.cloud.microsoft/e/mr63uL9LsU" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>
+            Guide RFE
+          </a>
+        </div>
         <a className="mkt-mobile-mail" href="mailto:contact@trevys-advisory.fr">
           contact@trevys-advisory.fr
         </a>
