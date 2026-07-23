@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { mdToHtml } from "@/lib/md-preview";
+import { MediaPicker } from "./media-picker";
 
 type Btn = { label: string; title: string; wrap?: [string, string]; block?: string };
 
@@ -32,6 +33,10 @@ export function MarkdownEditor({
   const [tab, setTab] = useState<"write" | "preview">("write");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [pick, setPick] = useState(false);
+  const [instruction, setInstruction] = useState("");
+  const [alfBusy, setAlfBusy] = useState(false);
+  const [alfMsg, setAlfMsg] = useState("");
   const ta = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const attachRef = useRef<HTMLInputElement>(null);
@@ -114,6 +119,28 @@ export function MarkdownEditor({
     if (attachRef.current) attachRef.current.value = "";
   };
 
+  // Demande à Alfred de modifier le contenu selon une instruction.
+  const askAlfred = async () => {
+    if (!instruction.trim()) return;
+    setAlfBusy(true);
+    setAlfMsg("");
+    try {
+      const r = await fetch("/api/admin/comms/assist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: value, instruction }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error ?? "Alfred n'a pas pu répondre.");
+      setValue(d.content ?? value);
+      setInstruction("");
+      setAlfMsg("Contenu mis à jour par Alfred. Relisez avant d'enregistrer.");
+    } catch (e) {
+      setAlfMsg((e as Error).message);
+    }
+    setAlfBusy(false);
+  };
+
   return (
     <div className="adm-md">
       <div className="adm-md-toolbar">
@@ -145,6 +172,14 @@ export function MarkdownEditor({
           multiple
           onChange={(e) => uploadImage(e.target.files)}
         />
+        <button
+          type="button"
+          className="adm-md-tool img"
+          title="Choisir une image dans la médiathèque"
+          onClick={() => setPick(true)}
+        >
+          🗂 Médiathèque
+        </button>
         <button
           type="button"
           className="adm-md-tool img"
@@ -185,6 +220,34 @@ export function MarkdownEditor({
           <div className="mkt-article" dangerouslySetInnerHTML={{ __html: mdToHtml(value) || "<p style='color:#9b8f7c'>L’aperçu s’affichera ici…</p>" }} />
         </div>
       </div>
+
+      {/* Barre Alfred : donner une instruction pour modifier le contenu */}
+      <div className="ck-alfred-bar">
+        <span className="ck-alfred-ic" aria-hidden="true">✦</span>
+        <input
+          type="text"
+          value={instruction}
+          onChange={(e) => setInstruction(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              askAlfred();
+            }
+          }}
+          placeholder="Demandez à Alfred : « raccourcis l'intro », « ajoute une conclusion », « ton plus direct »…"
+          disabled={alfBusy}
+        />
+        <button type="button" className="adm-btn sm" onClick={askAlfred} disabled={alfBusy || !instruction.trim()}>
+          {alfBusy ? "Alfred écrit…" : "Demander à Alfred"}
+        </button>
+      </div>
+      {alfMsg && <p style={{ fontSize: ".82rem", margin: ".5rem 0 0", color: alfMsg.startsWith("Contenu") ? "#2E9E6B" : "#c0392b" }}>{alfMsg}</p>}
+
+      <MediaPicker
+        open={pick}
+        onClose={() => setPick(false)}
+        onPick={(u, n) => insertAtCursor(`\n\n![${n}](${u})\n`)}
+      />
     </div>
   );
 }

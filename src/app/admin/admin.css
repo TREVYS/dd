@@ -58,6 +58,23 @@
 .adm-table .muted{color:var(--ink3);font-size:.82rem}
 .adm-link{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent}
 .adm-link:hover{color:var(--o);border-bottom-color:var(--o)}
+
+/* Barre Alfred (assistant de rédaction) sous l'éditeur */
+.ck-alfred-bar{display:flex;align-items:center;gap:.55rem;margin-top:.7rem;padding:.55rem .7rem;
+  border:1px solid #F5D9BE;background:linear-gradient(180deg,#FFF7F0,#fff);border-radius:12px;flex-wrap:wrap}
+.ck-alfred-ic{width:26px;height:26px;flex:0 0 auto;display:grid;place-items:center;border-radius:8px;
+  background:var(--o);color:#fff;font-size:.9rem;font-weight:800}
+.ck-alfred-bar input{flex:1;min-width:200px;border:1px solid var(--line);border-radius:9px;padding:.5rem .7rem;font:inherit;font-size:.86rem}
+
+/* Sélecteur de média (modale) */
+.ck-picker-back{position:fixed;inset:0;background:rgba(20,12,4,.5);z-index:1000;display:grid;place-items:center;padding:1rem}
+.ck-picker{background:#fff;border-radius:16px;width:min(760px,96vw);max-height:86vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.ck-picker-h{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.9rem 1rem;border-bottom:1px solid var(--line)}
+.ck-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.7rem;padding:1rem;overflow-y:auto}
+.ck-picker-item{border:1px solid var(--line);background:#fff;border-radius:10px;padding:.35rem;cursor:pointer;display:flex;flex-direction:column;gap:.3rem;font:inherit}
+.ck-picker-item:hover{border-color:var(--o);box-shadow:0 4px 14px rgba(245,129,31,.18)}
+.ck-picker-item img{width:100%;height:92px;object-fit:cover;border-radius:7px;background:#faf8f5}
+.ck-picker-item span{font-size:.7rem;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .adm-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--o);color:#fff;border:none;border-radius:10px;padding:.6rem 1.1rem;font-weight:700;font-size:.88rem;cursor:pointer;text-decoration:none;font-family:inherit}
 .adm-btn:hover{background:var(--o2)}
 .adm-btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
@@ -184,8 +201,8 @@
 .adm-md-tabs{display:flex;gap:.2rem;padding:.4rem;border-bottom:1px solid var(--line);background:#faf8f5}
 .adm-md-tabs button{border:none;background:none;font:inherit;font-size:.82rem;font-weight:700;color:var(--ink2);padding:.4rem .9rem;border-radius:8px;cursor:pointer}
 .adm-md-tabs button.on{background:var(--o);color:#fff}
-.adm-md-panes{display:grid;grid-template-columns:1fr 1fr}
-.adm-md-panes textarea{border:none;border-right:1px solid var(--line);border-radius:0;min-height:420px;margin:0}
+.adm-md-panes{display:grid;grid-template-columns:1fr}
+.adm-md-panes textarea{border:none;border-bottom:1px solid var(--line);border-radius:0;min-height:420px;margin:0}
 .adm-md-preview{padding:1.2rem 1.4rem;overflow-y:auto;max-height:560px}
 .adm-md-preview .mkt-article{font-size:.92rem;line-height:1.7;color:var(--ink2)}
 .adm-md-preview h2{font-size:1.25rem;color:var(--ink);margin:1.4rem 0 .7rem;font-weight:800}
@@ -200,11 +217,16 @@
 .adm-md-preview code{background:#f2efeb;padding:.1rem .35rem;border-radius:4px;font-size:.85em}
 /* En mode onglet (mobile), n'afficher qu'un panneau */
 .adm-md-panes.write .adm-md-preview{display:none}
-.adm-md-panes.write textarea{border-right:none}
+.adm-md-panes.write textarea{border-bottom:none}
 .adm-md-panes.preview textarea{display:none}
 .adm-md-panes.preview .adm-md-preview{display:block}
-@media(min-width:900px){.adm-md-panes.write .adm-md-preview,.adm-md-panes.preview textarea{display:block}.adm-md-panes.preview textarea{display:block}.adm-md-tabs{display:none}}
-@media(max-width:900px){.adm-md-panes{grid-template-columns:1fr}.ck-mail-grid{grid-template-columns:1fr!important}}
+/* Desktop : éditeur en haut, rendu en dessous (empilés, plus côte à côte). */
+@media(min-width:900px){
+  .adm-md-panes.write .adm-md-preview,.adm-md-panes.preview textarea{display:block}
+  .adm-md-panes.write textarea{border-bottom:1px solid var(--line)}
+  .adm-md-tabs{display:none}
+}
+@media(max-width:900px){.ck-mail-grid{grid-template-columns:1fr!important}}
 /* Bouton menu + fond, masqués sur desktop */
 .adm-burger{display:none;flex-direction:column;gap:4px;padding:.55rem;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
 .adm-burger span{width:18px;height:2px;background:var(--ink);border-radius:2px}

@@ -153,6 +153,41 @@ export async function draftSocialPost(
   return { content: content || topic, generated: true };
 }
 
+// Modifie un contenu Markdown selon une instruction (appel modèle unique).
+// Renvoie le texte révisé, prêt à relire. Sans clé API, lève une erreur claire.
+export async function reviseText(content: string, instruction: string): Promise<string> {
+  const apiKey = getSetting("anthropicApiKey");
+  if (!apiKey) {
+    throw new Error("Alfred n'est pas configuré (clé API manquante — voir Réglages).");
+  }
+
+  const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+  const client = new AnthropicSDK({ apiKey });
+
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 4000,
+    system:
+      `${alfredSystemBlock()}\n\n---\n\nTu es l'assistant de rédaction du cabinet. On te donne un contenu d'article en Markdown et une instruction de modification. ` +
+      `Renvoie UNIQUEMENT le contenu Markdown complet révisé (aucun commentaire, aucune balise de code, aucune explication). ` +
+      `Conserve la mise en forme Markdown (## sous-titres, listes, gras, liens, images) et le ton « maison ». Si l'instruction ne concerne qu'une partie, ne réécris pas le reste inutilement.`,
+    messages: [
+      {
+        role: "user",
+        content: `Instruction : ${instruction}\n\n--- CONTENU ACTUEL ---\n${content || "(vide)"}`,
+      },
+    ],
+  });
+
+  const revised = res.content
+    .filter((b) => b.type === "text")
+    .map((b) => (b as { text: string }).text)
+    .join("")
+    .trim();
+
+  return revised || content;
+}
+
 export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
   const apiKey = getSetting("anthropicApiKey");
   if (!apiKey) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { MediaPicker } from "./media-picker";
 
 // Champ d'image de couverture : saisie d'URL OU import direct d'un fichier
 // hébergé sur l'instance (via /api/admin/media). Renvoie l'URL dans un champ
@@ -15,6 +16,7 @@ export function ImageField({
   const [url, setUrl] = useState(defaultValue);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [pick, setPick] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const upload = async (files: FileList | null) => {
@@ -44,11 +46,15 @@ export function ImageField({
           placeholder="/uploads/mon-image.jpg ou https://…"
           style={{ flex: 1, minWidth: 220 }}
         />
+        <button type="button" className="adm-btn ghost sm" onClick={() => setPick(true)}>
+          Médiathèque
+        </button>
         <button type="button" className="adm-btn ghost sm" onClick={() => fileRef.current?.click()} disabled={busy}>
-          {busy ? "Import…" : "Importer une image"}
+          {busy ? "Import…" : "Importer"}
         </button>
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => upload(e.target.files)} />
       </div>
+      <MediaPicker open={pick} onClose={() => setPick(false)} onPick={(u) => setUrl(u)} />
       {err && <p style={{ color: "#c0392b", fontSize: ".8rem", margin: ".3rem 0 0" }}>{err}</p>}
       {url && (
         // eslint-disable-next-line @next/next/no-img-element
