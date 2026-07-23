@@ -230,10 +230,7 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         </div>
 
         <div className="mkt-mcta-row">
-          <Link className="btn btn-lg btn-gold mkt-mobile-cta" href="/rendez-vous" onClick={() => setMobileOpen(false)}>
-            Prendre rendez-vous
-          </Link>
-          <a className="btn btn-lg btn-ghost mkt-mobile-guide" href="https://forms.cloud.microsoft/e/mr63uL9LsU" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>
+          <a className="btn btn-lg btn-gold mkt-mobile-guide" href="https://forms.cloud.microsoft/e/mr63uL9LsU" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>
             Guide RFE
           </a>
         </div>

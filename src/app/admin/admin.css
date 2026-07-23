@@ -241,3 +241,10 @@
 .adm-post-sched{display:flex;gap:.4rem;align-items:center}
 .adm-post-sched input{border:1px solid var(--line);border-radius:8px;padding:.35rem .5rem;font:inherit;font-size:.8rem}
 @media(max-width:600px){.adm-post-actions,.adm-post-sched{width:100%}.adm-post-sched{flex-wrap:wrap}}
+
+/* Avatar Alfred (majordome animé) */
+.adm-alfred-av{background:#FBEEDD}
+.adm-alfred-svg{width:100%;height:100%;display:block}
+.adm-alf-eye{transform-box:fill-box;transform-origin:center;animation:adm-alf-blink 5.5s ease-in-out infinite}
+@keyframes adm-alf-blink{0%,45%,52%,100%{transform:scaleY(1)}48%{transform:scaleY(.1)}}
+@media(prefers-reduced-motion:reduce){.adm-alf-eye{animation:none}}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AlfredAvatar } from "./alfred-avatar";
 
 type Item = { href: string; label: string; exact?: boolean; soon?: boolean };
 type Group = { title: string; items: Item[] };
@@ -40,9 +41,7 @@ export function AdminNav({ badges = {} }: { badges?: Record<string, number> }) {
     <nav style={{ display: "flex", flexDirection: "column" }}>
       <Link href="/admin/communication" className={`adm-alfred${alfredOn ? " on" : ""}`}>
         <span className="adm-alfred-av">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/uploads/alfred.png" alt="" onError={(e) => { (e.currentTarget.style.display = "none"); }} />
-          <span className="adm-alfred-ini">A</span>
+          <AlfredAvatar />
         </span>
         <span className="adm-alfred-tx">
           <b>Alfred</b>
