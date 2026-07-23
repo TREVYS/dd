@@ -16,13 +16,22 @@ export async function diffuseArticleAction(formData: FormData) {
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const topic = excerpt ? `${title} — ${excerpt}` : title;
 
+  const scheduledDate = String(formData.get("scheduledDate") ?? "").trim();
+  const status = scheduledDate ? "planifie" : "brouillon";
+
   const nets: Array<{ id: "linkedin" | "instagram"; image: string }> = [];
   if (formData.get("net_linkedin")) nets.push({ id: "linkedin", image: String(formData.get("img_linkedin") ?? "") });
   if (formData.get("net_instagram")) nets.push({ id: "instagram", image: String(formData.get("img_instagram") ?? "") });
 
   for (const n of nets) {
     const { content } = await draftSocialPost(topic, n.id);
-    addPost({ network: n.id, content, image: n.image || undefined, status: "brouillon" });
+    addPost({
+      network: n.id,
+      content,
+      image: n.image || undefined,
+      status,
+      scheduledDate: scheduledDate || undefined,
+    });
   }
 
   redirect("/admin/communication/reseaux");

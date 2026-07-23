@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getItem } from "@/lib/editorial";
 import { MarkdownEditor } from "../../../markdown-editor";
+import { ArticleDiffusion } from "../../../articles/article-diffusion";
 import { updateDraftAction, publishDraftAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -81,6 +82,9 @@ export default async function EditDraft({ params }: { params: Promise<{ id: stri
           <button className="adm-btn" type="submit" disabled={!item.body}>Publier sur le site</button>
         </form>
       </div>
+
+      {/* Diffusion réseaux sociaux (brouillon ou planifié selon la date) */}
+      <ArticleDiffusion title={item.title} excerpt={item.excerpt ?? ""} />
     </>
   );
 }

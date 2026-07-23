@@ -44,9 +44,15 @@ export function ArticleDiffusion({ title, excerpt }: { title: string; excerpt: s
           </div>
         )}
 
+        <div className="adm-field" style={{ maxWidth: 260 }}>
+          <label>Date de publication prévue <small>(optionnel)</small></label>
+          <input type="date" name="scheduledDate" />
+          <small style={{ color: "var(--ink3)" }}>Sans date : brouillon. Avec une date : planifié.</small>
+        </div>
+
         <div className="adm-actions" style={{ marginTop: ".6rem" }}>
           <button className="adm-btn" type="submit" disabled={!linkedin && !instagram}>
-            Préparer les brouillons de posts
+            Préparer les posts
           </button>
         </div>
       </form>
