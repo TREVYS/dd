@@ -19,7 +19,7 @@ const EXPERTISES = [
 ];
 
 const CABINET = [
-  { href: "/le-cabinet", label: "À propos", d: "La maison Trevys" },
+  { href: "/le-cabinet", label: "À propos", d: "Le cabinet Trevys" },
   { href: "/notre-ecosysteme", label: "Notre écosystème", d: "Nos partenaires & le groupe" },
   { href: "/references", label: "Références", d: "Ils nous font confiance" },
 ];

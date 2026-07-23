@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 
-// Logo Trevys résilient : si l'image ne se charge pas (certains navigateurs
-// mobiles), on retombe proprement sur le mot « Trevys » en toutes lettres.
-// compactOnMobile : monogramme « TS » sur mobile, logo complet sur desktop.
+// Logo Trevys fiable : monogramme (logo.png importé) + mot « Trevys ».
+// Ne dépend plus d'un gros SVG fragile. Si le monogramme ne charge pas, on
+// garde le mot seul (jamais d'icône cassée).
+// compactOnMobile : sur mobile, on n'affiche que le monogramme.
 export function Logo({
-  className,
   variant = "couleur",
   compactOnMobile = false,
 }: {
@@ -14,34 +14,20 @@ export function Logo({
   variant?: "couleur" | "blanc";
   compactOnMobile?: boolean;
 }) {
-  const [failFull, setFailFull] = useState(false);
-  const [failMark, setFailMark] = useState(false);
-  const src =
-    variant === "blanc" ? "/brand/trevys-logo-blanc.svg" : "/brand/trevys-logo.svg";
-  const alt = "Trevys — Expertise comptable & conseil";
-
-  if (!compactOnMobile) {
-    if (failFull) {
-      return <span className={`mkt-logo-fallback${variant === "blanc" ? " blanc" : ""}`}>Trevys</span>;
-    }
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img className={className} src={src} alt={alt} onError={() => setFailFull(true)} />;
-  }
+  const [badgeFail, setBadgeFail] = useState(false);
 
   return (
-    <span className="mkt-logo-wrap">
-      {failFull ? (
-        <span className="mkt-logo-full mkt-logo-fallback">Trevys</span>
-      ) : (
+    <span className={`mkt-logo-lockup${variant === "blanc" ? " blanc" : ""}`}>
+      {!badgeFail && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className={`mkt-logo-full ${className ?? ""}`} src={src} alt={alt} onError={() => setFailFull(true)} />
+        <img
+          className="mkt-logo-badge"
+          src="/uploads/logo.png"
+          alt="Trevys"
+          onError={() => setBadgeFail(true)}
+        />
       )}
-      {failMark ? (
-        <span className="mkt-logo-mark mkt-logo-fallback">Trevys</span>
-      ) : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img className="mkt-logo-mark" src="/uploads/logo.png" alt="Trevys" onError={() => setFailMark(true)} />
-      )}
+      <span className={`mkt-logo-word${compactOnMobile ? " cm" : ""}`}>Trevys</span>
     </span>
   );
 }

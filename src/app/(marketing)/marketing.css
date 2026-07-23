@@ -755,3 +755,14 @@ html,body{overflow-x:hidden}
 
 /* Avatar consultant : format bandeau (moins haut) */
 .mkt-team-photo.mkt-sil{aspect-ratio:3/2}
+
+/* Logo « lockup » fiable : monogramme + mot Trevys */
+.mkt-logo-lockup{display:inline-flex;align-items:center;gap:.5rem}
+.mkt-logo-badge{height:34px;width:34px;object-fit:contain;border-radius:8px;display:block}
+.mkt-logo-word{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;color:var(--ink);line-height:1}
+.mkt-logo-lockup.blanc .mkt-logo-word{color:#fff}
+.mkt-nav .nlogo .mkt-logo-badge{height:32px;width:32px}
+.mkt-nav .nlogo .mkt-logo-word{font-size:1.35rem}
+.mkt-foot .brand .mkt-logo-lockup{margin-bottom:1.3rem}
+.mkt-foot .brand .mkt-logo-badge{height:38px;width:38px}
+@media(max-width:600px){.mkt-logo-word.cm{display:none}}

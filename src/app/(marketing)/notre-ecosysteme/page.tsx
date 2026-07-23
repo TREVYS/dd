@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Notre écosystème",
   description:
-    "Le Groupe TREVYS — KLARE STUDIO, WELL&WIZ, URCA, SONAM IA — et ses partenaires PHOENIX et DECA Paris, au service de nos clients en France et à l'international.",
+    "Le Groupe TREVYS — KLARE STUDIO, WELL&WIZ, URCA, SONAM IA — et ses partenaires PHOENIX, DECA Paris et NewTech, au service de nos clients en France et à l'international.",
   alternates: { canonical: "/notre-ecosysteme" },
 };
 
@@ -13,13 +13,14 @@ const GROUP = [
   { t: "KLARE STUDIO", d: "Solutions de pilotage prédictif pour anticiper les tendances, optimiser la performance et éclairer la décision.", u: "https://klare-studio.io/" },
   { t: "WELL&WIZ", d: "Société de conseil mobilisant une communauté d'experts freelances, de la stratégie à l'opérationnel.", u: "https://wellandwiz.com/" },
   { t: "URCA", d: "Commissariat aux comptes : un accompagnement rigoureux pour sécuriser vos processus et vos obligations légales.", u: "http://urca.io/" },
-  { t: "SONAM IA", d: "Éditeur de logiciels à base d'intelligence artificielle, au service de la performance et de l'automatisation.", u: "https://wellandwiz-ai-site.vercel.app/" },
+  { t: "SONAM IA", d: "ESN spécialiste des consultants en intelligence artificielle, pour renforcer vos équipes sur vos projets IA.", u: "https://wellandwiz-ai-site.vercel.app/" },
 ];
 
 // Sociétés partenaires
 const PARTNERS = [
   { t: "PHOENIX", d: "Société d'expertise comptable basée à Dakar, pour accompagner votre développement à l'international.", u: "https://www.phoenix-conseil.net/" },
   { t: "DECA Paris", d: "Cabinet d'avocats en droit social, partenaire pour sécuriser vos problématiques sociales et RH.", u: "https://www.decaparis.fr/" },
+  { t: "NewTech", d: "Spécialiste de l'automatisation et des grands modèles de langage (LLM), pour industrialiser vos cas d'usage IA.", u: "https://www.newtech.institute/" },
 ];
 
 export default function Page() {

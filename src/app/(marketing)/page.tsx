@@ -193,9 +193,10 @@ export default function HomePage() {
               { t: "KLARE STUDIO", d: "Pilotage prédictif", u: "https://klare-studio.io/" },
               { t: "WELL&WIZ", d: "Conseil & freelances", u: "https://wellandwiz.com/" },
               { t: "URCA", d: "Commissariat aux comptes", u: "http://urca.io/" },
-              { t: "SONAM IA", d: "Édition de logiciels IA", u: "https://wellandwiz-ai-site.vercel.app/" },
+              { t: "SONAM IA", d: "ESN · consultants IA", u: "https://wellandwiz-ai-site.vercel.app/" },
               { t: "PHOENIX", d: "Expertise comptable · international", u: "https://www.phoenix-conseil.net/" },
               { t: "DECA Paris", d: "Avocats en droit social", u: "https://www.decaparis.fr/" },
+              { t: "NewTech", d: "Automatisation & LLM", u: "https://www.newtech.institute/" },
             ].map((e) => (
               <a className="mkt-eco-item" href={e.u} target="_blank" rel="noopener noreferrer" key={e.t}>
                 <span className="t">{e.t}</span>
