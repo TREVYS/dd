@@ -132,7 +132,7 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
     <>
       <nav className={`mkt-nav${scrolled ? " s" : ""}${mobileOpen ? " open" : ""}`}>
         <Link href="/" className="nlogo" aria-label="Trevys — Accueil">
-          <Logo />
+          <Logo compactOnMobile />
         </Link>
 
         <ul className="mkt-links" ref={dropsRef}>
