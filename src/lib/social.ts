@@ -89,6 +89,53 @@ export function isConfigured(provider: Provider): boolean {
   return !!(process.env[p.clientIdEnv] && process.env[p.clientSecretEnv]);
 }
 
+// Publie un post sur un réseau. Renvoie {ok, error?}. Tant que le compte n'est
+// pas connecté (pas de jeton), renvoie ok:false avec un motif — le post reste
+// alors en brouillon/planifié côté cockpit.
+export async function publishPost(
+  provider: Provider,
+  content: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const store = readSocial();
+  const conn = store[provider];
+  if (!conn?.connected || !conn.accessToken) {
+    return { ok: false, error: "Compte non connecté" };
+  }
+  try {
+    if (provider === "linkedin") {
+      // Nécessite le scope w_member_social et l'URN de l'auteur (sub OpenID).
+      const author = conn.accountName?.startsWith("urn:")
+        ? conn.accountName
+        : `urn:li:person:${conn.accountName ?? ""}`;
+      const res = await fetch("https://api.linkedin.com/v2/ugcPosts", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${conn.accessToken}`,
+          "Content-Type": "application/json",
+          "X-Restli-Protocol-Version": "2.0.0",
+        },
+        body: JSON.stringify({
+          author,
+          lifecycleState: "PUBLISHED",
+          specificContent: {
+            "com.linkedin.ugc.ShareContent": {
+              shareCommentary: { text: content },
+              shareMediaCategory: "NONE",
+            },
+          },
+          visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
+        }),
+      });
+      if (!res.ok) return { ok: false, error: `LinkedIn ${res.status}` };
+      return { ok: true };
+    }
+    // Instagram : publication via Graph API (à finaliser après connexion Meta).
+    return { ok: false, error: "Publication Instagram à finaliser après connexion" };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
 // Statut public (sans jeton) pour l'affichage.
 export function publicStatus() {
   const store = readSocial();
