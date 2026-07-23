@@ -73,7 +73,14 @@ export async function sendTestAction(formData: FormData) {
   redirect(`/admin/communication/newsletter/${id}?tested=1`);
 }
 
-// Envoi de la campagne à tous les inscrits.
+// Extrait et normalise une liste d'adresses (séparées par virgule, point-virgule,
+// espace ou retour à la ligne), en supprimant les doublons.
+function parseEmails(raw: string): string[] {
+  const found = raw.match(/[^\s,;<>()"']+@[^\s,;<>()"']+\.[^\s,;<>()"']+/g) ?? [];
+  return [...new Set(found.map((e) => e.trim().toLowerCase()))];
+}
+
+// Envoi de la campagne : inscrits newsletter et/ou liste de destinataires collée.
 export async function sendCampaignAction(formData: FormData) {
   await guard();
   const id = formData.get("id") as string;
@@ -84,7 +91,13 @@ export async function sendCampaignAction(formData: FormData) {
     redirect(`/admin/communication/newsletter/${id}?error=notconfig`);
   }
 
-  const recipients = listSubscribers().map((s) => s.email);
+  const set = new Set<string>();
+  if (formData.get("includeSubscribers")) {
+    listSubscribers().forEach((s) => set.add(s.email.toLowerCase()));
+  }
+  parseEmails((formData.get("recipients") as string) || "").forEach((e) => set.add(e));
+  const recipients = [...set];
+
   if (recipients.length === 0) {
     redirect(`/admin/communication/newsletter/${id}?error=empty`);
   }

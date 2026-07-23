@@ -79,32 +79,47 @@ export default async function CampaignEditor({
       {/* Envoi */}
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>
         <h2>Envoyer</h2>
-        <p className="muted" style={{ margin: ".2rem 0 1rem" }}>
-          {mailOn
-            ? `Départ depuis ${senderAddress()} · ${count} inscrit(s) au total.`
-            : "Connexion Microsoft 365 requise (Réglages) pour pouvoir envoyer."}
-        </p>
 
-        <div className="adm-actions" style={{ flexWrap: "wrap", gap: ".7rem" }}>
-          <form action={sendTestAction} className="adm-actions" style={{ gap: ".5rem", alignItems: "flex-end" }}>
-            <input type="hidden" name="id" value={c.id} />
-            <div className="adm-field" style={{ margin: 0 }}>
-              <label style={{ fontSize: ".78rem" }}>Envoi de test</label>
-              <input name="testEmail" type="email" placeholder={senderAddress()} style={{ minWidth: 220 }} />
-            </div>
-            <button className="adm-btn ghost" type="submit" disabled={!mailOn}>Envoyer un test</button>
-          </form>
+        {!mailOn && (
+          <div className="adm-note" style={{ margin: ".2rem 0 1rem", borderColor: "#f0e2cf", background: "#fdf8f0" }}>
+            <b>Pour pouvoir envoyer, connectez d&apos;abord Microsoft 365.</b> C&apos;est une configuration
+            en une fois (adresse d&apos;envoi, tenant, client, secret) qui permet d&apos;expédier depuis{" "}
+            {senderAddress()}. <Link href="/admin/reglages" className="adm-link">Ouvrir les Réglages →</Link>
+          </div>
+        )}
 
-          <form action={sendCampaignAction}>
-            <input type="hidden" name="id" value={c.id} />
-            <button className="adm-btn" type="submit" disabled={!mailOn || count === 0}>
-              Envoyer à tous les inscrits ({count})
-            </button>
-          </form>
-        </div>
+        {/* Test */}
+        <form action={sendTestAction} className="adm-actions" style={{ gap: ".5rem", alignItems: "flex-end", marginBottom: "1.1rem" }}>
+          <input type="hidden" name="id" value={c.id} />
+          <div className="adm-field" style={{ margin: 0 }}>
+            <label style={{ fontSize: ".78rem" }}>Envoi de test à une adresse</label>
+            <input name="testEmail" type="email" placeholder={senderAddress()} style={{ minWidth: 240 }} />
+          </div>
+          <button className="adm-btn ghost" type="submit" disabled={!mailOn}>Envoyer un test</button>
+        </form>
+
+        {/* Envoi réel : inscrits et/ou liste collée */}
+        <form action={sendCampaignAction}>
+          <input type="hidden" name="id" value={c.id} />
+          <label className="adm-diff-net" style={{ marginBottom: ".6rem" }}>
+            <input type="checkbox" name="includeSubscribers" defaultChecked={count > 0} disabled={count === 0} />
+            <b>Inclure les {count} inscrit(s) à la newsletter</b>
+          </label>
+          <div className="adm-field">
+            <label>Destinataires (clients, contacts…) <small>— collez les adresses, séparées par des virgules, des points-virgules ou des retours à la ligne</small></label>
+            <textarea name="recipients" style={{ minHeight: 90 }} placeholder="client1@exemple.fr, client2@exemple.fr…" />
+          </div>
+          <div className="adm-actions">
+            <button className="adm-btn" type="submit" disabled={!mailOn}>Envoyer le mailing</button>
+          </div>
+          <p className="muted" style={{ marginTop: ".6rem", color: "var(--ink3)", fontSize: ".82rem" }}>
+            Les destinataires sont mis en copie cachée (Cci) : ils ne se voient pas entre eux.
+          </p>
+        </form>
+
         {sent && (
           <p className="muted" style={{ marginTop: ".9rem", color: "#2E9E6B", fontWeight: 600 }}>
-            Ce mailing a déjà été envoyé. Un nouvel envoi le renverra à tous les inscrits.
+            Ce mailing a déjà été envoyé ({c.sentCount ?? 0} destinataire(s)). Un nouvel envoi le renverra.
           </p>
         )}
       </div>
