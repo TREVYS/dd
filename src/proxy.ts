@@ -45,9 +45,9 @@ export default auth((req) => {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Déjà connecté et sur la page de connexion → tableau de bord ERP.
+  // Déjà connecté et sur la page de connexion → cockpit Trevys.
   if (isLoggedIn && isLoginPage) {
-    return NextResponse.redirect(new URL("/app", req.nextUrl.origin));
+    return NextResponse.redirect(new URL("/admin", req.nextUrl.origin));
   }
 
   return NextResponse.next();
