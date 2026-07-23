@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TEAM, getLeader } from "@/lib/team";
 import { TeamPhoto } from "../../_components/team-photo";
+import { getPeoplePhoto } from "@/lib/people-photos";
 import { LinkedinLink } from "../../_components/linkedin-link";
 import { BreadcrumbJsonLd } from "../../_components/seo-jsonld";
 
@@ -62,7 +63,7 @@ export default async function LeaderPage({
           <div className="mkt-consultant-view" style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "3rem", alignItems: "start" }}>
             <div>
               <div className="mkt-team-card" style={{ maxWidth: 300 }}>
-                <TeamPhoto src={m.photo} initials={m.initials} alt={m.name} />
+                <TeamPhoto src={getPeoplePhoto(m.slug) ?? m.photo} initials={m.initials} alt={m.name} />
                 <div className="mkt-team-body">
                   <div className="nm">{m.firstName}</div>
                   <div className="rl">{m.role}</div>

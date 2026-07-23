@@ -24,7 +24,7 @@ export const TEAM: Leader[] = [
     role: "Fondateur · Expert-comptable",
     initials: "JL",
     photo: "/uploads/john-levy.jpg",
-    linkedin: "https://www.linkedin.com/company/trevys-advisory/",
+    linkedin: "https://www.linkedin.com/in/levyjohn/",
     apport: "La vision",
     intro: "Donner au cabinet un cap : accompagner les dirigeants bien au-delà de la conformité.",
     resume: [
@@ -44,7 +44,7 @@ export const TEAM: Leader[] = [
     role: "Commissaire aux comptes · Data analyste · Transformation digitale",
     initials: "OB",
     photo: "/uploads/olivier-bonnin.jpg",
-    linkedin: "https://www.linkedin.com/company/trevys-advisory/",
+    linkedin: "https://www.linkedin.com/in/olivier-bonnin-33484569/",
     apport: "La pratique & l'expertise métier",
     intro: "Ancrer chaque décision dans la réalité technique et réglementaire du métier.",
     resume: [
@@ -64,7 +64,7 @@ export const TEAM: Leader[] = [
     role: "Directeur de l'innovation",
     initials: "WO",
     photo: "/uploads/walther-ottgen.jpg",
-    linkedin: "https://www.linkedin.com/company/trevys-advisory/",
+    linkedin: "https://www.linkedin.com/in/walther-oettgen-83b11a84/",
     apport: "La veille technologique",
     intro: "Garder toujours une longueur d'avance sur les technologies qui transforment le métier.",
     resume: [
@@ -84,7 +84,7 @@ export const TEAM: Leader[] = [
     role: "Directeur commercial",
     initials: "JR",
     photo: "/uploads/jeremy-roch.jpg",
-    linkedin: "https://www.linkedin.com/company/trevys-advisory/",
+    linkedin: "https://www.linkedin.com/in/jeremy-roch-a5804b3b/",
     apport: "L'exécution & le commercial",
     intro: "Transformer la vision en missions concrètes et en relations durables.",
     resume: [

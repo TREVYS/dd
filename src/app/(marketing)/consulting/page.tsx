@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 import { SilhouetteAvatar } from "../_components/silhouette-avatar";
+import { TeamPhoto } from "../_components/team-photo";
+import { getPeoplePhoto } from "@/lib/people-photos";
+
+export const dynamic = "force-dynamic";
 import { CONSULTANTS } from "@/lib/consultants";
 
 export const metadata: Metadata = {
@@ -104,7 +108,11 @@ export default function Page() {
           <div className="mkt-team">
             {CONSULTANTS.map((c) => (
               <div className="mkt-team-card mkt-consultant" key={c.slug}>
-                <SilhouetteAvatar seed={c.slug} label={c.firstName} />
+                {getPeoplePhoto(c.slug) ? (
+                  <TeamPhoto src={getPeoplePhoto(c.slug)!} initials={c.initials} alt={c.firstName} />
+                ) : (
+                  <SilhouetteAvatar seed={c.slug} label={c.firstName} />
+                )}
                 <div className="mkt-team-body">
                   <div className="nm">{c.firstName}</div>
                   <div className="rl">{c.role}</div>

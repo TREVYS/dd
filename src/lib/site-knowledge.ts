@@ -71,7 +71,7 @@ export function siteKnowledgeBlock(): string {
   // Équipe & consultants.
   try {
     parts.push(
-      `ASSOCIÉS :\n${TEAM.map((m) => `- ${m.name} — ${m.role} — apport : ${m.apport}`).join("\n")}\n\nCONSULTANTS (prénoms affichés seuls) : ${CONSULTANTS.map((c) => c.firstName ?? c.slug).join(", ")}.`,
+      `ASSOCIÉS (slug entre parenthèses) :\n${TEAM.map((m) => `- ${m.name} (${m.slug}) — ${m.role} — apport : ${m.apport}`).join("\n")}\n\nCONSULTANTS (prénom, slug) : ${CONSULTANTS.map((c) => `${c.firstName} (${c.slug})`).join(", ")}.`,
     );
   } catch { /* ignore */ }
 

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { OecLogo } from "../_components/oec-logo";
 import { TeamPhoto } from "../_components/team-photo";
+import { getPeoplePhoto } from "@/lib/people-photos";
+
+export const dynamic = "force-dynamic";
 import { LinkedinLink } from "../_components/linkedin-link";
 import { TEAM } from "@/lib/team";
 
@@ -127,7 +130,7 @@ export default function Page() {
               relation humaine, le conseil et la confiance.
             </blockquote>
             <figcaption>
-              <TeamPhoto src={TEAM.find((m) => m.slug === "john-levy")?.photo ?? "/brand/team/john-levy.jpg"} initials="JL" alt="John Lévy" />
+              <TeamPhoto src={getPeoplePhoto("john-levy") ?? TEAM.find((m) => m.slug === "john-levy")?.photo ?? "/brand/team/john-levy.jpg"} initials="JL" alt="John Lévy" />
               <span>
                 <strong>John Lévy</strong>
                 <em>Fondateur — Expert-comptable</em>
@@ -146,7 +149,7 @@ export default function Page() {
           <div className="mkt-team">
             {TEAM.map((m) => (
               <div className="mkt-team-card mkt-consultant" key={m.slug}>
-                <TeamPhoto src={m.photo} initials={m.initials} alt={m.name} />
+                <TeamPhoto src={getPeoplePhoto(m.slug) ?? m.photo} initials={m.initials} alt={m.name} />
                 <div className="mkt-team-body">
                   <div className="nm">{m.firstName}</div>
                   <div className="rl">{m.role}</div>

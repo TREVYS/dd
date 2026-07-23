@@ -6,6 +6,10 @@ import { siteKnowledgeBlock } from "@/lib/site-knowledge";
 import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
 import { addRoutine, listRoutines, describeSchedule, type RoutineFreq, type RoutineType } from "@/lib/alfred-routines";
+import { setPeoplePhoto, removePeoplePhoto, listPeoplePhotos } from "@/lib/people-photos";
+import { TEAM } from "@/lib/team";
+import { CONSULTANTS } from "@/lib/consultants";
+import { listUploads } from "@/lib/media";
 
 export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type AgentResult = { reply: string; actions: string[] };
@@ -21,6 +25,7 @@ Tes moyens d'action (outils) :
 - lister_calendrier : consulte le calendrier existant.
 - lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
 - creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
+- definir_photo / retirer_photo : change la photo d'un associé ou d'un consultant du site à partir d'une image de la médiathèque (à faire uniquement sur demande explicite).
 
 Règles : respecte scrupuleusement le ton, la ligne éditoriale et les mots à éviter ci-dessus. Inspire-toi des exemples de publications passées pour retrouver le style « maison ». Après une action, confirme brièvement et propose la suite. Tu prépares, l'humain valide et publie.`;
 
@@ -98,6 +103,28 @@ const TOOLS = [
     input_schema: { type: "object" as const, properties: {} },
   },
   {
+    name: "definir_photo",
+    description:
+      "Change la photo d'une personne du site (associé ou consultant) en pointant vers une image de la médiathèque (/uploads/…). Utilise le slug de la personne (ex. john-levy, olivier-bonnin, walther-ottgen, jeremy-roch, ou un slug de consultant). L'image doit exister dans la médiathèque.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        slug: { type: "string", description: "Slug de la personne" },
+        url: { type: "string", description: "URL de l'image, ex. /uploads/jeremy.jpg" },
+      },
+      required: ["slug", "url"],
+    },
+  },
+  {
+    name: "retirer_photo",
+    description: "Retire la photo personnalisée d'une personne (retour à la photo/avatar par défaut).",
+    input_schema: {
+      type: "object" as const,
+      properties: { slug: { type: "string" } },
+      required: ["slug"],
+    },
+  },
+  {
     name: "lire_article",
     description:
       "Renvoie le contenu complet (Markdown) d'un article publié du site, à partir de son slug (ex. « calendrier-2026-2027 »).",
@@ -166,6 +193,30 @@ function runTool(name: string, input: Record<string, unknown>, actions: string[]
         sujet: r.topic, active: r.enabled, derniereExecution: r.lastRun ?? null, dernierResultat: r.lastResult ?? null,
       })),
     );
+  }
+  if (name === "definir_photo") {
+    const slug = String(input.slug ?? "").trim();
+    const url = String(input.url ?? "").trim();
+    const known = [...TEAM.map((m) => m.slug), ...CONSULTANTS.map((c) => c.slug)];
+    if (!known.includes(slug)) {
+      return `Personne inconnue « ${slug} ». Slugs valides : ${known.join(", ")}.`;
+    }
+    if (!url.startsWith("/uploads/")) {
+      return "L'image doit venir de la médiathèque (URL commençant par /uploads/).";
+    }
+    const exists = listUploads().some((m) => m.url === url);
+    if (!exists) {
+      return `Fichier introuvable dans la médiathèque : ${url}. Fichiers disponibles : ${listUploads().slice(0, 30).map((m) => m.url).join(", ")}`;
+    }
+    setPeoplePhoto(slug, url);
+    actions.push(`Photo de ${slug} remplacée par ${url}`);
+    return `Photo de ${slug} mise à jour (${url}). Visible immédiatement sur le site.`;
+  }
+  if (name === "retirer_photo") {
+    const slug = String(input.slug ?? "").trim();
+    removePeoplePhoto(slug);
+    actions.push(`Photo personnalisée de ${slug} retirée`);
+    return `Photo personnalisée retirée pour ${slug} — retour au visuel par défaut. État actuel : ${JSON.stringify(listPeoplePhotos())}`;
   }
   if (name === "lire_article") {
     const post = getPost(String(input.slug ?? ""));
