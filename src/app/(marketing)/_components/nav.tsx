@@ -136,9 +136,9 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         </Link>
 
         <ul className="mkt-links" ref={dropsRef}>
+          {renderDrop("cabinet", "Le cabinet", CABINET)}
           {renderDrop("metiers", "Nos métiers", METIERS)}
           {renderDrop("expertises", "Expertises", EXPERTISES)}
-          {renderDrop("cabinet", "Le cabinet", CABINET)}
           {[...PRIMARY, ...extraLinks].map((l) => (
             <li key={l.href}>
               <Link href={l.href} className={isCur(l.href) ? "cur" : ""}>

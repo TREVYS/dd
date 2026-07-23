@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CONSULTANTS, getConsultant } from "@/lib/consultants";
-import { TeamPhoto } from "../../_components/team-photo";
+import { SilhouetteAvatar } from "../../_components/silhouette-avatar";
 import { BreadcrumbJsonLd } from "../../_components/seo-jsonld";
 
 export function generateStaticParams() {
@@ -68,7 +68,7 @@ export default async function ConsultantPage({
             className="mkt-consultant-view"
           >
             <div className="mkt-team-card" style={{ maxWidth: 300 }}>
-              <TeamPhoto src={c.photo ?? `/brand/team/${c.slug}.jpg`} initials={c.initials} alt={c.firstName} />
+              <SilhouetteAvatar seed={c.slug} label={c.firstName} />
               <div className="mkt-team-body">
                 <div className="nm">{c.firstName}</div>
                 <div className="rl">{c.role}</div>

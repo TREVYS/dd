@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
-import { TeamPhoto } from "../_components/team-photo";
+import { SilhouetteAvatar } from "../_components/silhouette-avatar";
 import { CONSULTANTS } from "@/lib/consultants";
 
 export const metadata: Metadata = {
@@ -104,11 +104,7 @@ export default function Page() {
           <div className="mkt-team">
             {CONSULTANTS.map((c) => (
               <div className="mkt-team-card mkt-consultant" key={c.slug}>
-                <TeamPhoto
-                  src={c.photo ?? `/brand/team/${c.slug}.jpg`}
-                  initials={c.initials}
-                  alt={c.firstName}
-                />
+                <SilhouetteAvatar seed={c.slug} label={c.firstName} />
                 <div className="mkt-team-body">
                   <div className="nm">{c.firstName}</div>
                   <div className="rl">{c.role}</div>
