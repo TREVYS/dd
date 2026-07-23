@@ -3,6 +3,7 @@ import Link from "next/link";
 import { TeamPhoto } from "../_components/team-photo";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 import { RfeFlow } from "./rfe-visuals";
+import { RfeMascot } from "./rfe-mascot";
 
 export const metadata: Metadata = {
   title: "Facturation électronique",
@@ -97,20 +98,23 @@ export default function Page() {
         serviceType="Facturation électronique"
       />
 
-      <header className="mkt-phead">
-        <div className="mkt-phead-in">
-          <span className="eyebrow">Facturation électronique</span>
-          <h1>Votre <em>chef d&apos;orchestre</em> de la réforme</h1>
-          <p>
-            Entre plateformes, formats, échéances et outils, la facturation
-            électronique est un projet à part entière. Nous coordonnons tous les
-            acteurs et vous guidons — en toute indépendance — pour en faire, bien
-            au-delà de la conformité, un véritable levier de transformation.
-          </p>
-          <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
-            <a className="btn btn-gold" href="https://forms.cloud.microsoft/e/mr63uL9LsU" target="_blank" rel="noopener noreferrer">Recevoir le Guide RFE</a>
-            <Link className="btn btn-ghost" href="/rendez-vous">Faire le point</Link>
+      <header className="mkt-phead mkt-ai-head">
+        <div className="mkt-phead-in mkt-ai-hero">
+          <div className="mkt-ai-hero-txt">
+            <span className="eyebrow">Facturation électronique</span>
+            <h1>Votre <em>chef d&apos;orchestre</em> de la réforme</h1>
+            <p>
+              Entre plateformes, formats, échéances et outils, la facturation
+              électronique est un projet à part entière. D&apos;abord française, puis
+              européenne, nous coordonnons tous les acteurs et vous guidons — en
+              toute indépendance — pour en faire un véritable levier de transformation.
+            </p>
+            <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
+              <a className="btn btn-gold" href="https://forms.cloud.microsoft/e/mr63uL9LsU" target="_blank" rel="noopener noreferrer">Recevoir le Guide RFE</a>
+              <Link className="btn btn-ghost" href="/rendez-vous">Faire le point</Link>
+            </div>
           </div>
+          <RfeMascot />
         </div>
       </header>
 
