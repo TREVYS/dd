@@ -10,6 +10,8 @@ const ROUTES = [
   "/consulting",
   "/intelligence-artificielle",
   "/facturation-electronique",
+  "/audit-it",
+  "/audit-organisationnel",
   "/le-cabinet",
   "/notre-ecosysteme",
   "/references",

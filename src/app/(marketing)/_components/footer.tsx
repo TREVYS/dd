@@ -39,10 +39,16 @@ export function Footer() {
             </p>
           </div>
           <div className="col">
-            <h5>Expertises</h5>
+            <h5>Nos métiers</h5>
             <Link href="/expertise-comptable">Expertise comptable</Link>
             <Link href="/consulting">Consulting</Link>
+          </div>
+          <div className="col">
+            <h5>Expertises</h5>
+            <Link href="/intelligence-artificielle">Intelligence artificielle</Link>
             <Link href="/facturation-electronique">Facturation électronique</Link>
+            <Link href="/audit-it">Audit IT</Link>
+            <Link href="/audit-organisationnel">Audit organisationnel</Link>
           </div>
           <div className="col">
             <h5>Le cabinet</h5>

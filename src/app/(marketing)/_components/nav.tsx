@@ -5,11 +5,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 
-const EXPERTISES = [
+// Nos deux cœurs de métier.
+const METIERS = [
   { href: "/expertise-comptable", label: "Expertise comptable", d: "Tenue, révision, bilan augmenté" },
   { href: "/consulting", label: "Consulting", d: "Pilotage, valorisation, stratégie" },
+];
+
+// Nos expertises spécialisées.
+const EXPERTISES = [
   { href: "/intelligence-artificielle", label: "Intelligence artificielle", d: "Automatisation & agents métier" },
   { href: "/facturation-electronique", label: "Facturation électronique", d: "Mise en conformité 2026" },
+  { href: "/audit-it", label: "Audit IT", d: "Systèmes d'information & sécurité" },
+  { href: "/audit-organisationnel", label: "Audit organisationnel", d: "Processus, contrôle interne, efficacité" },
 ];
 
 const CABINET = [
@@ -30,6 +37,8 @@ const MOBILE_LINKS = [
   { href: "/consulting", label: "Conseil" },
   { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
+  { href: "/audit-it", label: "Audit IT" },
+  { href: "/audit-organisationnel", label: "Audit organisationnel" },
   { href: "/le-cabinet", label: "Le cabinet" },
   { href: "/notre-ecosysteme", label: "Notre écosystème" },
   { href: "/references", label: "Références" },
@@ -127,8 +136,9 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         </Link>
 
         <ul className="mkt-links" ref={dropsRef}>
-          {renderDrop("cabinet", "Le cabinet", CABINET)}
+          {renderDrop("metiers", "Nos métiers", METIERS)}
           {renderDrop("expertises", "Expertises", EXPERTISES)}
+          {renderDrop("cabinet", "Le cabinet", CABINET)}
           {[...PRIMARY, ...extraLinks].map((l) => (
             <li key={l.href}>
               <Link href={l.href} className={isCur(l.href) ? "cur" : ""}>

@@ -184,7 +184,8 @@
 /* footer */
 .mkt-foot{padding:4rem var(--edge) 2.5rem}
 .mkt-foot-in{max-width:var(--max);margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:40px;padding:3.5rem 3rem 2.5rem;box-shadow:var(--glass-sh)}
-.mkt-foot-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:2.5rem;padding-bottom:3rem;border-bottom:1px solid var(--line2)}
+.mkt-foot-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;gap:2.2rem;padding-bottom:3rem;border-bottom:1px solid var(--line2)}
+@media(max-width:1080px){.mkt-foot-top{grid-template-columns:1fr 1fr 1fr}}
 .mkt-foot .brand svg{height:38px;width:auto;color:var(--ink);margin-bottom:1.3rem}
 .mkt-foot .brand img{height:40px;width:auto;display:block;margin-bottom:1.3rem}
 .mkt-foot .brand p{font-size:.88rem;color:var(--ink2);max-width:32ch;line-height:1.6}
