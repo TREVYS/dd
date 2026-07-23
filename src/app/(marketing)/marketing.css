@@ -736,3 +736,9 @@
 .mkt-ref-card:hover .mkt-ref-img{filter:grayscale(0);opacity:1}
 .mkt-ref-name{font-weight:800;font-size:1rem;color:var(--ink3);text-align:center;line-height:1.2}
 @media(max-width:520px){.mkt-refs-grid{grid-template-columns:1fr 1fr}}
+
+/* Consulting mobile : « En savoir plus » réduit à une flèche */
+@media(max-width:600px){
+  .mkt-consultant .mkt-more-txt{display:none}
+  .mkt-consultant .mkt-consultant-more{padding:.45rem .6rem}
+}

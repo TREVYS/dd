@@ -109,7 +109,9 @@ export default function Page() {
                   <div className="nm">{c.firstName}</div>
                   <div className="rl">{c.role}</div>
                   <div className="mkt-team-foot">
-                    <Link className="mkt-consultant-more mkt-stretch" href={`/consulting/${c.slug}`}>En savoir plus →</Link>
+                    <Link className="mkt-consultant-more mkt-stretch" href={`/consulting/${c.slug}`}>
+                      <span className="mkt-more-txt">En savoir plus </span>→
+                    </Link>
                     <Link className="mkt-rdv-ic" href="/rendez-vous" aria-label={`Prendre rendez-vous — ${c.firstName}`}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15" aria-hidden="true">
                         <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
