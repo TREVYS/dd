@@ -25,6 +25,17 @@ const CAL = [
   { d: "1ᵉʳ sept. 2027", t: "Émission obligatoire pour les PME, TPE et micro-entreprises", s: "Toutes les entreprises assujetties à la TVA sont alors concernées", on: false },
 ];
 
+// Avancement réel de la réforme — suivi en temps réel (source : DGFiP / AIFE).
+const ADVANCE = [
+  { d: "Mars 2025", t: "Annuaire en production", s: "Le registre national des entreprises et de leurs plateformes ouvre.", done: true },
+  { d: "Févr. 2026", t: "Pilote en production", s: "Entreprises et plateformes testent l'envoi réel des flux de données.", done: true },
+  { d: "Mars 2026", t: "Ouverture de la sphère publique", s: "Chorus Pro, plateforme de référence pour le secteur public.", done: true },
+  { d: "30 juin – 1ᵉʳ juil. 2026", t: "Mise à jour des 3 normes AFNOR", s: "Nouveaux cas d'usage : auto-facture bidirectionnelle, chapitres sectoriels.", done: true },
+  { d: "10 juillet 2026", t: "Le ministre confirme le calendrier", s: "David Amiel réaffirme le maintien de la réforme et annonce une « doctrine de démarrage » tolérante et bienveillante.", done: true, hot: true },
+  { d: "Été 2026", t: "Publication du décret et de l'arrêté", s: "Textes stabilisés et mise en ligne de la doctrine de démarrage.", done: false },
+  { d: "1ᵉʳ sept. 2026", t: "Entrée en vigueur", s: "Réception pour toutes ; émission pour les grandes entreprises et ETI.", done: false, milestone: true },
+];
+
 const FLUX = [
   { t: "E-invoicing", d: "Transmettre une facture au format structuré à un client B2B assujetti à la TVA, via une plateforme agréée." },
   { t: "Cycle de vie", d: "Suivre et remonter les statuts d'une facture à chaque étape, de l'émission jusqu'à la mise en paiement." },
@@ -52,6 +63,10 @@ const FAQ = [
   {
     q: "Quelle différence entre e-invoicing et e-reporting ?",
     a: "L'e-invoicing concerne l'émission et la réception des factures entre entreprises françaises assujetties à la TVA (B2B). L'e-reporting est la transmission à l'administration des données de transactions non couvertes par la facture électronique : ventes aux particuliers (B2C) et opérations avec l'étranger. Les deux suivent le même calendrier.",
+  },
+  {
+    q: "Y aura-t-il une tolérance au démarrage ?",
+    a: "Oui. Le 10 juillet 2026, le ministre a confirmé le calendrier tout en annonçant une « doctrine de démarrage » tolérante et bienveillante pour les entreprises de bonne foi : pas de sanctions automatiques pour celles qui documentent leurs difficultés et se corrigent, au moins jusqu'à fin 2026. Attention : ce n'est pas une « période blanche » — l'obligation reste, il faut être prêt et documenté.",
   },
   {
     q: "Combien de temps faut-il pour se préparer ?",
@@ -184,8 +199,44 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Comment ça marche */}
+      {/* Avancement de la réforme — au cœur du réacteur */}
       <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Où en est la réforme ?</span>
+            <h2>Une réforme qui <em>avance</em> — et que nous suivons en temps réel</h2>
+            <p>
+              Membre de la <strong>communauté des relais de la DGFiP</strong> et engagé dans les
+              travaux de normalisation AFNOR, Trevys est au cœur du réacteur : nous relayons les
+              dernières décisions et portons la voix des entreprises.
+            </p>
+          </div>
+          <div className="mkt-vtl">
+            {ADVANCE.map((a) => (
+              <div className={`mkt-vtl-item${a.done ? " done" : ""}${a.hot ? " hot" : ""}${a.milestone ? " milestone" : ""}`} key={a.d}>
+                <div className="mkt-vtl-node" />
+                <div className="mkt-vtl-body">
+                  <div className="mkt-vtl-date">{a.d}{a.hot && <span className="mkt-vtl-tag">Dernière annonce</span>}</div>
+                  <div className="mkt-vtl-title">{a.t}</div>
+                  <div className="mkt-vtl-sub">{a.s}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mkt-orch-list" style={{ marginTop: "2rem", flexDirection: "row", flexWrap: "wrap" }}>
+            <div className="mkt-stat-chip"><b>138</b><span>plateformes agréées immatriculées</span></div>
+            <div className="mkt-stat-chip"><b>2 M</b><span>entreprises déjà dans l&apos;annuaire</span></div>
+            <div className="mkt-stat-chip"><b>95</b><span>contrats Peppol signés (couverture quasi-totale)</span></div>
+            <div className="mkt-stat-chip"><b>76 %</b><span>des dirigeants confiants pour l&apos;échéance</span></div>
+          </div>
+          <p className="muted" style={{ fontSize: ".78rem", color: "var(--ink3)", marginTop: "1rem" }}>
+            Sources : DGFiP / AIFE — Communauté des relais, 10 juillet 2026. Baromètre facturation électronique (IPSOS).
+          </p>
+        </div>
+      </section>
+
+      {/* Comment ça marche */}
+      <section className="sec">
         <div className="wrap">
           <div className="shead">
             <span className="eyebrow">Comment ça marche</span>
