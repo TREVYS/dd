@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/blog";
+import { TEAM } from "@/lib/team";
+import { CONSULTANTS } from "@/lib/consultants";
 import { SITE_URL } from "@/lib/site";
 
 const BASE = SITE_URL;
@@ -29,6 +31,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path === "" ? 1 : 0.7,
   }));
 
+  // Fiches des associés et des consultants.
+  const peopleEntries: MetadataRoute.Sitemap = [
+    ...TEAM.map((m) => `/le-cabinet/${m.slug}`),
+    ...CONSULTANTS.map((c) => `/consulting/${c.slug}`),
+  ].map((path) => ({
+    url: `${BASE}${path}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+
   const blogEntries: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
     url: `${BASE}/blog/${post.slug}`,
     lastModified: post.date ? new Date(post.date) : now,
@@ -36,5 +49,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...blogEntries];
+  return [...staticEntries, ...peopleEntries, ...blogEntries];
 }

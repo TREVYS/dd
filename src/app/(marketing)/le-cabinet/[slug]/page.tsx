@@ -35,8 +35,24 @@ export default async function LeaderPage({
   const m = getLeader(slug);
   if (!m) notFound();
 
+  // Fiche Person pour Google (apparition dans les résultats liés au cabinet).
+  const personLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: m.name,
+    jobTitle: m.role,
+    description: m.intro,
+    worksFor: { "@id": "https://www.trevys.fr/#organization" },
+    url: `https://www.trevys.fr/le-cabinet/${m.slug}`,
+    sameAs: m.linkedin ? [m.linkedin] : undefined,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
+      />
       <BreadcrumbJsonLd
         items={[
           { name: "Accueil", path: "/" },

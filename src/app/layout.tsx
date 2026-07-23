@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TREVYS OS",
-  description: "Plateforme interne du cabinet TREVYS",
+  title: "Trevys — Expertise comptable & conseil",
+  description:
+    "Cabinet d'expertise comptable & de conseil à Paris, augmenté par la technologie.",
   icons: {
     icon: [{ url: "/uploads/logo.png", type: "image/png" }],
     shortcut: ["/uploads/logo.png"],
