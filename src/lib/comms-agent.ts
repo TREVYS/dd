@@ -2,6 +2,8 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { addItem, listItems } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
 import { alfredSystemBlock } from "@/lib/alfred-config";
+import { siteKnowledgeBlock } from "@/lib/site-knowledge";
+import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
 
 export type ChatTurn = { role: "user" | "assistant"; content: string };
@@ -9,16 +11,19 @@ export type AgentResult = { reply: string; actions: string[] };
 
 const OPERATING = `Tu aides John Lévy à piloter la communication du cabinet : calendrier éditorial, rédaction d'articles pour le site, déclinaison en posts réseaux (LinkedIn surtout) et newsletters. Français impeccable.
 
+Le site www.trevys.fr est ta maison : tu en connais chaque page, chaque article, chaque vidéo et chaque média (voir la connaissance du site ci-dessous). Appuie-toi dessus pour faire des liens internes pertinents, éviter les doublons avec les articles existants, illustrer avec les médias disponibles et rester cohérent avec les pages du site.
+
 Tes moyens d'action (outils) :
 - rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement.
 - rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications.
 - planifier_publication : ajoute une échéance au calendrier éditorial (article, post LinkedIn, newsletter…).
 - lister_calendrier : consulte le calendrier existant.
+- lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
 
 Règles : respecte scrupuleusement le ton, la ligne éditoriale et les mots à éviter ci-dessus. Inspire-toi des exemples de publications passées pour retrouver le style « maison ». Après une action, confirme brièvement et propose la suite. Tu prépares, l'humain valide et publie.`;
 
 function buildSystem(): string {
-  return `${alfredSystemBlock()}\n\n---\n\n${OPERATING}`;
+  return `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE (état actuel, généré à l'instant) :\n\n${siteKnowledgeBlock()}\n\n---\n\n${OPERATING}`;
 }
 
 const TOOLS = [
@@ -68,6 +73,18 @@ const TOOLS = [
     description: "Renvoie les éléments du calendrier éditorial.",
     input_schema: { type: "object" as const, properties: {} },
   },
+  {
+    name: "lire_article",
+    description:
+      "Renvoie le contenu complet (Markdown) d'un article publié du site, à partir de son slug (ex. « calendrier-2026-2027 »).",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        slug: { type: "string", description: "Le slug de l'article (fin de l'URL /blog/<slug>)" },
+      },
+      required: ["slug"],
+    },
+  },
 ];
 
 function runTool(name: string, input: Record<string, unknown>, actions: string[]): string {
@@ -105,6 +122,11 @@ function runTool(name: string, input: Record<string, unknown>, actions: string[]
       listItems().map((i) => ({ date: i.date, type: i.type, title: i.title, status: i.status })),
     );
   }
+  if (name === "lire_article") {
+    const post = getPost(String(input.slug ?? ""));
+    if (!post) return "Article introuvable — vérifie le slug dans la liste des articles publiés.";
+    return `TITRE : ${post.meta.title}\nTHÈME : ${post.meta.category}\nDATE : ${post.meta.date}\nRÉSUMÉ : ${post.meta.excerpt ?? ""}\n\n${post.content.slice(0, 24_000)}`;
+  }
   return "Outil inconnu.";
 }
 
@@ -140,7 +162,7 @@ export async function draftSocialPost(
   const res = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1200,
-    system: `${alfredSystemBlock()}\n\nTu rédiges UNIQUEMENT le texte final d'un post ${netLabel}, prêt à publier, sans commentaire ni balise. ${consignes}`,
+    system: `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\nTu rédiges UNIQUEMENT le texte final d'un post ${netLabel}, prêt à publier, sans commentaire ni balise. ${consignes}`,
     messages: [{ role: "user", content: `Rédige un post ${netLabel} sur : ${topic}` }],
   });
 
@@ -168,7 +190,7 @@ export async function reviseText(content: string, instruction: string): Promise<
     model: "claude-sonnet-4-6",
     max_tokens: 4000,
     system:
-      `${alfredSystemBlock()}\n\n---\n\nTu es l'assistant de rédaction du cabinet. On te donne un contenu d'article en Markdown et une instruction de modification. ` +
+      `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n---\n\nTu es l'assistant de rédaction du cabinet. On te donne un contenu d'article en Markdown et une instruction de modification. ` +
       `Renvoie UNIQUEMENT le contenu Markdown complet révisé (aucun commentaire, aucune balise de code, aucune explication). ` +
       `Conserve la mise en forme Markdown (## sous-titres, listes, gras, liens, images) et le ton « maison ». Si l'instruction ne concerne qu'une partie, ne réécris pas le reste inutilement.`,
     messages: [
