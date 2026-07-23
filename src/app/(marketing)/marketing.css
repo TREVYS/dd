@@ -767,7 +767,6 @@ html,body{overflow-x:hidden}
 .mkt-nav .nlogo .mkt-logo-word{font-size:1.35rem}
 .mkt-foot .brand .mkt-logo-lockup{margin-bottom:1.3rem}
 .mkt-foot .brand .mkt-logo-badge{height:38px;width:38px}
-@media(max-width:600px){.mkt-logo-word.cm{display:none}.mkt-logo-badge{display:block}}
 
 /* Vidéo intégrée dans un article */
 .mkt-article-video{display:block;position:relative;aspect-ratio:16/9;margin:1.6rem 0;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 10px 30px rgba(20,12,4,.14)}
