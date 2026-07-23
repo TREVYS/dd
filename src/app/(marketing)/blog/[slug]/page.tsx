@@ -28,12 +28,13 @@ export async function generateMetadata({
     title: post.meta.title,
     description: post.meta.excerpt,
     alternates: { canonical: `/blog/${slug}` },
+    // NB : pas de `images` ici — l'étiquette de partage est générée par
+    // opengraph-image.tsx (logo + mascottes), identique pour tous les réseaux.
     openGraph: {
       type: "article",
       title: post.meta.title,
       description: post.meta.excerpt,
       url: `/blog/${slug}`,
-      images: post.meta.image ? [post.meta.image] : undefined,
     },
   };
 }
