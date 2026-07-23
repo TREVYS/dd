@@ -741,8 +741,8 @@
 
 /* Consulting mobile : « En savoir plus » réduit à une flèche */
 @media(max-width:600px){
-  .mkt-consultant .mkt-more-txt{display:none}
-  .mkt-consultant .mkt-consultant-more{padding:.45rem .6rem}
+  .mkt-consultant .mkt-more-txt,.mkt-team-foot .mkt-more-txt{display:none}
+  .mkt-consultant .mkt-consultant-more,.mkt-team-foot .mkt-consultant-more{padding:.45rem .6rem}
 }
 
 /* Anti-débordement horizontal (décalage d'écran sur mobile) */

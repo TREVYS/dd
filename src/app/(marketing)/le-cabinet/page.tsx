@@ -152,7 +152,7 @@ export default function Page() {
                   <div className="rl">{m.role}</div>
                   <div className="mkt-team-apport">{m.apport}</div>
                   <div className="mkt-team-foot">
-                    <Link className="mkt-consultant-more mkt-stretch" href={`/le-cabinet/${m.slug}`}>En savoir plus →</Link>
+                    <Link className="mkt-consultant-more mkt-stretch" href={`/le-cabinet/${m.slug}`}><span className="mkt-more-txt">En savoir plus </span>→</Link>
                     <LinkedinLink href={m.linkedin} name={m.firstName} className="mkt-li-ic" compact />
                   </div>
                 </div>
