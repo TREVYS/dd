@@ -248,3 +248,11 @@
 .adm-alf-eye{transform-box:fill-box;transform-origin:center;animation:adm-alf-blink 5.5s ease-in-out infinite}
 @keyframes adm-alf-blink{0%,45%,52%,100%{transform:scaleY(1)}48%{transform:scaleY(.1)}}
 @media(prefers-reduced-motion:reduce){.adm-alf-eye{animation:none}}
+
+/* Bouton déconnexion */
+.adm-logout{display:block;width:100%;text-align:left;background:none;border:none;font:inherit;font-size:.82rem;font-weight:700;color:#c0392b;cursor:pointer;padding:.45rem .8rem;border-radius:8px}
+.adm-logout:hover{background:#fdf3f2}
+
+/* Diffusion depuis un article */
+.adm-diff-net{display:inline-flex;align-items:center;gap:.5rem;font-size:.95rem;cursor:pointer}
+.adm-diff-net input{width:16px;height:16px}

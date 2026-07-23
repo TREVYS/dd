@@ -31,11 +31,13 @@ export async function createPostAction(formData: FormData) {
   const content = String(formData.get("content") ?? "").trim();
   if (!content) return;
   const scheduledDate = String(formData.get("scheduledDate") ?? "");
+  const image = String(formData.get("image") ?? "");
   addPost({
     network: net(formData.get("network")),
     content,
     status: scheduledDate ? "planifie" : "brouillon",
     scheduledDate: scheduledDate || undefined,
+    image: image || undefined,
   });
   revalidatePath(PATH);
 }

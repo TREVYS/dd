@@ -1,16 +1,18 @@
+import { getSetting } from "@/lib/settings";
+
 // Notifications sortantes du cabinet (Telegram pour l'instant).
 // Configuration via variables d'environnement, sur l'instance :
 //   TELEGRAM_BOT_TOKEN  — jeton du bot (via @BotFather)
 //   TELEGRAM_CHAT_ID    — identifiant de la conversation/canal destinataire
 
 export function telegramConfigured(): boolean {
-  return !!(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID);
+  return !!(getSetting("telegramBotToken") && getSetting("telegramChatId"));
 }
 
 // Envoie un message Telegram. Ne lève jamais : renvoie true/false.
 export async function sendTelegram(text: string): Promise<boolean> {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const token = getSetting("telegramBotToken");
+  const chatId = getSetting("telegramChatId");
   if (!token || !chatId) return false;
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {

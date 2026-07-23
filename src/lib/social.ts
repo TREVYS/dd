@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { getSetting, type SettingKey } from "@/lib/settings";
 import path from "node:path";
 
 // Connexions réseaux sociaux du cabinet. Stockées dans data/social.json
@@ -86,7 +87,9 @@ export function disconnect(provider: Provider) {
 export function isConfigured(provider: Provider): boolean {
   const p = PROVIDERS.find((x) => x.id === provider);
   if (!p) return false;
-  return !!(process.env[p.clientIdEnv] && process.env[p.clientSecretEnv]);
+  const idKey = (provider + "ClientId") as SettingKey;
+  const secretKey = (provider + "ClientSecret") as SettingKey;
+  return !!(getSetting(idKey) && getSetting(secretKey));
 }
 
 // Publie un post sur un réseau. Renvoie {ok, error?}. Tant que le compte n'est

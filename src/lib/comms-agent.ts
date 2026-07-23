@@ -2,6 +2,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { addItem, listItems } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
 import { alfredSystemBlock } from "@/lib/alfred-config";
+import { getSetting } from "@/lib/settings";
 
 export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type AgentResult = { reply: string; actions: string[] };
@@ -113,7 +114,7 @@ export async function draftSocialPost(
   topic: string,
   network: "linkedin" | "instagram",
 ): Promise<{ content: string; generated: boolean }> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = getSetting("anthropicApiKey");
   const netLabel = network === "linkedin" ? "LinkedIn" : "Instagram";
 
   if (!apiKey) {
@@ -153,7 +154,7 @@ export async function draftSocialPost(
 }
 
 export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = getSetting("anthropicApiKey");
   if (!apiKey) {
     return {
       reply:

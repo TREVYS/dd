@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { getSetting } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Prendre rendez-vous",
@@ -8,9 +9,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/rendez-vous" },
 };
 
+export const dynamic = "force-dynamic";
 const CALENDLY_URL =
-  process.env.NEXT_PUBLIC_CALENDLY_URL ??
-  "https://calendly.com/trevys-advisory/15min";
+  getSetting("calendlyUrl") ?? "https://calendly.com/trevys-advisory/15min";
 
 import { WhatsappButton, WA_DISPLAY } from "../_components/whatsapp";
 

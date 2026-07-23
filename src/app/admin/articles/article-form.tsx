@@ -2,11 +2,13 @@ import Link from "next/link";
 import { saveArticleAction } from "../actions";
 import { MarkdownEditor } from "../markdown-editor";
 import { ImageField } from "../image-field";
+import { ArticleDiffusion } from "./article-diffusion";
 import type { ArticleInput } from "@/lib/content-admin";
 
 export function ArticleForm({ article }: { article?: ArticleInput }) {
   const isEdit = !!article?.slug;
   return (
+    <>
     <form action={saveArticleAction} className="adm-form">
       {isEdit && <input type="hidden" name="originalSlug" value={article!.slug} />}
 
@@ -48,7 +50,7 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
       </div>
 
       <div className="adm-field">
-        <label>Contenu <small>(Markdown : ## Titre, - liste, **gras**, [lien](url))</small></label>
+        <label>Contenu <small>— servez-vous de la barre d&apos;outils pour mettre en forme (titres, gras, listes, image, pièce jointe). Pas besoin de connaître le code.</small></label>
         <MarkdownEditor name="body" defaultValue={article?.body ?? ""} placeholder={"## Introduction\n\nVotre texte…"} />
       </div>
 
@@ -57,5 +59,10 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
         <Link className="adm-btn ghost" href="/admin/articles">Annuler</Link>
       </div>
     </form>
+
+    {isEdit && (
+      <ArticleDiffusion title={article?.title ?? ""} excerpt={article?.excerpt ?? ""} />
+    )}
+    </>
   );
 }

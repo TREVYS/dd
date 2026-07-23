@@ -1,3 +1,4 @@
+import { getSetting, type SettingKey } from "@/lib/settings";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { auth } from "@/lib/auth";
@@ -27,7 +28,7 @@ export async function GET(
   const redirectUri = `${SITE_URL}/api/admin/social/${provider}/callback`;
   const url = new URL(cfg.authorizeUrl);
   url.searchParams.set("response_type", "code");
-  url.searchParams.set("client_id", process.env[cfg.clientIdEnv] as string);
+  url.searchParams.set("client_id", getSetting(`${provider}ClientId` as SettingKey) as string);
   url.searchParams.set("redirect_uri", redirectUri);
   url.searchParams.set("scope", cfg.scope);
   url.searchParams.set("state", state);

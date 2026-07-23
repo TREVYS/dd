@@ -72,6 +72,10 @@ export default function ReseauxPage() {
                         {p.status === "brouillon" ? "Brouillon" : ""}
                       </span>
                     </div>
+                    {p.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.image} alt="" style={{ maxHeight: 140, borderRadius: 10, border: "1px solid var(--line)", marginBottom: ".6rem" }} />
+                    )}
                     <div className="adm-post-body">{p.content}</div>
                     {p.status !== "publie" && (
                       <div className="adm-post-actions">

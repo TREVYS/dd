@@ -13,6 +13,7 @@ export type SocialPost = {
   network: PostNetwork;
   content: string;
   status: PostStatus;
+  image?: string; // URL de l'image jointe
   scheduledDate?: string; // AAAA-MM-JJ
   createdAt: string;
   publishedAt?: string;
@@ -47,6 +48,7 @@ export function addPost(input: {
   content: string;
   status?: PostStatus;
   scheduledDate?: string;
+  image?: string;
 }): SocialPost {
   const posts = read();
   const post: SocialPost = {
@@ -54,6 +56,7 @@ export function addPost(input: {
     network: input.network,
     content: input.content,
     status: input.status ?? "brouillon",
+    image: input.image || undefined,
     scheduledDate: input.scheduledDate || undefined,
     createdAt: new Date().toISOString(),
   };

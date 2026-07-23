@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { addSubscriber } from "@/lib/newsletter";
 import { sendTelegram } from "@/lib/notify";
+import { getSetting } from "@/lib/settings";
 
 export type NewsletterState = { ok: boolean; message: string };
 
@@ -37,14 +38,14 @@ export async function subscribeNewsletter(
     return { ok: false, message: "Adresse e-mail invalide." };
   }
 
-  const apiKey = process.env.BREVO_API_KEY;
+  const apiKey = getSetting("brevoApiKey");
   if (!apiKey) {
     console.info("[newsletter] inscription (Brevo non configuré):", parsed.data.email);
     await recordAndNotify(parsed.data.email);
     return { ok: true, message: "Merci ! Votre inscription a bien été prise en compte." };
   }
 
-  const listId = process.env.BREVO_LIST_ID ? Number(process.env.BREVO_LIST_ID) : undefined;
+  const listId = getSetting("brevoListId") ? Number(getSetting("brevoListId")) : undefined;
 
   try {
     const res = await fetch("https://api.brevo.com/v3/contacts", {

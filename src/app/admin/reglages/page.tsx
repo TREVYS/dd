@@ -1,18 +1,46 @@
 import { publicStatus, PROVIDERS } from "@/lib/social";
-import { disconnectSocialAction } from "./actions";
+import { isSet, settingsStatus } from "@/lib/settings";
+import { disconnectSocialAction, saveSettingsAction } from "./actions";
 
 export const dynamic = "force-dynamic";
+
+// Champs éditables de « Clés & connexions », groupés par service.
+const CFG_GROUPS = [
+  { title: "Alfred — Intelligence artificielle (Anthropic)", fields: [
+    { k: "anthropicApiKey", label: "Clé API Anthropic", ph: "sk-ant-…", secret: true },
+  ] },
+  { title: "Notifications Telegram", fields: [
+    { k: "telegramBotToken", label: "Jeton du bot", ph: "123456:ABC…", secret: true },
+    { k: "telegramChatId", label: "Chat ID", ph: "votre identifiant", secret: false },
+  ] },
+  { title: "Newsletter (Brevo)", fields: [
+    { k: "brevoApiKey", label: "Clé API Brevo", ph: "xkeysib-…", secret: true },
+    { k: "brevoListId", label: "ID de liste", ph: "ex. 3", secret: false },
+  ] },
+  { title: "Prise de rendez-vous (Calendly)", fields: [
+    { k: "calendlyUrl", label: "URL Calendly", ph: "https://calendly.com/…", secret: false },
+  ] },
+  { title: "LinkedIn (app développeur)", fields: [
+    { k: "linkedinClientId", label: "Client ID", ph: "", secret: false },
+    { k: "linkedinClientSecret", label: "Client Secret", ph: "", secret: true },
+  ] },
+  { title: "Instagram / Meta (app développeur)", fields: [
+    { k: "instagramClientId", label: "Client ID", ph: "", secret: false },
+    { k: "instagramClientSecret", label: "Client Secret", ph: "", secret: true },
+  ] },
+] as const;
 
 export default async function AdminReglages({
   searchParams,
 }: {
-  searchParams: Promise<{ setup?: string; connected?: string; error?: string }>;
+  searchParams: Promise<{ setup?: string; connected?: string; error?: string; saved?: string }>;
 }) {
   const sp = await searchParams;
   const accounts = publicStatus();
-  const alfredKey = !!process.env.ANTHROPIC_API_KEY;
+  const alfredKey = isSet("anthropicApiKey");
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
-  const tgOn = !!(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID);
+  const tgOn = isSet("telegramBotToken") && isSet("telegramChatId");
+  const status = Object.fromEntries(settingsStatus().map((s) => [s.key, s]));
 
   return (
     <>
@@ -33,6 +61,52 @@ export default async function AdminReglages({
           ⚠️ La connexion a échoué. Réessayez, ou vérifiez la configuration développeur.
         </div>
       )}
+
+      {sp.saved && (
+        <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+          ✅ Réglages enregistrés.
+        </div>
+      )}
+
+      <div className="adm-card">
+        <h2>Clés &amp; connexions</h2>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: "0 0 1.2rem" }}>
+          Configurez ici vos clés API et connexions — elles prennent effet immédiatement, sans redéploiement.
+          Les champs laissés vides ne modifient pas une valeur déjà enregistrée. Les secrets ne sont jamais réaffichés.
+        </p>
+        <form action={saveSettingsAction}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "1.4rem" }}>
+            {CFG_GROUPS.map((g) => (
+              <div key={g.title} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: "1.1rem 1.2rem" }}>
+                <div style={{ fontWeight: 800, fontSize: ".92rem", marginBottom: ".8rem" }}>{g.title}</div>
+                {g.fields.map((f) => {
+                  const st = status[f.k];
+                  return (
+                    <div className="adm-field" key={f.k} style={{ marginBottom: ".8rem" }}>
+                      <label>
+                        {f.label}{" "}
+                        {st?.set
+                          ? <span style={{ color: "#2E9E6B", fontWeight: 700, fontSize: ".72rem" }}>● défini</span>
+                          : <span style={{ color: "#C2410C", fontWeight: 700, fontSize: ".72rem" }}>● non défini</span>}
+                      </label>
+                      <input
+                        name={f.k}
+                        type={f.secret ? "password" : "text"}
+                        placeholder={f.secret ? (st?.set ? "•••••• (laisser vide pour conserver)" : f.ph) : (st?.display || f.ph)}
+                        autoComplete="off"
+                        style={{ fontSize: ".85rem" }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+          <div className="adm-actions" style={{ marginTop: "1.4rem" }}>
+            <button className="adm-btn" type="submit">Enregistrer les réglages</button>
+          </div>
+        </form>
+      </div>
 
       <div className="adm-card">
         <h2>Alfred — clé API (Intelligence artificielle)</h2>

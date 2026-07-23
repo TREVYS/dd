@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AdminNav } from "./admin-nav";
+import { logoutAction } from "./reglages/actions";
 
 // Coquille du cockpit avec navigation en tiroir (off-canvas) sur mobile.
 export function AdminShell({
@@ -42,6 +43,9 @@ export function AdminShell({
         <AdminNav badges={badges} />
         <div className="sp">
           <Link href="/">← Voir le site</Link>
+          <form action={logoutAction}>
+            <button type="submit" className="adm-logout">Se déconnecter</button>
+          </form>
         </div>
       </aside>
 

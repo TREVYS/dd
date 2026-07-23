@@ -1,3 +1,4 @@
+import { getSetting, type SettingKey } from "@/lib/settings";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { SITE_URL } from "@/lib/site";
@@ -38,8 +39,8 @@ export async function GET(
       grant_type: "authorization_code",
       code,
       redirect_uri: redirectUri,
-      client_id: process.env[cfg.clientIdEnv] as string,
-      client_secret: process.env[cfg.clientSecretEnv] as string,
+      client_id: getSetting(`${provider}ClientId` as SettingKey) as string,
+      client_secret: getSetting(`${provider}ClientSecret` as SettingKey) as string,
     });
     const tokenRes = await fetch(cfg.tokenUrl, {
       method: "POST",

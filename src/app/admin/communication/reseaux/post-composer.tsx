@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { draftPostAction, createPostAction } from "./actions";
+import { ImageField } from "../../image-field";
 
 const initial = { content: "", generated: false as boolean, error: undefined as string | undefined };
 
@@ -50,6 +51,10 @@ export function PostComposer() {
             placeholder="Écrivez votre post, ou laissez Alfred le rédiger ci-dessus…"
             style={{ minHeight: 180 }}
           />
+        </div>
+        <div className="adm-field">
+          <label>Image du post <small>(optionnel — importez un visuel)</small></label>
+          <ImageField name="image" />
         </div>
         <div className="adm-row2">
           <div className="adm-field">

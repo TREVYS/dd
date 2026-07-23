@@ -208,9 +208,9 @@ export default function Page() {
               chiffres, vos processus, vos contraintes réglementaires et vos enjeux
               opérationnels&nbsp;? Cette connaissance intime de votre activité nous
               permet de traduire un besoin métier en une solution <strong>juste&nbsp;:
-              utile, fiable et réellement adoptée</strong> par vos équipes. Là où
+              utile, fiable et réellement adoptée</strong>{" "}par vos équipes. Là où
               d&apos;autres livrent une technologie, <strong>nous intervenons au cœur du
-              projet comme référent métier</strong> et concevons une réponse ancrée dans
+              projet comme référent métier</strong>{" "}et concevons une réponse ancrée dans
               la réalité de votre entreprise — parce que nous la comprenons de
               l&apos;intérieur.
             </p>

@@ -5,14 +5,18 @@ import { mdToHtml } from "@/lib/md-preview";
 
 type Btn = { label: string; title: string; wrap?: [string, string]; block?: string };
 
-const TOOLS: Btn[] = [
+type Btn2 = Btn & { insert?: string };
+
+const TOOLS: Btn2[] = [
   { label: "H2", title: "Titre de section", block: "## " },
   { label: "H3", title: "Sous-titre", block: "### " },
   { label: "B", title: "Gras", wrap: ["**", "**"] },
   { label: "I", title: "Italique", wrap: ["*", "*"] },
   { label: "• Liste", title: "Liste à puces", block: "- " },
+  { label: "1. Liste", title: "Liste numérotée", block: "1. " },
   { label: "❝ Citation", title: "Citation", block: "> " },
   { label: "🔗 Lien", title: "Insérer un lien", wrap: ["[", "](https://)"] },
+  { label: "— Séparateur", title: "Ligne de séparation", insert: "\n\n---\n\n" },
 ];
 
 export function MarkdownEditor({
@@ -30,11 +34,16 @@ export function MarkdownEditor({
   const [err, setErr] = useState("");
   const ta = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const attachRef = useRef<HTMLInputElement>(null);
 
   // Applique une transformation autour de la sélection courante.
-  const surround = (b: Btn) => {
+  const surround = (b: Btn2) => {
     const el = ta.current;
     if (!el) return;
+    if (b.insert) {
+      insertAtCursor(b.insert);
+      return;
+    }
     const start = el.selectionStart;
     const end = el.selectionEnd;
     const sel = value.slice(start, end);
@@ -85,6 +94,26 @@ export function MarkdownEditor({
     if (fileRef.current) fileRef.current.value = "";
   };
 
+  // Importe une pièce jointe (PDF, doc…) et insère un lien de téléchargement.
+  const uploadAttachment = async (files: FileList | null) => {
+    if (!files || !files.length) return;
+    setErr("");
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", files[0]);
+      const r = await fetch("/api/admin/media", { method: "POST", body: fd });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error ?? "Échec de l'import.");
+      const it = (d.items ?? [])[0];
+      if (it) insertAtCursor(`\n\n[📎 ${it.name}](${it.url})\n`);
+    } catch (e) {
+      setErr((e as Error).message);
+    }
+    setBusy(false);
+    if (attachRef.current) attachRef.current.value = "";
+  };
+
   return (
     <div className="adm-md">
       <div className="adm-md-toolbar">
@@ -115,6 +144,22 @@ export function MarkdownEditor({
           hidden
           multiple
           onChange={(e) => uploadImage(e.target.files)}
+        />
+        <button
+          type="button"
+          className="adm-md-tool img"
+          title="Joindre un document (PDF, etc.)"
+          onClick={() => attachRef.current?.click()}
+          disabled={busy}
+        >
+          📎 Pièce jointe
+        </button>
+        <input
+          ref={attachRef}
+          type="file"
+          accept="application/pdf,image/*"
+          hidden
+          onChange={(e) => uploadAttachment(e.target.files)}
         />
         <div className="adm-md-tabs">
           <button type="button" className={tab === "write" ? "on" : ""} onClick={() => setTab("write")}>Écrire</button>
