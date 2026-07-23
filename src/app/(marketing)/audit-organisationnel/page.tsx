@@ -113,8 +113,8 @@ export default function Page() {
               Facturation électronique : un enjeu sous-estimé
             </h3>
             <p style={{ margin: 0 }}>
-              Beaucoup pensent qu&apos;avec la facture électronique, la PAF disparaît.
-              <strong> C&apos;est faux.</strong> Elle reste exigée pour tous les flux qui ne
+              Beaucoup pensent qu&apos;avec la facture électronique, la PAF disparaît.{" "}
+              <strong>C&apos;est faux.</strong>{" "}Elle reste exigée pour tous les flux qui ne
               sont pas des factures électroniques structurées (factures papier ou PDF, ventes
               B2C, opérations internationales relevant de l&apos;e-reporting), et
               l&apos;administration s&apos;appuie dessus lors d&apos;un contrôle. Négliger sa
