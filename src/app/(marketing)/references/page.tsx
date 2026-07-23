@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { RefLogo } from "./ref-logo";
+import { slugify } from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "Références",
@@ -8,13 +10,32 @@ export const metadata: Metadata = {
   alternates: { canonical: "/references" },
 };
 
-const CLIENTS = [
-  "AG2R La Mondiale", "Banque Populaire", "Caisse d'Épargne", "BPCE Groupe",
-  "BPCE SI", "BRED", "BNP AM", "Natixis",
-  "LCL", "La Banque Postale", "Cardif", "Oney",
-  "Edmond de Rothschild", "Roole Assurance", "Sportfive France", "Publicis",
-  "Lapeyre", "Handy'Up", "Leano", "Jeux&Co",
-  "Ekin", "Ulas Istanbul", "Jaji",
+// name + domaine officiel (pour récupérer le vrai logo). Sans domaine, on
+// tente un logo importé (/uploads/refs/<slug>.png), sinon le nom en toutes lettres.
+const CLIENTS: { name: string; domain?: string }[] = [
+  { name: "AG2R La Mondiale", domain: "ag2rlamondiale.fr" },
+  { name: "Banque Populaire", domain: "banquepopulaire.fr" },
+  { name: "Caisse d'Épargne", domain: "caisse-epargne.fr" },
+  { name: "BPCE Groupe", domain: "bpce.fr" },
+  { name: "BPCE SI", domain: "bpce.fr" },
+  { name: "BRED", domain: "bred.fr" },
+  { name: "BNP AM", domain: "bnpparibas-am.com" },
+  { name: "Natixis", domain: "natixis.com" },
+  { name: "LCL", domain: "lcl.fr" },
+  { name: "La Banque Postale", domain: "labanquepostale.fr" },
+  { name: "Cardif", domain: "bnpparibascardif.com" },
+  { name: "Oney", domain: "oney.com" },
+  { name: "Edmond de Rothschild", domain: "edmond-de-rothschild.com" },
+  { name: "Roole", domain: "roole.fr" },
+  { name: "Sportfive", domain: "sportfive.com" },
+  { name: "Publicis", domain: "publicis.com" },
+  { name: "Lapeyre", domain: "lapeyre.fr" },
+  { name: "Handy'Up" },
+  { name: "Leano" },
+  { name: "Jeux&Co" },
+  { name: "Ekin" },
+  { name: "Ulas Istanbul" },
+  { name: "Jaji" },
 ];
 const SECTORS = [
   { t: "Banque & Assurance", u: "Direction de programme RFE, manager de transition, gestion de projet IT / Finance." },
@@ -47,32 +68,19 @@ export default function Page() {
             <span className="eyebrow">Ils nous font confiance</span>
             <h2>Quelques <em>références</em></h2>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
-              gap: "1rem",
-            }}
-          >
-            {CLIENTS.map((c) => (
-              <div
-                key={c}
-                style={{
-                  background: "var(--card)",
-                  border: "1px solid var(--line)",
-                  borderRadius: "18px",
-                  aspectRatio: "2.4 / 1",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 800,
-                  fontSize: "1.15rem",
-                  color: "var(--ink3)",
-                }}
-              >
-                {c}
-              </div>
-            ))}
+          <div className="mkt-refs-grid">
+            {CLIENTS.map((c) => {
+              const slug = slugify(c.name);
+              const srcs = [
+                ...(c.domain ? [`https://logo.clearbit.com/${c.domain}?size=200`] : []),
+                `/uploads/refs/${slug}.png`,
+              ];
+              return (
+                <div className="mkt-ref-card" key={c.name}>
+                  <RefLogo name={c.name} srcs={srcs} />
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

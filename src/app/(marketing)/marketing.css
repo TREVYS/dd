@@ -726,3 +726,13 @@
 
 /* marques en toutes-lettres dans le bandeau */
 .mkt-marq-logo.txt{width:auto;min-width:150px;padding:.9rem 1.4rem;font-weight:700;color:var(--ink2);font-size:.92rem;letter-spacing:.01em;white-space:nowrap}
+
+/* Références — grille de logos */
+.mkt-refs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}
+.mkt-ref-card{background:var(--card);border:1px solid var(--line);border-radius:16px;aspect-ratio:2.6/1;
+  display:flex;align-items:center;justify-content:center;padding:1rem 1.2rem;transition:box-shadow .25s,transform .25s}
+.mkt-ref-card:hover{box-shadow:var(--glass-sh);transform:translateY(-3px)}
+.mkt-ref-img{max-width:100%;max-height:46px;object-fit:contain;filter:grayscale(1);opacity:.72;transition:filter .25s,opacity .25s}
+.mkt-ref-card:hover .mkt-ref-img{filter:grayscale(0);opacity:1}
+.mkt-ref-name{font-weight:800;font-size:1rem;color:var(--ink3);text-align:center;line-height:1.2}
+@media(max-width:520px){.mkt-refs-grid{grid-template-columns:1fr 1fr}}
