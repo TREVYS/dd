@@ -23,7 +23,7 @@ export function Logo({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className={`mkt-logo-full ${className ?? ""}`} src={src} alt="Trevys — Expertise comptable & conseil" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="mkt-logo-mark" src="/brand/trevys-ts.svg" alt="Trevys" />
+      <img className="mkt-logo-mark" src="/uploads/logo.png" alt="Trevys" />
     </span>
   );
 }

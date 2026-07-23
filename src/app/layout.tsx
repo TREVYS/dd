@@ -18,10 +18,10 @@ export const metadata: Metadata = {
   description: "Plateforme interne du cabinet TREVYS",
   icons: {
     icon: [
-      { url: "/brand/trevys-ts.svg", type: "image/svg+xml" },
+      { url: "/uploads/logo.png", type: "image/png" },
       { url: "/favicon.ico" },
     ],
-    apple: "/brand/trevys-ts.svg",
+    apple: "/uploads/logo.png",
   },
 };
 
