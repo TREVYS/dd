@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
   // Hébergement mutualisé : on limite le parallélisme de génération des pages
   // (sinon 15 workers → dépassement de ressources / SIGSEGV au build).
   experimental: { cpus: 1 },
+  // Librairies Node lourdes chargées à la demande (extraction de documents) :
+  // on évite qu'elles soient empaquetées par le bundler (mémoire de build,
+  // compatibilité runtime), elles restent lues depuis node_modules.
+  serverExternalPackages: ["pdf-parse", "jszip"],
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
