@@ -1,24 +1,24 @@
-// Avatar « ombre de portrait » : fond orangé Trevys + silhouette de buste en
-// ombre, avec une coiffure qui varie selon la personne (seed = slug).
+// Avatar consultant stylisé : bandeau orangé Trevys + médaillon givré avec une
+// silhouette de buste, coiffure variant selon la personne (seed = slug).
 
-const HAIR: React.ReactNode[] = [
-  // 0 — cheveux courts
-  <path key="0" d="M60 96 C60 64 82 52 100 52 C118 52 140 64 140 96 C132 80 118 74 100 74 C82 74 68 80 60 96 Z" />,
-  // 1 — chignon
-  <g key="1">
-    <circle cx="100" cy="50" r="13" />
-    <path d="M62 98 C62 66 84 56 100 56 C116 56 138 66 138 98 C130 82 116 76 100 76 C84 76 70 82 62 98 Z" />
-  </g>,
-  // 2 — cheveux longs
-  <path key="2" d="M56 152 C50 110 58 68 100 62 C142 68 150 110 144 152 C142 120 130 96 118 92 C130 80 118 62 100 62 C82 62 70 80 82 92 C70 96 58 120 56 152 Z" />,
-  // 3 — bouclés
-  <path key="3" d="M60 92 a10 10 0 0 1 6 -20 a12 12 0 0 1 20 -10 a12 12 0 0 1 28 0 a12 12 0 0 1 20 10 a10 10 0 0 1 6 20 C132 78 118 72 100 72 C82 72 68 78 60 92 Z" />,
-  // 4 — raie sur le côté
-  <path key="4" d="M60 96 C58 64 82 52 100 52 C120 52 140 66 140 92 C132 78 120 74 106 74 C96 74 86 80 78 92 C72 88 66 90 62 98 Z" />,
-  // 5 — dégradé court
-  <path key="5" d="M64 92 C64 66 82 56 100 56 C118 56 136 66 136 92 C128 80 116 76 100 76 C84 76 72 80 64 92 Z" />,
-  // 6 — coupe carrée
-  <path key="6" d="M58 140 C56 96 76 60 100 60 C124 60 144 96 142 140 C138 108 128 90 116 88 C126 78 116 62 100 62 C84 62 74 78 84 88 C72 90 62 108 58 140 Z" />,
+const HAIR: Record<number, React.ReactNode> = {
+  0: <path d="M101 68 C101 49 110 42 120 42 C130 42 139 49 139 68 C133 56 128 52 120 52 C112 52 107 56 101 68 Z" />, // court
+  1: ( // chignon
+    <g>
+      <circle cx="120" cy="40" r="8" />
+      <path d="M103 68 C103 50 111 44 120 44 C129 44 137 50 137 68 C132 57 128 54 120 54 C112 54 108 57 103 68 Z" />
+    </g>
+  ),
+  2: <path d="M98 118 C92 82 100 50 120 46 C140 50 148 82 142 118 C140 92 132 70 122 66 C131 58 120 48 120 48 C120 48 109 58 118 66 C108 70 100 92 98 118 Z" />, // longs
+  3: <path d="M100 66 a8 8 0 0 1 5 -16 a10 10 0 0 1 16 -8 a10 10 0 0 1 16 8 a8 8 0 0 1 5 16 C134 55 128 51 120 51 C112 51 106 55 100 66 Z" />, // bouclés
+  4: <path d="M101 68 C100 49 111 42 120 42 C131 42 140 50 139 66 C133 56 129 53 122 53 C114 53 107 58 102 67 Z" />, // raie côté
+  5: <path d="M99 102 C97 70 108 48 120 48 C132 48 143 70 141 102 C138 80 131 66 122 64 C130 57 120 50 120 50 C120 50 110 57 118 64 C109 66 102 80 99 102 Z" />, // carré
+};
+
+const PALETTES = [
+  ["#FBB040", "#C2410C"],
+  ["#F6A623", "#B5340B"],
+  ["#FBB040", "#E2600F"],
 ];
 
 function hash(s: string): number {
@@ -37,38 +37,45 @@ export function SilhouetteAvatar({
   className?: string;
 }) {
   const h = hash(seed);
-  const variant = h % HAIR.length;
-  const id = `sil-${seed}`;
-  const gid = `silg-${seed}`;
+  const variant = h % Object.keys(HAIR).length;
+  const [c0, c1] = PALETTES[h % PALETTES.length];
+  const gid = `slg-${seed}`;
+  const cid = `slc-${seed}`;
 
   return (
     <svg
       className={`mkt-team-photo mkt-sil ${className}`}
-      viewBox="0 0 200 250"
+      viewBox="0 0 240 160"
       preserveAspectRatio="xMidYMid slice"
       role="img"
       aria-label={label ? `${label} — portrait` : "Portrait"}
     >
       <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="0.3" y2="1">
-          <stop offset="0" stopColor="#FBB040" />
-          <stop offset="1" stopColor="#C2410C" />
+        <linearGradient id={gid} x1="0" y1="0" x2="0.4" y2="1">
+          <stop offset="0" stopColor={c0} />
+          <stop offset="1" stopColor={c1} />
         </linearGradient>
-        <radialGradient id={id} cx="0.5" cy="0.42" r="0.7">
-          <stop offset="0" stopColor="#ffffff" stopOpacity="0.18" />
-          <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
-        </radialGradient>
+        <clipPath id={cid}>
+          <circle cx="120" cy="80" r="52" />
+        </clipPath>
       </defs>
 
-      <rect width="200" height="250" fill={`url(#${gid})`} />
-      <rect width="200" height="250" fill={`url(#${id})`} />
+      <rect width="240" height="160" fill={`url(#${gid})`} />
 
-      {/* Silhouette en ombre (une seule opacité de groupe pour un rendu net) */}
-      <g fill="#2a1403" opacity="0.4">
+      {/* Décor discret */}
+      <circle cx="212" cy="26" r="34" fill="none" stroke="#fff" strokeOpacity="0.12" strokeWidth="2" />
+      <circle cx="28" cy="142" r="26" fill="none" stroke="#fff" strokeOpacity="0.1" strokeWidth="2" />
+
+      {/* Médaillon givré */}
+      <circle cx="120" cy="80" r="52" fill="#fff" fillOpacity="0.16" />
+      <circle cx="120" cy="80" r="52" fill="none" stroke="#fff" strokeOpacity="0.35" strokeWidth="2" />
+
+      {/* Silhouette (buste + coiffure), en clair, découpée dans le médaillon */}
+      <g clipPath={`url(#${cid})`} fill="#fff" fillOpacity="0.92">
         {HAIR[variant]}
-        <rect x="88" y="150" width="24" height="46" rx="10" />
-        <ellipse cx="100" cy="110" rx="40" ry="46" />
-        <path d="M28 250 C28 202 60 188 100 188 C140 188 172 202 172 250 Z" />
+        <rect x="112" y="90" width="16" height="20" rx="6" />
+        <ellipse cx="120" cy="72" rx="22" ry="24" />
+        <path d="M70 160 C70 124 92 112 120 112 C148 112 170 124 170 160 Z" />
       </g>
     </svg>
   );

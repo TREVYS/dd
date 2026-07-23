@@ -752,3 +752,6 @@ html,body{overflow-x:hidden}
 .mkt-foot .brand .mkt-logo-fallback{font-size:1.5rem;margin-bottom:1.3rem}
 .mkt-nav .nlogo .mkt-logo-fallback{font-size:1.3rem}
 .mkt-nav .nlogo span.mkt-logo-mark{width:auto;height:auto;border-radius:0;font-size:1.2rem}
+
+/* Avatar consultant : format bandeau (moins haut) */
+.mkt-team-photo.mkt-sil{aspect-ratio:3/2}
