@@ -401,19 +401,18 @@
 
 /* ===== Page Facturation électronique ===== */
 /* Calendrier / timeline */
-.mkt-timeline{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;position:relative}
-.mkt-timeline::before{content:"";position:absolute;top:9px;left:8%;right:8%;height:2px;
-  background:linear-gradient(90deg,var(--violet),rgba(245,129,31,.25))}
-.mkt-tl-item{position:relative;padding:1.6rem 1.4rem 1.4rem;background:var(--card);border:1px solid var(--line);
-  border-radius:18px;box-shadow:var(--glass-sh)}
-.mkt-tl-dot{position:absolute;top:-56px;left:50%;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;
-  background:#fff;border:4px solid rgba(245,129,31,.35)}
-.mkt-tl-item.on .mkt-tl-dot{border-color:var(--violet);box-shadow:0 0 0 5px rgba(245,129,31,.15)}
-.mkt-tl-date{font-weight:800;color:var(--violet);font-size:1.05rem}
-.mkt-tl-title{font-weight:700;color:var(--ink);margin:.4rem 0 .3rem;line-height:1.4}
-.mkt-tl-sub{font-size:.88rem;color:var(--ink3);line-height:1.5}
-@media(max-width:640px){.mkt-timeline{grid-template-columns:1fr;gap:2.6rem}.mkt-timeline::before{left:20px;right:auto;top:0;bottom:0;width:2px;height:auto}
-  .mkt-tl-dot{top:24px;left:-28px;transform:none}}
+.mkt-timeline{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.mkt-tl-item{position:relative;padding:1.5rem 1.5rem 1.4rem;background:var(--card);border:1px solid var(--line);
+  border-radius:18px;box-shadow:var(--glass-sh);overflow:hidden}
+.mkt-tl-item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(245,129,31,.35)}
+.mkt-tl-item.on::before{background:var(--grad)}
+.mkt-tl-dot{display:inline-flex;align-items:center;gap:.5rem}
+.mkt-tl-date{display:inline-block;font-weight:800;color:#fff;font-size:.9rem;background:var(--grad);
+  padding:.3rem .8rem;border-radius:100px;margin-bottom:.9rem}
+.mkt-tl-item:not(.on) .mkt-tl-date{background:var(--ink);opacity:.85}
+.mkt-tl-title{font-weight:800;color:var(--ink);margin:0 0 .4rem;line-height:1.4;font-size:1.05rem}
+.mkt-tl-sub{font-size:.88rem;color:var(--ink3);line-height:1.55}
+@media(max-width:640px){.mkt-timeline{grid-template-columns:1fr}}
 /* Mascotte RFE (robot aux drapeaux FR + UE) */
 .mkt-rfe-mascot{position:relative;display:grid;place-items:center;min-height:340px;animation:mkt-ai-float 6s ease-in-out infinite}
 .mkt-rfe-svg{width:min(100%,380px);height:auto;position:relative;z-index:1;overflow:visible;
@@ -446,16 +445,39 @@
 .mkt-vtl-title{font-weight:700;color:var(--ink);margin:.25rem 0 .2rem}
 .mkt-vtl-sub{font-size:.86rem;color:var(--ink3);line-height:1.5}
 /* Chiffres clés */
-.mkt-stat-chip{flex:1 1 160px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;text-align:center}
-.mkt-stat-chip b{display:block;font-size:1.7rem;font-weight:800;color:var(--violet);line-height:1}
-.mkt-stat-chip span{font-size:.8rem;color:var(--ink3);display:block;margin-top:.35rem;line-height:1.4}
-/* Schéma de flux */
-.mkt-flow{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:1.6rem;box-shadow:var(--glass-sh);overflow-x:auto}
-.mkt-flow-svg{width:100%;min-width:640px;height:auto;display:block}
-.mkt-flow-t{font-size:15px;font-weight:800;fill:var(--ink)}
-.mkt-flow-s{font-size:12px;fill:var(--ink3)}
-.mkt-flow-legend{display:flex;gap:1.4rem;flex-wrap:wrap;justify-content:center;margin:1rem 0 0;font-size:.82rem;color:var(--ink3)}
-.mkt-flow-legend .dash{color:var(--violet)}
+.mkt-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem}
+.mkt-stat-chip{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.4rem 1.2rem;text-align:center;
+  box-shadow:var(--glass-sh)}
+.mkt-stat-chip b{display:block;font-size:2rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.mkt-stat-chip span{font-size:.82rem;color:var(--ink2);display:block;margin-top:.5rem;line-height:1.4}
+@media(max-width:760px){.mkt-stats-row{grid-template-columns:1fr 1fr}}
+/* Circuit de la facture (cartes HTML) */
+.mkt-circuit{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:2rem 1.6rem;box-shadow:var(--glass-sh)}
+.mkt-circuit-row{display:flex;align-items:stretch;justify-content:center;gap:.6rem;flex-wrap:nowrap;overflow-x:auto;padding-bottom:.3rem}
+.mkt-cnode{flex:1 1 0;min-width:132px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.15rem;
+  padding:1rem .8rem;border-radius:16px;background:#fff;border:1px solid var(--line)}
+.mkt-cnode .ic{font-size:1.5rem;line-height:1;margin-bottom:.25rem}
+.mkt-cnode b{font-size:.92rem;color:var(--ink);font-weight:800;line-height:1.2}
+.mkt-cnode small{font-size:.74rem;color:var(--ink3)}
+.mkt-cnode.hot{background:var(--grad);border-color:transparent}
+.mkt-cnode.hot b,.mkt-cnode.hot small{color:#fff}
+.mkt-cnode.hot small{opacity:.9}
+.mkt-cnode.dark{background:#1f1206;border-color:transparent;max-width:520px;margin:0 auto}
+.mkt-cnode.dark b{color:#FBB040}
+.mkt-cnode.dark small{color:#f6d9be}
+.mkt-carrow{flex:0 0 26px;align-self:center;height:2px;background:linear-gradient(90deg,var(--violet),rgba(245,129,31,.4));position:relative}
+.mkt-carrow::after{content:"";position:absolute;right:-1px;top:-3px;border-left:7px solid var(--violet);
+  border-top:4px solid transparent;border-bottom:4px solid transparent}
+.mkt-circuit-data{display:flex;flex-direction:column;align-items:center;margin-top:.2rem}
+.mkt-circuit-updown{width:2px;height:34px;background:repeating-linear-gradient(180deg,var(--violet) 0 5px,transparent 5px 10px)}
+@media(max-width:720px){
+  .mkt-circuit-row{flex-direction:column;align-items:stretch;overflow:visible}
+  .mkt-cnode{min-width:0}
+  .mkt-carrow{width:2px;height:24px;align-self:center;flex-basis:auto;background:linear-gradient(180deg,var(--violet),rgba(245,129,31,.4))}
+  .mkt-carrow::after{right:-3px;top:auto;bottom:-1px;border-left:4px solid transparent;border-right:4px solid transparent;
+    border-top:7px solid var(--violet);border-bottom:0}
+}
 /* Badge de durée sur les cartes de méthode */
 .mkt-svc-dur{display:inline-block;margin-bottom:.5rem;padding:.22rem .7rem;border-radius:100px;font-size:.72rem;font-weight:700;
   color:var(--violet);background:rgba(245,129,31,.1);border:1px solid rgba(245,129,31,.25)}

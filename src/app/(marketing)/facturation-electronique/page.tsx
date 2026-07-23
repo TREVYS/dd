@@ -193,7 +193,6 @@ export default function Page() {
           <div className="mkt-timeline">
             {CAL.map((c) => (
               <div className={`mkt-tl-item${c.on ? " on" : ""}`} key={c.d}>
-                <div className="mkt-tl-dot" />
                 <div className="mkt-tl-date">{c.d}</div>
                 <div className="mkt-tl-title">{c.t}</div>
                 <div className="mkt-tl-sub">{c.s}</div>
@@ -227,11 +226,11 @@ export default function Page() {
               </div>
             ))}
           </div>
-          <div className="mkt-orch-list" style={{ marginTop: "2rem", flexDirection: "row", flexWrap: "wrap" }}>
+          <div className="mkt-stats-row">
             <div className="mkt-stat-chip"><b>138</b><span>plateformes agréées immatriculées</span></div>
             <div className="mkt-stat-chip"><b>2 M</b><span>entreprises déjà dans l&apos;annuaire</span></div>
-            <div className="mkt-stat-chip"><b>95</b><span>contrats Peppol signés (couverture quasi-totale)</span></div>
-            <div className="mkt-stat-chip"><b>76 %</b><span>des dirigeants confiants pour l&apos;échéance</span></div>
+            <div className="mkt-stat-chip"><b>95</b><span>contrats Peppol signés</span></div>
+            <div className="mkt-stat-chip"><b>76 %</b><span>de dirigeants confiants pour l&apos;échéance</span></div>
           </div>
           <p className="muted" style={{ fontSize: ".78rem", color: "var(--ink3)", marginTop: "1rem" }}>
             Sources : DGFiP / AIFE — Communauté des relais, 10 juillet 2026. Baromètre facturation électronique (IPSOS).
