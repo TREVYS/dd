@@ -467,8 +467,8 @@
 .mkt-rfe-svg{width:min(100%,380px);height:auto;position:relative;z-index:1;overflow:visible;
   filter:drop-shadow(0 26px 42px rgba(226,106,15,.3))}
 .mkt-rfe-flag{transform-box:fill-box}
-.mkt-rfe-flag.fr{transform-origin:100% 50%;animation:mkt-flag-wave-l 3.4s ease-in-out infinite}
-.mkt-rfe-flag.eu{transform-origin:0% 50%;animation:mkt-flag-wave-r 3.4s ease-in-out infinite}
+.mkt-rfe-flag.fr{transform-origin:0% 50%;animation:mkt-flag-wave-r 3.4s ease-in-out infinite}
+.mkt-rfe-flag.eu{transform-origin:100% 50%;animation:mkt-flag-wave-l 3.4s ease-in-out infinite}
 @keyframes mkt-flag-wave-l{0%,100%{transform:skewY(0) scaleX(1)}50%{transform:skewY(-3deg) scaleX(.96)}}
 @keyframes mkt-flag-wave-r{0%,100%{transform:skewY(0) scaleX(1)}50%{transform:skewY(3deg) scaleX(.96)}}
 /* Notes de musique du chef d'orchestre */
