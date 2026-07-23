@@ -4,6 +4,10 @@ import { TeamPhoto } from "../_components/team-photo";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 import { RfeFlow } from "./rfe-visuals";
 import { RfeMascot } from "./rfe-mascot";
+import { getPeoplePhoto } from "@/lib/people-photos";
+
+// Dynamique : la photo du fondateur (médiathèque) doit suivre les mises à jour.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Facturation électronique",
@@ -355,7 +359,7 @@ export default function Page() {
           <div className="mkt-founder">
             <div className="mkt-founder-media">
               <TeamPhoto
-                src="/brand/team/john-levy.jpg"
+                src={getPeoplePhoto("john-levy") ?? "/uploads/john-levy.jpg"}
                 initials="JL"
                 alt="John Lévy, fondateur de Trevys"
               />

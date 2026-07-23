@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { RefLogo } from "./ref-logo";
 import { slugify } from "@/lib/blog";
+import { SECTORS } from "@/lib/sectors";
+import { SectorArt } from "../_components/sector-art";
 
 export const metadata: Metadata = {
   title: "Références",
@@ -36,15 +38,6 @@ const CLIENTS: { name: string; domain?: string }[] = [
   { name: "Ekin" },
   { name: "Ulas Istanbul" },
   { name: "Jaji" },
-];
-const SECTORS = [
-  { t: "Banque & Assurance", u: "Direction de programme RFE, manager de transition, gestion de projet IT / Finance." },
-  { t: "Jeux vidéo", u: "Crédit d'impôt jeux vidéo, structuration financière et expertise comptable des studios." },
-  { t: "Services", u: "Expertise comptable, reporting et pilotage de la performance." },
-  { t: "Santé", u: "Expertise comptable, fiscalité maîtrisée et accompagnement des professions libérales." },
-  { t: "Association", u: "Comptabilité, obligations spécifiques et sécurisation des comptes." },
-  { t: "Industrie", u: "Contrôle de gestion, reporting et transformation des systèmes d'information Finance." },
-  { t: "Immobilier", u: "SCI, fiscalité immobilière et structuration patrimoniale." },
 ];
 
 export default function Page() {
@@ -91,35 +84,20 @@ export default function Page() {
             <span className="eyebrow">Vos secteurs</span>
             <h2>Une expertise au service de <em>votre secteur</em></h2>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
-              gap: "1.2rem",
-            }}
-          >
+          <div className="mkt-sector-grid">
             {SECTORS.map((s) => (
-              <div
-                key={s.t}
-                style={{
-                  background: "var(--card)",
-                  border: "1px solid var(--line)",
-                  borderRadius: "var(--r)",
-                  padding: "1.6rem 1.7rem",
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight: 800,
-                    color: "var(--ink)",
-                    fontSize: "1.08rem",
-                    marginBottom: ".55rem",
-                  }}
-                >
-                  {s.t}
+              <div className="mkt-sector-card mkt-consultant" key={s.slug}>
+                <div className="mkt-sector-thumb">
+                  <SectorArt art={s.art} title={s.title} />
                 </div>
-                <div style={{ fontSize: ".88rem", color: "var(--ink2)", lineHeight: 1.55 }}>
-                  {s.u}
+                <div className="mkt-sector-body">
+                  <div className="nm">{s.title}</div>
+                  <p>{s.tagline}</p>
+                  <div className="mkt-team-foot">
+                    <Link className="mkt-consultant-more mkt-stretch" href={`/secteurs/${s.slug}`}>
+                      <span className="mkt-more-txt">En savoir plus </span>→
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}

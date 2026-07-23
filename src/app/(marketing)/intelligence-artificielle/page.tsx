@@ -202,13 +202,13 @@ export default function Page() {
             </h3>
             <p style={{ margin: 0 }}>
               Parce que c&apos;est dans notre ADN. Nos équipes de{" "}
-              <strong>transformation digitale</strong> vont naturellement vers ces
+              <strong>transformation digitale</strong>{" "}vont naturellement vers ces
               problématiques&nbsp;: nous suivons de près les sujets d&apos;actualité et
               cherchons, comme nous l&apos;avons fait pour la{" "}
               <strong>réforme de la facturation électronique</strong>, à être l&apos;un des
               cabinets <strong>pionniers</strong> plutôt que de subir le changement. Et
               parce que nous portons aussi la <strong>casquette d&apos;expert-comptable</strong>,
-              nous savons à quel point la <strong>rigueur</strong> est déterminante&nbsp;: qui,
+              nous savons à quel point la <strong>rigueur</strong>{" "}est déterminante&nbsp;: qui,
               mieux que nous, connaît vos chiffres, vos processus et l&apos;organisation de
               votre entreprise&nbsp;? Cette connaissance intime de votre activité nous permet
               de traduire un besoin métier en une solution <strong>juste&nbsp;: utile, fiable et

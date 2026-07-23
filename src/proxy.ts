@@ -21,6 +21,10 @@ const PUBLIC_PREFIXES = [
   "/mentions-legales",
   "/fec-partage", // partage de FEC par jeton
   "/uploads", // médias importés depuis le back-office
+  "/secteurs", // pages secteurs (références)
+  "/opengraph-image", // image de partage social (og:image)
+  "/brand", // ressources de marque (logos, icônes)
+  "/icons",
 ];
 
 const PUBLIC_FILES = ["/sitemap.xml", "/robots.txt"];
@@ -28,6 +32,8 @@ const PUBLIC_FILES = ["/sitemap.xml", "/robots.txt"];
 function isPublicPath(pathname: string): boolean {
   if (pathname === "/") return true; // accueil du site vitrine
   if (PUBLIC_FILES.includes(pathname)) return true;
+  // Images de partage social générées (suffixe de build, ex. -pwu6ef).
+  if (pathname.startsWith("/opengraph-image") || pathname.startsWith("/twitter-image")) return true;
   return PUBLIC_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
