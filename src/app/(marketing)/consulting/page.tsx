@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 import { TeamPhoto } from "../_components/team-photo";
-import { LinkedinLink } from "../_components/linkedin-link";
 import { CONSULTANTS } from "@/lib/consultants";
 
 export const metadata: Metadata = {
@@ -115,7 +114,12 @@ export default function Page() {
                   <div className="rl">{c.role}</div>
                   <div className="mkt-team-foot">
                     <Link className="mkt-consultant-more mkt-stretch" href={`/consulting/${c.slug}`}>En savoir plus →</Link>
-                    <LinkedinLink href={c.linkedin ?? "https://www.linkedin.com/company/trevys-advisory/"} name={c.firstName} className="mkt-li-ic" compact />
+                    <Link className="mkt-rdv-ic" href="/rendez-vous" aria-label={`Prendre rendez-vous — ${c.firstName}`}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
+                      </svg>
+                      <span>Rdv</span>
+                    </Link>
                   </div>
                 </div>
               </div>

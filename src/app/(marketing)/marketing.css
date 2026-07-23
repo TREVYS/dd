@@ -308,6 +308,16 @@
 .mkt-li-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;padding:.5rem 1rem;border-radius:10px;
   font-size:.85rem;font-weight:700;color:#0A66C2;background:rgba(10,102,194,.1);transition:background .2s,color .2s}
 .mkt-li-btn:hover{background:#0A66C2;color:#fff}
+/* pastille « Rdv » sur les cartes consultants (au-dessus du lien étiré) */
+.mkt-team-foot .mkt-rdv-ic{position:relative;z-index:2;display:inline-flex;align-items:center;gap:.35rem;flex:0 0 auto;
+  padding:.4rem .7rem;border-radius:100px;font-size:.76rem;font-weight:800;color:var(--violet);
+  background:rgba(245,129,31,.1);border:1px solid rgba(245,129,31,.3);transition:background .2s,color .2s}
+.mkt-team-foot .mkt-rdv-ic:hover{background:var(--grad);color:#fff;border-color:transparent}
+/* bouton rendez-vous sur la fiche consultant */
+.mkt-rdv-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;padding:.6rem 1.1rem;border-radius:10px;
+  font-size:.88rem;font-weight:800;color:#fff;background:var(--grad);box-shadow:0 12px 26px -14px rgba(226,106,15,.7);
+  transition:transform .15s}
+.mkt-rdv-btn:hover{transform:translateY(-1px)}
 /* bloc « apport dans le groupe » sur les fiches */
 .mkt-apport{display:inline-flex;flex-direction:column;gap:.3rem;padding:.9rem 1.2rem;border-radius:14px;
   background:linear-gradient(135deg,rgba(245,129,31,.1),rgba(194,65,12,.06));border:1px solid rgba(245,129,31,.25)}
@@ -326,7 +336,15 @@
 .mkt-team-lead{font-size:1.18rem;line-height:1.7;color:var(--ink);font-weight:500}
 @media(max-width:860px){.mkt-team{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.mkt-consultant-view{grid-template-columns:1fr !important}}
-@media(max-width:520px){.mkt-team{grid-template-columns:1fr}}
+/* Sur mobile : on garde 2 colonnes et on réduit la hauteur des photos */
+@media(max-width:600px){
+  .mkt-team{grid-template-columns:1fr 1fr;gap:.8rem}
+  .mkt-team-photo,.mkt-team-fallback{aspect-ratio:1/1}
+  .mkt-team-fallback span{width:64px;height:64px;font-size:1rem}
+  .mkt-team-body{padding:.8rem .85rem 1rem}
+  .mkt-team-body .nm{font-size:.95rem}
+  .mkt-team-body .rl{font-size:.74rem}
+}
 
 /* page rendez-vous (Calendly) */
 .mkt-rdv{display:grid;grid-template-columns:.85fr 1.4fr;gap:2.5rem;align-items:start}

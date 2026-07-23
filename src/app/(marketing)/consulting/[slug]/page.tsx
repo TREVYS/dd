@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CONSULTANTS, getConsultant } from "@/lib/consultants";
 import { TeamPhoto } from "../../_components/team-photo";
-import { LinkedinLink } from "../../_components/linkedin-link";
 import { BreadcrumbJsonLd } from "../../_components/seo-jsonld";
 
 export function generateStaticParams() {
@@ -73,7 +72,12 @@ export default async function ConsultantPage({
               <div className="mkt-team-body">
                 <div className="nm">{c.firstName}</div>
                 <div className="rl">{c.role}</div>
-                <LinkedinLink href={c.linkedin ?? "https://www.linkedin.com/company/trevys-advisory/"} name={c.firstName} className="mkt-li-btn" />
+                <Link className="mkt-rdv-btn" href="/rendez-vous">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
+                  </svg>
+                  Prendre rendez-vous
+                </Link>
               </div>
             </div>
 
