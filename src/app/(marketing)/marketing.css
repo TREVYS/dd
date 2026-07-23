@@ -228,12 +228,12 @@
 .mkt-phead h1{font-size:clamp(2.2rem,5vw,3.6rem);margin:1.3rem 0 1.1rem;text-wrap:balance;max-width:18ch;text-transform:uppercase}
 .mkt-phead p{font-size:1.1rem;color:var(--ink2);max-width:600px;line-height:1.65}
 
-.mkt-ncta-guide{display:inline-flex}
-.mkt-ncta-rdvm{display:none}
+.mkt-ncta .mkt-ncta-guide{display:inline-flex}
+.mkt-ncta .mkt-ncta-rdvm{display:none}
 @media(max-width:1000px){
   /* Sur mobile : bouton compact « Un rdv ? », le reste passe dans le menu */
-  .mkt-links,.mkt-ncta .btn-ghost,.mkt-ncta-rdv,.mkt-ncta-guide{display:none}
-  .mkt-ncta-rdvm{display:inline-flex;white-space:nowrap}
+  .mkt-links,.mkt-ncta .btn-ghost,.mkt-ncta .mkt-ncta-rdv,.mkt-ncta .mkt-ncta-guide{display:none}
+  .mkt-ncta .mkt-ncta-rdvm{display:inline-flex;white-space:nowrap}
   .mkt-burger{display:flex}
   .mkt-hero-in{grid-template-columns:1fr}
   .mkt-visual{min-height:380px;order:2}.mkt-copy{order:1}
