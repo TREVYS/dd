@@ -524,7 +524,9 @@
 .mkt-circuit-row{display:flex;align-items:stretch;justify-content:center;gap:.6rem;flex-wrap:nowrap;overflow-x:auto;padding-bottom:.3rem}
 .mkt-cnode{flex:1 1 0;min-width:132px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.15rem;
   padding:1rem .8rem;border-radius:16px;background:#fff;border:1px solid var(--line)}
-.mkt-cnode .ic{font-size:1.5rem;line-height:1;margin-bottom:.25rem}
+.mkt-cnode .ic{line-height:1;margin-bottom:.35rem;color:var(--violet);display:inline-flex;align-items:center;justify-content:center}
+.mkt-cnode .ic svg{width:26px;height:26px}
+.mkt-cnode.hot .ic{color:#fff}
 .mkt-cnode b{font-size:.92rem;color:var(--ink);font-weight:800;line-height:1.2}
 .mkt-cnode small{font-size:.74rem;color:var(--ink3)}
 .mkt-cnode.hot{background:var(--grad);border-color:transparent}
