@@ -12,6 +12,7 @@ const KEYS: SettingKey[] = [
   "brevoApiKey", "brevoListId", "calendlyUrl",
   "linkedinClientId", "linkedinClientSecret",
   "instagramClientId", "instagramClientSecret",
+  "msTenantId", "msClientId", "msClientSecret", "msSender",
 ];
 
 // Enregistre les clés/API saisies dans le cockpit. Les champs laissés vides
