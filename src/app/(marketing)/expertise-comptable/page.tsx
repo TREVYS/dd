@@ -9,6 +9,37 @@ export const metadata: Metadata = {
   alternates: { canonical: "/expertise-comptable" },
 };
 
+// Fonctionnement : les engagements de méthode pris sur chaque mission.
+const METHODE = [
+  { t: "Une équipe dédiée", d: "Chaque mission est confiée à une équipe identifiée, qui connaît votre dossier et votre secteur." },
+  { t: "Un interlocuteur unique", d: "Un référent durable qui vous répond, coordonne les travaux et engage le cabinet." },
+  { t: "Une veille permanente", d: "Fiscalité, comptabilité, réforme de la facturation électronique : nos équipes s'appuient sur une veille technique continue." },
+  { t: "Une restitution claire", d: "Chaque mission donne lieu à une présentation personnalisée : vous comprenez nos travaux et ce qu'ils changent pour vous." },
+];
+
+// Missions concrètes du pôle.
+const MISSIONS = [
+  "Business plan & prévisionnel",
+  "Collecte et saisie des pièces",
+  "Pointage périodique des comptes",
+  "Révision de la comptabilité",
+  "Analyse des marges",
+  "Clôture des comptes",
+  "Établissement des comptes annuels",
+  "Déclarations fiscales & TVA",
+  "Tableaux de bord & reporting",
+];
+
+// Ce que le client y gagne.
+const BENEFICES = [
+  { t: "Sérénité réglementaire", d: "Vos obligations comptables et fiscales sont prises en charge au quotidien, sans mauvaise surprise." },
+  { t: "Une information fiable et exploitable", d: "Des chiffres justes, à jour, présentables aux banques et aux tiers." },
+  { t: "Une fiscalité maîtrisée", d: "Des options comptables et fiscales étudiées dans votre contexte, pour une juste imposition." },
+  { t: "Des risques identifiés", d: "Les risques inhérents à votre activité sont repérés tôt — pour mieux les maîtriser." },
+  { t: "Un appui sur vos projets", d: "Création, investissement, croissance : chaque projet mérite une analyse prospective." },
+  { t: "Une meilleure gouvernance", d: "Une lecture pragmatique de votre situation financière pour décider en confiance." },
+];
+
 // Outils que nous maîtrisons — nous nous adaptons à votre environnement.
 const TOOLS = [
   { t: "Tiime", d: "Comptabilité et facturation en temps réel pour les TPE et indépendants." },
@@ -59,13 +90,37 @@ export default function Page() {
             À vos côtés à chaque étape de la vie de <em>l&apos;entreprise</em>
           </h1>
           <p>
-            Nous accompagnons les entrepreneurs, les TPE et les PME — de la
-            création au développement, de la conformité au pilotage. Et nous
-            allons plus loin, en intégrant les outils digitaux pour une expertise
-            plus fluide et tournée vers le conseil.
+            Déléguez vos obligations réglementaires, identifiez les risques,
+            optimisez vos options comptables et fiscales — avec un
+            expert-comptable à votre écoute, qui vous accompagne de manière
+            proactive au fur et à mesure que vous vous développez.
           </p>
+          <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
+            <Link className="btn btn-gold" href="/rendez-vous">Rencontrer un expert-comptable</Link>
+            <Link className="btn btn-ghost" href="/contact">Demander un devis</Link>
+          </div>
         </div>
       </header>
+
+      {/* Positionnement : un partenaire, pas un simple prestataire */}
+      <section className="sec">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Notre approche</span>
+            <h2>Des solutions adaptées à <em>chaque situation</em></h2>
+            <p>
+              Nous abordons chacun de vos enjeux sous un angle neuf et
+              indépendant, en partenaire : une vision juste, enrichie de la
+              multiplicité de nos savoir-faire — expertise comptable, conseil,
+              audit, transformation digitale. Au-delà des conseils, notre
+              priorité est de vous assurer une sécurité maximale, et de vous
+              permettre de prendre du recul dans un cadre sécurisant pour
+              mesurer les conséquences des orientations que vous donnez à
+              votre entreprise.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section className="sec">
         <div className="wrap">
@@ -86,6 +141,75 @@ export default function Page() {
                 </div>
                 <h3>{p.t}</h3>
                 <p>{p.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Fonctionnement clair */}
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Notre fonctionnement</span>
+            <h2>Un fonctionnement <em>clair</em>, pensé pour la qualité</h2>
+            <p>
+              Une organisation simple et des engagements de méthode, pour un
+              haut niveau d&apos;exigence sur chaque mission.
+            </p>
+          </div>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
+            {METHODE.map((m) => (
+              <div className="mkt-svc" key={m.t}>
+                <div className="ico">
+                  <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" /></svg>
+                </div>
+                <h3 style={{ fontSize: "1.12rem" }}>{m.t}</h3>
+                <p>{m.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Missions & bénéfices */}
+      <section className="sec">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Nos missions</span>
+            <h2>Du <em>quotidien</em> comptable aux projets qui comptent</h2>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem", justifyContent: "center", maxWidth: 860, margin: "0 auto 3rem" }}>
+            {MISSIONS.map((m) => (
+              <span
+                key={m}
+                style={{
+                  padding: ".55rem 1.1rem",
+                  borderRadius: 100,
+                  border: "1px solid #F5D9BE",
+                  background: "#FFF7F0",
+                  fontWeight: 600,
+                  fontSize: ".92rem",
+                  color: "#5a4330",
+                }}
+              >
+                {m}
+              </span>
+            ))}
+          </div>
+
+          <div className="shead">
+            <span className="eyebrow">Vos bénéfices</span>
+            <h2>Ce que vous y <em>gagnez</em></h2>
+          </div>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
+            {BENEFICES.map((b) => (
+              <div className="mkt-svc" key={b.t}>
+                <div className="ico">
+                  <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></svg>
+                </div>
+                <h3 style={{ fontSize: "1.1rem" }}>{b.t}</h3>
+                <p>{b.d}</p>
               </div>
             ))}
           </div>
