@@ -186,6 +186,16 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         aria-modal="true"
         aria-hidden={!mobileOpen}
       >
+        {/* Le cabinet en premier (regroupe cabinet + écosystème) */}
+        <div className="mkt-mgroup cabinet">
+          <span className="mkt-mgroup-h">Le cabinet</span>
+          {M_CABINET.map((l) => (
+            <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className={isCur(l.href) ? "cur" : ""}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
+
         {/* Deux univers côte à côte, jeu de couleurs */}
         <div className="mkt-mcols">
           <div className="mkt-mgroup metiers">
@@ -204,16 +214,6 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
               </Link>
             ))}
           </div>
-        </div>
-
-        {/* Le cabinet (regroupe cabinet + écosystème) */}
-        <div className="mkt-mgroup cabinet">
-          <span className="mkt-mgroup-h">Le cabinet</span>
-          {M_CABINET.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className={isCur(l.href) ? "cur" : ""}>
-              {l.label}
-            </Link>
-          ))}
         </div>
 
         {/* Liens seuls */}

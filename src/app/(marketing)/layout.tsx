@@ -79,7 +79,7 @@ const JSON_LD = {
       areaServed: "FR",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "13 avenue Bugeaud",
+        streetAddress: "1 rue Le Nôtre",
         postalCode: "75116",
         addressLocality: "Paris",
         addressCountry: "FR",

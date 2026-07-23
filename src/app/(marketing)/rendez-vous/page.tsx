@@ -18,7 +18,7 @@ import { WhatsappButton, WA_DISPLAY } from "../_components/whatsapp";
 const WAYS = [
   { l: "Téléphone / WhatsApp", v: WA_DISPLAY },
   { l: "E-mail", v: "contact@trevys-advisory.fr" },
-  { l: "Adresse", v: "13 avenue Bugeaud, 75116 Paris" },
+  { l: "Adresse", v: "1 rue Le Nôtre, 75116 Paris" },
   { l: "Horaires", v: "Sur rendez-vous, en cabinet ou à distance" },
 ];
 

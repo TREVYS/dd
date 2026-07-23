@@ -5,14 +5,14 @@ import { WhatsappButton, WA_DISPLAY } from "../_components/whatsapp";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contactez Trevys Advisory : +33 7 68 05 04 65 — contact@trevys-advisory.fr — 13 avenue Bugeaud, 75116 Paris.",
+    "Contactez Trevys Advisory : +33 7 68 05 04 65 — contact@trevys-advisory.fr — 1 rue Le Nôtre, 75116 Paris.",
   alternates: { canonical: "/contact" },
 };
 
 const WAYS = [
   { l: "Téléphone / WhatsApp", v: WA_DISPLAY },
   { l: "E-mail", v: "contact@trevys-advisory.fr" },
-  { l: "Adresse", v: "13 avenue Bugeaud, 75116 Paris" },
+  { l: "Adresse", v: "1 rue Le Nôtre, 75116 Paris" },
   { l: "Rendez-vous", v: "En cabinet ou à distance" },
 ];
 
