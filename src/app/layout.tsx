@@ -17,10 +17,8 @@ export const metadata: Metadata = {
   title: "TREVYS OS",
   description: "Plateforme interne du cabinet TREVYS",
   icons: {
-    icon: [
-      { url: "/uploads/logo.png", type: "image/png" },
-      { url: "/favicon.ico" },
-    ],
+    icon: [{ url: "/uploads/logo.png", type: "image/png" }],
+    shortcut: ["/uploads/logo.png"],
     apple: "/uploads/logo.png",
   },
 };
