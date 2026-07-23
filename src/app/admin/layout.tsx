@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import "./admin.css";
 import { AdminShell } from "./admin-shell";
 import { unreadCount } from "@/lib/newsletter";
+import { runDueRoutines } from "@/lib/alfred-routines-run";
 
 export const metadata: Metadata = {
   title: "Back-office · Trevys",
@@ -18,6 +19,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session?.user) redirect("/login");
   const role = (session.user as { role?: string | null }).role ?? "";
   if (!ALLOWED_ROLES.includes(role)) redirect("/");
+
+  // Exécution opportuniste des routines d'Alfred dues (en arrière-plan,
+  // sans ralentir l'affichage du cockpit).
+  runDueRoutines().catch(() => {});
 
   const name = session.user.name ?? session.user.email ?? "Admin";
   const initials = name.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();

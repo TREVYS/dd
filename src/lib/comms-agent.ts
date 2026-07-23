@@ -5,6 +5,7 @@ import { alfredSystemBlock } from "@/lib/alfred-config";
 import { siteKnowledgeBlock } from "@/lib/site-knowledge";
 import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
+import { addRoutine, listRoutines, describeSchedule, type RoutineFreq, type RoutineType } from "@/lib/alfred-routines";
 
 export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type AgentResult = { reply: string; actions: string[] };
@@ -19,6 +20,7 @@ Tes moyens d'action (outils) :
 - planifier_publication : ajoute une échéance au calendrier éditorial (article, post LinkedIn, newsletter…).
 - lister_calendrier : consulte le calendrier existant.
 - lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
+- creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
 
 Règles : respecte scrupuleusement le ton, la ligne éditoriale et les mots à éviter ci-dessus. Inspire-toi des exemples de publications passées pour retrouver le style « maison ». Après une action, confirme brièvement et propose la suite. Tu prépares, l'humain valide et publie.`;
 
@@ -74,6 +76,28 @@ const TOOLS = [
     input_schema: { type: "object" as const, properties: {} },
   },
   {
+    name: "creer_routine",
+    description:
+      "Crée une routine récurrente (ex. rédiger un article chaque semaine). Tout ce que produit une routine part en BROUILLON pour validation humaine. Les routines sont visibles et modifiables dans « Routines d'Alfred ».",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        label: { type: "string", description: "Nom court de la routine, ex. « Article hebdo RFE »" },
+        type: { type: "string", enum: ["article", "linkedin", "instagram"] },
+        freq: { type: "string", enum: ["quotidienne", "hebdomadaire", "mensuelle"] },
+        weekday: { type: "number", description: "Jour de la semaine si hebdomadaire (0=dimanche … 6=samedi)" },
+        monthday: { type: "number", description: "Jour du mois (1-28) si mensuelle" },
+        topic: { type: "string", description: "La consigne : sujet, angle, thème à traiter" },
+      },
+      required: ["label", "type", "freq", "topic"],
+    },
+  },
+  {
+    name: "lister_routines",
+    description: "Liste les routines récurrentes existantes.",
+    input_schema: { type: "object" as const, properties: {} },
+  },
+  {
     name: "lire_article",
     description:
       "Renvoie le contenu complet (Markdown) d'un article publié du site, à partir de son slug (ex. « calendrier-2026-2027 »).",
@@ -120,6 +144,27 @@ function runTool(name: string, input: Record<string, unknown>, actions: string[]
   if (name === "lister_calendrier") {
     return JSON.stringify(
       listItems().map((i) => ({ date: i.date, type: i.type, title: i.title, status: i.status })),
+    );
+  }
+  if (name === "creer_routine") {
+    const r = addRoutine({
+      label: String(input.label ?? "Routine"),
+      type: (input.type as RoutineType) ?? "article",
+      freq: (input.freq as RoutineFreq) ?? "hebdomadaire",
+      weekday: typeof input.weekday === "number" ? input.weekday : undefined,
+      monthday: typeof input.monthday === "number" ? input.monthday : undefined,
+      topic: String(input.topic ?? ""),
+      enabled: true,
+    });
+    actions.push(`Routine créée : « ${r.label} » (${describeSchedule(r)})`);
+    return `Routine enregistrée (${describeSchedule(r)}). Elle produira des brouillons à valider. Modifiable dans « Routines d'Alfred ».`;
+  }
+  if (name === "lister_routines") {
+    return JSON.stringify(
+      listRoutines().map((r) => ({
+        label: r.label, type: r.type, planification: describeSchedule(r),
+        sujet: r.topic, active: r.enabled, derniereExecution: r.lastRun ?? null, dernierResultat: r.lastResult ?? null,
+      })),
     );
   }
   if (name === "lire_article") {
@@ -173,6 +218,49 @@ export async function draftSocialPost(
     .trim();
 
   return { content: content || topic, generated: true };
+}
+
+// Rédige un article complet (appel modèle unique). Sans clé API, renvoie un
+// gabarit à compléter — le brouillon existe quand même pour ne rien perdre.
+export async function draftArticle(
+  topic: string,
+): Promise<{ title: string; category: string; excerpt: string; body: string; generated: boolean }> {
+  const apiKey = getSetting("anthropicApiKey");
+  if (!apiKey) {
+    return {
+      generated: false,
+      title: `[À rédiger] ${topic.slice(0, 80)}`,
+      category: "Article",
+      excerpt: "Brouillon créé par une routine — Alfred attend sa clé API pour rédiger.",
+      body: `## ${topic}\n\n_(Alfred n'a pas pu rédiger : clé API non configurée — voir Réglages.)_\n\n- Point clé 1\n- Point clé 2\n- Point clé 3`,
+    };
+  }
+
+  const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+  const client = new AnthropicSDK({ apiKey });
+
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 4000,
+    system:
+      `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n` +
+      `Tu rédiges un article complet pour le blog du cabinet. Réponds EXACTEMENT dans ce format, sans rien d'autre :\n` +
+      `TITRE: <titre>\nTHEME: <thème court, ex. Facturation électronique>\nRESUME: <1-2 phrases>\nCORPS:\n<contenu Markdown structuré avec ## sous-titres, listes, gras — 600 à 900 mots>`,
+    messages: [{ role: "user", content: `Rédige un article sur : ${topic}` }],
+  });
+
+  const raw = res.content
+    .filter((b) => b.type === "text")
+    .map((b) => (b as { text: string }).text)
+    .join("")
+    .trim();
+
+  const title = raw.match(/^TITRE:\s*(.+)$/m)?.[1]?.trim() || topic.slice(0, 80);
+  const category = raw.match(/^THEME:\s*(.+)$/m)?.[1]?.trim() || "Article";
+  const excerpt = raw.match(/^RESUME:\s*(.+)$/m)?.[1]?.trim() || "";
+  const body = (raw.split(/^CORPS:\s*$/m)[1] ?? raw).trim();
+
+  return { title, category, excerpt, body, generated: true };
 }
 
 // Modifie un contenu Markdown selon une instruction (appel modèle unique).
