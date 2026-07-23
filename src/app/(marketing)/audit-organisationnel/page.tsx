@@ -5,7 +5,7 @@ import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 export const metadata: Metadata = {
   title: "Audit organisationnel",
   description:
-    "Audit organisationnel : processus, contrôle interne, gouvernance et efficacité opérationnelle. Un diagnostic indépendant pour fiabiliser votre organisation et libérer de la performance, notamment sur la fonction finance.",
+    "Audit organisationnel : processus, contrôle interne, gouvernance et audit de la Piste d'Audit Fiable (PAF) — un sujet clé de la réforme de la facturation électronique souvent négligé. Diagnostic indépendant pour fiabiliser votre organisation et sécuriser votre conformité.",
   alternates: { canonical: "/audit-organisationnel" },
 };
 
@@ -16,6 +16,15 @@ const DOMAINS = [
   { n: "04", t: "Gouvernance & responsabilités", d: "Clarté des instances de décision, des circuits de validation et des délégations." },
   { n: "05", t: "Gestion des risques", d: "Cartographie des risques opérationnels, financiers et de conformité, et dispositifs de maîtrise associés." },
   { n: "06", t: "Performance & optimisation des coûts", d: "Indicateurs de pilotage, leviers d'efficience et opportunités d'automatisation." },
+];
+
+const PAF = [
+  { t: "Documentation des processus", d: "Formalisation des circuits achats (P2P) et ventes (O2C) et des contrôles associés — la base d'une piste d'audit fiable." },
+  { t: "Traçabilité de bout en bout", d: "Le lien continu et vérifiable entre commande, livraison/exécution, facture et paiement." },
+  { t: "Points de contrôle & séparation des tâches", d: "Les contrôles clés qui garantissent qu'aucune facture ne s'écarte de la réalité de l'opération." },
+  { t: "Authenticité, intégrité, lisibilité", d: "Les trois exigences légales sur chaque facture, de l'émission jusqu'à l'archivage." },
+  { t: "Archivage à valeur probante", d: "Conservation sécurisée et opposable des factures et des pièces justificatives (SAE)." },
+  { t: "Préparation au contrôle fiscal", d: "Une PAF documentée et présentable, pour aborder un contrôle sereinement." },
 ];
 
 const APPROACH = [
@@ -74,7 +83,61 @@ export default function Page() {
         </div>
       </section>
 
+      {/* Pavé Piste d'Audit Fiable */}
       <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Le sujet que beaucoup oublient</span>
+            <h2>Audit de la <em>Piste d&apos;Audit Fiable</em> (PAF)</h2>
+            <p>
+              La Piste d&apos;Audit Fiable est une obligation légale (art. 289 VII du CGI) :
+              un ensemble documenté de contrôles qui établit, pour chaque facture, le lien
+              avec la réalité de l&apos;opération — et garantit l&apos;authenticité de
+              l&apos;origine, l&apos;intégrité du contenu et la lisibilité, de l&apos;émission
+              à l&apos;archivage.
+            </p>
+          </div>
+
+          <div
+            style={{
+              background: "linear-gradient(180deg,#FFF7F0,#FFFFFF)",
+              border: "1px solid #F5D9BE",
+              borderLeft: "4px solid #F5811F",
+              borderRadius: "16px",
+              padding: "1.6rem 1.9rem",
+              maxWidth: "880px",
+              margin: "0 auto 2.5rem",
+            }}
+          >
+            <h3 style={{ fontSize: "1.2rem", margin: "0 0 .7rem" }}>
+              Facturation électronique : un enjeu sous-estimé
+            </h3>
+            <p style={{ margin: 0 }}>
+              Beaucoup pensent qu&apos;avec la facture électronique, la PAF disparaît.
+              <strong> C&apos;est faux.</strong> Elle reste exigée pour tous les flux qui ne
+              sont pas des factures électroniques structurées (factures papier ou PDF, ventes
+              B2C, opérations internationales relevant de l&apos;e-reporting), et
+              l&apos;administration s&apos;appuie dessus lors d&apos;un contrôle. Négliger sa
+              piste d&apos;audit, c&apos;est s&apos;exposer à un risque fiscal réel — au moment
+              même où les processus de facturation sont bouleversés par la réforme.
+            </p>
+          </div>
+
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
+            {PAF.map((s) => (
+              <div className="mkt-svc" key={s.t}>
+                <div className="ico">
+                  <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" /></svg>
+                </div>
+                <h3 style={{ fontSize: "1.12rem" }}>{s.t}</h3>
+                <p>{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="sec">
         <div className="wrap">
           <div className="shead">
             <span className="eyebrow">Notre approche</span>

@@ -9,7 +9,6 @@ const PUBLIC_PREFIXES = [
   "/consulting",
   "/intelligence-artificielle",
   "/facturation-electronique",
-  "/audit-it",
   "/audit-organisationnel",
   "/le-cabinet",
   "/notre-ecosysteme",

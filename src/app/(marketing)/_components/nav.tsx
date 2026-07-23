@@ -15,8 +15,7 @@ const METIERS = [
 const EXPERTISES = [
   { href: "/intelligence-artificielle", label: "Intelligence artificielle", d: "Automatisation & agents métier" },
   { href: "/facturation-electronique", label: "Facturation électronique", d: "Mise en conformité 2026" },
-  { href: "/audit-it", label: "Audit IT", d: "Systèmes d'information & sécurité" },
-  { href: "/audit-organisationnel", label: "Audit organisationnel", d: "Processus, contrôle interne, efficacité" },
+  { href: "/audit-organisationnel", label: "Audit organisationnel", d: "Processus, contrôle interne, piste d'audit fiable" },
 ];
 
 const CABINET = [
@@ -39,7 +38,6 @@ const M_METIERS = [
 const M_EXPERTISES = [
   { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
-  { href: "/audit-it", label: "Audit IT" },
   { href: "/audit-organisationnel", label: "Audit organisationnel" },
 ];
 const M_CABINET = [
