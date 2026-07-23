@@ -358,8 +358,19 @@
 .mkt-rdv{display:grid;grid-template-columns:.85fr 1.4fr;gap:2.5rem;align-items:start}
 .mkt-rdv-info{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:2rem;box-shadow:var(--glass-sh)}
 .mkt-rdv-embed{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--glass-sh);min-height:760px}
-.mkt-cal{position:relative;min-width:320px;width:100%;height:760px}
-@media(max-width:900px){.mkt-rdv{grid-template-columns:1fr}.mkt-rdv-embed{min-height:1040px}.mkt-cal{height:1040px}}
+.mkt-cal{position:relative;width:100%;height:760px}
+@media(max-width:900px){
+  .mkt-rdv{grid-template-columns:1fr;gap:1.3rem}
+  .mkt-rdv-info{padding:1.4rem 1.3rem}
+  .mkt-rdv-embed{min-height:0;border-radius:16px}
+  /* Hauteur adaptée à l'écran du téléphone (Calendly défile en interne) */
+  .mkt-cal{height:82vh;min-height:600px}
+}
+/* En-tête de page resserré sur mobile */
+@media(max-width:700px){
+  .mkt-phead{padding:calc(var(--nh) + 2rem) var(--edge) 1.8rem}
+  .mkt-rdv-info h2{font-size:1.2rem}
+}
 
 /* WhatsApp — bouton en ligne */
 .mkt-wa-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1.2rem;border-radius:100px;font-weight:800;
