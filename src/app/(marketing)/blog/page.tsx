@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/blog";
+import { listVideos } from "@/lib/videos";
 import { BlogList } from "./blog-list";
+import { VideoGallery } from "./video-gallery";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Ressources",
@@ -11,6 +15,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   const posts = getAllPosts();
+  const videos = listVideos();
   return (
     <>
       <header className="mkt-phead">
@@ -37,6 +42,19 @@ export default function Page() {
           </a>
         </div>
       </header>
+
+      {videos.length > 0 && (
+        <section className="sec" style={{ paddingBottom: 0 }}>
+          <div className="wrap">
+            <div className="shead">
+              <span className="eyebrow">En vidéo</span>
+              <h2>Nos <em>prises de parole</em></h2>
+              <p>Nos experts décryptent la facturation électronique, l&apos;intelligence artificielle et l&apos;innovation.</p>
+            </div>
+            <VideoGallery videos={videos} />
+          </div>
+        </section>
+      )}
 
       <section className="sec">
         <div className="wrap">

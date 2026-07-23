@@ -14,7 +14,13 @@ function inline(t: string): string {
 }
 
 export function mdToHtml(md: string): string {
-  const lines = (md || "").split(/\r?\n/);
+  // Aperçu des vidéos : <YouTube id="…" /> → vignette cliquable.
+  const withVideos = (md || "").replace(
+    /<YouTube\s+id=["']([A-Za-z0-9_-]{11})["']\s*\/>/g,
+    (_m, id) =>
+      `\n\n<div class="mkt-article-video" style="background:#000"><a href="https://youtu.be/${id}" target="_blank" rel="noopener"><img alt="Vidéo YouTube" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.85" /></a></div>\n\n`,
+  );
+  const lines = withVideos.split(/\r?\n/);
   const out: string[] = [];
   let inList = false;
   const closeList = () => {
@@ -46,6 +52,10 @@ export function mdToHtml(md: string): string {
       out.push(`<li>${inline(m[1])}</li>`);
     } else if (l.trim() === "") {
       closeList();
+    } else if (/^\s*<(div|iframe|img|figure)\b/.test(l)) {
+      // Bloc HTML brut (ex. vignette vidéo) : on le laisse passer tel quel.
+      closeList();
+      out.push(l);
     } else {
       closeList();
       out.push(`<p>${inline(l)}</p>`);

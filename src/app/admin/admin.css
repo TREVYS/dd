@@ -65,6 +65,11 @@
 .ck-alfred-ic{width:26px;height:26px;flex:0 0 auto;display:grid;place-items:center;border-radius:8px;
   background:var(--o);color:#fff;font-size:.9rem;font-weight:800}
 .ck-alfred-bar input{flex:1;min-width:200px;border:1px solid var(--line);border-radius:9px;padding:.5rem .7rem;font:inherit;font-size:.86rem}
+.ck-alfred-quick{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem}
+.ck-chip{border:1px solid var(--line);background:#fff;color:var(--ink2);font:inherit;font-size:.8rem;font-weight:600;
+  padding:.35rem .75rem;border-radius:100px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.ck-chip:hover:not(:disabled){background:var(--o);color:#fff;border-color:var(--o)}
+.ck-chip:disabled{opacity:.55;cursor:default}
 
 /* Sélecteur de média (modale) */
 .ck-picker-back{position:fixed;inset:0;background:rgba(20,12,4,.5);z-index:1000;display:grid;place-items:center;padding:1rem}

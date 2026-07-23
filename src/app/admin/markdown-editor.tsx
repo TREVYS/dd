@@ -119,16 +119,33 @@ export function MarkdownEditor({
     if (attachRef.current) attachRef.current.value = "";
   };
 
+  // Insère une vidéo YouTube (balise <YouTube id="…" /> reconnue par le site).
+  const insertVideo = () => {
+    const input = window.prompt("Collez le lien YouTube (ou l'identifiant de la vidéo) :");
+    if (!input) return;
+    const s = input.trim();
+    const id = /^[A-Za-z0-9_-]{11}$/.test(s)
+      ? s
+      : s.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/)?.[1];
+    if (!id) {
+      setErr("Lien YouTube non reconnu.");
+      return;
+    }
+    setErr("");
+    insertAtCursor(`\n\n<YouTube id="${id}" />\n\n`);
+  };
+
   // Demande à Alfred de modifier le contenu selon une instruction.
-  const askAlfred = async () => {
-    if (!instruction.trim()) return;
+  const askAlfred = async (instr?: string) => {
+    const order = (instr ?? instruction).trim();
+    if (!order) return;
     setAlfBusy(true);
     setAlfMsg("");
     try {
       const r = await fetch("/api/admin/comms/assist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: value, instruction }),
+        body: JSON.stringify({ content: value, instruction: order }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? "Alfred n'a pas pu répondre.");
@@ -140,6 +157,15 @@ export function MarkdownEditor({
     }
     setAlfBusy(false);
   };
+
+  const QUICK: { label: string; instr: string }[] = [
+    { label: "Améliorer le style", instr: "Améliore le style et la fluidité sans changer le sens ni la structure." },
+    { label: "Corriger", instr: "Corrige l'orthographe, la grammaire et la ponctuation." },
+    { label: "Raccourcir", instr: "Raccourcis le texte en gardant les idées essentielles." },
+    { label: "Plus percutant", instr: "Rends le texte plus percutant et incarné, ton direct." },
+    { label: "Ajouter une conclusion", instr: "Ajoute une courte conclusion avec un appel à l'action." },
+    { label: "Optimiser SEO", instr: "Optimise pour le référencement : titres clairs, mots-clés naturels, chapô." },
+  ];
 
   return (
     <div className="adm-md">
@@ -183,6 +209,14 @@ export function MarkdownEditor({
         <button
           type="button"
           className="adm-md-tool img"
+          title="Insérer une vidéo YouTube"
+          onClick={insertVideo}
+        >
+          ▶ Vidéo
+        </button>
+        <button
+          type="button"
+          className="adm-md-tool img"
           title="Joindre un document (PDF, etc.)"
           onClick={() => attachRef.current?.click()}
           disabled={busy}
@@ -221,6 +255,15 @@ export function MarkdownEditor({
         </div>
       </div>
 
+      {/* Actions rapides Alfred (un clic) */}
+      <div className="ck-alfred-quick">
+        {QUICK.map((q) => (
+          <button key={q.label} type="button" className="ck-chip" onClick={() => askAlfred(q.instr)} disabled={alfBusy}>
+            {q.label}
+          </button>
+        ))}
+      </div>
+
       {/* Barre Alfred : donner une instruction pour modifier le contenu */}
       <div className="ck-alfred-bar">
         <span className="ck-alfred-ic" aria-hidden="true">✦</span>
@@ -237,7 +280,7 @@ export function MarkdownEditor({
           placeholder="Demandez à Alfred : « raccourcis l'intro », « ajoute une conclusion », « ton plus direct »…"
           disabled={alfBusy}
         />
-        <button type="button" className="adm-btn sm" onClick={askAlfred} disabled={alfBusy || !instruction.trim()}>
+        <button type="button" className="adm-btn sm" onClick={() => askAlfred()} disabled={alfBusy || !instruction.trim()}>
           {alfBusy ? "Alfred écrit…" : "Demander à Alfred"}
         </button>
       </div>

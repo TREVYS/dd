@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPost, getPostSlugs, getAllPosts, extractHeadings, formatDateFr } from "@/lib/blog";
 import { SITE_URL } from "@/lib/site";
 import { TableOfContents, ShareButtons } from "./article-tools";
+import { ArticleVideo } from "../../_components/article-video";
 
 export function generateStaticParams() {
   return getPostSlugs().map((slug) => ({ slug }));
@@ -54,6 +55,7 @@ export default async function Page({
   const mdxComponents = {
     h2: (props: React.ComponentProps<"h2">) => <h2 id={nextHeadingId()} {...props} />,
     h3: (props: React.ComponentProps<"h3">) => <h3 id={nextHeadingId()} {...props} />,
+    YouTube: (props: { id?: string; title?: string }) => <ArticleVideo {...props} />,
   };
   const related = getAllPosts()
     .filter((p) => p.slug !== slug && p.category === post.meta.category)
