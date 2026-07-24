@@ -1,7 +1,8 @@
 import { listRoutines, updateRoutine, isDue, type Routine } from "@/lib/alfred-routines";
-import { draftArticle, draftSocialPost } from "@/lib/comms-agent";
+import { draftArticle, draftSocialPost, draftNewsletter } from "@/lib/comms-agent";
 import { addItem } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
+import { addCampaign } from "@/lib/newsletter-campaigns";
 import { sendTelegram } from "@/lib/notify";
 
 // Exécution des routines d'Alfred. Tout part en BROUILLON : rien n'est publié
@@ -20,6 +21,11 @@ export async function runRoutine(r: Routine): Promise<string> {
       body: a.body,
     });
     return `Brouillon d'article créé : « ${a.title} »`;
+  }
+  if (r.type === "newsletter") {
+    const n = await draftNewsletter(r.topic);
+    addCampaign(n.subject, n.body);
+    return `Brouillon de newsletter créé : « ${n.subject} »`;
   }
   const { content } = await draftSocialPost(r.topic, r.type);
   addPost({ network: r.type, content, status: "brouillon" });

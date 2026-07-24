@@ -6,7 +6,7 @@ import crypto from "node:crypto";
 // semaine, en brouillon, pour validation). Stockées dans data/alfred-routines.json.
 const FILE = path.join(process.cwd(), "data", "alfred-routines.json");
 
-export type RoutineType = "article" | "linkedin" | "instagram";
+export type RoutineType = "article" | "linkedin" | "instagram" | "newsletter";
 export type RoutineFreq = "quotidienne" | "hebdomadaire" | "mensuelle";
 
 export type Routine = {

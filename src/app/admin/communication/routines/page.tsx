@@ -8,6 +8,7 @@ const TYPE_LABEL: Record<string, string> = {
   article: "Article de blog",
   linkedin: "Post LinkedIn",
   instagram: "Post Instagram",
+  newsletter: "Newsletter",
 };
 
 function RoutineFields({ defaults }: { defaults?: { label?: string; type?: string; freq?: string; weekday?: number; monthday?: number; topic?: string } }) {
@@ -24,6 +25,7 @@ function RoutineFields({ defaults }: { defaults?: { label?: string; type?: strin
             <option value="article">Article de blog (brouillon)</option>
             <option value="linkedin">Post LinkedIn (brouillon)</option>
             <option value="instagram">Post Instagram (brouillon)</option>
+            <option value="newsletter">Newsletter (brouillon)</option>
           </select>
         </div>
         <div className="adm-field">

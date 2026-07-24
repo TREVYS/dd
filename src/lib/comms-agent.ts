@@ -88,7 +88,7 @@ const TOOLS = [
       type: "object" as const,
       properties: {
         label: { type: "string", description: "Nom court de la routine, ex. « Article hebdo RFE »" },
-        type: { type: "string", enum: ["article", "linkedin", "instagram"] },
+        type: { type: "string", enum: ["article", "linkedin", "instagram", "newsletter"] },
         freq: { type: "string", enum: ["quotidienne", "hebdomadaire", "mensuelle"] },
         weekday: { type: "number", description: "Jour de la semaine si hebdomadaire (0=dimanche … 6=samedi)" },
         monthday: { type: "number", description: "Jour du mois (1-28) si mensuelle" },
@@ -312,6 +312,44 @@ export async function draftArticle(
   const body = (raw.split(/^CORPS:\s*$/m)[1] ?? raw).trim();
 
   return { title, category, excerpt, body, generated: true };
+}
+
+// Rédige une newsletter complète (appel modèle unique). Sans clé API, renvoie
+// un gabarit à compléter — le brouillon existe quand même.
+export async function draftNewsletter(
+  topic: string,
+): Promise<{ subject: string; body: string; generated: boolean }> {
+  const apiKey = getSetting("anthropicApiKey");
+  if (!apiKey) {
+    return {
+      generated: false,
+      subject: `[À rédiger] ${topic.slice(0, 70)}`,
+      body: `Bonjour,\n\n## ${topic}\n\n_(Alfred n'a pas pu rédiger : clé API non configurée — voir Réglages.)_\n\n- Point clé 1\n- Point clé 2\n\nBonne lecture,\n\nL'équipe Trevys`,
+    };
+  }
+
+  const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+  const client = new AnthropicSDK({ apiKey });
+
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 3000,
+    system:
+      `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n` +
+      `Tu rédiges une newsletter e-mail pour les clients du cabinet (dirigeants, DAF). Ton chaleureux et utile, format court (300-500 mots), avec des liens vers les articles du site quand c'est pertinent. Réponds EXACTEMENT dans ce format, sans rien d'autre :\n` +
+      `SUJET: <objet de l'e-mail>\nCORPS:\n<contenu Markdown : salutation, ## sous-titres, listes, [liens](https://www.trevys.fr/...), signature « L'équipe Trevys »>`,
+    messages: [{ role: "user", content: `Rédige une newsletter sur : ${topic}` }],
+  });
+
+  const raw = res.content
+    .filter((b) => b.type === "text")
+    .map((b) => (b as { text: string }).text)
+    .join("")
+    .trim();
+
+  const subject = raw.match(/^SUJET:\s*(.+)$/m)?.[1]?.trim() || topic.slice(0, 70);
+  const body = (raw.split(/^CORPS:\s*$/m)[1] ?? raw).trim();
+  return { subject, body, generated: true };
 }
 
 // Modifie un contenu Markdown selon une instruction (appel modèle unique).
