@@ -89,9 +89,11 @@ function inline(s: string): string {
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
 }
 
+// Couleur pleine (pas de dégradé : Outlook les supprime, rendant le bouton
+// invisible) + bordure de secours si le fond saute.
 const BTN_STYLE =
-  "display:inline-block;background:linear-gradient(135deg,#F5811F,#E26A0F);color:#ffffff;" +
-  "font-weight:700;font-size:15px;text-decoration:none;padding:12px 26px;border-radius:100px;";
+  "display:inline-block;background-color:#E26A0F;border:2px solid #E26A0F;color:#ffffff;" +
+  "font-weight:700;font-size:15px;text-decoration:none;padding:11px 26px;border-radius:100px;";
 
 export function markdownToEmailHtml(md: string): string {
   const lines = md.replace(/\r\n/g, "\n").split("\n");
@@ -156,7 +158,7 @@ export function wrapEmail(bodyHtml: string): string {
 
     <!-- Carte principale -->
     <div style="background:#ffffff;border-radius:18px;border:1px solid #efe5d6;overflow:hidden;">
-      <div style="height:5px;background:linear-gradient(90deg,#F5811F,#E8B33C);"></div>
+      <div style="height:5px;background-color:#F5811F;font-size:0;line-height:0;">&nbsp;</div>
       <div style="padding:34px 34px 28px;">
         ${bodyHtml}
       </div>
