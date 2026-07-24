@@ -107,8 +107,8 @@ function inline(s: string): string {
 function emailButton(href: string, label: string): string {
   return (
     `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"><tr>` +
-    `<td bgcolor="#E26A0F" style="border-radius:100px;mso-padding-alt:12px 28px;">` +
-    `<a href="${href}" style="display:inline-block;padding:12px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:100px;">${label}&nbsp;&rarr;</a>` +
+    `<td bgcolor="#E26A0F" style="background-color:#E26A0F;border-radius:100px;mso-padding-alt:12px 28px;">` +
+    `<a href="${href}" style="display:inline-block;padding:12px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;background-color:#E26A0F;text-decoration:none;border-radius:100px;border:1px solid #C2410C;">${label}&nbsp;&rarr;</a>` +
     `</td></tr></table>`
   );
 }
