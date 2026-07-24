@@ -5,6 +5,7 @@ import { listSubscribers } from "@/lib/newsletter";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { MarkdownEditor } from "../../../markdown-editor";
 import { SubjectField } from "../subject-field";
+import { RecipientsField } from "../recipients-field";
 import { saveCampaignAction, deleteCampaignAction, sendTestAction, sendCampaignAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -124,10 +125,7 @@ export default async function CampaignEditor({
               </div>
             </details>
           )}
-          <div className="adm-field">
-            <label>Destinataires (clients, contacts…) <small>— collez les adresses, séparées par des virgules, des points-virgules ou des retours à la ligne</small></label>
-            <textarea name="recipients" style={{ minHeight: 90 }} placeholder="client1@exemple.fr, client2@exemple.fr…" />
-          </div>
+          <RecipientsField subscribers={subscribers.map((s) => s.email)} />
           <div className="adm-actions">
             <button className="adm-btn" type="submit" disabled={!mailOn}>Envoyer le mailing</button>
           </div>
