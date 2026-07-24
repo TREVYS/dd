@@ -762,7 +762,9 @@ html,body{overflow-x:hidden}
 
 /* Logo « lockup » fiable : monogramme + mot Trevys */
 .mkt-logo-lockup{display:inline-flex;align-items:center;gap:.5rem}
-.mkt-logo-badge{height:34px;width:34px;object-fit:contain;border-radius:8px;display:none}
+.mkt-logo-badge{height:34px;width:34px;object-fit:contain;border-radius:8px}
+/* Masqué sur PC — la spécificité doit battre « .mkt img{display:block} ». */
+.mkt .mkt-logo-badge,.mkt-nav .nlogo .mkt-logo-badge{display:none}
 .mkt-logo-word{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;color:var(--ink);line-height:1}
 .mkt-logo-lockup.blanc .mkt-logo-word{color:#fff}
 .mkt-nav .nlogo .mkt-logo-badge{height:32px;width:32px}
@@ -784,6 +786,11 @@ html,body{overflow-x:hidden}
   .mkt-contact-form{padding:1.5rem 1.15rem!important;border-radius:20px!important}
   .mkt-form-row2{grid-template-columns:1fr!important;gap:1rem!important}
 }
+
+/* Logos des outils (page expertise comptable) */
+.mkt-tool-logo{height:52px;display:flex;align-items:center;margin-bottom:1rem}
+.mkt-tool-logo .mkt-ref-img{max-height:44px;max-width:150px;width:auto;object-fit:contain;display:inline-block}
+.mkt-tool-logo .mkt-ref-name{font-weight:800;font-size:1.05rem;color:var(--ink)}
 
 /* Secteurs : cartes (références) + page de détail */
 .mkt-sector-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.2rem}

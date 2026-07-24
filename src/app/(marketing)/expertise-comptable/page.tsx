@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
+import { RefLogo } from "../references/ref-logo";
 
 export const metadata: Metadata = {
   title: "Expertise comptable",
@@ -41,13 +42,17 @@ const BENEFICES = [
 ];
 
 // Outils que nous maîtrisons — nous nous adaptons à votre environnement.
+// Le logo est chargé depuis le domaine officiel (repli : /uploads/refs/<slug>.png,
+// puis le nom en toutes lettres).
 const TOOLS = [
-  { t: "Tiime", d: "Comptabilité et facturation en temps réel pour les TPE et indépendants." },
-  { t: "Pennylane", d: "Plateforme de gestion financière collaborative dirigeant / expert-comptable." },
-  { t: "Sage", d: "Suite de gestion comptable et paie, du poste de travail à l'entreprise." },
-  { t: "Cegid", d: "Solutions comptables et fiscales pour cabinets, ETI et grands comptes." },
-  { t: "Oracle", d: "ERP et systèmes financiers pour les organisations complexes et internationales." },
-  { t: "Power BI", d: "Tableaux de bord et reporting décisionnel connectés à vos données." },
+  { t: "Tiime", domain: "tiime.fr", slug: "tiime", d: "Comptabilité et facturation en temps réel pour les TPE et indépendants." },
+  { t: "Pennylane", domain: "pennylane.com", slug: "pennylane", d: "Plateforme de gestion financière collaborative dirigeant / expert-comptable." },
+  { t: "Sage", domain: "sage.com", slug: "sage", d: "Suite de gestion comptable et paie, du poste de travail à l'entreprise." },
+  { t: "Cegid", domain: "cegid.com", slug: "cegid", d: "Solutions comptables et fiscales pour cabinets, ETI et grands comptes." },
+  { t: "SAP", domain: "sap.com", slug: "sap", d: "ERP de référence des ETI et grands groupes — finance, achats, production." },
+  { t: "Oracle", domain: "oracle.com", slug: "oracle", d: "ERP et systèmes financiers pour les organisations complexes et internationales." },
+  { t: "Microsoft Dynamics 365", domain: "microsoft.com", slug: "dynamics-365", d: "ERP et CRM Microsoft, intégrés à l'écosystème Office 365." },
+  { t: "Power BI", domain: "microsoft.com", slug: "power-bi", d: "Tableaux de bord et reporting décisionnel connectés à vos données." },
 ];
 
 const POLES = [
@@ -235,8 +240,14 @@ export default function Page() {
           <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
             {TOOLS.map((tool) => (
               <div className="mkt-svc" key={tool.t}>
-                <div className="ico">
-                  <svg viewBox="0 0 24 24"><path d="M12 2l3 3-3 3-3-3 3-3zM4 12l3-3 3 3-3 3-3-3zM14 12l3-3 3 3-3 3-3-3zM12 14l3 3-3 3-3-3 3-3z" /></svg>
+                <div className="mkt-tool-logo">
+                  <RefLogo
+                    name={tool.t}
+                    srcs={[
+                      `https://logo.clearbit.com/${tool.domain}?size=160`,
+                      `/uploads/refs/${tool.slug}.png`,
+                    ]}
+                  />
                 </div>
                 <h3 style={{ fontSize: "1.12rem" }}>{tool.t}</h3>
                 <p>{tool.d}</p>
