@@ -89,11 +89,16 @@ function inline(s: string): string {
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
 }
 
-// Couleur pleine (pas de dégradé : Outlook les supprime, rendant le bouton
-// invisible) + bordure de secours si le fond saute.
-const BTN_STYLE =
-  "display:inline-block;background-color:#E26A0F;border:2px solid #E26A0F;color:#ffffff;" +
-  "font-weight:700;font-size:15px;text-decoration:none;padding:11px 26px;border-radius:100px;";
+// Bouton « bulletproof » : structure en tableau + couleurs pleines, le seul
+// motif fiable dans Outlook (les dégradés et certains fonds y sont supprimés).
+function emailButton(href: string, label: string): string {
+  return (
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"><tr>` +
+    `<td bgcolor="#E26A0F" style="border-radius:100px;mso-padding-alt:12px 28px;">` +
+    `<a href="${href}" style="display:inline-block;padding:12px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:100px;">${label}&nbsp;&rarr;</a>` +
+    `</td></tr></table>`
+  );
+}
 
 export function markdownToEmailHtml(md: string): string {
   const lines = md.replace(/\r\n/g, "\n").split("\n");
@@ -112,18 +117,20 @@ export function markdownToEmailHtml(md: string): string {
     let m: RegExpMatchArray | null;
     if (/^#{2}\s+/.test(line)) {
       flushList();
-      out.push(`<h2 style="font-size:21px;margin:26px 0 10px;color:#1a1208;letter-spacing:-.01em;">${inline(line.replace(/^#{2}\s+/, ""))}</h2>`);
+      out.push(
+        `<h2 style="font-family:Arial,Helvetica,sans-serif;font-size:21px;line-height:1.3;margin:28px 0 10px;color:#1a1208;border-left:4px solid #F5811F;padding-left:14px;">${inline(line.replace(/^#{2}\s+/, ""))}</h2>`,
+      );
     } else if (/^#{3}\s+/.test(line)) {
       flushList();
-      out.push(`<h3 style="font-size:17px;margin:20px 0 8px;color:#1a1208;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
+      out.push(`<h3 style="font-family:Arial,Helvetica,sans-serif;font-size:17px;margin:20px 0 8px;color:#1a1208;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
     } else if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
       // Image pleine largeur (depuis la médiathèque ou une URL).
       flushList();
-      out.push(`<img src="${abs(m[2])}" alt="${esc(m[1])}" style="display:block;width:100%;max-width:100%;border-radius:12px;margin:0 0 18px;" />`);
+      out.push(`<img src="${abs(m[2])}" alt="${esc(m[1])}" width="532" style="display:block;width:100%;max-width:100%;height:auto;border-radius:10px;margin:0 0 18px;" />`);
     } else if ((m = line.match(/^\[([^\]]+)\]\(([^)\s]+)\)\s*$/))) {
-      // Ligne composée d'un seul lien → bouton d'action.
+      // Ligne composée d'un seul lien → bouton d'action (fiable Outlook).
       flushList();
-      out.push(`<p style="margin:6px 0 22px;"><a href="${abs(m[2])}" style="${BTN_STYLE}">${esc(m[1])}</a></p>`);
+      out.push(emailButton(abs(m[2]), esc(m[1].replace(/\s*→\s*$/, ""))));
     } else if (/^---+$/.test(line.trim())) {
       flushList();
       out.push(`<hr style="border:none;border-top:1px solid #f0e4d3;margin:26px 0;" />`);
@@ -140,44 +147,56 @@ export function markdownToEmailHtml(md: string): string {
   return out.join("\n");
 }
 
-// Enveloppe l'HTML du corps dans un gabarit e-mail aux couleurs Trevys :
-// bandeau orange, logo, carte blanche, pied de page complet.
+// Enveloppe l'HTML du corps dans un gabarit e-mail aux couleurs Trevys.
+// Structure en tableaux : c'est la seule mise en page réellement fiable dans
+// tous les clients (Outlook en tête).
 export function wrapEmail(bodyHtml: string): string {
   const logo = `${SITE_URL}/uploads/1.png`;
+  const font = "font-family:Arial,Helvetica,sans-serif;";
   return `<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;background:#f4efe8;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#2a241c;">
-  <div style="max-width:620px;margin:0 auto;padding:26px 14px;">
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trevys</title></head>
+<body style="margin:0;padding:0;background-color:#f2ece2;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f2ece2">
+    <tr><td align="center" style="padding:28px 12px;">
 
-    <!-- En-tête : logo -->
-    <div style="text-align:center;padding:6px 0 18px;">
-      <a href="${SITE_URL}" style="text-decoration:none;">
-        <img src="${logo}" alt="Trevys" height="46" style="height:46px;max-width:240px;object-fit:contain;" />
-      </a>
-    </div>
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;">
 
-    <!-- Carte principale -->
-    <div style="background:#ffffff;border-radius:18px;border:1px solid #efe5d6;overflow:hidden;">
-      <div style="height:5px;background-color:#F5811F;font-size:0;line-height:0;">&nbsp;</div>
-      <div style="padding:34px 34px 28px;">
-        ${bodyHtml}
-      </div>
-    </div>
+        <!-- En-tête : logo -->
+        <tr><td align="center" style="padding:4px 0 20px;">
+          <a href="${SITE_URL}" style="text-decoration:none;">
+            <img src="${logo}" alt="Trevys" height="44" style="height:44px;max-width:230px;border:0;display:block;" />
+          </a>
+        </td></tr>
 
-    <!-- Pied de page -->
-    <div style="text-align:center;color:#9d907c;font-size:12px;padding:22px 10px;line-height:1.7;">
-      <div style="margin-bottom:8px;">
-        <a href="${SITE_URL}" style="color:#E26A0F;font-weight:700;text-decoration:none;">www.trevys.fr</a>
-        &nbsp;·&nbsp;
-        <a href="https://www.linkedin.com/company/trevys-advisory/" style="color:#E26A0F;font-weight:700;text-decoration:none;">LinkedIn</a>
-        &nbsp;·&nbsp;
-        <a href="${SITE_URL}/rendez-vous" style="color:#E26A0F;font-weight:700;text-decoration:none;">Prendre rendez-vous</a>
-      </div>
-      <b style="color:#6b5f4c;">T.A. Trevys Advisory</b> — Expertise comptable &amp; conseil<br>
-      1 rue Le Nôtre, 75116 Paris · contact@trevys-advisory.fr<br>
-      Vous recevez cet e-mail car vous êtes inscrit à nos analyses.
-      Pour ne plus les recevoir, répondez simplement « stop ».
-    </div>
-  </div>
+        <!-- Carte principale -->
+        <tr><td>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="border-radius:16px;border:1px solid #eadfcd;">
+            <tr><td bgcolor="#F5811F" height="6" style="height:6px;font-size:0;line-height:0;border-radius:16px 16px 0 0;">&nbsp;</td></tr>
+            <tr><td style="padding:32px 34px 26px;${font}font-size:15px;color:#2a241c;line-height:1.65;">
+              ${bodyHtml}
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Liens rapides -->
+        <tr><td align="center" style="padding:20px 8px 6px;${font}font-size:13px;">
+          <a href="${SITE_URL}" style="color:#E26A0F;font-weight:bold;text-decoration:none;">www.trevys.fr</a>
+          &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+          <a href="https://www.linkedin.com/company/trevys-advisory/" style="color:#E26A0F;font-weight:bold;text-decoration:none;">LinkedIn</a>
+          &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+          <a href="${SITE_URL}/rendez-vous" style="color:#E26A0F;font-weight:bold;text-decoration:none;">Prendre rendez-vous</a>
+        </td></tr>
+
+        <!-- Pied de page -->
+        <tr><td align="center" style="padding:8px 10px 20px;${font}font-size:12px;color:#9d907c;line-height:1.7;">
+          <b style="color:#6b5f4c;">T.A. Trevys Advisory</b> — Expertise comptable &amp; conseil<br>
+          1 rue Le Nôtre, 75116 Paris &middot; contact@trevys-advisory.fr<br>
+          Vous recevez cet e-mail car vous êtes inscrit à nos analyses.
+          Pour ne plus les recevoir, répondez simplement &laquo;&nbsp;stop&nbsp;&raquo;.
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
 </body></html>`;
 }
