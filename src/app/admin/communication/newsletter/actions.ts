@@ -46,12 +46,6 @@ export async function createArticlesCampaignAction(formData: FormData) {
     .map((s) => getPost(s))
     .filter((p): p is NonNullable<ReturnType<typeof getPost>> => !!p);
 
-  const subject =
-    ((formData.get("subject") as string) || "").trim() ||
-    (posts.length === 1
-      ? posts[0].meta.title
-      : "Nos dernières analyses — Trevys");
-
   const intro =
     posts.length === 1
       ? "Bonjour,\n\nNotre dernière analyse pourrait vous intéresser :"
@@ -66,6 +60,13 @@ export async function createArticlesCampaignAction(formData: FormData) {
       )
       .join("\n\n---\n\n") +
     `\n\nBonne lecture,\n\nL'équipe Trevys\n[www.trevys.fr](${SITE_URL})`;
+
+  // Objet : saisi, sinon proposé par Alfred (ton chaleureux, pas trop sérieux).
+  let subject = ((formData.get("subject") as string) || "").trim();
+  if (!subject) {
+    const { suggestSubject } = await import("@/lib/comms-agent");
+    subject = await suggestSubject(body);
+  }
 
   const c = addCampaign(subject, body);
   redirect(`/admin/communication/newsletter/${c.id}`);
