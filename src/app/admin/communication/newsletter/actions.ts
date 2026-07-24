@@ -11,8 +11,9 @@ import {
   removeCampaign,
   markdownToEmailHtml,
   wrapEmail,
+  unsubscribeUrl,
 } from "@/lib/newsletter-campaigns";
-import { sendCampaign, mailerConfigured, senderAddress } from "@/lib/mailer";
+import { sendCampaign, sendPersonalized, mailerConfigured, senderAddress } from "@/lib/mailer";
 
 async function guard() {
   const session = await auth();
@@ -113,7 +114,7 @@ export async function sendTestAction(formData: FormData) {
     redirect(`/admin/communication/newsletter/${id}?error=notconfig`);
   }
   try {
-    await sendCampaign([to], `[Test] ${c.subject}`, wrapEmail(markdownToEmailHtml(c.body)));
+    await sendCampaign([to], `[Test] ${c.subject}`, wrapEmail(markdownToEmailHtml(c.body), unsubscribeUrl(to)));
   } catch {
     redirect(`/admin/communication/newsletter/${id}?error=send`);
   }
@@ -151,7 +152,12 @@ export async function sendCampaignAction(formData: FormData) {
 
   let count = 0;
   try {
-    count = await sendCampaign(recipients, c.subject, wrapEmail(markdownToEmailHtml(c.body)));
+    // Un e-mail par destinataire : chacun reçoit son lien de désinscription.
+    const bodyHtml = markdownToEmailHtml(c.body);
+    count = await sendPersonalized(recipients, c.subject, (email) =>
+      wrapEmail(bodyHtml, unsubscribeUrl(email)),
+    );
+    if (count === 0) redirect(`/admin/communication/newsletter/${id}?error=send`);
   } catch {
     redirect(`/admin/communication/newsletter/${id}?error=send`);
   }

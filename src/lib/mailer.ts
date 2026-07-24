@@ -104,3 +104,24 @@ export async function sendCampaign(
   }
   return sent;
 }
+
+// Envoi personnalisé : un e-mail par destinataire, avec un HTML propre à
+// chacun (lien de désinscription individuel). Les erreurs isolées ne stoppent
+// pas la campagne. Renvoie le nombre d'envois réussis.
+export async function sendPersonalized(
+  recipients: string[],
+  subject: string,
+  htmlFor: (email: string) => string,
+  replyTo?: string,
+): Promise<number> {
+  let sent = 0;
+  for (const email of recipients) {
+    try {
+      await sendMail({ to: [email], subject, html: htmlFor(email), replyTo });
+      sent += 1;
+    } catch (e) {
+      console.error(`[mailer] échec pour ${email}:`, (e as Error).message);
+    }
+  }
+  return sent;
+}

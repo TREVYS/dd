@@ -67,9 +67,22 @@ export function removeCampaign(id: string) {
   writeAll(readAll().filter((c) => c.id !== id));
 }
 
-// --- Rendu e-mail --------------------------------------------------------
+// --- Désinscription -------------------------------------------------------
 
 import { SITE_URL } from "@/lib/site";
+
+// Jeton signé propre à chaque adresse : le lien de désinscription ne peut
+// pas être forgé pour désinscrire quelqu'un d'autre.
+export function unsubscribeToken(email: string): string {
+  const secret = process.env.AUTH_SECRET || "trevys-unsub";
+  return crypto.createHmac("sha256", secret).update(email.toLowerCase().trim()).digest("hex").slice(0, 24);
+}
+
+export function unsubscribeUrl(email: string): string {
+  return `${SITE_URL}/desinscription?e=${encodeURIComponent(email)}&t=${unsubscribeToken(email)}`;
+}
+
+// --- Rendu e-mail --------------------------------------------------------
 
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -150,7 +163,7 @@ export function markdownToEmailHtml(md: string): string {
 // Enveloppe l'HTML du corps dans un gabarit e-mail aux couleurs Trevys.
 // Structure en tableaux : c'est la seule mise en page réellement fiable dans
 // tous les clients (Outlook en tête).
-export function wrapEmail(bodyHtml: string): string {
+export function wrapEmail(bodyHtml: string, unsubUrl?: string): string {
   const logo = `${SITE_URL}/uploads/1.png`;
   const font = "font-family:Arial,Helvetica,sans-serif;";
   return `<!doctype html>
@@ -191,8 +204,10 @@ export function wrapEmail(bodyHtml: string): string {
         <tr><td align="center" style="padding:8px 10px 20px;${font}font-size:12px;color:#9d907c;line-height:1.7;">
           <b style="color:#6b5f4c;">T.A. Trevys Advisory</b> — Expertise comptable &amp; conseil<br>
           1 rue Le Nôtre, 75116 Paris &middot; contact@trevys-advisory.fr<br>
-          Vous recevez cet e-mail car vous êtes inscrit à nos analyses.
-          Pour ne plus les recevoir, répondez simplement &laquo;&nbsp;stop&nbsp;&raquo;.
+          Vous recevez cet e-mail car vous êtes inscrit à nos analyses.<br>
+          ${unsubUrl
+            ? `<a href="${unsubUrl}" style="color:#9d907c;text-decoration:underline;">Se désinscrire en un clic</a>`
+            : `Pour ne plus les recevoir, répondez simplement &laquo;&nbsp;stop&nbsp;&raquo;.`}
         </td></tr>
 
       </table>
