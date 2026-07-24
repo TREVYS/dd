@@ -47,6 +47,14 @@ export function unreadCount(): number {
   return read().subscribers.filter((s) => !s.read).length;
 }
 
+export function removeSubscriber(email: string): boolean {
+  const store = read();
+  const next = store.subscribers.filter((s) => s.email.toLowerCase() !== email.toLowerCase());
+  if (next.length === store.subscribers.length) return false;
+  write({ subscribers: next });
+  return true;
+}
+
 export function markAllRead() {
   const store = read();
   store.subscribers.forEach((s) => (s.read = true));

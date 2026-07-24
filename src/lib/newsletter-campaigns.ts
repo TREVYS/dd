@@ -69,17 +69,29 @@ export function removeCampaign(id: string) {
 
 // --- Rendu e-mail --------------------------------------------------------
 
+import { SITE_URL } from "@/lib/site";
+
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// URL absolue (les clients mail ne connaissent pas les chemins relatifs).
+function abs(url: string): string {
+  return url.startsWith("/") ? `${SITE_URL}${url}` : url;
 }
 
 // Markdown simple → HTML (titres, gras, italique, liens, listes, paragraphes).
 function inline(s: string): string {
   return esc(s)
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" style="color:#F5811F;">$1</a>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, txt, url) =>
+      `<a href="${abs(url)}" style="color:#E26A0F;font-weight:600;">${txt}</a>`)
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
 }
+
+const BTN_STYLE =
+  "display:inline-block;background:linear-gradient(135deg,#F5811F,#E26A0F);color:#ffffff;" +
+  "font-weight:700;font-size:15px;text-decoration:none;padding:12px 26px;border-radius:100px;";
 
 export function markdownToEmailHtml(md: string): string {
   const lines = md.replace(/\r\n/g, "\n").split("\n");
@@ -95,38 +107,74 @@ export function markdownToEmailHtml(md: string): string {
 
   for (const raw of lines) {
     const line = raw.trimEnd();
+    let m: RegExpMatchArray | null;
     if (/^#{2}\s+/.test(line)) {
       flushList();
-      out.push(`<h2 style="font-size:20px;margin:24px 0 10px;color:#1a1a1a;">${inline(line.replace(/^#{2}\s+/, ""))}</h2>`);
+      out.push(`<h2 style="font-size:21px;margin:26px 0 10px;color:#1a1208;letter-spacing:-.01em;">${inline(line.replace(/^#{2}\s+/, ""))}</h2>`);
     } else if (/^#{3}\s+/.test(line)) {
       flushList();
-      out.push(`<h3 style="font-size:17px;margin:20px 0 8px;color:#1a1a1a;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
+      out.push(`<h3 style="font-size:17px;margin:20px 0 8px;color:#1a1208;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
+    } else if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
+      // Image pleine largeur (depuis la médiathèque ou une URL).
+      flushList();
+      out.push(`<img src="${abs(m[2])}" alt="${esc(m[1])}" style="display:block;width:100%;max-width:100%;border-radius:12px;margin:0 0 18px;" />`);
+    } else if ((m = line.match(/^\[([^\]]+)\]\(([^)\s]+)\)\s*$/))) {
+      // Ligne composée d'un seul lien → bouton d'action.
+      flushList();
+      out.push(`<p style="margin:6px 0 22px;"><a href="${abs(m[2])}" style="${BTN_STYLE}">${esc(m[1])}</a></p>`);
+    } else if (/^---+$/.test(line.trim())) {
+      flushList();
+      out.push(`<hr style="border:none;border-top:1px solid #f0e4d3;margin:26px 0;" />`);
     } else if (/^[-*]\s+/.test(line)) {
       (list ??= []).push(`<li style="margin:0 0 6px;">${inline(line.replace(/^[-*]\s+/, ""))}</li>`);
     } else if (line.trim() === "") {
       flushList();
     } else {
       flushList();
-      out.push(`<p style="margin:0 0 16px;line-height:1.6;">${inline(line)}</p>`);
+      out.push(`<p style="margin:0 0 16px;line-height:1.65;">${inline(line)}</p>`);
     }
   }
   flushList();
   return out.join("\n");
 }
 
-// Enveloppe l'HTML du corps dans un gabarit e-mail aux couleurs Trevys.
+// Enveloppe l'HTML du corps dans un gabarit e-mail aux couleurs Trevys :
+// bandeau orange, logo, carte blanche, pied de page complet.
 export function wrapEmail(bodyHtml: string): string {
+  const logo = `${SITE_URL}/uploads/1.png`;
   return `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;background:#f6f4f1;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#2a2a2a;">
-  <div style="max-width:600px;margin:0 auto;padding:24px;">
-    <div style="background:#ffffff;border-radius:16px;padding:32px;border:1px solid #eee;">
-      <div style="font-weight:800;font-size:22px;letter-spacing:-.02em;color:#1a1a1a;margin-bottom:24px;">Trevys</div>
-      ${bodyHtml}
+<body style="margin:0;background:#f4efe8;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#2a241c;">
+  <div style="max-width:620px;margin:0 auto;padding:26px 14px;">
+
+    <!-- En-tête : logo -->
+    <div style="text-align:center;padding:6px 0 18px;">
+      <a href="${SITE_URL}" style="text-decoration:none;">
+        <img src="${logo}" alt="Trevys" height="46" style="height:46px;max-width:240px;object-fit:contain;" />
+      </a>
     </div>
-    <div style="text-align:center;color:#9a9a9a;font-size:12px;padding:18px 8px;line-height:1.6;">
-      T.A. Trevys Advisory — 1 rue Le Nôtre, 75116 Paris<br>
+
+    <!-- Carte principale -->
+    <div style="background:#ffffff;border-radius:18px;border:1px solid #efe5d6;overflow:hidden;">
+      <div style="height:5px;background:linear-gradient(90deg,#F5811F,#E8B33C);"></div>
+      <div style="padding:34px 34px 28px;">
+        ${bodyHtml}
+      </div>
+    </div>
+
+    <!-- Pied de page -->
+    <div style="text-align:center;color:#9d907c;font-size:12px;padding:22px 10px;line-height:1.7;">
+      <div style="margin-bottom:8px;">
+        <a href="${SITE_URL}" style="color:#E26A0F;font-weight:700;text-decoration:none;">www.trevys.fr</a>
+        &nbsp;·&nbsp;
+        <a href="https://www.linkedin.com/company/trevys-advisory/" style="color:#E26A0F;font-weight:700;text-decoration:none;">LinkedIn</a>
+        &nbsp;·&nbsp;
+        <a href="${SITE_URL}/rendez-vous" style="color:#E26A0F;font-weight:700;text-decoration:none;">Prendre rendez-vous</a>
+      </div>
+      <b style="color:#6b5f4c;">T.A. Trevys Advisory</b> — Expertise comptable &amp; conseil<br>
+      1 rue Le Nôtre, 75116 Paris · contact@trevys-advisory.fr<br>
       Vous recevez cet e-mail car vous êtes inscrit à nos analyses.
+      Pour ne plus les recevoir, répondez simplement « stop ».
     </div>
   </div>
 </body></html>`;

@@ -20,7 +20,8 @@ export default async function CampaignEditor({
   const c = getCampaign(id);
   if (!c) notFound();
 
-  const count = listSubscribers().length;
+  const subscribers = listSubscribers();
+  const count = subscribers.length;
   const mailOn = mailerConfigured();
   const preview = wrapEmail(markdownToEmailHtml(c.body || "_(Votre message apparaîtra ici.)_"));
   const sent = c.status === "envoye";
@@ -101,10 +102,30 @@ export default async function CampaignEditor({
         {/* Envoi réel : inscrits et/ou liste collée */}
         <form action={sendCampaignAction}>
           <input type="hidden" name="id" value={c.id} />
-          <label className="adm-diff-net" style={{ marginBottom: ".6rem" }}>
+          <label className="adm-diff-net" style={{ marginBottom: ".4rem" }}>
             <input type="checkbox" name="includeSubscribers" defaultChecked={count > 0} disabled={count === 0} />
             <b>Inclure les {count} inscrit(s) à la newsletter</b>
           </label>
+          {count > 0 && (
+            <details style={{ margin: "0 0 .9rem", fontSize: ".85rem" }}>
+              <summary style={{ cursor: "pointer", color: "var(--o)", fontWeight: 600 }}>
+                Voir les adresses des inscrits
+              </summary>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem", marginTop: ".55rem" }}>
+                {subscribers.map((s) => (
+                  <span
+                    key={s.email}
+                    style={{
+                      padding: ".25rem .65rem", borderRadius: 100, background: "#faf8f5",
+                      border: "1px solid var(--line)", color: "var(--ink2)", fontSize: ".8rem",
+                    }}
+                  >
+                    {s.email}
+                  </span>
+                ))}
+              </div>
+            </details>
+          )}
           <div className="adm-field">
             <label>Destinataires (clients, contacts…) <small>— collez les adresses, séparées par des virgules, des points-virgules ou des retours à la ligne</small></label>
             <textarea name="recipients" style={{ minHeight: 90 }} placeholder="client1@exemple.fr, client2@exemple.fr…" />

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { markAllRead, listSubscribers } from "@/lib/newsletter";
+import { markAllRead, listSubscribers, removeSubscriber } from "@/lib/newsletter";
 import {
   addCampaign,
   getCampaign,
@@ -22,6 +22,13 @@ async function guard() {
 export async function markNewsletterReadAction() {
   await guard();
   markAllRead();
+  revalidatePath("/admin/communication/newsletter");
+}
+
+export async function deleteSubscriberAction(formData: FormData) {
+  await guard();
+  const email = (formData.get("email") as string) || "";
+  if (email) removeSubscriber(email);
   revalidatePath("/admin/communication/newsletter");
 }
 

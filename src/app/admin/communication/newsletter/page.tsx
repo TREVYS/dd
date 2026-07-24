@@ -4,7 +4,7 @@ import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { getAllPosts, formatDateFr } from "@/lib/blog";
-import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction } from "./actions";
+import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -152,17 +152,23 @@ export default async function NewsletterAdmin({
         <h2>Inscrits</h2>
         <table className="adm-table">
           <thead>
-            <tr><th>E-mail</th><th>Origine</th><th style={{ textAlign: "right" }}>Date</th></tr>
+            <tr><th>E-mail</th><th>Origine</th><th>Date</th><th style={{ textAlign: "right" }}>Actions</th></tr>
           </thead>
           <tbody>
             {subs.map((s) => (
               <tr key={s.email} style={!s.read ? { fontWeight: 700 } : undefined}>
                 <td>{!s.read && <span style={{ color: "#E26A0F", marginRight: ".4rem" }}>●</span>}{s.email}</td>
                 <td className="muted">{s.source}</td>
-                <td style={{ textAlign: "right" }}>{new Date(s.date).toLocaleString("fr-FR")}</td>
+                <td className="muted">{new Date(s.date).toLocaleString("fr-FR")}</td>
+                <td style={{ textAlign: "right" }}>
+                  <form action={deleteSubscriberAction}>
+                    <input type="hidden" name="email" value={s.email} />
+                    <button className="adm-btn danger sm" type="submit">Supprimer</button>
+                  </form>
+                </td>
               </tr>
             ))}
-            {subs.length === 0 && <tr><td colSpan={3} className="muted">Aucune inscription pour l&apos;instant.</td></tr>}
+            {subs.length === 0 && <tr><td colSpan={4} className="muted">Aucune inscription pour l&apos;instant.</td></tr>}
           </tbody>
         </table>
       </div>
