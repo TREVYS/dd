@@ -26,7 +26,7 @@ export default function LoginPage() {
       setError("Email ou mot de passe incorrect.");
       return;
     }
-    router.push("/app");
+    router.push("/admin");
     router.refresh();
   }
 
@@ -75,8 +75,8 @@ export default function LoginPage() {
           </button>
         </form>
         <p className="text-xs text-gray-400 mt-6">
-          Comptes démo : associe@trevys-advisory.fr / manager@trevys-advisory.fr
-          / collab@trevys-advisory.fr — mot de passe trevys2024
+          Accès réservé à l&apos;équipe Trevys. Toute tentative de connexion est
+          journalisée.
         </p>
       </div>
     </div>

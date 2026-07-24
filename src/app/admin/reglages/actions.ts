@@ -34,6 +34,33 @@ export async function logoutAction() {
   await signOut({ redirectTo: "/login" });
 }
 
+// Changement de mot de passe (self-service, mot de passe actuel exigé).
+export async function changePasswordAction(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Non autorisé");
+
+  const current = (formData.get("current") as string) || "";
+  const next = (formData.get("next") as string) || "";
+  const confirm = (formData.get("confirm") as string) || "";
+
+  if (next.length < 10) redirect("/admin/reglages?pwd=short");
+  if (next !== confirm) redirect("/admin/reglages?pwd=mismatch");
+
+  const { prisma } = await import("@/lib/prisma");
+  const bcrypt = (await import("bcryptjs")).default;
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (!user?.passwordHash || !(await bcrypt.compare(current, user.passwordHash))) {
+    redirect("/admin/reglages?pwd=wrong");
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash: await bcrypt.hash(next, 12) },
+  });
+  redirect("/admin/reglages?pwd=ok");
+}
+
 export async function disconnectSocialAction(formData: FormData) {
   const session = await auth();
   if (!session?.user) throw new Error("Non autorisé");

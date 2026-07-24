@@ -2,6 +2,11 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { sendTelegram } from "@/lib/notify";
+
+// Seuls ces rôles peuvent ouvrir une session (le cockpit est le seul espace
+// connecté : les anciens comptes de démo Manager/Collaborateur sont refusés).
+const LOGIN_ROLES = ["Administrateur", "Associé"];
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
@@ -37,7 +42,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (user.status !== "active") return null;
 
         const valid = await bcrypt.compare(password, user.passwordHash);
-        if (!valid) return null;
+        if (!valid) {
+          // Alerte sur tentative échouée (si Telegram est configuré).
+          sendTelegram(`⚠️ Tentative de connexion refusée pour ${email}.`).catch(() => {});
+          return null;
+        }
+
+        // Le cockpit est réservé aux rôles autorisés.
+        if (!LOGIN_ROLES.includes(user.role?.name ?? "")) return null;
+
+        // Notification de connexion réussie (si Telegram est configuré).
+        sendTelegram(`🔓 Connexion au cockpit : ${user.firstName} ${user.lastName} (${email}).`).catch(() => {});
 
         return {
           id: user.id,
