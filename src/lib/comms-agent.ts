@@ -6,6 +6,7 @@ import { siteKnowledgeBlock } from "@/lib/site-knowledge";
 import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
 import { addRoutine, listRoutines, describeSchedule, type RoutineFreq, type RoutineType } from "@/lib/alfred-routines";
+import { addCampaign as addCampaignStore } from "@/lib/newsletter-campaigns";
 import { setPeoplePhoto, removePeoplePhoto, listPeoplePhotos } from "@/lib/people-photos";
 import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
@@ -21,6 +22,7 @@ Le site www.trevys.fr est ta maison : tu en connais chaque page, chaque article,
 Tes moyens d'action (outils) :
 - rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement.
 - rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications.
+- rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
 - planifier_publication : ajoute une échéance au calendrier éditorial (article, post LinkedIn, newsletter…).
 - lister_calendrier : consulte le calendrier existant.
 - lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
@@ -44,6 +46,7 @@ const TOOLS = [
         title: { type: "string" },
         category: { type: "string", description: "Thème : Fiscalité, Comptabilité, Facturation électronique, Innovation…" },
         excerpt: { type: "string", description: "Résumé en 1-2 phrases" },
+        image: { type: "string", description: "URL de l'image de couverture (choisie dans la médiathèque, /uploads/…)" },
         body: { type: "string", description: "Contenu complet en Markdown (## sous-titres, listes, gras)" },
       },
       required: ["title", "excerpt", "body"],
@@ -79,6 +82,19 @@ const TOOLS = [
     name: "lister_calendrier",
     description: "Renvoie les éléments du calendrier éditorial.",
     input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "rediger_newsletter",
+    description:
+      "Enregistre un brouillon de newsletter (rédigée par toi) dans le module Newsletter, en attente de relecture et d'envoi par l'humain. Format e-mail : salutation, ## sous-titres, listes, liens vers les articles du site, signature « L'équipe Trevys ».",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        subject: { type: "string", description: "Objet de l'e-mail — court, accrocheur, chaleureux" },
+        body: { type: "string", description: "Contenu complet en Markdown (un lien seul sur sa ligne devient un bouton)" },
+      },
+      required: ["subject", "body"],
+    },
   },
   {
     name: "creer_routine",
@@ -147,6 +163,7 @@ function runTool(name: string, input: Record<string, unknown>, actions: string[]
       status: "brouillon",
       category: input.category ? String(input.category) : "Article",
       excerpt: String(input.excerpt ?? ""),
+      image: input.image ? String(input.image) : undefined,
       body: String(input.body ?? ""),
     });
     actions.push(`Brouillon d'article créé : « ${it.title} »`);
@@ -172,6 +189,11 @@ function runTool(name: string, input: Record<string, unknown>, actions: string[]
     return JSON.stringify(
       listItems().map((i) => ({ date: i.date, type: i.type, title: i.title, status: i.status })),
     );
+  }
+  if (name === "rediger_newsletter") {
+    const c = addCampaignStore(String(input.subject ?? "Sans objet"), String(input.body ?? ""));
+    actions.push(`Brouillon de newsletter créé : « ${c.subject} »`);
+    return `Newsletter enregistrée en brouillon (id ${c.id}) dans le module Newsletter — à relire, tester puis envoyer.`;
   }
   if (name === "creer_routine") {
     const r = addRoutine({
@@ -275,8 +297,16 @@ export async function draftSocialPost(
 // gabarit à compléter — le brouillon existe quand même pour ne rien perdre.
 export async function draftArticle(
   topic: string,
-): Promise<{ title: string; category: string; excerpt: string; body: string; generated: boolean }> {
+): Promise<{ title: string; category: string; excerpt: string; body: string; image?: string; generated: boolean }> {
   const apiKey = getSetting("anthropicApiKey");
+
+  // Images disponibles dans la médiathèque (pour la couverture).
+  const mediaUrls = listUploads()
+    .filter((m) => /\.(jpg|jpeg|png|webp)$/i.test(m.name))
+    .map((m) => m.url)
+    .slice(0, 40);
+  const fallbackImage = mediaUrls[0];
+
   if (!apiKey) {
     return {
       generated: false,
@@ -284,6 +314,7 @@ export async function draftArticle(
       category: "Article",
       excerpt: "Brouillon créé par une routine — Alfred attend sa clé API pour rédiger.",
       body: `## ${topic}\n\n_(Alfred n'a pas pu rédiger : clé API non configurée — voir Réglages.)_\n\n- Point clé 1\n- Point clé 2\n- Point clé 3`,
+      image: fallbackImage,
     };
   }
 
@@ -296,7 +327,8 @@ export async function draftArticle(
     system:
       `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n` +
       `Tu rédiges un article complet pour le blog du cabinet. Réponds EXACTEMENT dans ce format, sans rien d'autre :\n` +
-      `TITRE: <titre>\nTHEME: <thème court, ex. Facturation électronique>\nRESUME: <1-2 phrases>\nCORPS:\n<contenu Markdown structuré avec ## sous-titres, listes, gras — 600 à 900 mots>`,
+      `TITRE: <titre>\nTHEME: <thème court, ex. Facturation électronique>\nRESUME: <1-2 phrases>\nIMAGE: <l'URL de la médiathèque la plus pertinente pour illustrer l'article, choisie dans la liste ci-dessous, ou "aucune">\nCORPS:\n<contenu Markdown structuré avec ## sous-titres, listes, gras — 600 à 900 mots>\n\n` +
+      (mediaUrls.length ? `IMAGES DISPONIBLES DANS LA MÉDIATHÈQUE :\n${mediaUrls.join("\n")}` : "MÉDIATHÈQUE VIDE : réponds IMAGE: aucune"),
     messages: [{ role: "user", content: `Rédige un article sur : ${topic}` }],
   });
 
@@ -309,9 +341,11 @@ export async function draftArticle(
   const title = raw.match(/^TITRE:\s*(.+)$/m)?.[1]?.trim() || topic.slice(0, 80);
   const category = raw.match(/^THEME:\s*(.+)$/m)?.[1]?.trim() || "Article";
   const excerpt = raw.match(/^RESUME:\s*(.+)$/m)?.[1]?.trim() || "";
+  const imgRaw = raw.match(/^IMAGE:\s*(.+)$/m)?.[1]?.trim() || "";
+  const image = mediaUrls.includes(imgRaw) ? imgRaw : fallbackImage;
   const body = (raw.split(/^CORPS:\s*$/m)[1] ?? raw).trim();
 
-  return { title, category, excerpt, body, generated: true };
+  return { title, category, excerpt, body, image, generated: true };
 }
 
 // Rédige une newsletter complète (appel modèle unique). Sans clé API, renvoie
@@ -350,6 +384,43 @@ export async function draftNewsletter(
   const subject = raw.match(/^SUJET:\s*(.+)$/m)?.[1]?.trim() || topic.slice(0, 70);
   const body = (raw.split(/^CORPS:\s*$/m)[1] ?? raw).trim();
   return { subject, body, generated: true };
+}
+
+// Objets d'e-mail de secours, chaleureux et pas trop sérieux.
+const FUN_SUBJECTS = [
+  "☕ 3 minutes de lecture pour prendre une longueur d'avance",
+  "Votre pause chiffres & idées — signée Trevys",
+  "Ce que votre expert-comptable a repéré pour vous cette semaine",
+  "Des chiffres, des idées, zéro jargon",
+  "Un petit récap qui vaut le détour",
+];
+
+// Propose un objet d'e-mail accrocheur pour une newsletter.
+export async function suggestSubject(body: string): Promise<string> {
+  const apiKey = getSetting("anthropicApiKey");
+  const fallback = FUN_SUBJECTS[Math.floor(Math.random() * FUN_SUBJECTS.length)];
+  if (!apiKey) return fallback;
+
+  try {
+    const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+    const client = new AnthropicSDK({ apiKey });
+    const res = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 100,
+      system:
+        `${alfredSystemBlock()}\n\nTu proposes UNIQUEMENT un objet d'e-mail pour la newsletter du cabinet : court (max 60 caractères), accrocheur, chaleureux, pas trop sérieux (un emoji discret autorisé), sans guillemets ni commentaire. Réponds avec l'objet seul.`,
+      messages: [{ role: "user", content: `Contenu de la newsletter :\n${body.slice(0, 4000)}` }],
+    });
+    const subject = res.content
+      .filter((b) => b.type === "text")
+      .map((b) => (b as { text: string }).text)
+      .join("")
+      .trim()
+      .replace(/^["«\s]+|["»\s]+$/g, "");
+    return subject || fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 // Modifie un contenu Markdown selon une instruction (appel modèle unique).

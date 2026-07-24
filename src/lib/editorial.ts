@@ -17,6 +17,7 @@ export type EditorialItem = {
   status: ItemStatus;
   category?: string;
   excerpt?: string;
+  image?: string; // image de couverture (URL médiathèque)
   body?: string; // contenu Markdown (brouillon d'article rédigé par l'IA)
   slug?: string; // renseigné une fois publié sur le site
   createdAt: string;

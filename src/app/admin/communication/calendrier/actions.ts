@@ -37,6 +37,7 @@ export async function updateDraftAction(formData: FormData) {
     title: (formData.get("title") as string) || "Sans titre",
     category: (formData.get("category") as string) || undefined,
     excerpt: (formData.get("excerpt") as string) || undefined,
+    image: (formData.get("image") as string) || undefined,
     body: (formData.get("body") as string) || undefined,
   });
   revalidatePath("/admin/communication/calendrier");
@@ -53,6 +54,7 @@ export async function publishDraftAction(formData: FormData) {
     date: new Date().toISOString().slice(0, 10),
     category: item.category || "Article",
     excerpt: item.excerpt || "",
+    image: item.image || "",
     body: item.body,
   });
   updateItem(item.id, { status: "publie", slug });

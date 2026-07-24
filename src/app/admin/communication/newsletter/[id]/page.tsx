@@ -4,6 +4,7 @@ import { getCampaign, markdownToEmailHtml, wrapEmail } from "@/lib/newsletter-ca
 import { listSubscribers } from "@/lib/newsletter";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { MarkdownEditor } from "../../../markdown-editor";
+import { SubjectField } from "../subject-field";
 import { saveCampaignAction, deleteCampaignAction, sendTestAction, sendCampaignAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -52,10 +53,7 @@ export default async function CampaignEditor({
         <div className="adm-card">
           <form action={saveCampaignAction} className="adm-form">
             <input type="hidden" name="id" value={c.id} />
-            <div className="adm-field">
-              <label>Objet</label>
-              <input name="subject" required defaultValue={c.subject} />
-            </div>
+            <SubjectField defaultValue={c.subject} />
             <div className="adm-field">
               <label>Message <small>— barre d&apos;outils pour la mise en forme. Pas besoin de code.</small></label>
               <MarkdownEditor name="body" defaultValue={c.body} placeholder={"Bonjour,\n\n## Un titre\n\nVotre message…"} />

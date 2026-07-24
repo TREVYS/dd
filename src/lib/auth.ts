@@ -10,6 +10,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: {
     strategy: "jwt",
+    // Sécurité cockpit : la session expire au bout de 7 jours — mot de passe
+    // redemandé environ 4 fois par mois, même en utilisation continue.
+    maxAge: 7 * 24 * 60 * 60,
+    updateAge: 12 * 60 * 60,
+  },
+  jwt: {
+    maxAge: 7 * 24 * 60 * 60,
   },
   providers: [
     Credentials({

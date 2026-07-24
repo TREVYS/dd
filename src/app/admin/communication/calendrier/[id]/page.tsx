@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getItem } from "@/lib/editorial";
 import { MarkdownEditor } from "../../../markdown-editor";
+import { ImageField } from "../../../image-field";
 import { ArticleDiffusion } from "../../../articles/article-diffusion";
 import { updateDraftAction, publishDraftAction } from "../actions";
 
@@ -53,6 +54,11 @@ export default async function EditDraft({ params }: { params: Promise<{ id: stri
             <label>Thème / catégorie</label>
             <input name="category" defaultValue={item.category ?? ""} placeholder="Fiscalité, Comptabilité…" />
           </div>
+        </div>
+
+        <div className="adm-field">
+          <label>Image de couverture <small>— choisissez dans la médiathèque ou importez</small></label>
+          <ImageField name="image" defaultValue={item.image ?? ""} />
         </div>
 
         <div className="adm-field">

@@ -18,6 +18,7 @@ export async function runRoutine(r: Routine): Promise<string> {
       status: "brouillon",
       category: a.category,
       excerpt: a.excerpt,
+      image: a.image,
       body: a.body,
     });
     return `Brouillon d'article créé : « ${a.title} »`;
