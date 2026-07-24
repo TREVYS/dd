@@ -6,11 +6,12 @@ import { getSetting } from "@/lib/settings";
 // du cabinet (contact@trevys-advisory.fr) sans mot de passe SMTP.
 
 export function mailerConfigured(): boolean {
+  // L'adresse d'envoi a une valeur par défaut (senderAddress) : seuls le
+  // tenant, le client et le secret sont indispensables.
   return (
     !!getSetting("msTenantId") &&
     !!getSetting("msClientId") &&
-    !!getSetting("msClientSecret") &&
-    !!getSetting("msSender")
+    !!getSetting("msClientSecret")
   );
 }
 

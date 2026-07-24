@@ -189,6 +189,30 @@ echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
           <span style={{ width: 10, height: 10, borderRadius: "50%", background: mailOn ? "#2E9E6B" : "#E26A0F" }} />
           {mailOn ? "Actif — vous pouvez envoyer vos mailings depuis l'adresse du cabinet." : "Non configuré."}
         </div>
+        {/* Diagnostic champ par champ */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", margin: "0 0 1rem" }}>
+          {([
+            ["msTenantId", "Tenant ID"],
+            ["msClientId", "Client ID"],
+            ["msClientSecret", "Client Secret"],
+            ["msSender", "Adresse d'envoi (optionnelle — contact@trevys-advisory.fr par défaut)"],
+          ] as const).map(([k, label]) => {
+            const ok = !!status[k]?.set;
+            return (
+              <span
+                key={k}
+                style={{
+                  fontSize: ".76rem", fontWeight: 700, padding: ".3rem .7rem", borderRadius: 100,
+                  background: ok ? "#f1faf3" : "#fdf3f2",
+                  border: `1px solid ${ok ? "#bfe3c9" : "#f0d5d1"}`,
+                  color: ok ? "#2E9E6B" : "#C2410C",
+                }}
+              >
+                {ok ? "✓" : "✗"} {label}
+              </span>
+            );
+          })}
+        </div>
         <p className="muted" style={{ color: "var(--ink3)", fontSize: ".88rem", lineHeight: 1.6, margin: "0 0 .6rem" }}>
           Les mailings partent directement de votre boîte Microsoft 365, via Microsoft Graph
           (aucun mot de passe SMTP à stocker). Configuration en une fois par un administrateur du tenant :
