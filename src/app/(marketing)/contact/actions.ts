@@ -73,34 +73,59 @@ export async function submitContact(
     return { ok: false, message: parsed.error.issues[0]?.message ?? "Formulaire invalide." };
   }
 
-  // 5) Envoi. Utilise le SMTP configuré (nodemailer) s'il est présent.
-  const to = process.env.CONTACT_TO ?? "contact@trevys-advisory.fr";
+  const d = parsed.data;
+
+  // 5) Archive d'abord (cockpit → Messages) : aucun message n'est jamais perdu.
   try {
-    if (process.env.SMTP_HOST) {
-      const nodemailer = await import("nodemailer");
-      const transport = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT ?? 587),
-        secure: process.env.SMTP_SECURE === "true",
-        auth: process.env.SMTP_USER
-          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-          : undefined,
-      });
-      const d = parsed.data;
-      await transport.sendMail({
-        from: process.env.SMTP_FROM ?? `Site Trevys <${to}>`,
-        to,
+    const { addMessage } = await import("@/lib/contact-messages");
+    addMessage({
+      firstName: d.firstName,
+      lastName: d.lastName,
+      email: d.email,
+      phone: d.phone,
+      subject: d.subject,
+      message: d.message,
+    });
+  } catch (e) {
+    console.error("[contact] échec d'archivage:", e);
+  }
+
+  // 6) Notification Telegram immédiate (si configurée).
+  try {
+    const { sendTelegram } = await import("@/lib/notify");
+    sendTelegram(
+      `📬 Nouveau message via le site\n${d.firstName} ${d.lastName} — ${d.email}${d.phone ? ` — ${d.phone}` : ""}\nSujet : ${d.subject || "—"}\n\n${d.message.slice(0, 500)}`,
+    ).catch(() => {});
+  } catch { /* non bloquant */ }
+
+  // 7) E-mail vers la boîte du cabinet via Microsoft 365 (Graph).
+  try {
+    const { mailerConfigured, sendMail, senderAddress } = await import("@/lib/mailer");
+    if (mailerConfigured()) {
+      const esc = (s: string) =>
+        s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+      await sendMail({
+        to: [process.env.CONTACT_TO ?? senderAddress()],
+        subject: `Contact site — ${d.subject || "Nouvelle demande"} — ${d.firstName} ${d.lastName}`,
         replyTo: d.email,
-        subject: `Contact site — ${d.subject || "Nouvelle demande"}`,
-        text: `De : ${d.firstName} ${d.lastName}\nE-mail : ${d.email}\nTéléphone : ${d.phone}\nSujet : ${d.subject}\n\n${d.message}`,
+        html:
+          `<div style="font-family:sans-serif;line-height:1.6;color:#222;">` +
+          `<h2 style="margin:0 0 12px;">Nouveau message depuis www.trevys.fr</h2>` +
+          `<p><b>De :</b> ${esc(d.firstName)} ${esc(d.lastName)}<br>` +
+          `<b>E-mail :</b> <a href="mailto:${esc(d.email)}">${esc(d.email)}</a><br>` +
+          `<b>Téléphone :</b> ${esc(d.phone || "—")}<br>` +
+          `<b>Sujet :</b> ${esc(d.subject || "—")}</p>` +
+          `<div style="background:#faf6f0;border-left:3px solid #F5811F;border-radius:0 8px 8px 0;padding:14px 16px;">${esc(d.message)}</div>` +
+          `<p style="color:#999;font-size:12px;margin-top:16px;">Répondez directement à cet e-mail pour écrire au contact.</p>` +
+          `</div>`,
       });
     } else {
-      // Pas de SMTP configuré : on journalise pour ne rien perdre.
-      console.info("[contact] message reçu (SMTP non configuré):", parsed.data.email);
+      console.info("[contact] message archivé (Microsoft 365 non configuré):", d.email);
     }
   } catch (e) {
-    console.error("[contact] échec d'envoi:", e);
-    return { ok: false, message: "Envoi impossible pour le moment. Réessayez plus tard." };
+    // L'e-mail a échoué mais le message est archivé et notifié : on ne bloque
+    // pas le visiteur.
+    console.error("[contact] échec d'envoi e-mail:", e);
   }
 
   return {

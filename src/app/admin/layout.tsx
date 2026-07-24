@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import "./admin.css";
 import { AdminShell } from "./admin-shell";
 import { unreadCount } from "@/lib/newsletter";
+import { unreadMessages } from "@/lib/contact-messages";
 import { runDueRoutines } from "@/lib/alfred-routines-run";
 
 export const metadata: Metadata = {
@@ -26,7 +27,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const name = session.user.name ?? session.user.email ?? "Admin";
   const initials = name.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
-  const badges = { "/admin/communication/newsletter": unreadCount() };
+  const badges = {
+    "/admin/communication/newsletter": unreadCount(),
+    "/admin/messages": unreadMessages(),
+  };
 
   return (
     <AdminShell name={name} initials={initials} badges={badges}>
