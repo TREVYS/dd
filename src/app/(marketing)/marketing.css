@@ -775,6 +775,16 @@ html,body{overflow-x:hidden}
   .mkt-nav .nlogo .mkt-logo-word.cm{display:none}
 }
 
+/* Page contact : passage en une colonne sur mobile (les styles sont posés en
+   inline dans la page, d'où les !important). */
+@media(max-width:900px){
+  .mkt-contact-grid{grid-template-columns:1fr!important;gap:2.6rem!important}
+}
+@media(max-width:600px){
+  .mkt-contact-form{padding:1.5rem 1.15rem!important;border-radius:20px!important}
+  .mkt-form-row2{grid-template-columns:1fr!important;gap:1rem!important}
+}
+
 /* Secteurs : cartes (références) + page de détail */
 .mkt-sector-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.2rem}
 .mkt-sector-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;

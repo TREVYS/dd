@@ -30,6 +30,7 @@ export function ContactForm() {
   return (
     <form
       action={action}
+      className="mkt-contact-form"
       style={{
         background: "var(--card)",
         border: "1px solid var(--line)",
@@ -45,7 +46,7 @@ export function ContactForm() {
         <input type="text" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.25rem" }}>
+      <div className="mkt-form-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.25rem" }}>
         <label style={{ display: "block" }}>
           <span style={{ display: "block", fontSize: ".8rem", color: "var(--ink2)", marginBottom: ".45rem", fontWeight: 600 }}>Prénom</span>
           <input name="firstName" required placeholder="Prénom" style={fieldStyle} />
@@ -55,7 +56,7 @@ export function ContactForm() {
           <input name="lastName" required placeholder="Nom" style={fieldStyle} />
         </label>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.25rem" }}>
+      <div className="mkt-form-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.25rem" }}>
         <label style={{ display: "block" }}>
           <span style={{ display: "block", fontSize: ".8rem", color: "var(--ink2)", marginBottom: ".45rem", fontWeight: 600 }}>E-mail professionnel</span>
           <input type="email" name="email" required placeholder="vous@entreprise.fr" style={fieldStyle} />
