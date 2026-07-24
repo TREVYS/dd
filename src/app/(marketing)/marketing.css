@@ -787,6 +787,26 @@ html,body{overflow-x:hidden}
   .mkt-form-row2{grid-template-columns:1fr!important;gap:1rem!important}
 }
 
+/* Section « Notre approche » : texte + illustration animée */
+.mkt-appr{display:grid;grid-template-columns:1.05fr .95fr;gap:3.4rem;align-items:center}
+.mkt-appr-copy .eyebrow{margin-bottom:.9rem}
+.mkt-appr-copy h2{font-size:clamp(1.7rem,3vw,2.3rem);margin:0 0 1.1rem}
+.mkt-appr-copy p{color:var(--ink2);line-height:1.75;margin:0;max-width:56ch}
+.mkt-appr-art{display:flex;justify-content:center}
+.mkt-appr-svg{width:100%;max-width:440px;height:auto}
+@keyframes apr-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes apr-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes apr-blink{0%,100%{opacity:.25}50%{opacity:1}}
+.apr-float-a{animation:apr-float 5.5s ease-in-out infinite}
+.apr-float-b{animation:apr-float 6.5s ease-in-out 1s infinite}
+.apr-float-c{animation:apr-float 5s ease-in-out .5s infinite}
+.apr-orbit{transform-origin:210px 180px;animation:apr-spin 36s linear infinite}
+.apr-blink{animation:apr-blink 3.2s ease-in-out infinite}
+.apr-blink.d2{animation-delay:1.1s}
+.apr-blink.d3{animation-delay:2.2s}
+@media(prefers-reduced-motion:reduce){.apr-float-a,.apr-float-b,.apr-float-c,.apr-orbit,.apr-blink{animation:none}}
+@media(max-width:900px){.mkt-appr{grid-template-columns:1fr;gap:2rem}.mkt-appr-svg{max-width:340px}}
+
 /* Logos des outils (page expertise comptable) */
 .mkt-tool-logo{height:52px;display:flex;align-items:center;margin-bottom:1rem}
 .mkt-tool-logo .mkt-ref-img{max-height:44px;max-width:150px;width:auto;object-fit:contain;display:inline-block}

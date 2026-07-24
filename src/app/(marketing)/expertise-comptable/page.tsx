@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 import { RefLogo } from "../references/ref-logo";
+import { ApprocheArt } from "./approche-art";
 
 export const metadata: Metadata = {
   title: "Expertise comptable",
@@ -110,19 +111,22 @@ export default function Page() {
       {/* Positionnement : un partenaire, pas un simple prestataire */}
       <section className="sec">
         <div className="wrap">
-          <div className="shead">
-            <span className="eyebrow">Notre approche</span>
-            <h2>Des solutions adaptées à <em>chaque situation</em></h2>
-            <p>
-              Nous abordons chacun de vos enjeux sous un angle neuf et
-              indépendant, en partenaire : une vision juste, enrichie de la
-              multiplicité de nos savoir-faire — expertise comptable, conseil,
-              audit, transformation digitale. Au-delà des conseils, notre
-              priorité est de vous assurer une sécurité maximale, et de vous
-              permettre de prendre du recul dans un cadre sécurisant pour
-              mesurer les conséquences des orientations que vous donnez à
-              votre entreprise.
-            </p>
+          <div className="mkt-appr">
+            <div className="mkt-appr-copy">
+              <span className="eyebrow">Notre approche</span>
+              <h2>Des solutions adaptées à <em>chaque situation</em></h2>
+              <p>
+                Nous abordons chacun de vos enjeux sous un angle neuf et
+                indépendant, en partenaire : une vision juste, enrichie de la
+                multiplicité de nos savoir-faire — expertise comptable, conseil,
+                audit, transformation digitale. Au-delà des conseils, notre
+                priorité est de vous assurer une sécurité maximale, et de vous
+                permettre de prendre du recul dans un cadre sécurisant pour
+                mesurer les conséquences des orientations que vous donnez à
+                votre entreprise.
+              </p>
+            </div>
+            <ApprocheArt />
           </div>
         </div>
       </section>
