@@ -166,18 +166,20 @@ export async function submitApplication(
     if (mailerConfigured()) {
       const esc2 = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       const first = d.name.trim().split(/\s+/)[0] || d.name;
+      const { wrapEmail } = await import("@/lib/newsletter-campaigns");
       await sendMail({
         to: [d.email],
         bcc: false,
         replyTo: getSetting("recruitEmail") || undefined,
         subject: `Candidature bien reçue — ${job.title} — Trevys`,
-        html:
-          `<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.7;color:#2a241c;max-width:560px;">` +
-          `<p>Bonjour ${esc2(first)},</p>` +
-          `<p>Nous confirmons la bonne réception de votre candidature au poste de <b>${esc2(job.title)}</b>. Merci pour l'intérêt que vous portez à Trevys !</p>` +
-          `<p>Chaque candidature est lue par un associé : nous revenons vers vous rapidement.</p>` +
-          `<p>À très vite,<br><b>L'équipe Trevys</b><br>Expertise comptable &amp; conseil — Paris 16e</p>` +
-          `</div>`,
+        html: wrapEmail(
+          `<p style="margin:0 0 14px;">Bonjour ${esc2(first)},</p>` +
+          `<p style="margin:0 0 14px;">Nous confirmons la bonne réception de votre candidature au poste de <b>${esc2(job.title)}</b>. Merci pour l'intérêt que vous portez à Trevys !</p>` +
+          `<p style="margin:0 0 14px;">Chaque candidature est lue par un associé : nous revenons vers vous rapidement.</p>` +
+          `<p style="margin:0;">À très vite,<br><b>L'équipe Trevys</b><br>Expertise comptable &amp; conseil — Paris 16e</p>`,
+          undefined,
+          "Vous recevez cet e-mail suite à votre candidature chez Trevys.",
+        ),
       });
     }
   } catch (e) {

@@ -6,8 +6,14 @@ import { getSetting } from "@/lib/settings";
 // à l'entretien. Les e-mails partent via Microsoft 365.
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const WRAP = (inner: string) =>
-  `<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.7;color:#2a241c;max-width:560px;">${inner}</div>`;
+
+// Gabarit maison (logo, liseré orange, carte, pied de page) — le même que la
+// newsletter, avec une mention adaptée au recrutement.
+const RECRUIT_NOTE = "Vous recevez cet e-mail suite à votre candidature chez Trevys.";
+async function WRAP(inner: string): Promise<string> {
+  const { wrapEmail } = await import("@/lib/newsletter-campaigns");
+  return wrapEmail(inner, undefined, RECRUIT_NOTE);
+}
 
 // Refus : rédigé par Alfred si sa clé API est là, sinon modèle standard.
 export async function sendRejectionForApp(app: JobApplication): Promise<{ ok: boolean; detail: string }> {
@@ -28,8 +34,8 @@ export async function sendRejectionForApp(app: JobApplication): Promise<{ ok: bo
   } catch { /* repli standard */ }
 
   const html = drafted
-    ? WRAP(drafted.split(/\n{2,}/).map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join(""))
-    : WRAP(
+    ? await WRAP(drafted.split(/\n{2,}/).map((p) => `<p style="margin:0 0 14px;">${esc(p).replace(/\n/g, "<br>")}</p>`).join(""))
+    : await WRAP(
         `<p>Bonjour ${esc(firstName)},</p>` +
         `<p>Merci sincèrement pour votre candidature au poste de <b>${esc(app.jobTitle)}</b> et pour l'intérêt que vous portez à Trevys.</p>` +
         `<p>Après une étude attentive de votre profil, nous ne donnerons pas suite à votre candidature pour ce poste. Cette décision ne remet pas en cause la qualité de votre parcours : elle tient à l'adéquation avec les besoins spécifiques de la mission.</p>` +
@@ -54,12 +60,12 @@ export async function sendInterviewInviteForApp(app: JobApplication): Promise<{ 
   const firstName = app.name.trim().split(/\s+/)[0] || app.name;
   const calendly = getSetting("calendlyUrl");
 
-  const html = WRAP(
+  const html = await WRAP(
     `<p>Bonjour ${esc(firstName)},</p>` +
     `<p>Bonne nouvelle : votre candidature au poste de <b>${esc(app.jobTitle)}</b> a retenu toute notre attention, et nous serions ravis d'échanger avec vous lors d'un <b>entretien</b>.</p>` +
     (calendly
       ? `<p>Pour choisir le créneau qui vous convient le mieux, réservez directement dans notre agenda :</p>` +
-        `<p><a href="${/^https?:\/\/[^"'<>\s]+$/.test(calendly.trim()) ? esc(calendly.trim()) : "#"}" style="display:inline-block;background-color:#E26A0F;color:#ffffff;font-weight:bold;text-decoration:none;padding:12px 26px;border-radius:100px;">Choisir mon créneau d'entretien</a></p>`
+        `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:6px auto 16px;"><tr><td align="center" bgcolor="#F5811F" style="border-radius:100px;"><a href="${/^https?:\/\/[^"'<>\s]+$/.test(calendly.trim()) ? esc(calendly.trim()) : "#"}" style="display:inline-block;padding:13px 30px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:100px;">Choisir mon créneau d'entretien</a></td></tr></table>`
       : `<p>Répondez simplement à cet e-mail avec vos disponibilités des prochains jours, et nous organiserons l'entretien (en visio ou à notre cabinet, Paris 16e).</p>`) +
     `<p>Au plaisir de faire votre connaissance,<br><b>L'équipe Trevys</b><br>Expertise comptable &amp; conseil — Paris 16e</p>`,
   );

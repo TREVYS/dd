@@ -176,7 +176,7 @@ export function markdownToEmailHtml(md: string): string {
 // Enveloppe l'HTML du corps dans un gabarit e-mail aux couleurs Trevys.
 // Structure en tableaux : c'est la seule mise en page réellement fiable dans
 // tous les clients (Outlook en tête).
-export function wrapEmail(bodyHtml: string, unsubUrl?: string): string {
+export function wrapEmail(bodyHtml: string, unsubUrl?: string, footerNote?: string): string {
   const logo = `${SITE_URL}/uploads/1.png`;
   const font = "font-family:Arial,Helvetica,sans-serif;";
   return `<!doctype html>
@@ -226,10 +226,12 @@ export function wrapEmail(bodyHtml: string, unsubUrl?: string): string {
         <tr><td align="center" style="padding:8px 10px 20px;${font}font-size:12px;color:#9d907c;line-height:1.7;">
           <b style="color:#6b5f4c;">T.A. Trevys Advisory</b> — Expertise comptable &amp; conseil<br>
           1 rue Le Nôtre, 75116 Paris &middot; contact@trevys-advisory.fr<br>
-          Vous recevez cet e-mail car vous êtes inscrit à nos analyses.<br>
+          ${footerNote ?? "Vous recevez cet e-mail car vous êtes inscrit à nos analyses."}<br>
           ${unsubUrl
             ? `<a href="${unsubUrl}" style="color:#9d907c;text-decoration:underline;">Se désinscrire en un clic</a>`
-            : `Pour ne plus les recevoir, répondez simplement &laquo;&nbsp;stop&nbsp;&raquo;.`}
+            : footerNote
+              ? ""
+              : `Pour ne plus les recevoir, répondez simplement &laquo;&nbsp;stop&nbsp;&raquo;.`}
         </td></tr>
 
       </table>
