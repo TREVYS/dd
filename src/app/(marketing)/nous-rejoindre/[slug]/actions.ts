@@ -71,21 +71,27 @@ export async function submitApplication(
   }
 
   // 1) Archive (cockpit → Recrutement) + compteur de candidatures.
-  addApplication({
-    jobId: job.id,
-    jobTitle: job.title,
-    name: d.name,
-    email: d.email,
-    phone: d.phone || undefined,
-    linkedin: d.linkedin || undefined,
-    message: d.message,
-    cvName,
-    experience: experience || undefined,
-    education: education || undefined,
-    skills: skills.length ? skills : undefined,
-    languages: languages.length ? languages : undefined,
-    availability: availability || undefined,
-  });
+  // Protégé : si l'écriture disque échoue, on NE bloque PAS la candidature —
+  // John est tout de même alerté par Telegram et par e-mail (étapes suivantes).
+  try {
+    addApplication({
+      jobId: job.id,
+      jobTitle: job.title,
+      name: d.name,
+      email: d.email,
+      phone: d.phone || undefined,
+      linkedin: d.linkedin || undefined,
+      message: d.message,
+      cvName,
+      experience: experience || undefined,
+      education: education || undefined,
+      skills: skills.length ? skills : undefined,
+      languages: languages.length ? languages : undefined,
+      availability: availability || undefined,
+    });
+  } catch (e) {
+    console.error("[recrutement] échec d'archivage de la candidature:", e);
+  }
 
   // 2) Alerte Telegram. IMPORTANT : on ATTEND l'envoi. Sans `await`, la Server
   // Action rend sa réponse et le serveur peut clore la requête avant que le

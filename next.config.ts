@@ -15,9 +15,11 @@ const nextConfig: NextConfig = {
   // (sinon 15 workers → dépassement de ressources / SIGSEGV au build).
   experimental: {
     cpus: 1,
-    // Les candidatures embarquent un CV (jusqu'à 3 Mo) : on relève la limite
-    // des Server Actions (1 Mo par défaut, qui rejetait silencieusement).
-    serverActions: { bodySizeLimit: "4mb" },
+    // Les candidatures embarquent un CV (jusqu'à 3 Mo) : on relève largement la
+    // limite des Server Actions (1 Mo par défaut, qui rejetait silencieusement
+    // toute candidature avec un CV un peu lourd). Marge confortable au-delà des
+    // 3 Mo du CV pour couvrir le reste du formulaire et l'encodage multipart.
+    serverActions: { bodySizeLimit: "8mb" },
   },
   // Librairies Node lourdes chargées à la demande (extraction de documents) :
   // on évite qu'elles soient empaquetées par le bundler (mémoire de build,
