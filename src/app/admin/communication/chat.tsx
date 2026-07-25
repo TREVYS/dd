@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Turn = { role: "user" | "assistant"; content: string; actions?: string[] };
 
@@ -18,6 +18,18 @@ export function CommsChat() {
   const [uploading, setUploading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Conseil du tableau de bord : la consigne arrive en ?ask=… — on la
+  // préremplit, il ne reste qu'à appuyer sur Envoyer (ou l'ajuster avant).
+  useEffect(() => {
+    try {
+      const ask = new URLSearchParams(window.location.search).get("ask");
+      if (ask) {
+        setInput(ask);
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    } catch { /* pas bloquant */ }
+  }, []);
 
   // Trombone : envoie un fichier à Alfred (image → médiathèque,
   // document → base de connaissance) et l'annonce dans la conversation.

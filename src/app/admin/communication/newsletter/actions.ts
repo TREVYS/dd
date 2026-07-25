@@ -168,3 +168,25 @@ export async function sendCampaignAction(formData: FormData) {
   revalidatePath("/admin/communication/newsletter");
   redirect(`/admin/communication/newsletter/${id}?sent=${count}`);
 }
+
+// Campagne d'opt-in : invite une base de contacts à choisir OUI/NON pour
+// recevoir les analyses. Les déjà-inscrits, les refus passés et les contacts
+// déjà invités sont automatiquement écartés.
+export async function sendOptinInvitesAction(formData: FormData) {
+  await guard();
+  if (!mailerConfigured()) redirect("/admin/communication/newsletter?optin=notconfig");
+
+  const raw = (formData.get("contacts") as string) || "";
+  const all = parseEmails(raw);
+  if (all.length === 0) redirect("/admin/communication/newsletter?optin=empty");
+
+  const { isDeclined, isInvited, markInvited, buildOptinEmail, OPTIN_SUBJECT } = await import("@/lib/newsletter-optin");
+  const existing = new Set(listSubscribers().map((x) => x.email.toLowerCase()));
+  const targets = all.filter((e) => !existing.has(e) && !isDeclined(e) && !isInvited(e));
+  if (targets.length === 0) redirect("/admin/communication/newsletter?optin=none");
+
+  const sent = await sendPersonalized(targets, OPTIN_SUBJECT, (email) => buildOptinEmail(email));
+  targets.forEach((e) => markInvited(e));
+  revalidatePath("/admin/communication/newsletter");
+  redirect(`/admin/communication/newsletter?optin=sent&n=${sent}&skipped=${all.length - targets.length}`);
+}

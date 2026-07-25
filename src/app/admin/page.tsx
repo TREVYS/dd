@@ -24,11 +24,20 @@ async function AlfredAdviceCard() {
       <p className="muted" style={{ fontSize: ".8rem", margin: ".2rem 0 .7rem", color: "var(--ink3)" }}>
         Pour votre visibilité, à partir des données du site (visites, provenance, comportement).
       </p>
-      <ul style={{ margin: 0, paddingLeft: "1.1rem", display: "flex", flexDirection: "column", gap: ".45rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: ".7rem" }}>
         {tips.map((t) => (
-          <li key={t} style={{ fontSize: ".92rem", lineHeight: 1.55 }}>{t}</li>
+          <div key={t.text} style={{ display: "flex", alignItems: "center", gap: ".8rem", flexWrap: "wrap" }}>
+            <span style={{ flex: "1 1 260px", fontSize: ".92rem", lineHeight: 1.55 }}>{t.text}</span>
+            <Link
+              className="adm-btn ghost sm"
+              href={`/admin/communication?ask=${encodeURIComponent(t.prompt)}`}
+              style={{ flex: "none" }}
+            >
+              Lancer avec Alfred →
+            </Link>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

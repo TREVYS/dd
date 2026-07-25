@@ -140,21 +140,45 @@ export async function alfredTrafficAnalysis(force = false): Promise<string> {
 // communication (dernier article, brouillons en attente, abonnés).
 const ADVICE_FILE = path.join(process.cwd(), "data", "alfred-advice.json");
 
-function fallbackAdvice(s: StatsSummary): string[] {
-  const tips: string[] = [];
-  if (s.top3[0]) tips.push(`Votre page « ${s.top3[0].label} » attire le plus de monde : déclinez-la en post LinkedIn cette semaine.`);
-  if (s.trendPct !== null && s.trendPct < 0) tips.push("La fréquentation baisse : publiez un article d'actualité pour relancer les visites.");
-  else tips.push("Publiez régulièrement (1 article + 2 posts par semaine) pour installer votre visibilité.");
-  tips.push("Poussez vos derniers articles en newsletter : vos abonnés sont vos meilleurs relais.");
+export type AdviceTip = { text: string; prompt: string };
+
+function fallbackAdvice(s: StatsSummary): AdviceTip[] {
+  const tips: AdviceTip[] = [];
+  if (s.top3[0]) {
+    tips.push({
+      text: `Votre page « ${s.top3[0].label} » attire le plus de monde : déclinez-la en post LinkedIn cette semaine.`,
+      prompt: `Rédige un post LinkedIn court à partir de notre contenu « ${s.top3[0].label} » (notre page la plus visitée).`,
+    });
+  }
+  if (s.trendPct !== null && s.trendPct < 0) {
+    tips.push({
+      text: "La fréquentation baisse : publiez un article d'actualité pour relancer les visites.",
+      prompt: "Rédige un article d'actualité économique ou fiscale de la semaine, utile pour des dirigeants.",
+    });
+  } else {
+    tips.push({
+      text: "Publiez régulièrement (1 article + 2 posts par semaine) pour installer votre visibilité.",
+      prompt: "Propose-moi un calendrier éditorial pour les 2 prochaines semaines (articles + posts LinkedIn).",
+    });
+  }
+  tips.push({
+    text: "Poussez vos derniers articles en newsletter : vos abonnés sont vos meilleurs relais.",
+    prompt: "Rédige une newsletter qui met en avant nos derniers articles publiés.",
+  });
   return tips.slice(0, 3);
 }
 
-export async function alfredAdvice(): Promise<string[]> {
+export async function alfredAdvice(): Promise<AdviceTip[]> {
   const s = buildStatsSummary();
   try {
     if (fs.existsSync(ADVICE_FILE)) {
-      const cached = JSON.parse(fs.readFileSync(ADVICE_FILE, "utf8")) as { tips?: string[]; at?: number };
-      if (cached.tips?.length && cached.at && Date.now() - cached.at < 24 * 3600 * 1000) return cached.tips;
+      const cached = JSON.parse(fs.readFileSync(ADVICE_FILE, "utf8")) as { tips?: (AdviceTip | string)[]; at?: number };
+      if (cached.tips?.length && cached.at && Date.now() - cached.at < 24 * 3600 * 1000) {
+        // Compatibilité : anciens caches en simples chaînes.
+        return cached.tips.map((t) =>
+          typeof t === "string" ? { text: t, prompt: t } : t,
+        );
+      }
     }
   } catch { /* cache illisible : on régénère */ }
 
@@ -180,7 +204,8 @@ export async function alfredAdvice(): Promise<string[]> {
         system:
           "Tu es Alfred, directeur de la communication du cabinet Trevys. À partir des données d'audience et de l'état de la communication, " +
           "donne EXACTEMENT 3 conseils concrets et actionnables pour améliorer la visibilité du cabinet (sujets à traiter, canaux à pousser, actions de la semaine). " +
-          "Réponds UNIQUEMENT avec les 3 conseils, un par ligne, sans numérotation ni tiret, chacun en une phrase directe de 25 mots maximum, en français.",
+          "Réponds UNIQUEMENT avec 3 lignes, une par conseil, au format strict : « conseil :: consigne » — " +
+          "le conseil est une phrase directe de 25 mots max pour John ; la consigne est l'instruction exacte que John pourra t'envoyer pour exécuter ce conseil (ex. « Rédige un post LinkedIn sur… »). En français, sans numérotation.",
         messages: [
           {
             role: "user",
@@ -194,7 +219,11 @@ export async function alfredAdvice(): Promise<string[]> {
       });
       const out = res.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("").trim();
       const lines = out.split(/\n+/).map((l) => l.replace(/^[-•\d.\s]+/, "").trim()).filter(Boolean).slice(0, 3);
-      if (lines.length >= 2) tips = lines;
+      const parsed = lines.map((l) => {
+        const [text, prompt] = l.split("::").map((x) => x.trim());
+        return { text: text || l, prompt: prompt || text || l };
+      });
+      if (parsed.length >= 2) tips = parsed;
     } catch { /* on garde les conseils de secours */ }
   }
 

@@ -5,8 +5,9 @@ import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { getAllPosts, getPost, formatDateFr } from "@/lib/blog";
-import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction } from "./actions";
+import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction, sendOptinInvitesAction } from "./actions";
 import { campaignOpens, contactActivity } from "@/lib/newsletter-stats";
+import { optinStats } from "@/lib/newsletter-optin";
 import { ArticlePicker, type PickPost } from "./article-picker";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function NewsletterAdmin({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; optin?: string; n?: string; skipped?: string }>;
 }) {
   const sp = await searchParams;
   const subs = listSubscribers();
@@ -124,6 +125,52 @@ export default async function NewsletterAdmin({
           </div>
           <div className="adm-actions" style={{ marginTop: ".8rem" }}>
             <PendingButton pendingLabel="Alfred compose…">Composer le mailing</PendingButton>
+          </div>
+        </form>
+      </div>
+
+      {/* Invitation opt-in d'une base de contacts */}
+      <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
+        <h2>Inviter une base de contacts (opt-in)</h2>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: ".2rem 0 1rem" }}>
+          Collez les e-mails de contacts rencontrés par vos équipes : chacun reçoit une invitation
+          chaleureuse avec deux boutons <b>Oui</b> / <b>Non merci</b>. Les « Oui » rejoignent
+          automatiquement vos abonnés ; les « Non » sont mémorisés et ne seront jamais réinvités.
+          Les contacts déjà abonnés ou déjà invités sont écartés d&apos;office.
+        </p>
+        {(() => { const st = optinStats(); return st.invited > 0 ? (
+          <p className="muted" style={{ fontSize: ".8rem", margin: "0 0 .8rem" }}>
+            {st.invited} invitation{st.invited > 1 ? "s" : ""} envoyée{st.invited > 1 ? "s" : ""} à ce jour · {st.declined} refus.
+          </p>
+        ) : null; })()}
+        {sp.optin === "sent" && (
+          <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+            {sp.n} invitation{Number(sp.n) > 1 ? "s" : ""} envoyée{Number(sp.n) > 1 ? "s" : ""}.
+            {Number(sp.skipped) > 0 && ` ${sp.skipped} contact(s) écarté(s) (déjà abonnés, déjà invités ou refus).`}
+          </div>
+        )}
+        {sp.optin === "none" && (
+          <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0e2cf", background: "#fdf8f0" }}>
+            Aucun nouvel envoi : tous ces contacts sont déjà abonnés, déjà invités ou ont refusé.
+          </div>
+        )}
+        {sp.optin === "empty" && (
+          <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+            Aucune adresse e-mail valide trouvée.
+          </div>
+        )}
+        {sp.optin === "notconfig" && (
+          <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+            Configurez d&apos;abord l&apos;envoi Microsoft 365 dans les Réglages.
+          </div>
+        )}
+        <form action={sendOptinInvitesAction}>
+          <div className="adm-field">
+            <label>Adresses e-mail <small>(séparées par des virgules, espaces ou retours à la ligne)</small></label>
+            <textarea name="contacts" required style={{ minHeight: 110 }} placeholder={"jean@entreprise.fr\nmarie@societe.com"} />
+          </div>
+          <div className="adm-actions" style={{ marginTop: ".6rem" }}>
+            <PendingButton pendingLabel="Envoi des invitations…">Envoyer les invitations</PendingButton>
           </div>
         </form>
       </div>
