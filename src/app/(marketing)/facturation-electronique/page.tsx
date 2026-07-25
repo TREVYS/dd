@@ -294,7 +294,7 @@ export default function Page() {
               <p>
                 Éditeurs, plateformes agréées, DSI, équipes comptables, dirigeants :
                 une mise en conformité réussie fait intervenir de nombreux acteurs.
-                Notre rôle est de les <strong>coordonner</strong> et d&apos;être le
+                Notre rôle est de les <strong>coordonner</strong>{" "}et d&apos;être le
                 garant d&apos;une évolution maîtrisée.
               </p>
               <p>
