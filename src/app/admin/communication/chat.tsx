@@ -118,7 +118,7 @@ export function CommsChat() {
         <input
           ref={fileRef}
           type="file"
-          accept=".pdf,.doc,.docx,.txt,.md,image/*"
+          accept=".pdf,.doc,.docx,.txt,.md,.zip,image/*"
           style={{ display: "none" }}
           onChange={(e) => sendFile(e.target.files)}
         />

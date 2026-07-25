@@ -165,6 +165,13 @@
 /* Alertes entrantes empilées */
 .ck-alerts{display:flex;flex-direction:column;gap:.6rem}
 
+/* Zone de glisser-déposer de la GED */
+.adm-dropzone{display:flex;flex-direction:column;align-items:center;gap:.35rem;text-align:center;cursor:pointer;
+  border:2px dashed var(--line);border-radius:16px;padding:1.6rem 1.2rem;background:var(--bg);
+  transition:border-color .15s,background .15s}
+.adm-dropzone:hover,.adm-dropzone.over{border-color:var(--o);background:var(--o-tint)}
+.adm-dropzone.busy{cursor:wait;opacity:.8}
+
 /* Trombone du chat Alfred */
 .adm-chat-clip{flex:none;width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line);
   border-radius:12px;background:var(--card);color:var(--ink3);cursor:pointer;transition:color .15s,border-color .15s}

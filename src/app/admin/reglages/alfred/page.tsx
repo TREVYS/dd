@@ -1,3 +1,4 @@
+import { KnowledgeDropZone } from "./dropzone";
 import Link from "next/link";
 import { ReglagesTabs } from "../reglages-tabs";
 import { readAlfred } from "@/lib/alfred-config";
@@ -80,6 +81,10 @@ export default async function AlfredConfigPage({
           Nourrissez Alfred de documentation : PDF, Word (.docx), notes ou pages web (ex. textes officiels
           DGFiP, guides, supports internes). Alfred s&apos;appuiera sur ces sources pour ses rédactions.
         </p>
+
+        <div style={{ marginBottom: "1.2rem" }}>
+          <KnowledgeDropZone />
+        </div>
 
         {sp.kok && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Document ajouté à la base de connaissance d&apos;Alfred.</div>}
         {sp.kerr && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>{KERR[sp.kerr] ?? "Une erreur est survenue."}</div>}
