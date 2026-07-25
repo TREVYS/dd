@@ -1,3 +1,4 @@
+import { BrouillonsTabs } from "../brouillons-tabs";
 import Link from "next/link";
 import { listItems } from "@/lib/editorial";
 import { addCalendarAction, deleteCalendarAction, publishDraftAction } from "./actions";
@@ -23,11 +24,13 @@ export default function CalendrierPage() {
     <>
       <div className="adm-h">
         <div>
-          <h1>Brouillons d&apos;articles</h1>
+          <h1>Brouillons</h1>
           <p>Les propositions d&apos;Alfred et vos idées en préparation. Une fois publié, l&apos;article rejoint la rubrique Articles et sort de cette liste.</p>
         </div>
         <Link className="adm-btn ghost" href="/admin/communication">← Directeur de comm</Link>
       </div>
+
+      <BrouillonsTabs />
 
       <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
         <h2>Ajouter une idée d&apos;article</h2>

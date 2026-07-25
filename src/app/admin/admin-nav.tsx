@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { AlfredAvatar } from "./alfred-avatar";
 import { Icon } from "./icons";
 
-type Item = { href: string; label: string; ic: string; exact?: boolean };
+type Item = { href: string; label: string; ic: string; exact?: boolean; also?: string[] };
 type Group = { title: string; items: Item[] };
 
 // Organisation en 4 univers : piloter, communiquer, répondre, gérer le site.
@@ -20,8 +20,8 @@ const GROUPS: Group[] = [
   {
     title: "Communication",
     items: [
-      { href: "/admin/communication/calendrier", label: "Brouillons d'articles", ic: "draft" },
-      { href: "/admin/communication/reseaux", label: "Réseaux sociaux", ic: "megaphone" },
+      // « Brouillons » regroupe articles + réseaux sociaux (onglets internes).
+      { href: "/admin/communication/calendrier", label: "Brouillons", ic: "draft", also: ["/admin/communication/reseaux"] },
       { href: "/admin/communication/newsletter", label: "Newsletter", ic: "mail" },
       { href: "/admin/communication/routines", label: "Routines d'Alfred", ic: "repeat" },
     ],
@@ -68,7 +68,9 @@ export function AdminNav({ badges = {} }: { badges?: Record<string, number> }) {
           {g.title && <div className="adm-grp">{g.title}</div>}
           {!g.title && <div style={{ height: ".9rem" }} />}
           {g.items.map((l) => {
-            const on = l.exact ? pathname === l.href : pathname.startsWith(l.href);
+            const on = l.exact
+              ? pathname === l.href
+              : pathname.startsWith(l.href) || (l.also ?? []).some((p) => pathname.startsWith(p));
             const badge = badges[l.href] ?? 0;
             return (
               <Link key={l.href} href={l.href} className={on ? "on" : ""}>

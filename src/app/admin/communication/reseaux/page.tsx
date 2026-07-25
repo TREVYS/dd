@@ -1,3 +1,4 @@
+import { BrouillonsTabs } from "../brouillons-tabs";
 import { listPosts, type PostStatus } from "@/lib/social-posts";
 import { publicStatus } from "@/lib/social";
 import { PostComposer } from "./post-composer";
@@ -43,6 +44,8 @@ export default async function ReseauxPage({
           <p>Préparez, planifiez et publiez vos posts LinkedIn et Instagram. Alfred peut les rédiger pour vous.</p>
         </div>
       </div>
+
+      <BrouillonsTabs />
 
       <div
         className="adm-note"
