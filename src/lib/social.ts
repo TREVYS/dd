@@ -15,6 +15,8 @@ export type Connection = {
   // jeton d'accès conservé côté serveur uniquement
   accessToken?: string;
   expiresAt?: number;
+  // URN LinkedIn de l'auteur (urn:li:person:… ou urn:li:organization:…)
+  authorUrn?: string;
 };
 
 export type SocialStore = Record<Provider, Connection>;
@@ -104,12 +106,17 @@ export async function publishPost(
   if (!conn?.connected || !conn.accessToken) {
     return { ok: false, error: "Compte non connecté" };
   }
+  if (conn.expiresAt && Date.now() > conn.expiresAt) {
+    return { ok: false, error: "Jeton expiré — cliquez « Reconnecter » dans Réglages → Réseaux sociaux" };
+  }
   try {
     if (provider === "linkedin") {
-      // Nécessite le scope w_member_social et l'URN de l'auteur (sub OpenID).
-      const author = conn.accountName?.startsWith("urn:")
-        ? conn.accountName
-        : `urn:li:person:${conn.accountName ?? ""}`;
+      // Nécessite le scope w_member_social et l'URN de l'auteur (sub OpenID),
+      // enregistré à la connexion du compte.
+      const author = conn.authorUrn;
+      if (!author) {
+        return { ok: false, error: "Compte à reconnecter (identifiant d'auteur manquant) — Réglages → Réseaux sociaux" };
+      }
       const res = await fetch("https://api.linkedin.com/v2/ugcPosts", {
         method: "POST",
         headers: {
@@ -129,7 +136,10 @@ export async function publishPost(
           visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
         }),
       });
-      if (!res.ok) return { ok: false, error: `LinkedIn ${res.status}` };
+      if (!res.ok) {
+        const detail = (await res.text().catch(() => "")).slice(0, 200);
+        return { ok: false, error: `LinkedIn ${res.status}${detail ? ` — ${detail}` : ""}` };
+      }
       return { ok: true };
     }
     // Instagram : publication via Graph API (à finaliser après connexion Meta).

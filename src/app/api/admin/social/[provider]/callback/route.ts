@@ -53,9 +53,25 @@ export async function GET(
     };
     if (!data.access_token) throw new Error("no token");
 
+    // LinkedIn : on récupère l'identité réelle (OpenID userinfo) pour
+    // construire l'URN de l'auteur — indispensable pour publier ensuite.
+    let accountName = cfg.label;
+    let authorUrn: string | undefined;
+    if (provider === "linkedin") {
+      const infoRes = await fetch("https://api.linkedin.com/v2/userinfo", {
+        headers: { Authorization: `Bearer ${data.access_token}` },
+      });
+      if (infoRes.ok) {
+        const info = (await infoRes.json()) as { sub?: string; name?: string };
+        if (info.sub) authorUrn = `urn:li:person:${info.sub}`;
+        if (info.name) accountName = info.name;
+      }
+    }
+
     setConnection(provider as Provider, {
       connected: true,
-      accountName: cfg.label,
+      accountName,
+      authorUrn,
       connectedAt: new Date().toISOString(),
       accessToken: data.access_token,
       expiresAt: data.expires_in ? Date.now() + data.expires_in * 1000 : undefined,
