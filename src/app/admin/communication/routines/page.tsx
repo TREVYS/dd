@@ -117,7 +117,23 @@ export default async function RoutinesPage({
               <tr key={r.id} style={!r.enabled ? { opacity: 0.55 } : undefined}>
                 <td style={{ paddingLeft: "1.1rem" }}>
                   <div style={{ fontWeight: 700 }}>{r.label} {!r.enabled && <span className="adm-tag">en pause</span>}</div>
-                  <div className="muted">{TYPE_LABEL[r.type]} — {r.topic.length > 90 ? r.topic.slice(0, 90) + "…" : r.topic}</div>
+                  <div style={{ margin: ".25rem 0" }}>
+                    <span
+                      className="adm-tag"
+                      style={{
+                        fontWeight: 800,
+                        color: "#fff",
+                        background:
+                          r.type === "linkedin" ? "#0A66C2"
+                          : r.type === "instagram" ? "#B0348C"
+                          : r.type === "newsletter" ? "#2E9E6B"
+                          : "var(--o2)",
+                      }}
+                    >
+                      {TYPE_LABEL[r.type]}
+                    </span>
+                  </div>
+                  <div className="muted">{r.topic.length > 90 ? r.topic.slice(0, 90) + "…" : r.topic}</div>
                 </td>
                 <td>
                   <div>{describeSchedule(r)}</div>

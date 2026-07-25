@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { addRoutine, getRoutine, removeRoutine, updateRoutine, type RoutineFreq, type RoutineType } from "@/lib/alfred-routines";
+import { addRoutine, getRoutine, removeRoutine, updateRoutine, inferRoutineType, type RoutineFreq, type RoutineType } from "@/lib/alfred-routines";
 import { runRoutine } from "@/lib/alfred-routines-run";
 
 async function guard() {
@@ -16,13 +16,15 @@ const PATH = "/admin/communication/routines";
 export async function addRoutineAction(formData: FormData) {
   await guard();
   const freq = ((formData.get("freq") as string) || "hebdomadaire") as RoutineFreq;
+  const label = ((formData.get("label") as string) || "Routine").trim();
+  const topic = ((formData.get("topic") as string) || "").trim();
   addRoutine({
-    label: ((formData.get("label") as string) || "Routine").trim(),
-    type: ((formData.get("type") as string) || "article") as RoutineType,
+    label,
+    type: inferRoutineType(label, topic, ((formData.get("type") as string) || "article") as RoutineType),
     freq,
     weekday: freq === "hebdomadaire" ? Number(formData.get("weekday") ?? 1) : undefined,
     monthday: freq === "mensuelle" ? Number(formData.get("monthday") ?? 1) : undefined,
-    topic: ((formData.get("topic") as string) || "").trim(),
+    topic,
     enabled: true,
   });
   revalidatePath(PATH);
@@ -34,13 +36,15 @@ export async function updateRoutineAction(formData: FormData) {
   const id = formData.get("id") as string;
   if (!id) return;
   const freq = ((formData.get("freq") as string) || "hebdomadaire") as RoutineFreq;
+  const label = ((formData.get("label") as string) || "Routine").trim();
+  const topic = ((formData.get("topic") as string) || "").trim();
   updateRoutine(id, {
-    label: ((formData.get("label") as string) || "Routine").trim(),
-    type: ((formData.get("type") as string) || "article") as RoutineType,
+    label,
+    type: inferRoutineType(label, topic, ((formData.get("type") as string) || "article") as RoutineType),
     freq,
     weekday: freq === "hebdomadaire" ? Number(formData.get("weekday") ?? 1) : undefined,
     monthday: freq === "mensuelle" ? Number(formData.get("monthday") ?? 1) : undefined,
-    topic: ((formData.get("topic") as string) || "").trim(),
+    topic,
   });
   revalidatePath(PATH);
   redirect(`${PATH}?ok=1`);

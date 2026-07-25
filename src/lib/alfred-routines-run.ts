@@ -1,4 +1,4 @@
-import { listRoutines, updateRoutine, isDue, type Routine } from "@/lib/alfred-routines";
+import { listRoutines, updateRoutine, isDue, inferRoutineType, type Routine } from "@/lib/alfred-routines";
 import { draftArticle, draftSocialPost, draftNewsletter } from "@/lib/comms-agent";
 import { addItem } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
@@ -9,6 +9,13 @@ import { sendTelegram } from "@/lib/notify";
 // sans validation humaine.
 
 export async function runRoutine(r: Routine): Promise<string> {
+  // Filet de sécurité : une routine « LinkedIn » créée par erreur avec le type
+  // « article » produit bien des posts LinkedIn — et on répare son type.
+  const effective = inferRoutineType(r.label, r.topic, r.type);
+  if (effective !== r.type) {
+    updateRoutine(r.id, { type: effective });
+    r = { ...r, type: effective };
+  }
   if (r.type === "article") {
     const a = await draftArticle(r.topic);
     addItem({

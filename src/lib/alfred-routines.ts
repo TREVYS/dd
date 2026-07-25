@@ -7,6 +7,18 @@ import crypto from "node:crypto";
 const FILE = path.join(process.cwd(), "data", "alfred-routines.json");
 
 export type RoutineType = "article" | "linkedin" | "instagram" | "newsletter";
+
+// Corrige un type incohérent : si le nom ou la consigne parlent clairement de
+// LinkedIn/Instagram/newsletter alors que le type est resté « article »
+// (valeur par défaut du formulaire), on suit l'intention évidente.
+export function inferRoutineType(label: string, topic: string, declared: RoutineType): RoutineType {
+  if (declared !== "article") return declared;
+  const t = `${label} ${topic}`.toLowerCase();
+  if (t.includes("linkedin")) return "linkedin";
+  if (t.includes("instagram")) return "instagram";
+  if (t.includes("newsletter") || t.includes("mailing")) return "newsletter";
+  return declared;
+}
 export type RoutineFreq = "quotidienne" | "hebdomadaire" | "mensuelle";
 
 export type Routine = {
