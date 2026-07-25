@@ -152,10 +152,13 @@ export async function sendCampaignAction(formData: FormData) {
 
   let count = 0;
   try {
-    // Un e-mail par destinataire : chacun reçoit son lien de désinscription.
+    // Un e-mail par destinataire : lien de désinscription individuel +
+    // pixel de suivi d'ouverture signé (statistiques par contact).
+    const { openPixelUrl } = await import("@/lib/newsletter-stats");
     const bodyHtml = markdownToEmailHtml(c.body);
     count = await sendPersonalized(recipients, c.subject, (email) =>
-      wrapEmail(bodyHtml, unsubscribeUrl(email)),
+      wrapEmail(bodyHtml, unsubscribeUrl(email)) +
+      `<img src="${openPixelUrl(id, email)}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;" />`,
     );
     if (count === 0) redirect(`/admin/communication/newsletter/${id}?error=send`);
   } catch {

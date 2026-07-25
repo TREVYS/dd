@@ -6,6 +6,7 @@ import { listCampaigns } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { getAllPosts, getPost, formatDateFr } from "@/lib/blog";
 import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction } from "./actions";
+import { campaignOpens, contactActivity } from "@/lib/newsletter-stats";
 import { ArticlePicker, type PickPost } from "./article-picker";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +22,24 @@ export default async function NewsletterAdmin({
   const tg = telegramConfigured();
   const campaigns = listCampaigns();
   const mailOn = mailerConfigured();
+
+  // Statistiques d'ouverture (pixel de suivi, par contact).
+  const activity = contactActivity();
+  const sentCamps = campaigns.filter((c) => c.status === "envoye" && (c.sentCount ?? 0) > 0);
+  const withOpens = sentCamps.map((c) => ({ c, opens: campaignOpens(c.id) }));
+  const totSent = withOpens.reduce((x, y) => x + (y.c.sentCount ?? 0), 0);
+  const totOpens = withOpens.reduce((x, y) => x + y.opens, 0);
+  const avgOpenRate = totSent > 0 ? Math.round((totOpens / totSent) * 100) : null;
+  const last = withOpens[0]; // campagnes triées de la plus récente à la plus ancienne
+  const lastRate = last && (last.c.sentCount ?? 0) > 0 ? Math.round((last.opens / last.c.sentCount!) * 100) : null;
+  const ninety = Date.now() - 90 * 24 * 3600 * 1000;
+  const activeCount = subs.filter((x) => {
+    const a = activity[x.email.toLowerCase()];
+    return a?.lastOpen && new Date(a.lastOpen).getTime() > ninety;
+  }).length;
+  // Historique : les 3 dernières campagnes visibles, le reste replié.
+  const recentCamps = campaigns.slice(0, 3);
+  const olderCamps = campaigns.slice(3);
   // Tous les articles publiés, avec un index de recherche (titre + résumé +
   // contenu) pour filtrer par mots-clés dans le sélecteur ci-dessous.
   const pickPosts: PickPost[] = getAllPosts().map((p) => {
@@ -64,6 +83,26 @@ export default async function NewsletterAdmin({
         <Link href="/admin/reglages" className="adm-link">Réglages →</Link>
       </div>
 
+      {/* Indicateurs clés */}
+      <div className="adm-grid">
+        <div className="adm-kpi"><div className="k">Abonnés</div><div className="v o">{subs.length}</div></div>
+        <div className="adm-kpi">
+          <div className="k">Taux d&apos;ouverture moyen</div>
+          <div className="v">{avgOpenRate !== null ? `${avgOpenRate} %` : "—"}</div>
+        </div>
+        <div className="adm-kpi">
+          <div className="k">Dernière campagne</div>
+          <div className="v">{lastRate !== null ? `${lastRate} %` : "—"}</div>
+        </div>
+        <div className="adm-kpi"><div className="k">Contacts actifs (90 j)</div><div className="v">{activeCount}</div></div>
+      </div>
+      {sentCamps.length > 0 && (
+        <p className="muted" style={{ fontSize: ".78rem", color: "var(--ink3)", margin: "-.4rem 0 1.2rem" }}>
+          Ouvertures mesurées par pixel depuis cette mise à jour (certains clients mail comme Apple Mail
+          préchargent les images : le taux est un ordre de grandeur).
+        </p>
+      )}
+
       {sp.error === "noselection" && (
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
           Sélectionnez au moins un article à diffuser.
@@ -103,14 +142,14 @@ export default async function NewsletterAdmin({
         </form>
       </div>
 
-      {/* Campagnes */}
+      {/* Campagnes : les 3 dernières, le reste replié */}
       <div className="adm-card" style={{ padding: 0, marginBottom: "1.2rem" }}>
         <table className="adm-table">
           <thead>
-            <tr><th style={{ paddingLeft: "1.1rem" }}>Objet</th><th>Statut</th><th>Envoi</th><th></th></tr>
+            <tr><th style={{ paddingLeft: "1.1rem" }}>Objet</th><th>Statut</th><th>Envoi</th><th>Ouvertures</th><th></th></tr>
           </thead>
           <tbody>
-            {campaigns.map((c) => (
+            {recentCamps.map((c) => (
               <tr key={c.id}>
                 <td style={{ fontWeight: 600, paddingLeft: "1.1rem" }}>
                   <Link href={`/admin/communication/newsletter/${c.id}`} className="adm-link">{c.subject}</Link>
@@ -123,16 +162,45 @@ export default async function NewsletterAdmin({
                 <td className="muted">
                   {c.sentAt ? `${c.sentCount ?? 0} dest. · ${new Date(c.sentAt).toLocaleDateString("fr-FR")}` : "—"}
                 </td>
+                <td>
+                  {c.status === "envoye" && (c.sentCount ?? 0) > 0
+                    ? (() => { const o = campaignOpens(c.id); return <b>{o} <span className="muted" style={{ fontWeight: 500 }}>({Math.round((o / c.sentCount!) * 100)} %)</span></b>; })()
+                    : <span className="muted">—</span>}
+                </td>
                 <td style={{ textAlign: "right", paddingRight: "1.1rem" }}>
                   <Link className="adm-btn ghost sm" href={`/admin/communication/newsletter/${c.id}`}>Ouvrir</Link>
                 </td>
               </tr>
             ))}
             {campaigns.length === 0 && (
-              <tr><td colSpan={4} className="muted" style={{ padding: "1.2rem" }}>Aucun mailing préparé pour l&apos;instant.</td></tr>
+              <tr><td colSpan={5} className="muted" style={{ padding: "1.2rem" }}>Aucun mailing préparé pour l&apos;instant.</td></tr>
             )}
           </tbody>
         </table>
+        {olderCamps.length > 0 && (
+          <details style={{ padding: ".6rem 1.1rem 1rem" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: ".88rem", color: "var(--ink2)" }}>
+              Voir les {olderCamps.length} campagne{olderCamps.length > 1 ? "s" : ""} plus ancienne{olderCamps.length > 1 ? "s" : ""}
+            </summary>
+            <table className="adm-table" style={{ marginTop: ".6rem" }}>
+              <tbody>
+                {olderCamps.map((c) => (
+                  <tr key={c.id}>
+                    <td style={{ fontWeight: 600 }}>
+                      <Link href={`/admin/communication/newsletter/${c.id}`} className="adm-link">{c.subject}</Link>
+                    </td>
+                    <td className="muted">{c.sentAt ? `${c.sentCount ?? 0} dest. · ${new Date(c.sentAt).toLocaleDateString("fr-FR")}` : "brouillon"}</td>
+                    <td>
+                      {c.status === "envoye" && (c.sentCount ?? 0) > 0
+                        ? (() => { const o = campaignOpens(c.id); return <>{o} ouv. ({Math.round((o / c.sentCount!) * 100)} %)</>; })()
+                        : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+        )}
       </div>
 
       <div
@@ -152,7 +220,7 @@ export default async function NewsletterAdmin({
         <h2>Inscrits</h2>
         <table className="adm-table">
           <thead>
-            <tr><th>E-mail</th><th>Origine</th><th>Date</th><th style={{ textAlign: "right" }}>Actions</th></tr>
+            <tr><th>E-mail</th><th>Origine</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
           </thead>
           <tbody>
             {subs.map((s) => (
@@ -160,6 +228,19 @@ export default async function NewsletterAdmin({
                 <td>{!s.read && <span style={{ color: "#E26A0F", marginRight: ".4rem" }}>●</span>}{s.email}</td>
                 <td className="muted">{s.source}</td>
                 <td className="muted">{new Date(s.date).toLocaleString("fr-FR")}</td>
+                <td>
+                  {(() => {
+                    const a = activity[s.email.toLowerCase()];
+                    if (!a?.opens) return <span className="muted">—</span>;
+                    const active = a.lastOpen && new Date(a.lastOpen).getTime() > ninety;
+                    return (
+                      <span style={{ fontSize: ".82rem", fontWeight: 600, color: active ? "#2E9E6B" : "var(--ink3)" }}>
+                        {active ? "● Actif" : "○ Inactif"} · {a.opens} ouv.
+                        {a.lastOpen ? ` · ${new Date(a.lastOpen).toLocaleDateString("fr-FR")}` : ""}
+                      </span>
+                    );
+                  })()}
+                </td>
                 <td style={{ textAlign: "right" }}>
                   <form action={deleteSubscriberAction}>
                     <input type="hidden" name="email" value={s.email} />
@@ -168,7 +249,7 @@ export default async function NewsletterAdmin({
                 </td>
               </tr>
             ))}
-            {subs.length === 0 && <tr><td colSpan={4} className="muted">Aucune inscription pour l&apos;instant.</td></tr>}
+            {subs.length === 0 && <tr><td colSpan={5} className="muted">Aucune inscription pour l&apos;instant.</td></tr>}
           </tbody>
         </table>
       </div>
