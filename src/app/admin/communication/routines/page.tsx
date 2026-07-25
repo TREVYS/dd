@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PendingButton } from "../../pending-button";
 import { listRoutines, describeSchedule, nextDue, WEEKDAYS } from "@/lib/alfred-routines";
 import { addRoutineAction, deleteRoutineAction, runNowAction, toggleRoutineAction, updateRoutineAction } from "./actions";
 
@@ -134,7 +135,7 @@ export default async function RoutinesPage({
                   <div className="adm-actions" style={{ justifyContent: "flex-end", paddingRight: "1.1rem", flexWrap: "wrap" }}>
                     <form action={runNowAction}>
                       <input type="hidden" name="id" value={r.id} />
-                      <button className="adm-btn sm" type="submit">Exécuter maintenant</button>
+                      <PendingButton className="adm-btn sm" pendingLabel="Alfred travaille…">Exécuter maintenant</PendingButton>
                     </form>
                     <Link className="adm-btn ghost sm" href={`/admin/communication/routines?edit=${r.id}`}>Modifier</Link>
                     <form action={toggleRoutineAction}>

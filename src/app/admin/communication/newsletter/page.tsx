@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PendingButton } from "../../pending-button";
 import { listSubscribers, unreadCount } from "@/lib/newsletter";
 import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
@@ -83,7 +84,7 @@ export default async function NewsletterAdmin({
             <input name="subject" placeholder="Ex. Nos dernières analyses — Trevys" />
           </div>
           <div className="adm-actions" style={{ marginTop: ".8rem" }}>
-            <button className="adm-btn" type="submit">Composer le mailing</button>
+            <PendingButton pendingLabel="Alfred compose…">Composer le mailing</PendingButton>
           </div>
         </form>
       </div>

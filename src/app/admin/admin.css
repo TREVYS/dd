@@ -165,6 +165,13 @@
 /* Alertes entrantes empilées */
 .ck-alerts{display:flex;flex-direction:column;gap:.6rem}
 
+/* Anneau discret « Alfred travaille » dans les boutons */
+.adm-spin{display:inline-block;width:13px;height:13px;margin-right:.5rem;vertical-align:-2px;
+  border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;
+  animation:adm-spin .7s linear infinite}
+.adm-btn.ghost .adm-spin,.adm-btn.sm.ghost .adm-spin{border-color:var(--o-soft);border-top-color:var(--o)}
+@keyframes adm-spin{to{transform:rotate(360deg)}}
+
 /* Deux colonnes qui s'empilent sur mobile */
 .adm-cols2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
 @media(max-width:760px){.adm-cols2{grid-template-columns:1fr}}
