@@ -54,10 +54,26 @@ export default function ReseauxPage() {
       <PostComposer />
 
       {groups.map((g) => {
-        const items = posts.filter((p) => p.status === g);
+        let items = posts.filter((p) => p.status === g);
+        // Publiés : on ne garde à l'écran que le dernier post (l'historique
+        // complet n'a pas d'intérêt ici — il vit sur les réseaux eux-mêmes).
+        const publishedTotal = g === "publie" ? items.length : 0;
+        if (g === "publie") {
+          items = [...items]
+            .sort((a, b) => ((a.publishedAt ?? a.createdAt) < (b.publishedAt ?? b.createdAt) ? 1 : -1))
+            .slice(0, 1);
+        }
         return (
           <div className="adm-card" key={g} style={{ marginTop: "1.4rem" }}>
-            <h2>{STATUS_LABEL[g]} {items.length > 0 && `(${items.length})`}</h2>
+            <h2>
+              {g === "publie" ? "Dernier post publié" : STATUS_LABEL[g]}{" "}
+              {g !== "publie" && items.length > 0 && `(${items.length})`}
+            </h2>
+            {g === "publie" && publishedTotal > 1 && (
+              <p className="muted" style={{ fontSize: ".8rem", margin: ".2rem 0 .8rem" }}>
+                {publishedTotal - 1} post{publishedTotal > 2 ? "s" : ""} plus ancien{publishedTotal > 2 ? "s" : ""} masqué{publishedTotal > 2 ? "s" : ""}.
+              </p>
+            )}
             {items.length === 0 ? (
               <p className="muted">Aucun post.</p>
             ) : (
