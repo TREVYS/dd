@@ -71,6 +71,15 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
     };
   }, [mobileOpen]);
 
+  // Refermer le menu (et les déroulants) à chaque changement de page. La barre
+  // de navigation vit dans le layout : elle ne se remonte pas lors d'une
+  // navigation, donc sans cela le menu mobile resterait ouvert après un clic
+  // sur « Postuler » ou « Un rdv ? ».
+  useEffect(() => {
+    setMobileOpen(false);
+    setOpenDrop(null);
+  }, [pathname]);
+
   // Fermer les dropdowns au clic extérieur et à la touche Échap.
   useEffect(() => {
     if (!openDrop) return;
@@ -165,10 +174,10 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
             Guide RFE
           </a>
           {/* Boutons compacts mobile : postuler + prise de rendez-vous */}
-          <Link className="btn btn-sm btn-ghost mkt-ncta-postuler" href="/nous-rejoindre">
+          <Link className="btn btn-sm btn-ghost mkt-ncta-postuler" href="/nous-rejoindre" onClick={() => setMobileOpen(false)}>
             Postuler
           </Link>
-          <Link className="btn btn-sm btn-gold mkt-ncta-rdvm" href="/rendez-vous">
+          <Link className="btn btn-sm btn-gold mkt-ncta-rdvm" href="/rendez-vous" onClick={() => setMobileOpen(false)}>
             Un rdv&nbsp;?
           </Link>
           <button
