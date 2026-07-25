@@ -74,7 +74,9 @@ export default async function AdminReglages({
       )}
       {sp.error && (
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
-          ⚠️ La connexion a échoué. Réessayez, ou vérifiez la configuration développeur.
+          {sp.error === "noinsta"
+            ? "⚠️ Connexion Meta réussie, mais aucun compte Instagram professionnel relié à une de vos Pages Facebook n'a été trouvé. Passez votre compte Instagram en « professionnel » et reliez-le à votre Page Facebook, puis reconnectez."
+            : "⚠️ La connexion a échoué. Réessayez, ou vérifiez la configuration développeur."}
         </div>
       )}
 

@@ -96,10 +96,12 @@ export function isConfigured(provider: Provider): boolean {
 
 // Publie un post sur un réseau. Renvoie {ok, error?}. Tant que le compte n'est
 // pas connecté (pas de jeton), renvoie ok:false avec un motif — le post reste
-// alors en brouillon/planifié côté cockpit.
+// alors en brouillon/planifié côté cockpit. `image` (URL /uploads/… ou http)
+// est obligatoire pour Instagram, optionnelle ailleurs.
 export async function publishPost(
   provider: Provider,
   content: string,
+  image?: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const store = readSocial();
   const conn = store[provider];
@@ -142,8 +144,42 @@ export async function publishPost(
       }
       return { ok: true };
     }
-    // Instagram : publication via Graph API (à finaliser après connexion Meta).
-    return { ok: false, error: "Publication Instagram à finaliser après connexion" };
+    // Instagram : publication d'une image + légende via la Graph API, en deux
+    // temps (création d'un conteneur média, puis publication).
+    const igId = conn.authorUrn;
+    if (!igId) {
+      return { ok: false, error: "Compte Instagram à reconnecter (identifiant manquant) — Réglages → Réseaux sociaux" };
+    }
+    if (!image) {
+      return { ok: false, error: "Instagram exige une image : ajoutez une image au post (médiathèque) puis republiez." };
+    }
+    const { SITE_URL } = await import("@/lib/site");
+    const imageUrl = image.startsWith("http") ? image : `${SITE_URL}${image}`;
+
+    const createRes = await fetch(`https://graph.facebook.com/v19.0/${igId}/media`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        image_url: imageUrl,
+        caption: content.slice(0, 2200),
+        access_token: conn.accessToken,
+      }),
+    });
+    const created = (await createRes.json()) as { id?: string; error?: { message?: string } };
+    if (!created.id) {
+      return { ok: false, error: `Instagram (préparation) — ${created.error?.message ?? `HTTP ${createRes.status}`}` };
+    }
+
+    const pubRes = await fetch(`https://graph.facebook.com/v19.0/${igId}/media_publish`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ creation_id: created.id, access_token: conn.accessToken }),
+    });
+    const pub = (await pubRes.json()) as { id?: string; error?: { message?: string } };
+    if (!pub.id) {
+      return { ok: false, error: `Instagram (publication) — ${pub.error?.message ?? `HTTP ${pubRes.status}`}` };
+    }
+    return { ok: true };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }

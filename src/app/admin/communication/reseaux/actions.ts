@@ -78,7 +78,7 @@ export async function publishPostAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const post = getPost(id);
   if (!post) return;
-  const res = await publishPost(post.network, post.content);
+  const res = await publishPost(post.network, post.content, post.image);
   if (!res.ok) {
     revalidatePath(PATH);
     redirect(`${PATH}?puberr=${encodeURIComponent(res.error ?? "échec inconnu")}`);

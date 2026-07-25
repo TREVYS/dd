@@ -130,6 +130,47 @@
 
 /* ===== Cockpit : tableau de bord (style Coursue, couleurs Trevys) ===== */
 .ck-grid{display:grid;grid-template-columns:1fr 340px;gap:1.3rem;align-items:start}
+
+/* Alertes entrantes empilées */
+.ck-alerts{display:flex;flex-direction:column;gap:.6rem}
+
+/* Indicateurs clés (KPI) */
+.ck-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+@media(max-width:900px){.ck-kpis{grid-template-columns:repeat(2,1fr)}}
+.ck-kpi{display:flex;flex-direction:column;gap:.15rem;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:.95rem 1.05rem;text-decoration:none;transition:border-color .15s,transform .15s}
+.ck-kpi:hover{border-color:var(--o);transform:translateY(-2px)}
+.ck-kpi .ic{font-size:1.05rem}
+.ck-kpi .v{font-size:1.5rem;font-weight:800;color:var(--ink);line-height:1.15}
+.ck-kpi .k{font-size:.76rem;color:var(--ink3);font-weight:600}
+
+/* Pipeline de communication */
+.ck-pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+@media(max-width:900px){.ck-pipe{grid-template-columns:repeat(2,1fr)}}
+.ck-pipe-col{display:flex;flex-direction:column;gap:.2rem;background:var(--bg);border:1px solid var(--line);
+  border-radius:14px;padding:.9rem 1rem;text-decoration:none;transition:border-color .15s}
+.ck-pipe-col:hover{border-color:var(--o)}
+.ck-pipe-col .n{font-size:1.6rem;font-weight:800;color:var(--o)}
+.ck-pipe-col .t{font-size:.84rem;font-weight:700;color:var(--ink)}
+.ck-pipe-col .d{font-size:.74rem;color:var(--ink3)}
+
+/* État des connexions */
+.ck-conns{display:flex;flex-direction:column;gap:.35rem;margin-top:.6rem}
+.ck-conn{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:10px;text-decoration:none;transition:background .15s}
+.ck-conn:hover{background:var(--bg)}
+.ck-conn .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.ck-conn .dot.ok{background:#2eaf5d;box-shadow:0 0 0 3px rgba(46,175,93,.15)}
+.ck-conn .dot.ko{background:#d8b04a;box-shadow:0 0 0 3px rgba(216,176,74,.16)}
+.ck-conn .lb{font-size:.85rem;font-weight:700;color:var(--ink)}
+.ck-conn .dt{margin-left:auto;font-size:.74rem;color:var(--ink3);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Échéances à venir */
+.ck-due{display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem}
+.ck-due-it{display:flex;align-items:center;gap:.65rem;text-decoration:none;padding:.45rem .55rem;border-radius:10px;transition:background .15s}
+.ck-due-it:hover{background:var(--bg)}
+.ck-due-it .dt{flex:none;font-size:.78rem;font-weight:800;color:#fff;background:linear-gradient(140deg,#FBB040,var(--o2));
+  border-radius:8px;padding:.3rem .45rem}
+.ck-due-it .tx{font-size:.8rem;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ck-main{display:flex;flex-direction:column;gap:1.3rem;min-width:0}
 .ck-aside{display:flex;flex-direction:column;gap:1.3rem}
 
