@@ -147,6 +147,9 @@
 /* Pipeline de communication */
 .ck-pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
 @media(max-width:900px){.ck-pipe{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.ck-pipe{grid-template-columns:1fr}}
+/* Téléphone : 14 barres d'audience tiennent, mais on allège les étiquettes */
+@media(max-width:600px){.ck-bars2 .lb{display:none}.ck-bars2{gap:3px}}
 .ck-pipe-col{display:flex;flex-direction:column;gap:.2rem;background:var(--bg);border:1px solid var(--line);
   border-radius:14px;padding:.9rem 1rem;text-decoration:none;transition:border-color .15s}
 .ck-pipe-col:hover{border-color:var(--o)}
