@@ -63,10 +63,6 @@ export function AdminShell({
             <span />
             <span />
           </button>
-          <div className="ck-search">
-            <svg viewBox="0 0 24 24"><path d="M21 21l-4-4M11 18a7 7 0 100-14 7 7 0 000 14z" /></svg>
-            <input placeholder="Rechercher…" aria-label="Rechercher" />
-          </div>
           <div className="ck-topuser">
             <span className="av">{initials}</span>
             <span className="nm">{name}</span>

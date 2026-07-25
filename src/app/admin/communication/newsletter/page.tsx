@@ -3,8 +3,9 @@ import { listSubscribers, unreadCount } from "@/lib/newsletter";
 import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
-import { getAllPosts, formatDateFr } from "@/lib/blog";
+import { getAllPosts, getPost, formatDateFr } from "@/lib/blog";
 import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction } from "./actions";
+import { ArticlePicker, type PickPost } from "./article-picker";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,18 @@ export default async function NewsletterAdmin({
   const tg = telegramConfigured();
   const campaigns = listCampaigns();
   const mailOn = mailerConfigured();
-  const posts = getAllPosts().slice(0, 24);
+  // Tous les articles publiés, avec un index de recherche (titre + résumé +
+  // contenu) pour filtrer par mots-clés dans le sélecteur ci-dessous.
+  const pickPosts: PickPost[] = getAllPosts().map((p) => {
+    const content = getPost(p.slug)?.content ?? "";
+    return {
+      slug: p.slug,
+      title: p.title,
+      category: p.category,
+      dateLabel: formatDateFr(p.date),
+      search: `${p.title} ${p.excerpt} ${content}`.toLowerCase(),
+    };
+  });
 
   return (
     <>
@@ -65,20 +77,7 @@ export default async function NewsletterAdmin({
           boutons « Lire l&apos;article »). Vous le relisez, l&apos;ajustez, puis l&apos;envoyez.
         </p>
         <form action={createArticlesCampaignAction}>
-          <div className="ck-artpick">
-            {posts.map((p) => (
-              <label key={p.slug} className="ck-artpick-item">
-                <input type="checkbox" name="slugs" value={p.slug} />
-                <span className="ck-artpick-body">
-                  <span className="t">{p.title}</span>
-                  <span className="m">
-                    <span className="adm-tag">{p.category}</span> {formatDateFr(p.date)}
-                  </span>
-                </span>
-              </label>
-            ))}
-            {posts.length === 0 && <p className="muted">Aucun article publié pour l&apos;instant.</p>}
-          </div>
+          <ArticlePicker posts={pickPosts} />
           <div className="adm-field" style={{ marginTop: "1rem", maxWidth: 520 }}>
             <label>Objet de l&apos;e-mail <small>(optionnel — proposé automatiquement)</small></label>
             <input name="subject" placeholder="Ex. Nos dernières analyses — Trevys" />
