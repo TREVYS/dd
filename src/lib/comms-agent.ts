@@ -461,14 +461,16 @@ export async function draftSocialPost(
   const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
   const client = new AnthropicSDK({ apiKey });
 
+  const jour = new Date().toLocaleDateString("fr-FR", { weekday: "long" });
   const consignes =
     network === "linkedin"
-      ? "Format LinkedIn : accroche forte en première ligne, corps aéré (sauts de ligne, éventuelles puces), 3 à 6 hashtags pertinents en fin. Pas de titre Markdown. " +
-        "TON : humain avant tout — on doit sentir une vraie personne qui parle, pas un robot ni un communiqué. Chaleureux, avec une pointe d'humour ou d'autodérision quand le sujet s'y prête (les chiffres et la fiscalité supportent très bien un sourire). " +
-        "Bannis absolument le style corporate creux (« Nous sommes ravis de… », « À l'ère du digital… », « game changer », « n'hésitez pas à ») et les tournures d'IA (« Dans un monde où… », « Il est important de noter que… »). " +
-        "Écris comme John raconterait le sujet à un client au café : phrases courtes, exemples concrets, un vrai point de vue. " +
-        "INTERACTION : termine TOUJOURS par une question ouverte et sincère à l'audience (leur expérience, leur avis, leur galère du moment) pour lancer la conversation en commentaires."
-      : "Format Instagram : plus court et percutant, ton chaleureux et complice, quelques emojis pertinents, une pointe d'humour, appel à l'action ou question à la communauté, 5 à 10 hashtags en fin.";
+      ? `FORMAT COURT OBLIGATOIRE (6-9 lignes en tout) : une accroche du type « C'est ${jour}, je vous partage un nouvel article sur … » (varie la formule d'une fois sur l'autre), ` +
+        "puis un résumé de 3-4 lignes qui donne envie (le problème, ce qu'on y apprend), puis le lien vers l'article sur www.trevys.fr seul sur sa ligne, et 3-4 hashtags. Pas de titre Markdown, pas de pavé. " +
+        "TON : humain et chaleureux — une vraie personne qui parle, pas un robot ni un communiqué. Une pointe d'humour bienvenue quand le sujet s'y prête. " +
+        "Bannis le style corporate creux (« Nous sommes ravis de… », « À l'ère du digital… », « n'hésitez pas à ») et les tournures d'IA (« Dans un monde où… »). " +
+        "Une courte question finale à l'audience est bienvenue si elle reste naturelle."
+      : `FORMAT COURT OBLIGATOIRE (5-7 lignes) : accroche du type « C'est ${jour}, nouvel article sur … » (varie la formule), résumé de 3-4 lignes, ` +
+        "invitation à lire l'article (lien www.trevys.fr en bio ou sur sa ligne), quelques emojis pertinents, ton chaleureux et complice, 5-8 hashtags en fin.";
 
   const res = await client.messages.create({
     model: "claude-sonnet-4-6",

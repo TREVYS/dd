@@ -25,7 +25,7 @@ function SubmitBtn({ disabled }: { disabled: boolean }) {
 
 // Panneau de diffusion : depuis un article, préparer des posts réseaux avec une
 // image de front au choix par réseau. Les brouillons partent dans la file.
-export function ArticleDiffusion({ title, excerpt }: { title: string; excerpt: string }) {
+export function ArticleDiffusion({ title, excerpt, url }: { title: string; excerpt: string; url?: string }) {
   const [linkedin, setLinkedin] = useState(true);
   const [instagram, setInstagram] = useState(false);
 
@@ -40,6 +40,7 @@ export function ArticleDiffusion({ title, excerpt }: { title: string; excerpt: s
       <form action={diffuseArticleAction}>
         <input type="hidden" name="title" value={title} />
         <input type="hidden" name="excerpt" value={excerpt} />
+        {url && <input type="hidden" name="url" value={url} />}
 
         <label className="adm-diff-net">
           <input type="checkbox" name="net_linkedin" checked={linkedin} onChange={(e) => setLinkedin(e.target.checked)} />

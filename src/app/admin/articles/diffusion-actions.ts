@@ -14,7 +14,10 @@ export async function diffuseArticleAction(formData: FormData) {
 
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
-  const topic = excerpt ? `${title} — ${excerpt}` : title;
+  const url = String(formData.get("url") ?? "").trim();
+  const topic =
+    `${title}${excerpt ? ` — ${excerpt}` : ""}` +
+    (url ? `\nLIEN DE L'ARTICLE à inclure dans le post : ${url}` : "");
 
   const scheduledDate = String(formData.get("scheduledDate") ?? "").trim();
   const status = scheduledDate ? "planifie" : "brouillon";

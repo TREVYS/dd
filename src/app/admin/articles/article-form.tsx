@@ -61,7 +61,11 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
     </form>
 
     {isEdit && (
-      <ArticleDiffusion title={article?.title ?? ""} excerpt={article?.excerpt ?? ""} />
+      <ArticleDiffusion
+        title={article?.title ?? ""}
+        excerpt={article?.excerpt ?? ""}
+        url={article?.slug ? `https://www.trevys.fr/blog/${article.slug}` : undefined}
+      />
     )}
     </>
   );
