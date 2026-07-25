@@ -1,7 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { addItem, listItems } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
-import { alfredSystemBlock } from "@/lib/alfred-config";
+import { alfredSystemBlock, readAlfred, GED_THEMES } from "@/lib/alfred-config";
 import { siteKnowledgeBlock } from "@/lib/site-knowledge";
 import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
@@ -65,6 +65,7 @@ Tes moyens d'action (outils) :
 - creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
 - definir_photo / retirer_photo : change la photo d'un associé ou d'un consultant du site à partir d'une image de la médiathèque (à faire uniquement sur demande explicite).
 - lister_candidatures / refuser_candidature / inviter_entretien : gère le recrutement. RÈGLE ABSOLUE : refuser ou inviter envoie un e-mail réel au candidat — uniquement sur instruction explicite et non ambiguë de John (sinon, liste et demande confirmation).
+- chercher_documents : cherche dans la GED du cabinet (base documentaire fournie par John : PDF, notes, guides, rangés par thème). UTILISE-LE dès qu'une question de John porte sur un contenu documentaire précis, ou avant de rédiger sur un sujet couvert par un thème de la GED — tu réponds alors à partir des documents, en citant le document utilisé.
 - lister_statistiques : consulte la fréquentation du site (pages vues, pages les plus consultées, interactions, tendance récente) pour répondre aux questions sur l'audience.
 - lister_messages : consulte les messages reçus via le formulaire de contact.
 - lister_newsletter : consulte l'état de la newsletter (nombre d'inscrits, campagnes envoyées/brouillons).
@@ -224,6 +225,19 @@ const TOOLS = [
       type: "object" as const,
       properties: { slug: { type: "string" } },
       required: ["slug"],
+    },
+  },
+  {
+    name: "chercher_documents",
+    description:
+      "Cherche dans la GED du cabinet (documents fournis par John : PDF, Word, notes, liens). Renvoie les documents les plus pertinents avec de larges extraits. À utiliser pour répondre aux questions documentaires et pour sourcer articles/posts.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        requete: { type: "string", description: "Mots-clés de la recherche" },
+        theme: { type: "string", description: "Optionnel — un des thèmes de la GED pour restreindre la recherche" },
+      },
+      required: ["requete"],
     },
   },
   {
@@ -396,6 +410,36 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     removePeoplePhoto(slug);
     actions.push(`Photo personnalisée de ${slug} retirée`);
     return `Photo personnalisée retirée pour ${slug} — retour au visuel par défaut. État actuel : ${JSON.stringify(listPeoplePhotos())}`;
+  }
+  if (name === "chercher_documents") {
+    const requete = String(input.requete ?? "").toLowerCase().trim();
+    const theme = String(input.theme ?? "").trim();
+    const words = requete.split(/\s+/).filter((w) => w.length > 2);
+    const docs = (readAlfred().knowledge ?? []).filter((d) => !theme || d.theme === theme);
+    if (docs.length === 0) return "La GED est vide (ou ce thème ne contient aucun document).";
+    // Pertinence simple : nombre de mots-clés présents (titre pondéré x3).
+    const scored = docs
+      .map((d) => {
+        const t = d.title.toLowerCase();
+        const x = d.text.toLowerCase();
+        const score = words.reduce((s2, w) => s2 + (t.includes(w) ? 3 : 0) + (x.includes(w) ? 1 : 0), 0);
+        return { d, score };
+      })
+      .filter((r) => r.score > 0 || words.length === 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+    if (scored.length === 0) {
+      return `Aucun document ne correspond à « ${requete} ». Documents disponibles : ${docs.slice(0, 20).map((d) => `« ${d.title} »${d.theme ? ` (${d.theme})` : ""}`).join(", ")}. Thèmes : ${GED_THEMES.join(", ")}.`;
+    }
+    return scored
+      .map(({ d }) => {
+        // Extrait centré sur la première occurrence d'un mot-clé.
+        const x = d.text.toLowerCase();
+        const pos = words.map((w) => x.indexOf(w)).filter((i) => i >= 0).sort((a, b) => a - b)[0] ?? 0;
+        const start = Math.max(0, pos - 500);
+        return `### ${d.title}${d.theme ? ` [${d.theme}]` : ""} (source : ${d.source})\n${d.text.slice(start, start + 7000)}`;
+      })
+      .join("\n\n---\n\n");
   }
   if (name === "lister_statistiques") {
     const a = readAnalytics();
