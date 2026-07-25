@@ -6,10 +6,67 @@ import { subscribeNewsletter, type NewsletterState } from "./newsletter-actions"
 
 const initial: NewsletterState = { ok: false, message: "" };
 
-// Bouton d'appel + popup d'inscription à la newsletter.
+// Mémoire locale du visiteur : déjà inscrit → plus jamais de popup auto ;
+// popup déjà proposé → on attend 30 jours avant de le reproposer.
+const SEEN_KEY = "trevys-news-seen";
+const SUB_KEY = "trevys-news-sub";
+const SEEN_TTL = 30 * 24 * 3600 * 1000; // 30 jours
+
+function shouldAutoOpen(): boolean {
+  try {
+    if (localStorage.getItem(SUB_KEY)) return false;
+    const seen = Number(localStorage.getItem(SEEN_KEY) ?? 0);
+    return !seen || Date.now() - seen > SEEN_TTL;
+  } catch {
+    return false;
+  }
+}
+
+function markSeen() {
+  try {
+    localStorage.setItem(SEEN_KEY, String(Date.now()));
+  } catch { /* stockage indisponible */ }
+}
+
+// Bouton d'appel + popup d'inscription à la newsletter. Le popup s'ouvre
+// aussi tout seul (une fois par mois maximum) : après 30 s de lecture, ou
+// quand la souris quitte la page vers le haut (intention de sortie, PC).
 export function NewsletterPopup({ label = "S'inscrire à la newsletter" }: { label?: string }) {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(subscribeNewsletter, initial);
+
+  // Inscription réussie → on ne reproposera plus jamais le popup automatique.
+  useEffect(() => {
+    if (state.ok) {
+      try {
+        localStorage.setItem(SUB_KEY, "1");
+      } catch { /* stockage indisponible */ }
+    }
+  }, [state.ok]);
+
+  // Ouverture automatique : 30 s de lecture OU intention de sortie (desktop).
+  useEffect(() => {
+    if (!shouldAutoOpen()) return;
+    let done = false;
+    const fire = () => {
+      if (done) return;
+      done = true;
+      markSeen();
+      setOpen(true);
+      cleanup();
+    };
+    const timer = window.setTimeout(fire, 30_000);
+    const onLeave = (e: MouseEvent) => {
+      // Souris qui file vers le haut de la fenêtre = départ probable.
+      if (e.clientY <= 0) fire();
+    };
+    document.addEventListener("mouseout", onLeave);
+    function cleanup() {
+      window.clearTimeout(timer);
+      document.removeEventListener("mouseout", onLeave);
+    }
+    return cleanup;
+  }, []);
 
   // Échap pour fermer + blocage du défilement derrière le popup.
   useEffect(() => {
