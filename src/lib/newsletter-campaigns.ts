@@ -204,19 +204,10 @@ export function wrapEmail(bodyHtml: string, unsubUrl?: string, footerNote?: stri
           </table>
         </td></tr>
 
-        <!-- Bouton site, bien visible et centré -->
-        <tr><td align="center" style="padding:22px 8px 4px;">
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
-            <tr><td align="center" bgcolor="#1B1712" style="border-radius:100px;">
-              <a href="${SITE_URL}" style="display:inline-block;padding:13px 34px;${font}font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:100px;letter-spacing:.02em;">
-                Visiter www.trevys.fr
-              </a>
-            </td></tr>
-          </table>
-        </td></tr>
-
         <!-- Liens rapides -->
-        <tr><td align="center" style="padding:14px 8px 6px;${font}font-size:13px;">
+        <tr><td align="center" style="padding:20px 8px 6px;${font}font-size:13px;">
+          <a href="${SITE_URL}" style="color:#E26A0F;font-weight:bold;text-decoration:none;">www.trevys.fr</a>
+          &nbsp;&nbsp;&bull;&nbsp;&nbsp;
           <a href="https://www.linkedin.com/company/trevys-advisory/" style="color:#E26A0F;font-weight:bold;text-decoration:none;">LinkedIn</a>
           &nbsp;&nbsp;&bull;&nbsp;&nbsp;
           <a href="${SITE_URL}/rendez-vous" style="color:#E26A0F;font-weight:bold;text-decoration:none;">Prendre rendez-vous</a>
