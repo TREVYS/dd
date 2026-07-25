@@ -19,47 +19,32 @@ export default function Page() {
   return (
     <>
       <header className="mkt-phead">
-        <div className="mkt-phead-in mkt-ressources-head">
-          <div>
-            <span className="eyebrow">Ressources</span>
-            <h1>Nos <em>ressources</em> : l&apos;actu du chiffre et de la réforme</h1>
-            <p>
-              Analyses, guides pratiques et décryptages de nos équipes sur la
-              facturation électronique, la fiscalité, la comptabilité et
-              l&apos;innovation.
-            </p>
-          </div>
-          <div className="mkt-ress-side">
-            <a
-              className="mkt-guide-card"
-              href="https://forms.cloud.microsoft/e/mr63uL9LsU"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="mkt-guide-ic" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
-                </svg>
-              </span>
-              <span className="mkt-guide-tx">
-                <small>Guide gratuit · PDF</small>
-                <b>Facturation électronique</b>
-                <span className="mkt-guide-sub">Le guide complet de la réforme</span>
-              </span>
-              <span className="mkt-guide-arrow" aria-hidden="true">→</span>
-            </a>
-            <div className="mkt-ress-stats" aria-hidden="true">
-              <span className="mkt-ress-stat">
-                <b>{posts.length}</b> article{posts.length > 1 ? "s" : ""}
-              </span>
-              {videos.length > 0 && (
-                <span className="mkt-ress-stat">
-                  <b>{videos.length}</b> vidéo{videos.length > 1 ? "s" : ""}
-                </span>
-              )}
-              <span className="mkt-ress-stat"><b>1</b> guide PDF</span>
-            </div>
-          </div>
+        <div className="mkt-phead-in">
+          <span className="eyebrow">Ressources</span>
+          <h1>Nos <em>ressources</em> : l&apos;actu du chiffre et de la réforme</h1>
+          <p>
+            Analyses, guides pratiques et décryptages de nos équipes sur la
+            facturation électronique, la fiscalité, la comptabilité et
+            l&apos;innovation.
+          </p>
+          <a
+            className="mkt-guide-card"
+            href="https://forms.cloud.microsoft/e/mr63uL9LsU"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="mkt-guide-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+              </svg>
+            </span>
+            <span className="mkt-guide-tx">
+              <small>Guide gratuit · PDF</small>
+              <b>Facturation électronique</b>
+              <span className="mkt-guide-sub">Le guide complet de la réforme</span>
+            </span>
+            <span className="mkt-guide-arrow" aria-hidden="true">→</span>
+          </a>
         </div>
       </header>
 

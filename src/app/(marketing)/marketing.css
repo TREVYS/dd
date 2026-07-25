@@ -670,19 +670,9 @@
 .mkt-marq-logo:hover img{filter:none;opacity:1}
 @media(prefers-reduced-motion:reduce){.mkt-marq-track{animation:none;flex-wrap:wrap;justify-content:center}}
 
-/* en-tête page Ressources + carte de téléchargement du guide */
-.mkt-ressources-head{display:flex;align-items:center;justify-content:space-between;gap:2.5rem;flex-wrap:wrap}
-.mkt-ress-side{flex:0 0 auto;display:flex;flex-direction:column;gap:.8rem;align-items:stretch}
-.mkt-ress-stats{display:flex;gap:.55rem;justify-content:center;flex-wrap:wrap}
-.mkt-ress-stat{display:inline-flex;align-items:baseline;gap:.32rem;font-size:.78rem;color:var(--ink2);
-  background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem}
-.mkt-ress-stat b{font-size:.95rem;font-weight:800;color:var(--o,#E26A0F)}
-@media(max-width:760px){.mkt-ress-side{width:100%}}
-
-/* Carte « guide » : bien plus visuelle qu'un gros bouton. Icône ronde à
-   gauche, intitulé sur deux niveaux, flèche à droite. Fonctionne aussi bien
-   posée à droite de l'en-tête (desktop) qu'en pleine largeur (mobile). */
-.mkt-guide-card{flex:0 0 auto;max-width:340px;display:flex;align-items:center;gap:.95rem;
+/* Carte « guide » (page Ressources) : posée sous le texte d'introduction.
+   Icône dégradée à gauche, intitulé sur deux niveaux, flèche à droite. */
+.mkt-guide-card{margin-top:1.6rem;max-width:340px;display:flex;align-items:center;gap:.95rem;
   text-decoration:none;color:var(--ink);background:linear-gradient(135deg,#fff,#fdf4ea);
   border:1px solid #f0dcc2;border-radius:18px;padding:.9rem 1.05rem;
   box-shadow:0 10px 26px -14px rgba(191,110,20,.4);transition:transform .18s,box-shadow .18s,border-color .18s}
