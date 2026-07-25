@@ -30,15 +30,22 @@ export default function Page() {
             </p>
           </div>
           <a
-            className="btn btn-gold mkt-guide-btn"
+            className="mkt-guide-card"
             href="https://forms.cloud.microsoft/e/mr63uL9LsU"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
-            </svg>
-            Télécharger le guide facturation électronique
+            <span className="mkt-guide-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+              </svg>
+            </span>
+            <span className="mkt-guide-tx">
+              <small>Guide gratuit · PDF</small>
+              <b>Facturation électronique</b>
+              <span className="mkt-guide-sub">Le guide complet de la réforme</span>
+            </span>
+            <span className="mkt-guide-arrow" aria-hidden="true">→</span>
           </a>
         </div>
       </header>

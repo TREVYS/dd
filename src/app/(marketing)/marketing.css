@@ -646,13 +646,28 @@
 .mkt-marq-logo:hover img{filter:none;opacity:1}
 @media(prefers-reduced-motion:reduce){.mkt-marq-track{animation:none;flex-wrap:wrap;justify-content:center}}
 
-/* en-tête page Ressources + bouton guide */
+/* en-tête page Ressources + carte de téléchargement du guide */
 .mkt-ressources-head{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
-.mkt-guide-btn{flex:0 0 auto;text-align:left}
-.mkt-guide-btn svg{width:18px;height:18px}
-@media(max-width:760px){.mkt-guide-btn{width:100%;justify-content:center}}
-/* Sur mobile, la nav propose déjà « Guide RFE » : on masque le doublon en page */
-@media(max-width:1000px){.mkt-guide-btn{display:none}}
+
+/* Carte « guide » : bien plus visuelle qu'un gros bouton. Icône ronde à
+   gauche, intitulé sur deux niveaux, flèche à droite. Fonctionne aussi bien
+   posée à droite de l'en-tête (desktop) qu'en pleine largeur (mobile). */
+.mkt-guide-card{flex:0 0 auto;max-width:340px;display:flex;align-items:center;gap:.95rem;
+  text-decoration:none;color:var(--ink);background:linear-gradient(135deg,#fff,#fdf4ea);
+  border:1px solid #f0dcc2;border-radius:18px;padding:.9rem 1.05rem;
+  box-shadow:0 10px 26px -14px rgba(191,110,20,.4);transition:transform .18s,box-shadow .18s,border-color .18s}
+.mkt-guide-card:hover{transform:translateY(-2px);border-color:var(--o);
+  box-shadow:0 16px 34px -14px rgba(191,110,20,.55)}
+.mkt-guide-ic{flex:none;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(140deg,#FBB040,var(--o2,#E26A0F));box-shadow:0 6px 14px -6px rgba(226,106,15,.7)}
+.mkt-guide-ic svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mkt-guide-tx{display:flex;flex-direction:column;gap:.1rem;min-width:0;line-height:1.25}
+.mkt-guide-tx small{font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--o,#E26A0F)}
+.mkt-guide-tx b{font-size:1rem;font-weight:800;color:var(--ink)}
+.mkt-guide-sub{font-size:.78rem;color:var(--ink3)}
+.mkt-guide-arrow{flex:none;margin-left:auto;font-size:1.2rem;font-weight:800;color:var(--o,#E26A0F);transition:transform .18s}
+.mkt-guide-card:hover .mkt-guide-arrow{transform:translateX(3px)}
+@media(max-width:760px){.mkt-guide-card{width:100%;max-width:none}}
 
 /* encart fondateur / expert reconnu (page facturation électronique) */
 .mkt-founder{display:grid;grid-template-columns:280px 1fr;gap:2.5rem;align-items:center;
