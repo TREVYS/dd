@@ -7,6 +7,7 @@ import { unreadCount } from "@/lib/newsletter";
 import { unreadMessages } from "@/lib/contact-messages";
 import { unreadApplications } from "@/lib/jobs";
 import { runDueRoutines } from "@/lib/alfred-routines-run";
+import { maybeSendWeeklyStatsReport } from "@/lib/stats-report";
 
 export const metadata: Metadata = {
   title: "Back-office · Trevys",
@@ -25,6 +26,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // Exécution opportuniste des routines d'Alfred dues (en arrière-plan,
   // sans ralentir l'affichage du cockpit).
   runDueRoutines().catch(() => {});
+  // Rapport d'audience hebdomadaire sur Telegram (au plus 1 fois / 7 jours).
+  maybeSendWeeklyStatsReport().catch(() => {});
 
   const name = session.user.name ?? session.user.email ?? "Admin";
   const initials = name.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
