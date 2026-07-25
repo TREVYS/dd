@@ -49,13 +49,31 @@ export function ApplyForm({ jobSlug, jobTitle }: { jobSlug: string; jobTitle: st
 
   if (state.ok) {
     return (
-      <div
-        className="mkt-contact-form"
-        style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 24, padding: "2.2rem", textAlign: "center" }}
-      >
-        <div style={{ fontSize: "2rem", marginBottom: ".6rem" }}>🎉</div>
-        <p style={{ fontWeight: 700, margin: 0 }}>{state.message}</p>
-      </div>
+      <>
+        {/* Popup de confirmation, par-dessus la page */}
+        <div className="mkt-newspop-overlay">
+          <div className="mkt-newspop" role="dialog" aria-modal="true" aria-labelledby="apply-done-title">
+            <div className="mkt-newspop-done">
+              <div className="ic">🎉</div>
+              <h3 id="apply-done-title">Merci, candidature bien reçue !</h3>
+              <p>
+                Votre dossier pour « {jobTitle} » est entre nos mains. Chaque
+                candidature est lue par un associé — vous recevez un accusé de
+                réception par e-mail et nous revenons vers vous rapidement.
+              </p>
+              <a className="btn btn-gold" href="/nous-rejoindre">Retour aux offres</a>
+            </div>
+          </div>
+        </div>
+        {/* Encart de confirmation qui reste en place sur la page */}
+        <div
+          className="mkt-contact-form"
+          style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 24, padding: "2.2rem", textAlign: "center" }}
+        >
+          <div style={{ fontSize: "2rem", marginBottom: ".6rem" }}>🎉</div>
+          <p style={{ fontWeight: 700, margin: 0 }}>{state.message}</p>
+        </div>
+      </>
     );
   }
 
