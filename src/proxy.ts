@@ -1,44 +1,12 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-// Routes publiques (site vitrine) accessibles sans authentification.
-// Tout le reste (ERP TREVYS OS sous /app, /clients, /devis, …) reste protégé.
-const PUBLIC_PREFIXES = [
-  "/login",
-  "/expertise-comptable",
-  "/consulting",
-  "/intelligence-artificielle",
-  "/facturation-electronique",
-  "/audit-organisationnel",
-  "/le-cabinet",
-  "/notre-ecosysteme",
-  "/references",
-  "/blog",
-  "/p", // pages personnalisées créées depuis le back-office
-  "/contact",
-  "/rendez-vous",
-  "/espace-client",
-  "/mentions-legales",
-  "/fec-partage", // partage de FEC par jeton
-  "/uploads", // médias importés depuis le back-office
-  "/secteurs", // pages secteurs (références)
-  "/desinscription", // désinscription newsletter en un clic
-  "/nous-rejoindre", // recrutement
-  "/opengraph-image", // image de partage social (og:image)
-  "/brand", // ressources de marque (logos, icônes)
-  "/icons",
-];
+// Seul le back-office est protégé. Tout le reste est public — les URL
+// inexistantes tombent ainsi sur la vraie page 404 (et non sur la connexion).
+const PROTECTED_PREFIXES = ["/admin"];
 
-const PUBLIC_FILES = ["/sitemap.xml", "/robots.txt", "/manifest.webmanifest"];
-
-function isPublicPath(pathname: string): boolean {
-  if (pathname === "/") return true; // accueil du site vitrine
-  if (PUBLIC_FILES.includes(pathname)) return true;
-  // Images de partage social générées (suffixe de build, ex. -pwu6ef).
-  if (pathname.startsWith("/opengraph-image") || pathname.startsWith("/twitter-image")) return true;
-  return PUBLIC_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
+function isProtected(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
 export default auth((req) => {
@@ -46,8 +14,8 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoginPage = pathname.startsWith("/login");
 
-  // Visiteur non connecté sur une route protégée → connexion.
-  if (!isLoggedIn && !isPublicPath(pathname)) {
+  // Visiteur non connecté sur le back-office → connexion.
+  if (!isLoggedIn && isProtected(pathname)) {
     const loginUrl = new URL("/login", req.nextUrl.origin);
     return NextResponse.redirect(loginUrl);
   }
