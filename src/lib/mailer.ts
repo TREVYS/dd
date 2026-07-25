@@ -143,13 +143,25 @@ export async function sendPersonalized(
   htmlFor: (email: string) => string,
   replyTo?: string,
 ): Promise<number> {
+  // Anti-spam : cadence maîtrisée, transparente pour l'utilisateur —
+  // un petit délai entre chaque e-mail, et une vraie pause tous les 50
+  // (les fournisseurs pénalisent les rafales, pas le volume).
+  const BATCH = 50;
+  const GAP_MS = 400; // entre deux e-mails
+  const PAUSE_MS = 25_000; // entre deux paquets de 50
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
   let sent = 0;
-  for (const email of recipients) {
+  for (let i = 0; i < recipients.length; i++) {
+    const email = recipients[i];
     try {
       await sendMail({ to: [email], subject, html: htmlFor(email), replyTo });
       sent += 1;
     } catch (e) {
       console.error(`[mailer] échec pour ${email}:`, (e as Error).message);
+    }
+    if (i < recipients.length - 1) {
+      await wait((i + 1) % BATCH === 0 ? PAUSE_MS : GAP_MS);
     }
   }
   return sent;
