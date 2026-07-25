@@ -29,7 +29,7 @@ export function PostComposer() {
         <input type="hidden" name="network" value={network} />
         <input name="topic" placeholder="Sujet du post (ex. « réforme facturation, doctrine de démarrage »)" />
         <button className="adm-btn" type="submit" disabled={drafting}>
-          {drafting ? "Alfred rédige…" : "✍️ Rédiger avec Alfred"}
+          {drafting ? "Alfred rédige…" : "Rédiger avec Alfred"}
         </button>
       </form>
       {draft.error && <p style={{ color: "#c0392b", fontSize: ".82rem", margin: ".2rem 0 0" }}>{draft.error}</p>}

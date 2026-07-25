@@ -111,7 +111,7 @@ export function MarkdownEditor({
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? "Échec de l'import.");
       const it = (d.items ?? [])[0];
-      if (it) insertAtCursor(`\n\n[📎 ${it.name}](${it.url})\n`);
+      if (it) insertAtCursor(`\n\n[${it.name}](${it.url})\n`);
     } catch (e) {
       setErr((e as Error).message);
     }
@@ -188,7 +188,7 @@ export function MarkdownEditor({
           onClick={() => fileRef.current?.click()}
           disabled={busy}
         >
-          {busy ? "Import…" : "🖼 Image"}
+          {busy ? "Import…" : "Image"}
         </button>
         <input
           ref={fileRef}
@@ -221,7 +221,7 @@ export function MarkdownEditor({
           onClick={() => attachRef.current?.click()}
           disabled={busy}
         >
-          📎 Pièce jointe
+          Pièce jointe
         </button>
         <input
           ref={attachRef}

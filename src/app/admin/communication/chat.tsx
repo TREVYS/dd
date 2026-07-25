@@ -34,7 +34,7 @@ export function CommsChat() {
       if (!r.ok) throw new Error(d.error ?? "Erreur");
       setTurns((t) => [...t, { role: "assistant", content: d.reply, actions: d.actions }]);
     } catch (e) {
-      setTurns((t) => [...t, { role: "assistant", content: `⚠️ ${(e as Error).message}` }]);
+      setTurns((t) => [...t, { role: "assistant", content: `${(e as Error).message}` }]);
     }
     setBusy(false);
     setTimeout(() => scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight), 50);
@@ -46,7 +46,7 @@ export function CommsChat() {
         {turns.length === 0 && (
           <div className="adm-chat-empty">
             <div className="adm-chat-ava">🎩</div>
-            <p style={{ fontWeight: 700, margin: ".6rem 0 .2rem" }}>Bonjour John, je suis Alfred 🎩</p>
+            <p style={{ fontWeight: 700, margin: ".6rem 0 .2rem" }}>Bonjour John, je suis Alfred</p>
             <p style={{ color: "var(--ink2)", fontSize: ".9rem", maxWidth: 460 }}>
               Votre directeur de communication. Je peux <b>rédiger des articles</b>,
               <b> planifier</b> vos publications et proposer un <b>calendrier éditorial</b>,
@@ -69,7 +69,7 @@ export function CommsChat() {
               {t.actions && t.actions.length > 0 && (
                 <div className="adm-msg-actions">
                   {t.actions.map((a, k) => (
-                    <span key={k}>✅ {a}</span>
+                    <span key={k}>✓ {a}</span>
                   ))}
                 </div>
               )}

@@ -119,6 +119,63 @@ export async function publishPost(
       if (!author) {
         return { ok: false, error: "Compte à reconnecter (identifiant d'auteur manquant) — Réglages → Réseaux sociaux" };
       }
+
+      // Image jointe (optionnelle) : LinkedIn impose un enregistrement
+      // d'upload, l'envoi du binaire, puis la publication avec l'asset.
+      let assetUrn: string | undefined;
+      if (image) {
+        try {
+          let bytes: Buffer | undefined;
+          if (image.startsWith("/uploads/")) {
+            const local = path.join(process.cwd(), "public", "uploads", path.basename(image));
+            if (fs.existsSync(local)) bytes = fs.readFileSync(local);
+          }
+          if (!bytes && /^https?:\/\//.test(image)) {
+            const r = await fetch(image);
+            if (r.ok) bytes = Buffer.from(await r.arrayBuffer());
+          }
+          if (bytes) {
+            const regRes = await fetch("https://api.linkedin.com/v2/assets?action=registerUpload", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${conn.accessToken}`,
+                "Content-Type": "application/json",
+                "X-Restli-Protocol-Version": "2.0.0",
+              },
+              body: JSON.stringify({
+                registerUploadRequest: {
+                  recipes: ["urn:li:digitalmediaRecipe:feedshare-image"],
+                  owner: author,
+                  serviceRelationships: [
+                    { relationshipType: "OWNER", identifier: "urn:li:userGeneratedContent" },
+                  ],
+                },
+              }),
+            });
+            const reg = (await regRes.json()) as {
+              value?: {
+                asset?: string;
+                uploadMechanism?: Record<string, { uploadUrl?: string }>;
+              };
+            };
+            const uploadUrl = reg.value?.uploadMechanism?.[
+              "com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"
+            ]?.uploadUrl;
+            if (uploadUrl && reg.value?.asset) {
+              const up = await fetch(uploadUrl, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${conn.accessToken}` },
+                body: new Uint8Array(bytes),
+              });
+              if (up.ok) assetUrn = reg.value.asset;
+            }
+          }
+        } catch (e) {
+          // Image impossible à joindre : on publie le texte seul plutôt que d'échouer.
+          console.error("[social] image LinkedIn non jointe:", e);
+        }
+      }
+
       const res = await fetch("https://api.linkedin.com/v2/ugcPosts", {
         method: "POST",
         headers: {
@@ -132,7 +189,8 @@ export async function publishPost(
           specificContent: {
             "com.linkedin.ugc.ShareContent": {
               shareCommentary: { text: content },
-              shareMediaCategory: "NONE",
+              shareMediaCategory: assetUrn ? "IMAGE" : "NONE",
+              ...(assetUrn ? { media: [{ status: "READY", media: assetUrn }] } : {}),
             },
           },
           visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },

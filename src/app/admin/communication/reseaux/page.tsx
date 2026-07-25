@@ -53,13 +53,13 @@ export default async function ReseauxPage({
         }}
       >
         {anyConnected
-          ? "🔗 Comptes connectés : la publication réelle est active."
-          : "ℹ️ Aucun compte connecté pour l'instant : vous travaillez en mode brouillon. Connectez LinkedIn/Instagram dans Réglages pour activer la publication réelle. « Publier » marquera les posts comme publiés en attendant."}
+          ? "Comptes connectés : la publication réelle est active."
+          : "Aucun compte connecté pour l'instant : vous travaillez en mode brouillon. Connectez LinkedIn/Instagram dans Réglages pour activer la publication réelle. « Publier » marquera les posts comme publiés en attendant."}
       </div>
 
       {sp.puberr && (
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
-          ⚠️ La publication a échoué — le post reste en brouillon. Détail : {sp.puberr}
+          La publication a échoué — le post reste en brouillon. Détail : {sp.puberr}
         </div>
       )}
 

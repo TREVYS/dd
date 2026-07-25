@@ -38,7 +38,7 @@ export default async function RecrutementAdmin({
               <th style={{ paddingLeft: "1.1rem" }}>Offre</th>
               <th>Statut</th>
               <th>👁 Vues</th>
-              <th>🧑‍💼 Candidatures</th>
+              <th>Candidatures</th>
               <th style={{ textAlign: "right", paddingRight: "1.1rem" }}>Actions</th>
             </tr>
           </thead>
@@ -113,7 +113,7 @@ export default async function RecrutementAdmin({
               <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem", margin: "0 0 .8rem" }}>
                 {a.experience && <span className="adm-tag">💼 {a.experience}</span>}
                 {a.education && <span className="adm-tag">🎓 {a.education}</span>}
-                {a.availability && <span className="adm-tag">📅 {a.availability}</span>}
+                {a.availability && <span className="adm-tag">Dispo : {a.availability}</span>}
                 {a.languages?.map((l) => <span className="adm-tag" key={l}>🗣 {l}</span>)}
                 {a.skills?.map((s) => (
                   <span key={s} className="adm-tag" style={{ background: "#FFF3E6", borderColor: "#F5D9BE", color: "#9A4D0B" }}>{s}</span>

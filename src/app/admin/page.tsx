@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Icon } from "./icons";
 import { readAnalytics, lastDays } from "@/lib/analytics";
 import { unreadCount } from "@/lib/newsletter";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
@@ -35,12 +36,12 @@ export default function AdminDashboard() {
     .sort((x, y) => (x.scheduledDate! < y.scheduledDate! ? -1 : 1))[0];
 
   const TODO: { n: number; label: string; href: string; ic: string; urgent?: boolean }[] = [
-    { n: appsTodo, label: "candidature(s) à traiter", href: "/admin/recrutement", ic: "🧑‍💼", urgent: true },
-    { n: msgUnread, label: "message(s) reçu(s) non lu(s)", href: "/admin/messages", ic: "📬", urgent: true },
-    { n: newSubs, label: "nouvelle(s) inscription(s) newsletter", href: "/admin/communication/newsletter", ic: "🔔" },
-    { n: artDrafts, label: "brouillon(s) d'article à relire", href: "/admin/communication/calendrier", ic: "📝" },
-    { n: postDrafts, label: "post(s) réseaux à valider", href: "/admin/communication/reseaux", ic: "📣" },
-    { n: newsDrafts, label: "newsletter(s) en brouillon", href: "/admin/communication/newsletter", ic: "💌" },
+    { n: appsTodo, label: "candidature(s) à traiter", href: "/admin/recrutement", ic: "users", urgent: true },
+    { n: msgUnread, label: "message(s) reçu(s) non lu(s)", href: "/admin/messages", ic: "inbox", urgent: true },
+    { n: newSubs, label: "nouvelle(s) inscription(s) newsletter", href: "/admin/communication/newsletter", ic: "bell" },
+    { n: artDrafts, label: "brouillon(s) d'article à relire", href: "/admin/communication/calendrier", ic: "draft" },
+    { n: postDrafts, label: "post(s) réseaux à valider", href: "/admin/communication/reseaux", ic: "megaphone" },
+    { n: newsDrafts, label: "newsletter(s) en brouillon", href: "/admin/communication/newsletter", ic: "mail" },
   ].filter((t) => t.n > 0);
 
   // Connexions : on ne montre que ce qui pose problème.
@@ -56,7 +57,7 @@ export default function AdminDashboard() {
       <div className="ck-main">
         <div className="ck-hero">
           <div className="lbl">Cockpit Trevys</div>
-          <h2>Bonjour John 👋</h2>
+          <h2>Bonjour John</h2>
           <Link className="cta" href="/admin/communication">Parler à Alfred →</Link>
         </div>
 
@@ -64,12 +65,12 @@ export default function AdminDashboard() {
         <div className="adm-card" style={{ margin: 0 }}>
           <h2>À traiter</h2>
           {TODO.length === 0 ? (
-            <p className="muted" style={{ margin: ".4rem 0 0" }}>Rien en attente — tout est à jour ✨</p>
+            <p className="muted" style={{ margin: ".4rem 0 0" }}>Rien en attente — tout est à jour.</p>
           ) : (
             <div className="ck-todo">
               {TODO.map((t) => (
                 <Link href={t.href} className={`ck-todo-it${t.urgent ? " urgent" : ""}`} key={t.label}>
-                  <span className="ic">{t.ic}</span>
+                  <span className="ic"><Icon name={t.ic} /></span>
                   <span className="tx"><b>{t.n}</b> {t.label}</span>
                   <span className="go">→</span>
                 </Link>
@@ -78,7 +79,7 @@ export default function AdminDashboard() {
           )}
           {nextPlanned && (
             <p className="muted" style={{ fontSize: ".82rem", margin: "1rem 0 0" }}>
-              📅 Prochaine publication planifiée : {nextPlanned.scheduledDate} ({nextPlanned.network === "linkedin" ? "LinkedIn" : "Instagram"}).
+              Prochaine publication planifiée : {nextPlanned.scheduledDate} ({nextPlanned.network === "linkedin" ? "LinkedIn" : "Instagram"}).
             </p>
           )}
         </div>
@@ -111,19 +112,19 @@ export default function AdminDashboard() {
         <div className="ck-acard">
           <h3>Actions rapides</h3>
           <div className="ck-ql">
-            <Link href="/admin/communication"><span className="qi">🎩</span> Parler à Alfred</Link>
-            <Link href="/admin/articles/new"><span className="qi">✍️</span> Nouvel article</Link>
-            <Link href="/admin/communication/reseaux"><span className="qi">📣</span> Réseaux sociaux</Link>
-            <Link href="/admin/communication/newsletter"><span className="qi">💌</span> Préparer un mailing</Link>
-            <Link href="/admin/statistiques"><span className="qi">📊</span> Statistiques</Link>
-            <Link href="/"><span className="qi">🌐</span> Voir le site</Link>
+            <Link href="/admin/communication"><span className="qi"><Icon name="chat" /></span> Parler à Alfred</Link>
+            <Link href="/admin/articles/new"><span className="qi"><Icon name="pen" /></span> Nouvel article</Link>
+            <Link href="/admin/communication/reseaux"><span className="qi"><Icon name="megaphone" /></span> Réseaux sociaux</Link>
+            <Link href="/admin/communication/newsletter"><span className="qi"><Icon name="mail" /></span> Préparer un mailing</Link>
+            <Link href="/admin/statistiques"><span className="qi"><Icon name="chart" /></span> Statistiques</Link>
+            <Link href="/"><span className="qi"><Icon name="globe" /></span> Voir le site</Link>
           </div>
         </div>
 
         <div className="ck-acard">
           <h3>Connexions</h3>
           {issues.length === 0 ? (
-            <p className="muted" style={{ fontSize: ".86rem", margin: ".4rem 0 0" }}>✅ Tout est connecté et opérationnel.</p>
+            <p className="muted" style={{ fontSize: ".86rem", margin: ".4rem 0 0" }}>Tout est connecté et opérationnel.</p>
           ) : (
             <div className="ck-conns">
               {issues.map((c) => (

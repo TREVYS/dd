@@ -42,7 +42,7 @@ export default async function AlfredConfigPage({
       <ReglagesTabs />
 
       <div className="adm-note" style={{ marginBottom: "1.3rem" }}>
-        🎩 Plus vous nourrissez Alfred (ton, messages clés, exemples de posts réussis), plus il écrit
+        Plus vous nourrissez Alfred (ton, messages clés, exemples de posts réussis), plus il écrit
         <b> comme vous</b>. Tout ce que vous réglez ici guide chacune de ses rédactions.
       </div>
 

@@ -4,7 +4,7 @@ import { telegramConfigured } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
-const MEDALS = ["🥇", "🥈", "🥉"];
+const RANK_COLORS = ["#E8B33C", "#B9BDC7", "#C98A5A"];
 
 export default async function AdminStats() {
   const a = readAnalytics();
@@ -29,11 +29,11 @@ export default async function AdminStats() {
 
       {/* L'analyse d'Alfred */}
       <div className="adm-card" style={{ borderLeft: "4px solid var(--o)" }}>
-        <h2>🎩 L&apos;analyse d&apos;Alfred</h2>
+        <h2>L&apos;analyse d&apos;Alfred</h2>
         <p style={{ fontSize: ".95rem", lineHeight: 1.75, margin: ".4rem 0 .8rem" }}>{analysis}</p>
         <p className="muted" style={{ fontSize: ".8rem", color: "var(--ink3)", margin: 0 }}>
           {tg
-            ? "📬 Ce résumé vous est aussi envoyé chaque semaine sur Telegram."
+            ? "Ce résumé vous est aussi envoyé chaque semaine sur Telegram."
             : "Activez Telegram dans les Réglages pour recevoir ce résumé chaque semaine."}
         </p>
       </div>
@@ -58,14 +58,14 @@ export default async function AdminStats() {
       <div className="adm-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
         {/* Top 3 */}
         <div className="adm-card" style={{ margin: 0 }}>
-          <h2>🏆 Top 3 des pages</h2>
+          <h2>Top 3 des pages</h2>
           {s.top3.length === 0 ? (
             <p className="muted">Pas encore de données.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: ".7rem", marginTop: ".6rem" }}>
               {s.top3.map((t, i) => (
                 <div key={t.path} style={{ display: "flex", alignItems: "center", gap: ".75rem" }}>
-                  <span style={{ fontSize: "1.3rem" }}>{MEDALS[i]}</span>
+                  <span style={{ width: 26, height: 26, borderRadius: "50%", background: RANK_COLORS[i], color: "#fff", display: "inline-grid", placeItems: "center", fontWeight: 800, fontSize: ".8rem", flex: "none" }}>{i + 1}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, fontSize: ".92rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.label}</div>
                     <div style={{ height: 7, borderRadius: 99, background: "var(--o-soft)", marginTop: ".3rem" }}>
@@ -84,7 +84,7 @@ export default async function AdminStats() {
 
         {/* Navigation des visiteurs */}
         <div className="adm-card" style={{ margin: 0 }}>
-          <h2>🧭 Ce que font vos visiteurs</h2>
+          <h2>Ce que font vos visiteurs</h2>
           {events.length === 0 ? (
             <p className="muted">Pas encore d&apos;interactions mesurées.</p>
           ) : (

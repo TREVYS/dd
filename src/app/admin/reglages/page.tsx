@@ -69,20 +69,20 @@ export default async function AdminReglages({
 
       {sp.connected && (
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
-          ✅ Compte <b>{sp.connected}</b> connecté avec succès.
+          Compte <b>{sp.connected}</b> connecté avec succès.
         </div>
       )}
       {sp.error && (
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
           {sp.error === "noinsta"
-            ? "⚠️ Connexion Meta réussie, mais aucun compte Instagram professionnel relié à une de vos Pages Facebook n'a été trouvé. Passez votre compte Instagram en « professionnel » et reliez-le à votre Page Facebook, puis reconnectez."
-            : "⚠️ La connexion a échoué. Réessayez, ou vérifiez la configuration développeur."}
+            ? "Connexion Meta réussie, mais aucun compte Instagram professionnel relié à une de vos Pages Facebook n'a été trouvé. Passez votre compte Instagram en « professionnel » et reliez-le à votre Page Facebook, puis reconnectez."
+            : "La connexion a échoué. Réessayez, ou vérifiez la configuration développeur."}
         </div>
       )}
 
       {sp.saved && (
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
-          ✅ Réglages enregistrés.
+          Réglages enregistrés.
         </div>
       )}
 
@@ -157,7 +157,7 @@ export default async function AdminReglages({
           <li>Redéployez (ou redémarrez l&apos;instance) pour qu&apos;Alfred prenne la clé en compte.</li>
         </ol>
         <p className="muted" style={{ color: "var(--ink3)", fontSize: ".8rem", marginTop: ".8rem" }}>
-          ⚠️ Ne collez jamais votre clé dans le chat ni dans un fichier versionné (Git).
+          Ne collez jamais votre clé dans le chat ni dans un fichier versionné (Git).
         </p>
       </div>
 
@@ -190,7 +190,7 @@ echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
 
       {/* Alfred sur Telegram */}
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>
-        <h2>🎩 Parler à Alfred sur Telegram</h2>
+        <h2>Parler à Alfred sur Telegram</h2>
         {sp.tga === "on" && <div className="adm-note" style={{ margin: ".6rem 0 1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Alfred est en ligne sur Telegram — écrivez à votre bot !</div>}
         {sp.tga === "off" && <div className="adm-note" style={{ margin: ".6rem 0 1rem" }}>Conversation Telegram désactivée.</div>}
         {sp.tga === "err" && <div className="adm-note" style={{ margin: ".6rem 0 1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>Activation impossible — vérifiez le jeton du bot.</div>}

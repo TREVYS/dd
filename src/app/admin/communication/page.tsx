@@ -8,7 +8,7 @@ export default function CommunicationPage() {
     <>
       <div className="adm-h">
         <div>
-          <h1>Alfred 🎩</h1>
+          <h1>Alfred</h1>
           <p>Votre directeur de communication : rédaction d&apos;articles, calendrier éditorial, réseaux sociaux.</p>
         </div>
         <div className="adm-actions">
