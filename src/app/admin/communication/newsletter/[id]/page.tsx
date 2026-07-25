@@ -8,6 +8,7 @@ import { MarkdownEditor } from "../../../markdown-editor";
 import { SubjectField } from "../subject-field";
 import { RecipientsField } from "../recipients-field";
 import { saveCampaignAction, deleteCampaignAction, sendTestAction, sendCampaignAction } from "../actions";
+import { campaignReport } from "@/lib/newsletter-stats";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,11 @@ export default async function CampaignEditor({
   const mailOn = mailerConfigured();
   const preview = wrapEmail(markdownToEmailHtml(c.body || "_(Votre message apparaîtra ici.)_"));
   const sent = c.status === "envoye";
+  const report = sent ? campaignReport(c.id) : null;
+  const sentN = c.sentCount ?? 0;
+  const openRate = report && sentN > 0 ? Math.round((report.opens.length / sentN) * 100) : 0;
+  const clickRate = report && sentN > 0 ? Math.round((report.clickers / sentN) * 100) : 0;
+  const pretty = (u: string) => u.replace(/^https?:\/\/(www\.)?trevys\.fr/, "") .replace(/^$/, "/") || u;
 
   const errMsg: Record<string, string> = {
     notconfig: "Envoi impossible : la connexion Microsoft 365 n'est pas configurée (voir Réglages).",
@@ -49,6 +55,73 @@ export default async function CampaignEditor({
       {sp.tested && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>E-mail de test envoyé.</div>}
       {sp.sent && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Mailing envoyé à {sp.sent} inscrit(s).</div>}
       {sp.error && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>{errMsg[sp.error] ?? "Une erreur est survenue."}</div>}
+
+      {/* Analyse du mailing envoyé */}
+      {sent && report && (
+        <div className="adm-card" style={{ borderLeft: "4px solid var(--o)" }}>
+          <h2>Analyse du mailing</h2>
+          <div className="adm-grid" style={{ marginBottom: ".4rem" }}>
+            <div className="adm-kpi"><div className="k">Envoyés</div><div className="v">{sentN}</div></div>
+            <div className="adm-kpi"><div className="k">Ouvertures</div><div className="v o">{report.opens.length} <span style={{ fontSize: "1rem" }}>({openRate} %)</span></div></div>
+            <div className="adm-kpi"><div className="k">Cliqueurs</div><div className="v">{report.clickers} <span style={{ fontSize: "1rem" }}>({clickRate} %)</span></div></div>
+            <div className="adm-kpi"><div className="k">Clics totaux</div><div className="v">{report.totalClicks}</div></div>
+          </div>
+
+          {report.byUrl.length > 0 ? (
+            <>
+              <h3 style={{ margin: "1rem 0 .5rem", fontSize: ".95rem" }}>Pages cliquées</h3>
+              <table className="adm-table">
+                <thead><tr><th>Lien</th><th style={{ textAlign: "right" }}>Personnes</th><th style={{ textAlign: "right" }}>Clics</th></tr></thead>
+                <tbody>
+                  {report.byUrl.map((r) => (
+                    <tr key={r.url}>
+                      <td style={{ maxWidth: 380, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <a href={r.url} target="_blank" rel="noopener" className="adm-link">{pretty(r.url)}</a>
+                      </td>
+                      <td style={{ textAlign: "right", fontWeight: 700 }}>{r.uniques}</td>
+                      <td style={{ textAlign: "right" }}>{r.clicks}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          ) : (
+            <p className="muted" style={{ margin: ".6rem 0 0" }}>Aucun clic mesuré pour l&apos;instant.</p>
+          )}
+
+          <details style={{ marginTop: "1rem" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: ".9rem" }}>
+              Qui a ouvert ({report.opens.length}) / cliqué ({report.clickers})
+            </summary>
+            <div className="adm-cols2" style={{ marginTop: ".8rem" }}>
+              <div>
+                <h4 style={{ margin: "0 0 .4rem", fontSize: ".85rem" }}>Ouvertures</h4>
+                {report.opens.length === 0 ? <p className="muted">Aucune.</p> : (
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: ".85rem", lineHeight: 1.8 }}>
+                    {report.opens.map((o) => (
+                      <li key={o.email}>{o.email} <span className="muted">· {new Date(o.at).toLocaleString("fr-FR")}</span></li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div>
+                <h4 style={{ margin: "0 0 .4rem", fontSize: ".85rem" }}>Cliqueurs</h4>
+                {report.byContact.length === 0 ? <p className="muted">Aucun.</p> : (
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: ".85rem", lineHeight: 1.8 }}>
+                    {report.byContact.map((k) => (
+                      <li key={k.email}>{k.email} <span className="muted">· {k.clicks} clic{k.clicks > 1 ? "s" : ""}</span></li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </details>
+          <p className="muted" style={{ fontSize: ".76rem", color: "var(--ink3)", margin: ".9rem 0 0" }}>
+            Ouvertures mesurées par pixel (ordre de grandeur — certains clients mail les bloquent ou les préchargent) ;
+            les clics, eux, sont exacts. Un clic compte aussi comme une ouverture.
+          </p>
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: "1.2rem", alignItems: "start" }} className="ck-mail-grid">
         {/* Édition */}
