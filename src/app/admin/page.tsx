@@ -11,6 +11,27 @@ import { publicStatus } from "@/lib/social";
 import { telegramConfigured } from "@/lib/notify";
 import { mailerConfigured } from "@/lib/mailer";
 import { isSet } from "@/lib/settings";
+import { alfredAdvice } from "@/lib/stats-report";
+import { Suspense } from "react";
+
+// Conseils d'Alfred (générés 1x/jour) — en Suspense pour ne jamais retarder
+// l'affichage du reste du tableau de bord.
+async function AlfredAdviceCard() {
+  const tips = await alfredAdvice();
+  return (
+    <div className="adm-card" style={{ margin: 0, borderLeft: "4px solid var(--o)" }}>
+      <h2>Les conseils d&apos;Alfred</h2>
+      <p className="muted" style={{ fontSize: ".8rem", margin: ".2rem 0 .7rem", color: "var(--ink3)" }}>
+        Pour votre visibilité, à partir des données du site (visites, provenance, comportement).
+      </p>
+      <ul style={{ margin: 0, paddingLeft: "1.1rem", display: "flex", flexDirection: "column", gap: ".45rem" }}>
+        {tips.map((t) => (
+          <li key={t} style={{ fontSize: ".92rem", lineHeight: 1.55 }}>{t}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +104,20 @@ export default function AdminDashboard() {
             </p>
           )}
         </div>
+
+        {/* Les conseils d'Alfred */}
+        <Suspense
+          fallback={
+            <div className="adm-card" style={{ margin: 0, borderLeft: "4px solid var(--o)" }}>
+              <h2>Les conseils d&apos;Alfred</h2>
+              <p className="muted" style={{ margin: ".4rem 0 0" }}>
+                <span className="adm-spin" style={{ borderColor: "var(--o-soft)", borderTopColor: "var(--o)" }} /> Alfred analyse vos données…
+              </p>
+            </div>
+          }
+        >
+          <AlfredAdviceCard />
+        </Suspense>
 
         {/* Audience compacte */}
         <div className="adm-card" style={{ margin: 0 }}>

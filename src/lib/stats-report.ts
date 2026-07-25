@@ -135,6 +135,77 @@ export async function alfredTrafficAnalysis(force = false): Promise<string> {
   return text;
 }
 
+// --- Conseils d'Alfred pour la visibilité (tableau de bord) ---------------
+// 3 recommandations concrètes, basées sur l'audience ET l'état de la
+// communication (dernier article, brouillons en attente, abonnés).
+const ADVICE_FILE = path.join(process.cwd(), "data", "alfred-advice.json");
+
+function fallbackAdvice(s: StatsSummary): string[] {
+  const tips: string[] = [];
+  if (s.top3[0]) tips.push(`Votre page « ${s.top3[0].label} » attire le plus de monde : déclinez-la en post LinkedIn cette semaine.`);
+  if (s.trendPct !== null && s.trendPct < 0) tips.push("La fréquentation baisse : publiez un article d'actualité pour relancer les visites.");
+  else tips.push("Publiez régulièrement (1 article + 2 posts par semaine) pour installer votre visibilité.");
+  tips.push("Poussez vos derniers articles en newsletter : vos abonnés sont vos meilleurs relais.");
+  return tips.slice(0, 3);
+}
+
+export async function alfredAdvice(): Promise<string[]> {
+  const s = buildStatsSummary();
+  try {
+    if (fs.existsSync(ADVICE_FILE)) {
+      const cached = JSON.parse(fs.readFileSync(ADVICE_FILE, "utf8")) as { tips?: string[]; at?: number };
+      if (cached.tips?.length && cached.at && Date.now() - cached.at < 24 * 3600 * 1000) return cached.tips;
+    }
+  } catch { /* cache illisible : on régénère */ }
+
+  let tips = fallbackAdvice(s);
+  const apiKey = getSetting("anthropicApiKey");
+  if (apiKey && s.totalViews > 0) {
+    try {
+      // Contexte de communication : dernier article, file d'attente, abonnés.
+      const { getAllPosts } = await import("@/lib/blog");
+      const { listPosts } = await import("@/lib/social-posts");
+      const { listSubscribers } = await import("@/lib/newsletter");
+      const posts = getAllPosts();
+      const lastArticleDays = posts[0]?.date
+        ? Math.max(0, Math.round((Date.now() - new Date(posts[0].date).getTime()) / 86400000))
+        : null;
+      const queue = listPosts().filter((p) => p.status !== "publie").length;
+
+      const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+      const client = new AnthropicSDK({ apiKey });
+      const res = await client.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 500,
+        system:
+          "Tu es Alfred, directeur de la communication du cabinet Trevys. À partir des données d'audience et de l'état de la communication, " +
+          "donne EXACTEMENT 3 conseils concrets et actionnables pour améliorer la visibilité du cabinet (sujets à traiter, canaux à pousser, actions de la semaine). " +
+          "Réponds UNIQUEMENT avec les 3 conseils, un par ligne, sans numérotation ni tiret, chacun en une phrase directe de 25 mots maximum, en français.",
+        messages: [
+          {
+            role: "user",
+            content:
+              `Audience : ${s.views7} vues/7 j (tendance ${s.trendPct ?? "n/c"} %). Top pages : ${s.top3.map((t) => `${t.label} ${t.sharePct} %`).join(" ; ") || "n/c"}. ` +
+              `Provenance : ${s.topSources.map((x) => `${x.name} ${x.pct} %`).join(" ; ") || "pas encore mesurée"}. ` +
+              `Interactions : ${s.topEvents.map((e) => `${e.name} ${e.count}`).join(" ; ") || "aucune"}. ` +
+              `Communication : dernier article publié il y a ${lastArticleDays ?? "?"} jour(s), ${queue} post(s) réseaux en attente de validation, ${listSubscribers().length} abonné(s) newsletter.`,
+          },
+        ],
+      });
+      const out = res.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("").trim();
+      const lines = out.split(/\n+/).map((l) => l.replace(/^[-•\d.\s]+/, "").trim()).filter(Boolean).slice(0, 3);
+      if (lines.length >= 2) tips = lines;
+    } catch { /* on garde les conseils de secours */ }
+  }
+
+  try {
+    const dir = path.dirname(ADVICE_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(ADVICE_FILE, JSON.stringify({ tips, at: Date.now() }), "utf8");
+  } catch { /* disque en lecture seule */ }
+  return tips;
+}
+
 // Rapport hebdomadaire Telegram (au plus une fois tous les 7 jours ; déclenché
 // à l'ouverture du cockpit, comme les routines d'Alfred).
 export async function maybeSendWeeklyStatsReport(): Promise<void> {
