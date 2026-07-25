@@ -821,13 +821,13 @@ html,body{overflow-x:hidden}
 .mkt-404-svg{width:100%;max-width:420px;height:auto}
 @keyframes lm-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes lm-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@keyframes lm-baton{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
+@keyframes lm-baton{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
 @keyframes lm-blink{0%,92%,100%{opacity:1}96%{opacity:.25}}
 .mkt-404-art .lm-float-a{animation:lm-float 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
 .mkt-404-art .lm-float-b{animation:lm-float 6s ease-in-out .6s infinite;transform-box:fill-box;transform-origin:center}
 .mkt-404-art .lm-float-c{animation:lm-float 3.4s ease-in-out infinite}
-.mkt-404-art .lm-orbit{transform-origin:210px 150px;animation:lm-spin 40s linear infinite}
-.mkt-404-art .lm-baton{transform-box:fill-box;transform-origin:right center;animation:lm-baton 2.2s ease-in-out infinite}
+.mkt-404-art .lm-orbit{transform-origin:210px 120px;animation:lm-spin 40s linear infinite}
+.mkt-404-art .lm-baton{transform-box:fill-box;transform-origin:center;animation:lm-baton 3s ease-in-out infinite}
 .mkt-404-art .lm-blink{animation:lm-blink 4s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){
   .mkt-404-art .lm-float-a,.mkt-404-art .lm-float-b,.mkt-404-art .lm-float-c,

@@ -19,9 +19,8 @@ export default function NotFound() {
             Cette page a <em>perdu la baguette</em>
           </h1>
           <p style={{ color: "var(--ink2)", lineHeight: 1.7, margin: "0 auto 2rem", maxWidth: "46ch" }}>
-            Même notre chef d&apos;orchestre et son robot ne trouvent pas cette
-            partition. La page a peut-être été déplacée, ou l&apos;adresse
-            comporte une coquille.
+            La partition que vous cherchez s&apos;est égarée. La page a
+            peut-être été déplacée, ou l&apos;adresse comporte une coquille.
           </p>
           <div className="mkt-act" style={{ justifyContent: "center" }}>
             <Link className="btn btn-gold" href="/">Retour à l&apos;accueil</Link>
