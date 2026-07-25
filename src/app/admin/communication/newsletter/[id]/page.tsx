@@ -1,3 +1,4 @@
+import { EmailPreview } from "./email-preview";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCampaign, markdownToEmailHtml, wrapEmail } from "@/lib/newsletter-campaigns";
@@ -68,12 +69,7 @@ export default async function CampaignEditor({
         {/* Aperçu */}
         <div className="adm-card">
           <h2 style={{ marginTop: 0 }}>Aperçu</h2>
-          <iframe
-            title="Aperçu de l'e-mail"
-            sandbox=""
-            srcDoc={preview}
-            style={{ width: "100%", height: 460, border: "1px solid var(--line)", borderRadius: 12, background: "#fff" }}
-          />
+          <EmailPreview html={preview} />
         </div>
       </div>
 
