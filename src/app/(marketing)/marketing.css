@@ -66,7 +66,7 @@
 .mkt-nav.s{height:66px;background:rgba(254,253,251,.82);backdrop-filter:blur(18px) saturate(160%);border-bottom-color:var(--line);box-shadow:0 6px 24px -18px rgba(26,21,16,.5)}
 .mkt-nav .nlogo{display:inline-flex;align-items:center;color:var(--ink)}
 .mkt-nav .nlogo svg{height:34px;width:auto;display:block;transition:height .3s ease}
-.mkt-nav.s .nlogo svg,.mkt-nav.s .nlogo img{height:30px}
+.mkt-nav.s .nlogo svg,.mkt-nav.s .nlogo img{height:48px}
 .mkt-links{display:flex;list-style:none;gap:.1rem;margin:0;padding:.32rem;background:var(--glass-bg);border:1px solid var(--glass-brd);border-radius:100px;backdrop-filter:blur(18px) saturate(160%);transition:background .3s ease,border-color .3s ease,box-shadow .3s ease}
 /* Une fois défilé, la barre porte déjà le fond : la pastille s'efface */
 .mkt-nav.s .mkt-links{background:transparent;border-color:transparent;backdrop-filter:none}
@@ -716,7 +716,7 @@
 /* vrai logo (img) — mêmes dimensions que la version vectorielle */
 /* NB : pas de display ici — l'affichage du badge est géré par .mkt-logo-badge
    (masqué sur PC, visible sur mobile). */
-.mkt-nav .nlogo img{height:34px;width:auto}
+.mkt-nav .nlogo img{height:60px;width:auto}
 .mkt-foot .brand img{height:38px;width:auto;display:block}
 
 /* Ressources : filtres par thème + grille */
@@ -803,8 +803,8 @@ html,body{overflow-x:hidden}
 /* Badge TS masqué sur PC — spécificité supérieure à « .mkt img{display:block} ». */
 .mkt .mkt-logo-badge,.mkt-nav .nlogo .mkt-logo-badge{display:none}
 /* Logo complet (1.png) : visible sur PC dans la nav, masqué sur mobile. */
-.mkt .mkt-logo-full-img{display:block;height:40px;width:auto;max-width:210px;object-fit:contain}
-.mkt-nav.s .nlogo .mkt-logo-full-img{height:34px}
+.mkt .mkt-logo-full-img{display:block;height:60px;width:auto;max-width:320px;object-fit:contain}
+.mkt-nav.s .nlogo .mkt-logo-full-img{height:48px}
 /* Quand le logo complet est affiché, le mot texte disparaît (PC). */
 .mkt .mkt-logo-word.has-img{display:none}
 .mkt-logo-word{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;color:var(--ink);line-height:1}
