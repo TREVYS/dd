@@ -1,32 +1,15 @@
-const U = "https://www.trevys-advisory.fr/wp-content/uploads";
+import { RefLogo } from "../references/ref-logo";
 
 type Item = { src?: string; text?: string; alt: string };
 
-// Mix : logos-images (hébergés sur le WordPress) + marques en toutes-lettres
-// (celles sans fichier logo à ce stade).
-const CLIENTS: Item[] = [
-  { text: "AG2R La Mondiale", alt: "AG2R La Mondiale" },
-  { src: `${U}/2025/02/BNP-AM.png`, alt: "BNP AM" },
-  { text: "Banque Populaire", alt: "Banque Populaire" },
-  { src: `${U}/2025/02/BPCE-GROUPE.png`, alt: "BPCE Groupe" },
-  { text: "Caisse d'Épargne", alt: "Caisse d'Épargne" },
-  { src: `${U}/2025/02/natixis.png`, alt: "Natixis" },
-  { text: "BRED", alt: "BRED" },
-  { src: `${U}/2025/02/BPCE-SI.png`, alt: "BPCE SI" },
-  { src: `${U}/2025/02/LCL.png`, alt: "LCL" },
-  { text: "Oney", alt: "Oney" },
-  { src: `${U}/2025/02/cardif.png`, alt: "Cardif" },
-  { src: `${U}/2025/02/LBP.png`, alt: "La Banque Postale" },
-  { text: "Roole Assurance", alt: "Roole Assurance" },
-  { src: `${U}/2025/02/Edmon-de.png`, alt: "Edmond de Rothschild" },
-  { text: "Sportfive France", alt: "Sportfive France" },
-  { src: `${U}/2025/02/Publicis.png`, alt: "Publicis" },
-  { text: "Lapeyre", alt: "Lapeyre" },
-  { text: "Handy'Up", alt: "Handy'Up" },
-  { src: `${U}/2025/02/Leano-LOGO.png`, alt: "Leano" },
-  { src: `${U}/2025/02/logo_jeuxAndCo_small.png`, alt: "Jeux&Co" },
-  { src: `${U}/2025/02/Logo_Ekin_Noir.png`, alt: "Ekin" },
-  { src: `${U}/2025/02/ulas-istanbul-logo-01.png`, alt: "Ulas Istanbul" },
+// Accueil : 6 références phares, avec leur vrai logo (repli sur le nom).
+const CLIENTS_FEATURED: { name: string; domain: string }[] = [
+  { name: "AG2R La Mondiale", domain: "ag2rlamondiale.fr" },
+  { name: "EDF", domain: "edf.fr" },
+  { name: "BPCE Groupe", domain: "bpce.fr" },
+  { name: "Natixis", domain: "natixis.com" },
+  { name: "La Banque Postale", domain: "labanquepostale.fr" },
+  { name: "Publicis", domain: "publicis.com" },
 ];
 
 // Outils que nous maîtrisons et déployons chez nos clients.
@@ -75,8 +58,14 @@ export function LogoMarquee() {
         <p className="eyebrow" id="marq-title">
           Ils nous font confiance · Nos outils
         </p>
+        <div className="mkt-marq-featured">
+          {CLIENTS_FEATURED.map((c) => (
+            <div className="mkt-ref-card" key={c.name}>
+              <RefLogo name={c.name} srcs={[`https://logo.clearbit.com/${c.domain}?size=200`]} />
+            </div>
+          ))}
+        </div>
       </div>
-      <Row items={CLIENTS} label="Clients du cabinet" />
       <Row items={TOOLS} reverse label="Outils utilisés au cabinet et chez nos clients" />
     </section>
   );

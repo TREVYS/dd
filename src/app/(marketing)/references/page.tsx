@@ -16,17 +16,14 @@ export const metadata: Metadata = {
 // tente un logo importé (/uploads/refs/<slug>.png), sinon le nom en toutes lettres.
 const CLIENTS: { name: string; domain?: string }[] = [
   { name: "AG2R La Mondiale", domain: "ag2rlamondiale.fr" },
-  { name: "Banque Populaire", domain: "banquepopulaire.fr" },
-  { name: "Caisse d'Épargne", domain: "caisse-epargne.fr" },
+  { name: "EDF", domain: "edf.fr" },
   { name: "BPCE Groupe", domain: "bpce.fr" },
   { name: "BPCE SI", domain: "bpce.fr" },
-  { name: "BRED", domain: "bred.fr" },
   { name: "BNP AM", domain: "bnpparibas-am.com" },
   { name: "Natixis", domain: "natixis.com" },
   { name: "LCL", domain: "lcl.fr" },
   { name: "La Banque Postale", domain: "labanquepostale.fr" },
   { name: "Cardif", domain: "bnpparibascardif.com" },
-  { name: "Oney", domain: "oney.com" },
   { name: "Edmond de Rothschild", domain: "edmond-de-rothschild.com" },
   { name: "Roole", domain: "roole.fr" },
   { name: "Sportfive", domain: "sportfive.com" },
