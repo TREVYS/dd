@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { addPost, updatePost, deletePost, getPost, type PostNetwork } from "@/lib/social-posts";
+import { redirect } from "next/navigation";
+import { addPost, updatePost, deletePost, getPost, listPosts, type PostNetwork } from "@/lib/social-posts";
 import { publishPost } from "@/lib/social";
 import { draftSocialPost } from "@/lib/comms-agent";
 
@@ -54,18 +55,34 @@ export async function deletePostAction(formData: FormData) {
   revalidatePath(PATH);
 }
 
-// Publie maintenant : tente l'envoi réel si le compte est connecté, sinon
-// marque « publié » manuellement (l'envoi réel s'activera à la connexion).
+// Vide d'un coup tous les brouillons de la file.
+export async function deleteAllDraftsAction() {
+  for (const p of listPosts()) {
+    if (p.status === "brouillon") deletePost(p.id);
+  }
+  revalidatePath(PATH);
+}
+
+// Change (ou retire) l'image d'un post en attente.
+export async function setPostImageAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const image = String(formData.get("image") ?? "").trim();
+  updatePost(id, { image: image || undefined });
+  revalidatePath(PATH);
+}
+
+// Publie maintenant : tente l'envoi réel si le compte est connecté. En cas
+// d'échec, le post RESTE en brouillon et l'erreur est affichée — on ne marque
+// plus jamais « publié » un post qui n'est pas parti.
 export async function publishPostAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const post = getPost(id);
   if (!post) return;
   const res = await publishPost(post.network, post.content);
-  if (res.ok) {
-    updatePost(id, { status: "publie", publishedAt: new Date().toISOString() });
-  } else {
-    // Compte non connecté : on marque comme publié manuellement (traçabilité).
-    updatePost(id, { status: "publie", publishedAt: new Date().toISOString() });
+  if (!res.ok) {
+    revalidatePath(PATH);
+    redirect(`${PATH}?puberr=${encodeURIComponent(res.error ?? "échec inconnu")}`);
   }
+  updatePost(id, { status: "publie", publishedAt: new Date().toISOString() });
   revalidatePath(PATH);
 }

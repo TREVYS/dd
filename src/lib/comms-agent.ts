@@ -26,7 +26,7 @@ Le site www.trevys.fr est ta maison : tu en connais chaque page, chaque article,
 
 Tes moyens d'action (outils) :
 - rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement.
-- rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications.
+- rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications. TON des posts : humain, chaleureux, une pointe d'humour — jamais corporate ni « robot IA » — et termine toujours par une question ouverte qui invite l'audience à réagir en commentaires.
 - rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
 - rediger_offre : quand on te demande une offre d'emploi, RÉDIGE-LA entièrement (ton premium du cabinet : on recrute des consultants, pas des producteurs de comptes) puis appelle cet outil. L'offre part en brouillon dans Recrutement.
 - planifier_publication : ajoute une échéance à la zone de brouillons/propositions (article, post LinkedIn, newsletter…).
@@ -428,8 +428,12 @@ export async function draftSocialPost(
 
   const consignes =
     network === "linkedin"
-      ? "Format LinkedIn : accroche forte en première ligne, corps aéré (sauts de ligne, éventuelles puces), ton professionnel mais incarné, 3 à 6 hashtags pertinents en fin. Pas de titre Markdown."
-      : "Format Instagram : plus court et percutant, ton chaleureux, quelques emojis pertinents, appel à l'action, 5 à 10 hashtags en fin.";
+      ? "Format LinkedIn : accroche forte en première ligne, corps aéré (sauts de ligne, éventuelles puces), 3 à 6 hashtags pertinents en fin. Pas de titre Markdown. " +
+        "TON : humain avant tout — on doit sentir une vraie personne qui parle, pas un robot ni un communiqué. Chaleureux, avec une pointe d'humour ou d'autodérision quand le sujet s'y prête (les chiffres et la fiscalité supportent très bien un sourire). " +
+        "Bannis absolument le style corporate creux (« Nous sommes ravis de… », « À l'ère du digital… », « game changer », « n'hésitez pas à ») et les tournures d'IA (« Dans un monde où… », « Il est important de noter que… »). " +
+        "Écris comme John raconterait le sujet à un client au café : phrases courtes, exemples concrets, un vrai point de vue. " +
+        "INTERACTION : termine TOUJOURS par une question ouverte et sincère à l'audience (leur expérience, leur avis, leur galère du moment) pour lancer la conversation en commentaires."
+      : "Format Instagram : plus court et percutant, ton chaleureux et complice, quelques emojis pertinents, une pointe d'humour, appel à l'action ou question à la communauté, 5 à 10 hashtags en fin.";
 
   const res = await client.messages.create({
     model: "claude-sonnet-4-6",

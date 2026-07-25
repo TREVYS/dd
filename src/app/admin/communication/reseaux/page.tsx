@@ -1,7 +1,8 @@
 import { listPosts, type PostStatus } from "@/lib/social-posts";
 import { publicStatus } from "@/lib/social";
 import { PostComposer } from "./post-composer";
-import { schedulePostAction, deletePostAction, publishPostAction } from "./actions";
+import { ImageField } from "../../image-field";
+import { schedulePostAction, deletePostAction, publishPostAction, deleteAllDraftsAction, setPostImageAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,12 @@ function NetBadge({ n }: { n: "linkedin" | "instagram" }) {
   );
 }
 
-export default function ReseauxPage() {
+export default async function ReseauxPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ puberr?: string }>;
+}) {
+  const sp = await searchParams;
   const posts = listPosts();
   const accounts = publicStatus();
   const anyConnected = accounts.some((a) => a.connected);
@@ -51,6 +57,12 @@ export default function ReseauxPage() {
           : "ℹ️ Aucun compte connecté pour l'instant : vous travaillez en mode brouillon. Connectez LinkedIn/Instagram dans Réglages pour activer la publication réelle. « Publier » marquera les posts comme publiés en attendant."}
       </div>
 
+      {sp.puberr && (
+        <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+          ⚠️ La publication a échoué — le post reste en brouillon. Détail : {sp.puberr}
+        </div>
+      )}
+
       <PostComposer />
 
       {groups.map((g) => {
@@ -65,10 +77,17 @@ export default function ReseauxPage() {
         }
         return (
           <div className="adm-card" key={g} style={{ marginTop: "1.4rem" }}>
-            <h2>
-              {g === "publie" ? "Dernier post publié" : STATUS_LABEL[g]}{" "}
-              {g !== "publie" && items.length > 0 && `(${items.length})`}
-            </h2>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+              <h2 style={{ margin: 0 }}>
+                {g === "publie" ? "Dernier post publié" : STATUS_LABEL[g]}{" "}
+                {g !== "publie" && items.length > 0 && `(${items.length})`}
+              </h2>
+              {g === "brouillon" && items.length > 1 && (
+                <form action={deleteAllDraftsAction}>
+                  <button className="adm-btn danger sm" type="submit">Tout supprimer</button>
+                </form>
+              )}
+            </div>
             {g === "publie" && publishedTotal > 1 && (
               <p className="muted" style={{ fontSize: ".8rem", margin: ".2rem 0 .8rem" }}>
                 {publishedTotal - 1} post{publishedTotal > 2 ? "s" : ""} plus ancien{publishedTotal > 2 ? "s" : ""} masqué{publishedTotal > 2 ? "s" : ""}.
@@ -93,6 +112,18 @@ export default function ReseauxPage() {
                       <img src={p.image} alt="" style={{ maxHeight: 140, borderRadius: 10, border: "1px solid var(--line)", marginBottom: ".6rem" }} />
                     )}
                     <div className="adm-post-body">{p.content}</div>
+                    {p.status !== "publie" && (
+                      <form action={setPostImageAction} style={{ margin: ".6rem 0", maxWidth: 520 }}>
+                        <input type="hidden" name="id" value={p.id} />
+                        <div className="adm-field">
+                          <label>Image du post <small>(médiathèque ou import)</small></label>
+                          <ImageField name="image" defaultValue={p.image ?? ""} />
+                        </div>
+                        <button className="adm-btn ghost sm" type="submit" style={{ marginTop: ".4rem" }}>
+                          Enregistrer l&apos;image
+                        </button>
+                      </form>
+                    )}
                     {p.status !== "publie" && (
                       <div className="adm-post-actions">
                         <form action={schedulePostAction} className="adm-post-sched">
