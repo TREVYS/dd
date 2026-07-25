@@ -25,6 +25,7 @@
 .adm-side a.on{background:var(--o-tint);color:var(--o2)}
 .adm-side a.on::before{content:"";position:absolute;left:-1rem;top:22%;height:56%;width:4px;border-radius:0 4px 4px 0;background:var(--o)}
 .adm-side a .adm-soon{margin-left:auto;font-size:.62rem;font-weight:800;color:var(--ink3);background:var(--bg);border-radius:100px;padding:.08rem .4rem}
+.adm-side a .adm-nav-ic{width:1.25rem;text-align:center;font-size:.92rem;flex:none;opacity:.85}
 .adm-side a .adm-badge{margin-left:auto;min-width:20px;height:20px;display:inline-grid;place-items:center;font-size:.68rem;font-weight:800;
   color:#fff;background:#E26A0F;border-radius:100px;padding:0 .35rem;box-shadow:0 0 0 3px rgba(226,106,15,.18)}
 /* bannière de notification sur le tableau de bord */

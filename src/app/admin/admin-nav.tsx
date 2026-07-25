@@ -4,39 +4,46 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AlfredAvatar } from "./alfred-avatar";
 
-type Item = { href: string; label: string; exact?: boolean; soon?: boolean };
+type Item = { href: string; label: string; ic: string; exact?: boolean };
 type Group = { title: string; items: Item[] };
 
+// Organisation en 4 univers : piloter, communiquer, répondre, gérer le site.
 const GROUPS: Group[] = [
+  {
+    title: "Pilotage",
+    items: [
+      { href: "/admin", label: "Tableau de bord", ic: "🏠", exact: true },
+      { href: "/admin/statistiques", label: "Statistiques", ic: "📊" },
+    ],
+  },
   {
     title: "Communication",
     items: [
-      { href: "/admin/communication/routines", label: "Routines d'Alfred" },
-      { href: "/admin/communication/calendrier", label: "Brouillons d'articles" },
-      { href: "/admin/communication/reseaux", label: "Réseaux sociaux" },
-      { href: "/admin/communication/newsletter", label: "Newsletter" },
+      { href: "/admin/communication/calendrier", label: "Brouillons d'articles", ic: "📝" },
+      { href: "/admin/communication/reseaux", label: "Réseaux sociaux", ic: "📣" },
+      { href: "/admin/communication/newsletter", label: "Newsletter", ic: "💌" },
+      { href: "/admin/communication/routines", label: "Routines d'Alfred", ic: "🔁" },
+    ],
+  },
+  {
+    title: "Boîte de réception",
+    items: [
+      { href: "/admin/messages", label: "Messages reçus", ic: "📬" },
+      { href: "/admin/recrutement", label: "Recrutement", ic: "🧑‍💼" },
     ],
   },
   {
     title: "Site web",
     items: [
-      { href: "/admin", label: "Tableau de bord", exact: true },
-      { href: "/admin/messages", label: "Messages reçus" },
-      { href: "/admin/recrutement", label: "Recrutement" },
-      { href: "/admin/articles", label: "Articles" },
-      { href: "/admin/videos", label: "Vidéos" },
-      { href: "/admin/legal", label: "Pages légales" },
-      { href: "/admin/medias", label: "Médias" },
-      { href: "/admin/statistiques", label: "Statistiques" },
+      { href: "/admin/articles", label: "Articles", ic: "📰" },
+      { href: "/admin/videos", label: "Vidéos", ic: "🎬" },
+      { href: "/admin/medias", label: "Médias", ic: "🖼️" },
+      { href: "/admin/legal", label: "Pages légales", ic: "⚖️" },
     ],
   },
   {
-    title: "Général",
-    items: [
-      { href: "/admin/reglages", label: "Réglages", exact: true },
-      { href: "/admin/reglages/alfred", label: "Réglages · Alfred" },
-      { href: "/admin/reglages/securite", label: "Réglages · Sécurité" },
-    ],
+    title: "",
+    items: [{ href: "/admin/reglages", label: "Réglages", ic: "⚙️" }],
   },
 ];
 
@@ -55,23 +62,16 @@ export function AdminNav({ badges = {} }: { badges?: Record<string, number> }) {
         </span>
         <span className="adm-alfred-dot" />
       </Link>
-      {GROUPS.map((g) => (
-        <div key={g.title}>
-          <div className="adm-grp">{g.title}</div>
+      {GROUPS.map((g, gi) => (
+        <div key={g.title || gi}>
+          {g.title && <div className="adm-grp">{g.title}</div>}
+          {!g.title && <div style={{ height: ".9rem" }} />}
           {g.items.map((l) => {
-            if (l.soon) {
-              return (
-                // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                <a key={l.label} className="dis">
-                  {l.label}
-                  <span className="adm-soon">Bientôt</span>
-                </a>
-              );
-            }
             const on = l.exact ? pathname === l.href : pathname.startsWith(l.href);
             const badge = badges[l.href] ?? 0;
             return (
               <Link key={l.href} href={l.href} className={on ? "on" : ""}>
+                <span className="adm-nav-ic" aria-hidden="true">{l.ic}</span>
                 {l.label}
                 {badge > 0 && <span className="adm-badge">{badge}</span>}
               </Link>
