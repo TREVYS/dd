@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { href: "/admin/reglages", label: "Clés & connexions" },
   { href: "/admin/reglages/alfred", label: "Éduquer Alfred" },
+  { href: "/admin/reglages/securite", label: "Sécurité" },
 ];
 
 export function ReglagesTabs() {

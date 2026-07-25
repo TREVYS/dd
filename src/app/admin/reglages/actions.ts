@@ -63,22 +63,22 @@ export async function changePasswordAction(formData: FormData) {
   const next = (formData.get("next") as string) || "";
   const confirm = (formData.get("confirm") as string) || "";
 
-  if (next.length < 10) redirect("/admin/reglages?pwd=short");
-  if (next !== confirm) redirect("/admin/reglages?pwd=mismatch");
+  if (next.length < 10) redirect("/admin/reglages/securite?pwd=short");
+  if (next !== confirm) redirect("/admin/reglages/securite?pwd=mismatch");
 
   const { prisma } = await import("@/lib/prisma");
   const bcrypt = (await import("bcryptjs")).default;
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (!user?.passwordHash || !(await bcrypt.compare(current, user.passwordHash))) {
-    redirect("/admin/reglages?pwd=wrong");
+    redirect("/admin/reglages/securite?pwd=wrong");
   }
 
   await prisma.user.update({
     where: { id: user.id },
     data: { passwordHash: await bcrypt.hash(next, 12) },
   });
-  redirect("/admin/reglages?pwd=ok");
+  redirect("/admin/reglages/securite?pwd=ok");
 }
 
 export async function disconnectSocialAction(formData: FormData) {

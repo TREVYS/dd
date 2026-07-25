@@ -35,6 +35,7 @@ const GROUPS: Group[] = [
     items: [
       { href: "/admin/reglages", label: "Réglages", exact: true },
       { href: "/admin/reglages/alfred", label: "Réglages · Alfred" },
+      { href: "/admin/reglages/securite", label: "Réglages · Sécurité" },
     ],
   },
 ];

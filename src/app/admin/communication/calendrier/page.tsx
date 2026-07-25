@@ -16,8 +16,9 @@ function statusClass(s: string) {
 }
 
 export default function CalendrierPage() {
-  // Les articles déjà publiés vivent dans « Articles » — on ne garde ici que le travail en cours.
-  const items = listItems().filter((it) => !(it.type === "article" && it.status === "publie"));
+  // Uniquement les brouillons d'articles (les posts et newsletters ont leurs
+  // propres modules). Les articles publiés vivent dans « Articles ».
+  const items = listItems().filter((it) => it.type === "article" && it.status !== "publie");
   return (
     <>
       <div className="adm-h">
@@ -29,25 +30,16 @@ export default function CalendrierPage() {
       </div>
 
       <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
-        <h2>Ajouter une échéance</h2>
+        <h2>Ajouter une idée d&apos;article</h2>
         <form action={addCalendarAction} className="adm-actions" style={{ alignItems: "flex-end", gap: ".7rem", flexWrap: "wrap" }}>
           <div className="adm-field" style={{ margin: 0 }}>
             <label>Date</label>
             <input type="date" name="date" defaultValue={new Date().toISOString().slice(0, 10)} />
           </div>
-          <div className="adm-field" style={{ margin: 0 }}>
-            <label>Type</label>
-            <select name="type">
-              <option value="article">Article</option>
-              <option value="linkedin">Post LinkedIn</option>
-              <option value="instagram">Post Instagram</option>
-              <option value="newsletter">Newsletter</option>
-              <option value="idee">Idée</option>
-            </select>
-          </div>
+          <input type="hidden" name="type" value="article" />
           <div className="adm-field" style={{ margin: 0, flex: 1, minWidth: 200 }}>
             <label>Titre</label>
-            <input name="title" placeholder="Sujet / titre" required />
+            <input name="title" placeholder="Sujet / titre de l&apos;article à préparer" required />
           </div>
           <button className="adm-btn" type="submit">Ajouter</button>
         </form>
@@ -56,13 +48,12 @@ export default function CalendrierPage() {
       <div className="adm-card" style={{ padding: 0 }}>
         <table className="adm-table">
           <thead>
-            <tr><th>Date</th><th>Type</th><th>Titre</th><th>Statut</th><th style={{ textAlign: "right" }}>Actions</th></tr>
+            <tr><th>Date</th><th>Titre</th><th>Statut</th><th style={{ textAlign: "right" }}>Actions</th></tr>
           </thead>
           <tbody>
             {items.map((it) => (
               <tr key={it.id}>
                 <td className="muted" style={{ paddingLeft: "1.1rem", whiteSpace: "nowrap" }}>{it.date}</td>
-                <td><span className="adm-tag">{TYPE_LABEL[it.type] ?? it.type}</span></td>
                 <td style={{ fontWeight: 600 }}>
                   {it.type === "article" && it.status === "publie" && it.slug ? (
                     <Link href={`/admin/articles/${it.slug}`} className="adm-link">{it.title}</Link>
@@ -97,8 +88,8 @@ export default function CalendrierPage() {
               </tr>
             ))}
             {items.length === 0 && (
-              <tr><td colSpan={5} className="muted" style={{ padding: "1.4rem" }}>
-                Rien pour l&apos;instant. Demandez au <Link href="/admin/communication">Directeur de comm</Link> de vous proposer un calendrier !
+              <tr><td colSpan={4} className="muted" style={{ padding: "1.4rem" }}>
+                Aucun brouillon. Commandez un article à Alfred (chat ou Telegram) — il apparaîtra ici pour relecture avant publication.
               </td></tr>
             )}
           </tbody>
