@@ -142,7 +142,7 @@ export default async function CampaignEditor({
         {/* Aperçu */}
         <div className="adm-card">
           <h2 style={{ marginTop: 0 }}>Aperçu</h2>
-          <EmailPreview html={preview} />
+          <EmailPreview html={preview} live={!sent} />
         </div>
       </div>
 

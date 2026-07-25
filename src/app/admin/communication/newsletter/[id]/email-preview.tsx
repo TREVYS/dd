@@ -8,9 +8,39 @@ import { useEffect, useRef, useState } from "react";
 const EMAIL_WIDTH = 640;
 const BASE_HEIGHT = 760;
 
-export function EmailPreview({ html }: { html: string }) {
+export function EmailPreview({ html: initialHtml, live = false }: { html: string; live?: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [html, setHtml] = useState(initialHtml);
+
+  // Aperçu vivant : on écoute la frappe dans l'éditeur (champ « body ») de la
+  // page et on régénère le rendu e-mail après une courte pause.
+  useEffect(() => {
+    if (!live) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const onInput = (e: Event) => {
+      const el = e.target as HTMLTextAreaElement | null;
+      if (!el || el.name !== "body") return;
+      const value = el.value;
+      clearTimeout(timer);
+      timer = setTimeout(async () => {
+        try {
+          const r = await fetch("/api/admin/comms/preview", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ body: value }),
+          });
+          const d = (await r.json()) as { html?: string };
+          if (d.html) setHtml(d.html);
+        } catch { /* on garde l'aperçu précédent */ }
+      }, 500);
+    };
+    document.addEventListener("input", onInput, true);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("input", onInput, true);
+    };
+  }, [live]);
 
   useEffect(() => {
     const el = wrapRef.current;
