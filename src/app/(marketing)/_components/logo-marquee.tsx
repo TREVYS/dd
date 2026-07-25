@@ -1,15 +1,14 @@
-import { RefLogo } from "../references/ref-logo";
-
 type Item = { src?: string; text?: string; alt: string };
 
-// Accueil : 6 références phares, avec leur vrai logo (repli sur le nom).
-const CLIENTS_FEATURED: { name: string; domain: string }[] = [
-  { name: "Groupe BPCE", domain: "bpce.fr" },
-  { name: "LCL", domain: "lcl.fr" },
-  { name: "EDF", domain: "edf.fr" },
-  { name: "AG2R La Mondiale", domain: "ag2rlamondiale.fr" },
-  { name: "Natixis", domain: "natixis.com" },
-  { name: "Publicis", domain: "publicis.com" },
+// Accueil : nos références phares, en défilé (marquee). Rendues en toutes
+// lettres pour un affichage fiable (pas de logo externe qui casse).
+const CLIENTS: Item[] = [
+  { text: "Groupe BPCE", alt: "Groupe BPCE" },
+  { text: "LCL", alt: "LCL" },
+  { text: "EDF", alt: "EDF" },
+  { text: "AG2R La Mondiale", alt: "AG2R La Mondiale" },
+  { text: "Natixis", alt: "Natixis" },
+  { text: "Publicis", alt: "Publicis" },
 ];
 
 // Outils que nous maîtrisons et déployons chez nos clients.
@@ -58,14 +57,8 @@ export function LogoMarquee() {
         <p className="eyebrow" id="marq-title">
           Ils nous font confiance · Nos outils
         </p>
-        <div className="mkt-marq-featured">
-          {CLIENTS_FEATURED.map((c) => (
-            <div className="mkt-ref-card" key={c.name}>
-              <RefLogo name={c.name} srcs={[`https://logo.clearbit.com/${c.domain}?size=200`]} />
-            </div>
-          ))}
-        </div>
       </div>
+      <Row items={CLIENTS} label="Références du cabinet" />
       <Row items={TOOLS} reverse label="Outils utilisés au cabinet et chez nos clients" />
     </section>
   );
