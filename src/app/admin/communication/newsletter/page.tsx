@@ -38,6 +38,21 @@ export default async function NewsletterAdmin({
     const a = activity[x.email.toLowerCase()];
     return a?.lastOpen && new Date(a.lastOpen).getTime() > ninety;
   }).length;
+  // Inscrits : actifs d'abord, puis du plus récent au plus ancien ;
+  // seuls les 10 premiers sont affichés, le reste est replié.
+  const isActive = (email: string) => {
+    const a = activity[email.toLowerCase()];
+    return !!(a?.lastOpen && new Date(a.lastOpen).getTime() > ninety);
+  };
+  const sortedSubs = subs.slice().sort((x, y) => {
+    const ax = isActive(x.email) ? 1 : 0;
+    const ay = isActive(y.email) ? 1 : 0;
+    if (ax !== ay) return ay - ax;
+    return y.date.localeCompare(x.date);
+  });
+  const topSubs = sortedSubs.slice(0, 10);
+  const restSubs = sortedSubs.slice(10);
+
   // Historique : les 3 dernières campagnes visibles, le reste replié.
   const recentCamps = campaigns.slice(0, 3);
   const olderCamps = campaigns.slice(3);
@@ -270,7 +285,7 @@ export default async function NewsletterAdmin({
             <tr><th>E-mail</th><th>Origine</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
           </thead>
           <tbody>
-            {subs.map((s) => (
+            {topSubs.map((s) => (
               <tr key={s.email} style={!s.read ? { fontWeight: 700 } : undefined}>
                 <td>{!s.read && <span style={{ color: "#E26A0F", marginRight: ".4rem" }}>●</span>}{s.email}</td>
                 <td className="muted">{s.source}</td>
@@ -279,7 +294,7 @@ export default async function NewsletterAdmin({
                   {(() => {
                     const a = activity[s.email.toLowerCase()];
                     if (!a?.opens) return <span className="muted">—</span>;
-                    const active = a.lastOpen && new Date(a.lastOpen).getTime() > ninety;
+                    const active = isActive(s.email);
                     return (
                       <span style={{ fontSize: ".82rem", fontWeight: 600, color: active ? "#2E9E6B" : "var(--ink3)" }}>
                         {active ? "● Actif" : "○ Inactif"} · {a.opens} ouv.
@@ -299,6 +314,37 @@ export default async function NewsletterAdmin({
             {subs.length === 0 && <tr><td colSpan={5} className="muted">Aucune inscription pour l&apos;instant.</td></tr>}
           </tbody>
         </table>
+        {restSubs.length > 0 && (
+          <details style={{ marginTop: ".6rem" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: ".88rem", color: "var(--ink2)" }}>
+              Voir les {restSubs.length} autre{restSubs.length > 1 ? "s" : ""} inscrit{restSubs.length > 1 ? "s" : ""}
+            </summary>
+            <table className="adm-table" style={{ marginTop: ".6rem" }}>
+              <tbody>
+                {restSubs.map((s) => (
+                  <tr key={s.email}>
+                    <td>{s.email}</td>
+                    <td className="muted">{s.source}</td>
+                    <td className="muted">{new Date(s.date).toLocaleDateString("fr-FR")}</td>
+                    <td>
+                      {(() => {
+                        const a = activity[s.email.toLowerCase()];
+                        if (!a?.opens) return <span className="muted">—</span>;
+                        return <span className="muted" style={{ fontSize: ".82rem" }}>{a.opens} ouv.</span>;
+                      })()}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      <form action={deleteSubscriberAction}>
+                        <input type="hidden" name="email" value={s.email} />
+                        <button className="adm-btn danger sm" type="submit">Supprimer</button>
+                      </form>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+        )}
       </div>
     </>
   );
