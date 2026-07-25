@@ -8,10 +8,13 @@ import type { Video } from "@/lib/videos";
 // qui lit la vidéo YouTube. La fenêtre est rendue au niveau du document
 // (portal) : elle passe TOUJOURS au premier plan, au-dessus des sections
 // suivantes de la page. La vidéo n'est chargée qu'à l'ouverture.
+const INITIAL_COUNT = 3; // vidéos visibles avant « Voir plus »
+
 export function VideoGallery({ videos }: { videos: Video[] }) {
   const [active, setActive] = useState<Video | null>(null);
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
@@ -41,10 +44,13 @@ export function VideoGallery({ videos }: { videos: Video[] }) {
     }
   };
 
+  const visible = showAll ? videos : videos.slice(0, INITIAL_COUNT);
+  const hidden = videos.length - INITIAL_COUNT;
+
   return (
     <div className="mkt-vid-wrap">
       <div className="mkt-vid-grid">
-        {videos.map((v) => (
+        {visible.map((v) => (
           <button key={v.id} className="mkt-vid-card" onClick={() => setActive(v)} type="button">
             <span className="mkt-vid-thumb">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -65,6 +71,21 @@ export function VideoGallery({ videos }: { videos: Video[] }) {
           </button>
         ))}
       </div>
+
+      {hidden > 0 && !showAll && (
+        <div style={{ textAlign: "center", marginTop: "1.4rem" }}>
+          <button className="btn btn-ghost" type="button" onClick={() => setShowAll(true)}>
+            Voir plus de vidéos ({hidden})
+          </button>
+        </div>
+      )}
+      {showAll && hidden > 0 && (
+        <div style={{ textAlign: "center", marginTop: "1.4rem" }}>
+          <button className="btn btn-ghost" type="button" onClick={() => setShowAll(false)}>
+            Voir moins
+          </button>
+        </div>
+      )}
 
       {active && mounted &&
         createPortal(
