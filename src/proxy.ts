@@ -23,6 +23,7 @@ const PUBLIC_PREFIXES = [
   "/uploads", // médias importés depuis le back-office
   "/secteurs", // pages secteurs (références)
   "/desinscription", // désinscription newsletter en un clic
+  "/nous-rejoindre", // recrutement
   "/opengraph-image", // image de partage social (og:image)
   "/brand", // ressources de marque (logos, icônes)
   "/icons",

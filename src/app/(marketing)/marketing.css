@@ -787,6 +787,22 @@ html,body{overflow-x:hidden}
   .mkt-form-row2{grid-template-columns:1fr!important;gap:1rem!important}
 }
 
+/* Recrutement : cartes d'offres */
+.mkt-jobs{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.3rem;max-width:980px;margin:0 auto}
+.mkt-job-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.6rem 1.7rem;
+  display:flex;flex-direction:column;gap:.7rem;transition:transform .18s,box-shadow .18s}
+.mkt-job-card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(20,12,4,.12)}
+.mkt-job-card h3{margin:0;font-size:1.15rem;line-height:1.35;color:var(--ink)}
+.mkt-job-card p{margin:0;font-size:.9rem;color:var(--ink2);line-height:1.6;flex:1}
+.mkt-job-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.mkt-job-tag{font-size:.72rem;font-weight:700;letter-spacing:.03em;padding:.3rem .75rem;border-radius:100px;
+  background:#faf6f0;border:1px solid var(--line);color:var(--ink2)}
+.mkt-job-tag.hot{background:var(--grad);border-color:transparent;color:#fff}
+@media(max-width:600px){
+  .mkt-job-card .mkt-more-txt{display:none}
+  .mkt-job-card .mkt-consultant-more{padding:.45rem .6rem}
+}
+
 /* Section « Notre approche » : texte + illustration animée */
 .mkt-appr{display:grid;grid-template-columns:1.05fr .95fr;gap:3.4rem;align-items:center}
 .mkt-appr-copy .eyebrow{margin-bottom:.9rem}

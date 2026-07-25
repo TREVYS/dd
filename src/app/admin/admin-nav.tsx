@@ -23,6 +23,7 @@ const GROUPS: Group[] = [
     items: [
       { href: "/admin", label: "Tableau de bord", exact: true },
       { href: "/admin/messages", label: "Messages reçus" },
+      { href: "/admin/recrutement", label: "Recrutement" },
       { href: "/admin/articles", label: "Articles" },
       { href: "/admin/videos", label: "Vidéos" },
       { href: "/admin/pages", label: "Pages" },

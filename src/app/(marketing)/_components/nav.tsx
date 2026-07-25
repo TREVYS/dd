@@ -28,6 +28,7 @@ const CABINET = [
 // « Contact » est retiré du menu PC : « Prendre rendez-vous » joue ce rôle.
 const PRIMARY = [
   { href: "/blog", label: "Ressources" },
+  { href: "/nous-rejoindre", label: "Nous rejoindre" },
 ];
 
 // Menu mobile : regroupé par univers, avec un jeu de couleurs.
@@ -220,6 +221,7 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         <div className="mkt-msolo">
           <Link href="/references" onClick={() => setMobileOpen(false)} className={isCur("/references") ? "cur" : ""}>Références</Link>
           <Link href="/blog" onClick={() => setMobileOpen(false)} className={isCur("/blog") ? "cur" : ""}>Ressources</Link>
+          <Link href="/nous-rejoindre" onClick={() => setMobileOpen(false)} className={isCur("/nous-rejoindre") ? "cur" : ""}>Nous rejoindre</Link>
           {extraLinks.map((l) => (
             <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className={isCur(l.href) ? "cur" : ""}>
               {l.label}

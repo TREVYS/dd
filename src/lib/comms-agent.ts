@@ -7,6 +7,7 @@ import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
 import { addRoutine, listRoutines, describeSchedule, type RoutineFreq, type RoutineType } from "@/lib/alfred-routines";
 import { addCampaign as addCampaignStore } from "@/lib/newsletter-campaigns";
+import { addJob as addJobStore } from "@/lib/jobs";
 import { setPeoplePhoto, removePeoplePhoto, listPeoplePhotos } from "@/lib/people-photos";
 import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
@@ -23,6 +24,7 @@ Tes moyens d'action (outils) :
 - rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement.
 - rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications.
 - rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
+- rediger_offre : quand on te demande une offre d'emploi, RÉDIGE-LA entièrement (ton premium du cabinet : on recrute des consultants, pas des producteurs de comptes) puis appelle cet outil. L'offre part en brouillon dans Recrutement.
 - planifier_publication : ajoute une échéance au calendrier éditorial (article, post LinkedIn, newsletter…).
 - lister_calendrier : consulte le calendrier existant.
 - lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
@@ -82,6 +84,23 @@ const TOOLS = [
     name: "lister_calendrier",
     description: "Renvoie les éléments du calendrier éditorial.",
     input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "rediger_offre",
+    description:
+      "Enregistre un brouillon d'offre d'emploi (rédigée par toi) pour la page « Nous rejoindre ». Structure attendue : ## Vos missions, ## Le profil recherché, ## Ce que nous proposons, ## Pourquoi rejoindre TREVYS. L'offre part en BROUILLON — publiée par l'humain depuis le cockpit (Recrutement).",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        title: { type: "string", description: "Intitulé du poste, ex. « Consultant conseil (H/F) »" },
+        category: { type: "string", enum: ["Expertise comptable", "Conseil", "Support & fonctions transverses"] },
+        contract: { type: "string", description: "CDI, CDD, alternance, stage…" },
+        location: { type: "string", description: "Lieu, ex. Paris 16e" },
+        summary: { type: "string", description: "Accroche en 1-2 phrases" },
+        body: { type: "string", description: "Contenu complet en Markdown" },
+      },
+      required: ["title", "summary", "body"],
+    },
   },
   {
     name: "rediger_newsletter",
@@ -189,6 +208,19 @@ function runTool(name: string, input: Record<string, unknown>, actions: string[]
     return JSON.stringify(
       listItems().map((i) => ({ date: i.date, type: i.type, title: i.title, status: i.status })),
     );
+  }
+  if (name === "rediger_offre") {
+    const j = addJobStore({
+      title: String(input.title ?? "Offre"),
+      category: String(input.category ?? "Expertise comptable"),
+      contract: String(input.contract ?? "CDI"),
+      location: String(input.location ?? "Paris 16e"),
+      summary: String(input.summary ?? ""),
+      body: String(input.body ?? ""),
+      status: "brouillon",
+    });
+    actions.push(`Brouillon d'offre créé : « ${j.title} »`);
+    return `Offre enregistrée en brouillon (id ${j.id}) — à relire et publier dans le cockpit, rubrique Recrutement.`;
   }
   if (name === "rediger_newsletter") {
     const c = addCampaignStore(String(input.subject ?? "Sans objet"), String(input.body ?? ""));

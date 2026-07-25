@@ -5,6 +5,7 @@ import "./admin.css";
 import { AdminShell } from "./admin-shell";
 import { unreadCount } from "@/lib/newsletter";
 import { unreadMessages } from "@/lib/contact-messages";
+import { unreadApplications } from "@/lib/jobs";
 import { runDueRoutines } from "@/lib/alfred-routines-run";
 
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const badges = {
     "/admin/communication/newsletter": unreadCount(),
     "/admin/messages": unreadMessages(),
+    "/admin/recrutement": unreadApplications(),
   };
 
   return (
