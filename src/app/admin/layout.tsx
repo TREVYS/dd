@@ -28,6 +28,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   runDueRoutines().catch(() => {});
   // Rapport d'audience hebdomadaire sur Telegram (au plus 1 fois / 7 jours).
   maybeSendWeeklyStatsReport().catch(() => {});
+  // Annonce de mise à jour (repli : si la première visite du site ne l'a pas
+  // déjà déclenchée, l'ouverture du cockpit s'en charge).
+  import("@/lib/deploy-notify").then((m) => m.notifyDeployOnce()).catch(() => {});
 
   const name = session.user.name ?? session.user.email ?? "Admin";
   const initials = name.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();

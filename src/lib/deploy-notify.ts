@@ -16,6 +16,19 @@ function currentBuildId(): string {
   }
 }
 
+// Infos de version pour l'affichage (Réglages) : identifiant de build et
+// date/heure de la mise en ligne détectée.
+export function getDeployInfo(): { build: string; at?: string } {
+  const build = currentBuildId();
+  try {
+    if (fs.existsSync(STATE_FILE)) {
+      const st = JSON.parse(fs.readFileSync(STATE_FILE, "utf8")) as { build?: string; at?: string };
+      if (st.build === build) return { build, at: st.at };
+    }
+  } catch { /* état illisible */ }
+  return { build };
+}
+
 export async function notifyDeployOnce(): Promise<void> {
   if (checkedThisProcess) return;
   checkedThisProcess = true;

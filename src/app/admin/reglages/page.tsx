@@ -3,6 +3,7 @@ import { isSet, settingsStatus } from "@/lib/settings";
 import { mailerConfigured } from "@/lib/mailer";
 import { disconnectSocialAction, saveSettingsAction, enableTelegramAlfredAction, disableTelegramAlfredAction } from "./actions";
 import { telegramWebhookStatus } from "@/lib/telegram-alfred";
+import { getDeployInfo } from "@/lib/deploy-notify";
 import { ReglagesTabs } from "./reglages-tabs";
 
 export const dynamic = "force-dynamic";
@@ -66,6 +67,22 @@ export default async function AdminReglages({
       </div>
 
       <ReglagesTabs />
+
+      {/* Version du site : date/heure de la dernière mise en ligne détectée */}
+      {(() => {
+        const dep = getDeployInfo();
+        return (
+          <div className="adm-note" style={{ marginBottom: "1.2rem", display: "flex", alignItems: "center", gap: ".6rem", flexWrap: "wrap" }}>
+            <b>Version du site :</b>
+            {dep.at
+              ? <>mise en ligne le {new Date(dep.at).toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}</>
+              : <>en attente de la première visite depuis la dernière mise à jour</>}
+            <span className="muted" style={{ fontSize: ".78rem", color: "var(--ink3)" }}>
+              (build {dep.build.slice(0, 10)}) — Alfred vous prévient sur Telegram à chaque nouvelle version.
+            </span>
+          </div>
+        );
+      })()}
 
       {sp.connected && (
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
