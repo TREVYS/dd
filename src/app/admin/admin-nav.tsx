@@ -11,9 +11,8 @@ const GROUPS: Group[] = [
   {
     title: "Communication",
     items: [
-      { href: "/admin/communication/alfred", label: "Éduquer Alfred" },
       { href: "/admin/communication/routines", label: "Routines d'Alfred" },
-      { href: "/admin/communication/calendrier", label: "Calendrier éditorial" },
+      { href: "/admin/communication/calendrier", label: "Brouillons d'articles" },
       { href: "/admin/communication/reseaux", label: "Réseaux sociaux" },
       { href: "/admin/communication/newsletter", label: "Newsletter" },
     ],
@@ -26,7 +25,6 @@ const GROUPS: Group[] = [
       { href: "/admin/recrutement", label: "Recrutement" },
       { href: "/admin/articles", label: "Articles" },
       { href: "/admin/videos", label: "Vidéos" },
-      { href: "/admin/pages", label: "Pages" },
       { href: "/admin/legal", label: "Pages légales" },
       { href: "/admin/medias", label: "Médias" },
       { href: "/admin/statistiques", label: "Statistiques" },
@@ -34,7 +32,10 @@ const GROUPS: Group[] = [
   },
   {
     title: "Général",
-    items: [{ href: "/admin/reglages", label: "Réglages" }],
+    items: [
+      { href: "/admin/reglages", label: "Réglages", exact: true },
+      { href: "/admin/reglages/alfred", label: "Réglages · Alfred" },
+    ],
   },
 ];
 

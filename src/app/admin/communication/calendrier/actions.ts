@@ -57,8 +57,10 @@ export async function publishDraftAction(formData: FormData) {
     image: item.image || "",
     body: item.body,
   });
-  updateItem(item.id, { status: "publie", slug });
+  // Publié → l'article vit désormais dans « Articles » : il sort des brouillons.
+  removeItem(item.id);
   revalidatePath("/blog");
   revalidatePath("/admin/articles");
   revalidatePath("/admin/communication/calendrier");
+  redirect(`/admin/articles/${slug}`);
 }

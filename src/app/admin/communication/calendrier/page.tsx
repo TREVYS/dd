@@ -16,13 +16,14 @@ function statusClass(s: string) {
 }
 
 export default function CalendrierPage() {
-  const items = listItems();
+  // Les articles déjà publiés vivent dans « Articles » — on ne garde ici que le travail en cours.
+  const items = listItems().filter((it) => !(it.type === "article" && it.status === "publie"));
   return (
     <>
       <div className="adm-h">
         <div>
-          <h1>Calendrier éditorial</h1>
-          <p>Idées, brouillons, publications planifiées — le fil de votre communication.</p>
+          <h1>Brouillons d&apos;articles</h1>
+          <p>Les propositions d&apos;Alfred et vos idées en préparation. Une fois publié, l&apos;article rejoint la rubrique Articles et sort de cette liste.</p>
         </div>
         <Link className="adm-btn ghost" href="/admin/communication">← Directeur de comm</Link>
       </div>

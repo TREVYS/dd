@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getAllPosts, formatDateFr } from "@/lib/blog";
-import { listPages } from "@/lib/content-admin";
 import { readAnalytics, lastDays } from "@/lib/analytics";
 import { unreadCount } from "@/lib/newsletter";
 
@@ -8,7 +7,6 @@ export const dynamic = "force-dynamic";
 
 export default function AdminDashboard() {
   const posts = getAllPosts();
-  const pages = listPages();
   const a = readAnalytics();
   const newSubs = unreadCount();
   const days = lastDays(a, 7);
@@ -110,7 +108,7 @@ export default function AdminDashboard() {
           <h3>Pôle communication</h3>
           <div className="ck-ql">
             <Link href="/admin/communication"><span className="qi">🎩</span> Parler à Alfred</Link>
-            <Link href="/admin/communication/calendrier"><span className="qi">📅</span> Calendrier éditorial</Link>
+            <Link href="/admin/communication/calendrier"><span className="qi">📝</span> Brouillons d&apos;articles</Link>
             <Link href="/admin/articles/new"><span className="qi">✍️</span> Nouvel article</Link>
             <Link href="/admin/medias"><span className="qi">🖼️</span> Médias</Link>
           </div>
@@ -120,7 +118,6 @@ export default function AdminDashboard() {
           <h3>Aperçu</h3>
           <div className="ck-ql">
             <Link href="/admin/statistiques"><span className="qi">📊</span> Statistiques détaillées</Link>
-            <Link href="/admin/pages"><span className="qi">📄</span> {pages.length} page{pages.length > 1 ? "s" : ""} personnalisée{pages.length > 1 ? "s" : ""}</Link>
             <Link href="/"><span className="qi">🌐</span> Voir le site</Link>
           </div>
         </div>

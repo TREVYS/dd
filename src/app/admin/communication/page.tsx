@@ -12,8 +12,8 @@ export default function CommunicationPage() {
           <p>Votre directeur de communication : rédaction d&apos;articles, calendrier éditorial, réseaux sociaux.</p>
         </div>
         <div className="adm-actions">
-          <Link className="adm-btn ghost" href="/admin/communication/alfred">Éduquer Alfred</Link>
-          <Link className="adm-btn ghost" href="/admin/communication/calendrier">Calendrier</Link>
+          <Link className="adm-btn ghost" href="/admin/reglages/alfred">Éduquer Alfred</Link>
+          <Link className="adm-btn ghost" href="/admin/communication/calendrier">Brouillons</Link>
         </div>
       </div>
       <CommsChat />

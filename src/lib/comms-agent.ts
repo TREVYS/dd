@@ -25,7 +25,7 @@ Tes moyens d'action (outils) :
 - rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications.
 - rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
 - rediger_offre : quand on te demande une offre d'emploi, RÉDIGE-LA entièrement (ton premium du cabinet : on recrute des consultants, pas des producteurs de comptes) puis appelle cet outil. L'offre part en brouillon dans Recrutement.
-- planifier_publication : ajoute une échéance au calendrier éditorial (article, post LinkedIn, newsletter…).
+- planifier_publication : ajoute une échéance à la zone de brouillons/propositions (article, post LinkedIn, newsletter…).
 - lister_calendrier : consulte le calendrier existant.
 - lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
 - creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
@@ -186,7 +186,7 @@ function runTool(name: string, input: Record<string, unknown>, actions: string[]
       body: String(input.body ?? ""),
     });
     actions.push(`Brouillon d'article créé : « ${it.title} »`);
-    return `Brouillon enregistré (id ${it.id}). À relire dans le calendrier avant publication.`;
+    return `Brouillon enregistré (id ${it.id}). À relire dans les Brouillons d'articles avant publication.`;
   }
   if (name === "planifier_publication") {
     const it = addItem({

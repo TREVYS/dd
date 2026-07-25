@@ -3,6 +3,7 @@ import { isSet, settingsStatus } from "@/lib/settings";
 import { mailerConfigured } from "@/lib/mailer";
 import { disconnectSocialAction, saveSettingsAction, changePasswordAction, enableTelegramAlfredAction, disableTelegramAlfredAction } from "./actions";
 import { telegramWebhookStatus } from "@/lib/telegram-alfred";
+import { ReglagesTabs } from "./reglages-tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,8 @@ export default async function AdminReglages({
           <p>Comptes réseaux sociaux, intégrations et paramètres du cabinet.</p>
         </div>
       </div>
+
+      <ReglagesTabs />
 
       {sp.connected && (
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
