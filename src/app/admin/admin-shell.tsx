@@ -4,7 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AdminNav } from "./admin-nav";
+import { GlobalSearch } from "./global-search";
 import { logoutAction } from "./reglages/actions";
+
+// Onglets mobiles (barre du bas, façon application).
+const TABS = [
+  { href: "/admin", label: "Accueil", ic: "🏠", exact: true },
+  { href: "/admin/communication", label: "Alfred", ic: "🎩", exact: true },
+  { href: "/admin/communication/reseaux", label: "Réseaux", ic: "📣" },
+  { href: "/admin/recrutement", label: "Recrut.", ic: "🧑‍💼" },
+  { href: "/admin/communication/newsletter", label: "News", ic: "💌" },
+];
 
 // Coquille du cockpit avec navigation en tiroir (off-canvas) sur mobile.
 export function AdminShell({
@@ -63,12 +73,26 @@ export function AdminShell({
             <span />
             <span />
           </button>
+          <GlobalSearch />
           <div className="ck-topuser">
             <span className="av">{initials}</span>
             <span className="nm">{name}</span>
           </div>
         </header>
         <div className="adm-content">{children}</div>
+
+        {/* Barre d'onglets mobile (façon app) */}
+        <nav className="ck-tabs" aria-label="Navigation rapide">
+          {TABS.map((t) => {
+            const active = t.exact ? pathname === t.href : pathname === t.href || pathname.startsWith(`${t.href}/`);
+            return (
+              <Link key={t.href} href={t.href} className={`ck-tab${active ? " on" : ""}`}>
+                <span className="ic">{t.ic}</span>
+                <span className="lb">{t.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </main>
     </div>
   );
