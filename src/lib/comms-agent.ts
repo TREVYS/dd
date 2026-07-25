@@ -418,6 +418,50 @@ export async function draftNewsletter(
   return { subject, body, generated: true };
 }
 
+// Rédige un e-mail de refus de candidature, courtois et personnalisé
+// (appel modèle unique). Renvoie null sans clé API — l'appelant applique
+// alors son modèle standard.
+export async function draftRejectionEmail(input: {
+  name: string;
+  jobTitle: string;
+  message?: string;
+  experience?: string;
+  skills?: string[];
+}): Promise<string | null> {
+  const apiKey = getSetting("anthropicApiKey");
+  if (!apiKey) return null;
+
+  try {
+    const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+    const client = new AnthropicSDK({ apiKey });
+    const res = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 800,
+      system:
+        `${alfredSystemBlock()}\n\nTu rédiges un e-mail de refus de candidature au nom du cabinet Trevys. ` +
+        `Exigences : courtois, chaleureux, personnalisé (mentionne un élément positif du profil si les informations le permettent), sans fausse promesse ni motif détaillé du refus, sans jugement. ` +
+        `Structure : salutation avec le prénom, remerciement, décision claire mais bienveillante, mot d'encouragement, proposition de conserver la candidature, signature « L'équipe Trevys ». ` +
+        `Réponds UNIQUEMENT avec le corps de l'e-mail en texte simple (pas de Markdown, pas d'objet, pas de commentaire), 120 mots maximum.`,
+      messages: [
+        {
+          role: "user",
+          content:
+            `Candidat : ${input.name}\nPoste : ${input.jobTitle}\nExpérience : ${input.experience ?? "non précisée"}\n` +
+            `Compétences : ${input.skills?.join(", ") ?? "non précisées"}\nExtrait du message du candidat : ${(input.message ?? "").slice(0, 600)}`,
+        },
+      ],
+    });
+    const text = res.content
+      .filter((b) => b.type === "text")
+      .map((b) => (b as { text: string }).text)
+      .join("")
+      .trim();
+    return text || null;
+  } catch {
+    return null;
+  }
+}
+
 // Objets d'e-mail de secours, chaleureux et pas trop sérieux.
 const FUN_SUBJECTS = [
   "☕ 3 minutes de lecture pour prendre une longueur d'avance",

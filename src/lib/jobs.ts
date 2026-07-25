@@ -227,6 +227,12 @@ export type JobApplication = {
   linkedin?: string;
   message: string;
   cvName?: string; // fichier CV stocké dans data/cvs/ (privé, servi via l'admin)
+  // Profil structuré (façon LinkedIn) — pour trier et automatiser.
+  experience?: string; // ex. « 4-6 ans »
+  education?: string; // ex. « Bac+5 (Master CCA, DSCG…) »
+  skills?: string[]; // compétences clés
+  languages?: string[]; // langues pratiquées
+  availability?: string; // ex. « Sous 1 mois »
   read: boolean;
   refusedAt?: string; // ISO — refus envoyé au candidat
 };

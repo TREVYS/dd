@@ -40,6 +40,13 @@ export async function submitApplication(
   }
   const d = parsed.data;
 
+  // Profil structuré (façon LinkedIn).
+  const experience = String(formData.get("experience") ?? "").slice(0, 40);
+  const education = String(formData.get("education") ?? "").slice(0, 80);
+  const skills = formData.getAll("skills").map(String).slice(0, 20);
+  const languages = formData.getAll("languages").map(String).slice(0, 10);
+  const availability = String(formData.get("availability") ?? "").slice(0, 40);
+
   // CV obligatoire (PDF ou Word, 3 Mo max).
   const cv = formData.get("cv");
   if (!(cv instanceof File) || cv.size === 0) {
@@ -69,13 +76,18 @@ export async function submitApplication(
     linkedin: d.linkedin || undefined,
     message: d.message,
     cvName,
+    experience: experience || undefined,
+    education: education || undefined,
+    skills: skills.length ? skills : undefined,
+    languages: languages.length ? languages : undefined,
+    availability: availability || undefined,
   });
 
   // 2) Alerte Telegram.
   try {
     const { sendTelegram } = await import("@/lib/notify");
     sendTelegram(
-      `🧑‍💼 Nouvelle candidature — ${job.title}\n${d.name} — ${d.email}${d.phone ? ` — ${d.phone}` : ""}${d.linkedin ? `\nLinkedIn : ${d.linkedin}` : ""}\n\n${d.message.slice(0, 500)}`,
+      `🧑‍💼 Nouvelle candidature — ${job.title}\n${d.name} — ${d.email}${d.phone ? ` — ${d.phone}` : ""}\nExp. : ${experience || "—"} · ${education || "—"} · Dispo : ${availability || "—"}\nCompétences : ${skills.join(", ") || "—"}\nLangues : ${languages.join(", ") || "—"}\n\n${d.message.slice(0, 400)}`,
     ).catch(() => {});
   } catch { /* non bloquant */ }
 
@@ -108,6 +120,12 @@ export async function submitApplication(
           `<b>E-mail :</b> <a href="mailto:${esc(d.email)}">${esc(d.email)}</a><br>` +
           `<b>Téléphone :</b> ${esc(d.phone || "—")}<br>` +
           `<b>LinkedIn :</b> ${d.linkedin ? `<a href="${esc(d.linkedin)}">${esc(d.linkedin)}</a>` : "—"}</p>` +
+          `<p style="background:#f4f0e9;border-radius:8px;padding:10px 14px;">` +
+          `<b>Expérience :</b> ${esc(experience || "—")}<br>` +
+          `<b>Formation :</b> ${esc(education || "—")}<br>` +
+          `<b>Compétences :</b> ${esc(skills.join(", ") || "—")}<br>` +
+          `<b>Langues :</b> ${esc(languages.join(", ") || "—")}<br>` +
+          `<b>Disponibilité :</b> ${esc(availability || "—")}</p>` +
           `<div style="background:#faf6f0;border-left:3px solid #F5811F;border-radius:0 8px 8px 0;padding:14px 16px;">${esc(d.message)}</div>` +
           `<p style="color:#999;font-size:12px;margin-top:16px;">Répondez directement à cet e-mail pour écrire au candidat.</p>` +
           `</div>`,

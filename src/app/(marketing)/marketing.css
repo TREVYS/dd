@@ -789,6 +789,16 @@ html,body{overflow-x:hidden}
   .mkt-form-row2{grid-template-columns:1fr!important;gap:1rem!important}
 }
 
+/* Recrutement : puces de sélection (compétences, langues) */
+.mkt-chips{display:flex;flex-wrap:wrap;gap:.45rem}
+.mkt-chip{cursor:pointer}
+.mkt-chip input{position:absolute;opacity:0;pointer-events:none}
+.mkt-chip span{display:inline-block;padding:.42rem .85rem;border-radius:100px;border:1px solid var(--line);
+  background:var(--bg2);font-size:.82rem;font-weight:600;color:var(--ink2);transition:all .15s}
+.mkt-chip:hover span{border-color:var(--violet)}
+.mkt-chip input:checked+span{background:var(--grad);border-color:transparent;color:#fff}
+.mkt-chip input:focus-visible+span{outline:2px solid var(--violet);outline-offset:2px}
+
 /* Recrutement : cartes d'offres */
 .mkt-jobs{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.3rem;max-width:980px;margin:0 auto}
 .mkt-job-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.6rem 1.7rem;

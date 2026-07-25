@@ -106,6 +106,17 @@ export default async function RecrutementAdmin({
               {a.linkedin && <> · <a href={a.linkedin} target="_blank" rel="noopener" className="adm-link">LinkedIn</a></>}
               {a.cvName && <> · <a href={`/api/admin/cv/${a.cvName}`} className="adm-link" style={{ fontWeight: 700, color: "#E26A0F" }}>📄 Télécharger le CV</a></>}
             </div>
+            {(a.experience || a.education || a.skills?.length || a.languages?.length || a.availability) && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem", margin: "0 0 .8rem" }}>
+                {a.experience && <span className="adm-tag">💼 {a.experience}</span>}
+                {a.education && <span className="adm-tag">🎓 {a.education}</span>}
+                {a.availability && <span className="adm-tag">📅 {a.availability}</span>}
+                {a.languages?.map((l) => <span className="adm-tag" key={l}>🗣 {l}</span>)}
+                {a.skills?.map((s) => (
+                  <span key={s} className="adm-tag" style={{ background: "#FFF3E6", borderColor: "#F5D9BE", color: "#9A4D0B" }}>{s}</span>
+                ))}
+              </div>
+            )}
             <p style={{ margin: 0, whiteSpace: "pre-wrap", color: "var(--ink2)", lineHeight: 1.6 }}>{a.message}</p>
             <div className="adm-actions" style={{ marginTop: ".9rem" }}>
               <a className="adm-btn sm" href={`mailto:${a.email}?subject=${encodeURIComponent(`Votre candidature — ${a.jobTitle} — Trevys`)}`}>
