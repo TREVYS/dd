@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { listJobs, listApplications } from "@/lib/jobs";
-import { toggleJobAction, deleteJobAction, markAppReadAction, deleteAppAction } from "./actions";
+import { toggleJobAction, deleteJobAction, markAppReadAction, deleteAppAction, sendRejectionAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function RecrutementAdmin({
   searchParams,
 }: {
-  searchParams: Promise<{ ok?: string }>;
+  searchParams: Promise<{ ok?: string; refus?: string }>;
 }) {
   const sp = await searchParams;
   const jobs = listJobs();
@@ -25,6 +25,9 @@ export default async function RecrutementAdmin({
       </div>
 
       {sp.ok && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Offre enregistrée.</div>}
+      {sp.refus === "ok" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Refus envoyé au candidat.</div>}
+      {sp.refus === "notconfig" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>Envoi impossible : connexion Microsoft 365 non configurée (Réglages).</div>}
+      {sp.refus === "err" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>L'envoi du refus a échoué. Réessayez.</div>}
 
       <div className="adm-card" style={{ padding: 0, marginBottom: "1.4rem" }}>
         <table className="adm-table">
@@ -95,11 +98,13 @@ export default async function RecrutementAdmin({
                 </span>
               </div>
               <span className="adm-tag">{a.jobTitle}</span>
+              {a.refusedAt && <span className="adm-chipst draft">Refus envoyé le {new Date(a.refusedAt).toLocaleDateString("fr-FR")}</span>}
             </div>
             <div className="muted" style={{ fontSize: ".86rem", margin: ".35rem 0 .7rem" }}>
               <a href={`mailto:${a.email}`} className="adm-link">{a.email}</a>
               {a.phone && <> · {a.phone}</>}
               {a.linkedin && <> · <a href={a.linkedin} target="_blank" rel="noopener" className="adm-link">LinkedIn</a></>}
+              {a.cvName && <> · <a href={`/api/admin/cv/${a.cvName}`} className="adm-link" style={{ fontWeight: 700, color: "#E26A0F" }}>📄 Télécharger le CV</a></>}
             </div>
             <p style={{ margin: 0, whiteSpace: "pre-wrap", color: "var(--ink2)", lineHeight: 1.6 }}>{a.message}</p>
             <div className="adm-actions" style={{ marginTop: ".9rem" }}>
@@ -110,6 +115,14 @@ export default async function RecrutementAdmin({
                 <form action={markAppReadAction}>
                   <input type="hidden" name="id" value={a.id} />
                   <button className="adm-btn ghost sm" type="submit">Marquer comme lue</button>
+                </form>
+              )}
+              {!a.refusedAt && (
+                <form action={sendRejectionAction}>
+                  <input type="hidden" name="id" value={a.id} />
+                  <button className="adm-btn ghost sm" type="submit" style={{ color: "#c0392b", borderColor: "#f0d5d1" }}>
+                    Envoyer un refus
+                  </button>
                 </form>
               )}
               <form action={deleteAppAction}>

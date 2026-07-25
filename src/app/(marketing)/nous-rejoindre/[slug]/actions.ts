@@ -1,7 +1,10 @@
 "use server";
 
 import { z } from "zod";
-import { getJob, addApplication } from "@/lib/jobs";
+import { getJob, addApplication, saveCv } from "@/lib/jobs";
+
+const CV_MAX_BYTES = 3 * 1024 * 1024; // 3 Mo (limite des pièces jointes e-mail)
+const CV_TYPES = /\.(pdf|doc|docx)$/i;
 
 export type ApplyState = { ok: boolean; message: string };
 
@@ -37,6 +40,25 @@ export async function submitApplication(
   }
   const d = parsed.data;
 
+  // CV obligatoire (PDF ou Word, 3 Mo max).
+  const cv = formData.get("cv");
+  if (!(cv instanceof File) || cv.size === 0) {
+    return { ok: false, message: "Merci de joindre votre CV (PDF ou Word)." };
+  }
+  if (!CV_TYPES.test(cv.name)) {
+    return { ok: false, message: "Format de CV non pris en charge — utilisez un PDF ou un Word (.doc/.docx)." };
+  }
+  if (cv.size > CV_MAX_BYTES) {
+    return { ok: false, message: "CV trop volumineux (3 Mo maximum)." };
+  }
+  const cvBuffer = Buffer.from(await cv.arrayBuffer());
+  let cvName: string | undefined;
+  try {
+    cvName = saveCv(cvBuffer, cv.name);
+  } catch (e) {
+    console.error("[recrutement] échec de sauvegarde du CV:", e);
+  }
+
   // 1) Archive (cockpit → Recrutement) + compteur de candidatures.
   addApplication({
     jobId: job.id,
@@ -46,6 +68,7 @@ export async function submitApplication(
     phone: d.phone || undefined,
     linkedin: d.linkedin || undefined,
     message: d.message,
+    cvName,
   });
 
   // 2) Alerte Telegram.
@@ -56,14 +79,25 @@ export async function submitApplication(
     ).catch(() => {});
   } catch { /* non bloquant */ }
 
-  // 3) E-mail vers la boîte du cabinet (Microsoft 365).
+  // 3) Synthèse par e-mail (adresse réglable dans le cockpit), CV en pièce jointe.
   try {
     const { mailerConfigured, sendMail, senderAddress } = await import("@/lib/mailer");
+    const { getSetting } = await import("@/lib/settings");
     if (mailerConfigured()) {
       const esc = (s: string) =>
         s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+      const ext = cv.name.match(/\.(pdf|docx?)$/i)?.[1]?.toLowerCase() ?? "pdf";
+      const contentType =
+        ext === "pdf" ? "application/pdf"
+        : ext === "docx" ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        : "application/msword";
       await sendMail({
-        to: [senderAddress()],
+        to: [getSetting("recruitEmail") || senderAddress()],
+        attachments: [{
+          name: `CV-${d.name.replace(/[^\w.-]+/g, "-")}.${ext}`,
+          contentType,
+          contentBase64: cvBuffer.toString("base64"),
+        }],
         subject: `Candidature — ${job.title} — ${d.name}`,
         replyTo: d.email,
         html:

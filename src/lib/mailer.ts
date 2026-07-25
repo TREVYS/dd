@@ -52,16 +52,23 @@ async function getToken(): Promise<string> {
   return json.access_token;
 }
 
+export type MailAttachment = {
+  name: string;
+  contentType: string;
+  contentBase64: string; // contenu encodé en base64
+};
+
 export type MailInput = {
   to: string[];
   subject: string;
   html: string;
   replyTo?: string;
+  attachments?: MailAttachment[];
 };
 
 // Envoie un e-mail via Graph depuis l'adresse du cabinet.
 // Les destinataires sont mis en Cci (bcc) pour un envoi de masse discret.
-export async function sendMail({ to, subject, html, replyTo }: MailInput): Promise<void> {
+export async function sendMail({ to, subject, html, replyTo, attachments }: MailInput): Promise<void> {
   const token = await getToken();
   const sender = senderAddress();
 
@@ -72,6 +79,14 @@ export async function sendMail({ to, subject, html, replyTo }: MailInput): Promi
     bccRecipients: to.map((address) => ({ emailAddress: { address } })),
   };
   if (replyTo) message.replyTo = [{ emailAddress: { address: replyTo } }];
+  if (attachments?.length) {
+    message.attachments = attachments.map((a) => ({
+      "@odata.type": "#microsoft.graph.fileAttachment",
+      name: a.name,
+      contentType: a.contentType,
+      contentBytes: a.contentBase64,
+    }));
+  }
 
   const res = await fetch(
     `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(sender)}/sendMail`,

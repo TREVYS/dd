@@ -226,8 +226,22 @@ export type JobApplication = {
   phone?: string;
   linkedin?: string;
   message: string;
+  cvName?: string; // fichier CV stocké dans data/cvs/ (privé, servi via l'admin)
   read: boolean;
+  refusedAt?: string; // ISO — refus envoyé au candidat
 };
+
+// Répertoire privé des CV (jamais servi publiquement).
+export const CV_DIR = path.join(process.cwd(), "data", "cvs");
+
+export function saveCv(buffer: Buffer, originalName: string): string {
+  if (!fs.existsSync(CV_DIR)) fs.mkdirSync(CV_DIR, { recursive: true });
+  const ext = (originalName.match(/\.(pdf|doc|docx)$/i)?.[1] ?? "pdf").toLowerCase();
+  const base = slugify(originalName.replace(/\.[^.]+$/, "")).slice(0, 40) || "cv";
+  const name = `${crypto.randomBytes(5).toString("hex")}-${base}.${ext}`;
+  fs.writeFileSync(path.join(CV_DIR, name), buffer);
+  return name;
+}
 
 function readApps(): JobApplication[] {
   try {
@@ -275,6 +289,14 @@ export function addApplication(input: Omit<JobApplication, "id" | "date" | "read
 
 export function markApplicationRead(id: string) {
   writeApps(readApps().map((a) => (a.id === id ? { ...a, read: true } : a)));
+}
+
+export function getApplication(id: string): JobApplication | undefined {
+  return readApps().find((a) => a.id === id);
+}
+
+export function markApplicationRefused(id: string) {
+  writeApps(readApps().map((a) => (a.id === id ? { ...a, read: true, refusedAt: new Date().toISOString() } : a)));
 }
 
 export function removeApplication(id: string) {

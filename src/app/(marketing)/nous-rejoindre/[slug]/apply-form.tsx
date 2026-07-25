@@ -73,6 +73,10 @@ export function ApplyForm({ jobSlug, jobTitle }: { jobSlug: string; jobTitle: st
         </label>
       </div>
       <label style={{ display: "block", marginBottom: "1.25rem" }}>
+        <span style={labelStyle}>Votre CV <em style={{ fontStyle: "normal", color: "var(--ink3)" }}>(PDF ou Word, 3 Mo max — obligatoire)</em></span>
+        <input type="file" name="cv" required accept=".pdf,.doc,.docx,application/pdf" style={{ ...fieldStyle, padding: ".7rem 1.05rem" }} />
+      </label>
+      <label style={{ display: "block", marginBottom: "1.25rem" }}>
         <span style={labelStyle}>Votre message — parcours, motivations, disponibilité</span>
         <textarea
           name="message"

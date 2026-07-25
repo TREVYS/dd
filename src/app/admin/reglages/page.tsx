@@ -24,6 +24,9 @@ const CFG_GROUPS = [
     { k: "msClientId", label: "Client ID (Application)", ph: "xxxxxxxx-xxxx-…", secret: false },
     { k: "msClientSecret", label: "Client Secret", ph: "", secret: true },
   ] },
+  { title: "Recrutement", fields: [
+    { k: "recruitEmail", label: "E-mail de réception des candidatures", ph: "contact@trevys-advisory.fr", secret: false },
+  ] },
   { title: "Prise de rendez-vous (Calendly)", fields: [
     { k: "calendlyUrl", label: "URL Calendly", ph: "https://calendly.com/…", secret: false },
   ] },
