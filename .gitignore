@@ -46,14 +46,10 @@ next-env.d.ts
 
 # uploaded client documents
 /public/uploads/
-data/analytics.json
 
 # Médias importés via le back-office
 public/uploads/*
 !public/uploads/README.md
 
-data/social.json
-
-data/editorial.json
-
-data/alfred.json
+# Stores d'exécution (réglages, brouillons, candidatures…) — jamais versionnés
+/data/
