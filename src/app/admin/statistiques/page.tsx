@@ -55,7 +55,7 @@ export default async function AdminStats() {
         <div className="adm-kpi"><div className="k">Vues (depuis le début)</div><div className="v">{s.totalViews.toLocaleString("fr-FR")}</div></div>
       </div>
 
-      <div className="adm-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+      <div className="adm-cols2">
         {/* Top 3 */}
         <div className="adm-card" style={{ margin: 0 }}>
           <h2>Top 3 des pages</h2>
@@ -82,33 +82,65 @@ export default async function AdminStats() {
           )}
         </div>
 
-        {/* Navigation des visiteurs */}
+        {/* Provenance des visiteurs */}
         <div className="adm-card" style={{ margin: 0 }}>
-          <h2>Ce que font vos visiteurs</h2>
-          {events.length === 0 ? (
-            <p className="muted">Pas encore d&apos;interactions mesurées.</p>
+          <h2>D&apos;où viennent vos visiteurs</h2>
+          {s.topSources.length === 0 ? (
+            <p className="muted">
+              La mesure de provenance démarre avec cette mise à jour — les
+              premières données apparaîtront dès les prochaines visites.
+            </p>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: ".6rem", marginTop: ".6rem" }}>
-              {events.slice(0, 5).map(([e, n]) => (
-                <div key={e} style={{ display: "flex", alignItems: "center", gap: ".7rem" }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: ".88rem", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{e}</div>
-                    <div style={{ height: 6, borderRadius: 99, background: "var(--o-soft)", marginTop: ".25rem" }}>
-                      <div style={{ height: "100%", width: `${Math.max(5, Math.round((n / maxEvent) * 100))}%`, borderRadius: 99, background: "linear-gradient(90deg,#FBB040,var(--o2))" }} />
+            <>
+              <div style={{ display: "flex", flexDirection: "column", gap: ".6rem", marginTop: ".6rem" }}>
+                {s.topSources.map((src) => (
+                  <div key={src.name} style={{ display: "flex", alignItems: "center", gap: ".7rem" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: ".88rem", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{src.name}</div>
+                      <div style={{ height: 6, borderRadius: 99, background: "var(--o-soft)", marginTop: ".25rem" }}>
+                        <div style={{ height: "100%", width: `${Math.max(5, src.pct)}%`, borderRadius: 99, background: "linear-gradient(90deg,#FBB040,var(--o2))" }} />
+                      </div>
                     </div>
+                    <b style={{ flex: "none" }}>{src.pct} %</b>
                   </div>
-                  <b style={{ flex: "none" }}>{n}</b>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+              {s.devices.length > 0 && (
+                <p className="muted" style={{ fontSize: ".82rem", margin: "1rem 0 0" }}>
+                  Appareils : {s.devices.map((d) => `${d.name} ${d.pct} %`).join(" · ")}
+                </p>
+              )}
+            </>
           )}
         </div>
+      </div>
+
+      {/* Navigation des visiteurs — pleine largeur, sous les deux cartes */}
+      <div className="adm-card">
+        <h2>Ce que font vos visiteurs</h2>
+        {events.length === 0 ? (
+          <p className="muted">Pas encore d&apos;interactions mesurées.</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: ".6rem", marginTop: ".6rem" }}>
+            {events.slice(0, 5).map(([e, n]) => (
+              <div key={e} style={{ display: "flex", alignItems: "center", gap: ".7rem" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: ".88rem", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{e}</div>
+                  <div style={{ height: 6, borderRadius: 99, background: "var(--o-soft)", marginTop: ".25rem" }}>
+                    <div style={{ height: "100%", width: `${Math.max(5, Math.round((n / maxEvent) * 100))}%`, borderRadius: 99, background: "linear-gradient(90deg,#FBB040,var(--o2))" }} />
+                  </div>
+                </div>
+                <b style={{ flex: "none" }}>{n}</b>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Détail complet, replié par défaut */}
       <details className="adm-card" style={{ cursor: "pointer" }}>
         <summary style={{ fontWeight: 800, fontSize: "1rem" }}>Voir le détail complet (toutes les pages, jour par jour)</summary>
-        <div className="adm-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginTop: "1rem", cursor: "auto" }}>
+        <div className="adm-cols2" style={{ marginTop: "1rem", cursor: "auto" }}>
           <div>
             <h3 style={{ margin: "0 0 .5rem" }}>Toutes les pages</h3>
             <table className="adm-table">
@@ -136,7 +168,7 @@ export default async function AdminStats() {
       {/* Google, replié aussi : utile mais pas quotidien */}
       <details className="adm-card" style={{ cursor: "pointer" }}>
         <summary style={{ fontWeight: 800, fontSize: "1rem" }}>Google Analytics &amp; Search Console</summary>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "1rem", cursor: "auto" }}>
+        <div className="adm-cols2" style={{ gap: "1rem", marginTop: "1rem", cursor: "auto" }}>
           <div style={{ border: "1px solid var(--line)", borderRadius: 14, padding: "1.1rem 1.2rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: ".6rem", fontWeight: 800 }}>
               <span style={{ width: 9, height: 9, borderRadius: "50%", background: gaId ? "#2E9E6B" : "#E26A0F" }} />

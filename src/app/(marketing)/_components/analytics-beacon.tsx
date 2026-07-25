@@ -21,7 +21,18 @@ export function AnalyticsBeacon() {
   const pathname = usePathname();
 
   useEffect(() => {
-    send({ type: "view", path: pathname });
+    // Début de visite : on joint la provenance (referrer) une seule fois par
+    // session — pour savoir d'où viennent les visiteurs, sans cookie.
+    let nv = 0;
+    let ref = "";
+    try {
+      if (!sessionStorage.getItem("trv-visit")) {
+        sessionStorage.setItem("trv-visit", "1");
+        nv = 1;
+        ref = document.referrer || "";
+      }
+    } catch { /* stockage indisponible */ }
+    send(nv ? { type: "view", path: pathname, nv, ref } : { type: "view", path: pathname });
   }, [pathname]);
 
   useEffect(() => {

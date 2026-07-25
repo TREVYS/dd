@@ -41,6 +41,8 @@ export type StatsSummary = {
   trendPct: number | null;
   top3: { path: string; label: string; views: number; sharePct: number }[];
   topEvents: { name: string; count: number }[];
+  topSources: { name: string; count: number; pct: number }[];
+  devices: { name: string; count: number; pct: number }[];
   engagementPct: number;
 };
 
@@ -60,7 +62,16 @@ export function buildStatsSummary(): StatsSummary {
     .slice(0, 5)
     .map(([name, count]) => ({ name, count }));
   const engagementPct = a.totals.views ? Math.min(100, Math.round((a.totals.events / a.totals.views) * 100)) : 0;
-  return { totalViews: a.totals.views, views7, views7Prev, trendPct, top3, topEvents, engagementPct };
+  const srcTotal = Math.max(1, Object.values(a.sources ?? {}).reduce((x, y) => x + y, 0));
+  const topSources = Object.entries(a.sources ?? {})
+    .sort((x, y) => y[1] - x[1])
+    .slice(0, 6)
+    .map(([name, count]) => ({ name, count, pct: Math.round((count / srcTotal) * 100) }));
+  const devTotal = Math.max(1, Object.values(a.devices ?? {}).reduce((x, y) => x + y, 0));
+  const devices = Object.entries(a.devices ?? {})
+    .sort((x, y) => y[1] - x[1])
+    .map(([name, count]) => ({ name, count, pct: Math.round((count / devTotal) * 100) }));
+  return { totalViews: a.totals.views, views7, views7Prev, trendPct, top3, topEvents, topSources, devices, engagementPct };
 }
 
 // Texte de secours (sans IA) : déjà utile, jamais bloquant.
@@ -105,6 +116,8 @@ export async function alfredTrafficAnalysis(force = false): Promise<string> {
               `Données : ${s.views7} vues sur 7 jours (précédente semaine : ${s.views7Prev}${s.trendPct !== null ? `, tendance ${s.trendPct > 0 ? "+" : ""}${s.trendPct} %` : ""}). ` +
               `Top 3 pages : ${s.top3.map((t) => `${t.label} (${t.views} vues, ${t.sharePct} %)`).join(" ; ") || "aucune donnée"}. ` +
               `Interactions principales : ${s.topEvents.map((e) => `${e.name} (${e.count})`).join(" ; ") || "aucune"}. ` +
+              `Provenance des visiteurs : ${s.topSources.map((x) => `${x.name} (${x.pct} %)`).join(" ; ") || "pas encore mesurée"}. ` +
+              `Appareils : ${s.devices.map((x) => `${x.name} (${x.pct} %)`).join(" ; ") || "pas encore mesurés"}. ` +
               `Taux d'engagement global : ${s.engagementPct} %.`,
           },
         ],
@@ -155,6 +168,9 @@ export async function maybeSendWeeklyStatsReport(): Promise<void> {
     `🏆 Top 3 :`,
     ...s.top3.map((t, i) => `${i + 1}. ${t.label} — ${t.views} vues (${t.sharePct} %)`),
     ``,
+    ...(s.topSources.length
+      ? [`🧭 Provenance : ${s.topSources.slice(0, 4).map((x) => `${x.name} ${x.pct} %`).join(" · ")}`, ``]
+      : []),
     `🎩 L'analyse d'Alfred :`,
     analysis,
   ];
