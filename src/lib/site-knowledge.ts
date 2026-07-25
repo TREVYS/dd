@@ -5,6 +5,11 @@ import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
 import { listItems } from "@/lib/editorial";
 import { listPosts } from "@/lib/social-posts";
+import { readAnalytics, lastDays } from "@/lib/analytics";
+import { listJobs, listApplications } from "@/lib/jobs";
+import { listMessages, unreadMessages } from "@/lib/contact-messages";
+import { listSubscribers } from "@/lib/newsletter";
+import { listCampaigns } from "@/lib/newsletter-campaigns";
 
 // Connaissance vivante du site pour Alfred : plan des pages, articles, vidéos,
 // médias, équipe, écosystème, et état de la communication. Recomposée à chaque
@@ -87,7 +92,69 @@ export function siteKnowledgeBlock(): string {
     );
   } catch { /* ignore */ }
 
+  // Fréquentation (statistiques de visite).
+  try {
+    const a = readAnalytics();
+    const d14 = lastDays(a, 14);
+    const views14 = d14.reduce((s, x) => s + x.views, 0);
+    const topPaths = Object.entries(a.paths)
+      .sort((x, y) => y[1] - x[1])
+      .slice(0, 8)
+      .map(([p, n]) => `${p} (${n})`);
+    const topEvents = Object.entries(a.events)
+      .sort((x, y) => y[1] - x[1])
+      .slice(0, 6)
+      .map(([e, n]) => `${e} (${n})`);
+    parts.push(
+      `FRÉQUENTATION DU SITE : ${a.totals.views} pages vues au total (${views14} sur les 14 derniers jours), ${a.totals.events} interactions suivies.` +
+        (topPaths.length ? `\nPages les plus vues : ${topPaths.join(", ")}.` : "") +
+        (topEvents.length ? `\nInteractions les plus fréquentes : ${topEvents.join(", ")}.` : ""),
+    );
+  } catch { /* ignore */ }
+
+  // Recrutement (offres + candidatures).
+  try {
+    const jobs = listJobs();
+    const apps = listApplications();
+    const published = jobs.filter((j) => j.status === "publie");
+    const jobLines = jobs
+      .slice(0, 15)
+      .map((j) => `- « ${j.title} » (${j.status === "publie" ? "publiée" : "brouillon"}) — ${j.views} vues, ${j.applications} candidatures`);
+    const toProcess = apps.filter((a) => !a.refusedAt && !a.invitedAt).length;
+    const invited = apps.filter((a) => a.invitedAt).length;
+    const refused = apps.filter((a) => a.refusedAt).length;
+    const appLines = apps
+      .slice(0, 20)
+      .map((a) => `- ${a.name} — ${a.jobTitle} (${a.date.slice(0, 10)})${a.experience ? `, ${a.experience}` : ""} — statut : ${a.refusedAt ? "refusée" : a.invitedAt ? "entretien proposé" : "à traiter"}`);
+    parts.push(
+      `RECRUTEMENT : ${published.length} offre(s) publiée(s) sur ${jobs.length}.\n${jobLines.join("\n")}\n\n` +
+        `CANDIDATURES (${apps.length} au total — ${toProcess} à traiter, ${invited} en entretien, ${refused} refusées) :\n${appLines.join("\n") || "- aucune pour le moment"}`,
+    );
+  } catch { /* ignore */ }
+
+  // Messages reçus (formulaire de contact).
+  try {
+    const msgs = listMessages();
+    const lines = msgs
+      .slice(0, 12)
+      .map((m) => `- ${m.firstName} ${m.lastName} (${m.date.slice(0, 10)})${m.subject ? ` — ${cap(m.subject, 60)}` : ""}${m.read ? "" : " — NON LU"}`);
+    parts.push(
+      `MESSAGES REÇUS (contact) : ${msgs.length} au total, ${unreadMessages()} non lu(s).\n${lines.join("\n") || "- aucun message"}`,
+    );
+  } catch { /* ignore */ }
+
+  // Newsletter (inscrits + campagnes).
+  try {
+    const subs = listSubscribers();
+    const camps = listCampaigns();
+    const sent = camps.filter((c) => c.status === "envoye").length;
+    const drafts = camps.filter((c) => c.status === "brouillon").length;
+    parts.push(
+      `NEWSLETTER : ${subs.length} inscrit(s), ${camps.length} campagne(s) (${sent} envoyée(s), ${drafts} brouillon(s)).`,
+    );
+  } catch { /* ignore */ }
+
   const block = parts.join("\n\n");
   // Garde-fou de taille (le savoir documentaire d'Alfred s'ajoute par ailleurs).
-  return cap(block, 18_000);
+  return cap(block, 26_000);
 }

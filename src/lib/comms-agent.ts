@@ -8,6 +8,10 @@ import { getSetting } from "@/lib/settings";
 import { addRoutine, listRoutines, describeSchedule, type RoutineFreq, type RoutineType } from "@/lib/alfred-routines";
 import { addCampaign as addCampaignStore } from "@/lib/newsletter-campaigns";
 import { addJob as addJobStore, listApplications, type JobApplication } from "@/lib/jobs";
+import { readAnalytics, lastDays } from "@/lib/analytics";
+import { listMessages } from "@/lib/contact-messages";
+import { listSubscribers } from "@/lib/newsletter";
+import { listCampaigns } from "@/lib/newsletter-campaigns";
 import { setPeoplePhoto, removePeoplePhoto, listPeoplePhotos } from "@/lib/people-photos";
 import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
@@ -31,6 +35,11 @@ Tes moyens d'action (outils) :
 - creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
 - definir_photo / retirer_photo : change la photo d'un associé ou d'un consultant du site à partir d'une image de la médiathèque (à faire uniquement sur demande explicite).
 - lister_candidatures / refuser_candidature / inviter_entretien : gère le recrutement. RÈGLE ABSOLUE : refuser ou inviter envoie un e-mail réel au candidat — uniquement sur instruction explicite et non ambiguë de John (sinon, liste et demande confirmation).
+- lister_statistiques : consulte la fréquentation du site (pages vues, pages les plus consultées, interactions, tendance récente) pour répondre aux questions sur l'audience.
+- lister_messages : consulte les messages reçus via le formulaire de contact.
+- lister_newsletter : consulte l'état de la newsletter (nombre d'inscrits, campagnes envoyées/brouillons).
+
+Tu as une vue d'ensemble de toute l'activité du cabinet (fréquentation, recrutement, messages, newsletter) — reprise dans la CONNAISSANCE DU SITE et interrogeable en détail via ces outils. Réponds aux questions de John sur les statistiques, les candidatures, les messages ou la newsletter en t'appuyant dessus.
 
 Règles : respecte scrupuleusement le ton, la ligne éditoriale et les mots à éviter ci-dessus. Inspire-toi des exemples de publications passées pour retrouver le style « maison ». Après une action, confirme brièvement et propose la suite. Tu prépares, l'humain valide et publie.`;
 
@@ -188,6 +197,22 @@ const TOOLS = [
     },
   },
   {
+    name: "lister_statistiques",
+    description:
+      "Renvoie la fréquentation du site : total de pages vues, tendance des 14 derniers jours, pages les plus consultées et interactions les plus fréquentes.",
+    input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "lister_messages",
+    description: "Liste les messages reçus via le formulaire de contact (expéditeur, objet, date, lu/non lu).",
+    input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "lister_newsletter",
+    description: "Renvoie l'état de la newsletter : nombre d'inscrits et campagnes (envoyées / brouillons).",
+    input_schema: { type: "object" as const, properties: {} },
+  },
+  {
     name: "lire_article",
     description:
       "Renvoie le contenu complet (Markdown) d'un article publié du site, à partir de son slug (ex. « calendrier-2026-2027 »).",
@@ -336,6 +361,38 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     removePeoplePhoto(slug);
     actions.push(`Photo personnalisée de ${slug} retirée`);
     return `Photo personnalisée retirée pour ${slug} — retour au visuel par défaut. État actuel : ${JSON.stringify(listPeoplePhotos())}`;
+  }
+  if (name === "lister_statistiques") {
+    const a = readAnalytics();
+    const d14 = lastDays(a, 14);
+    return JSON.stringify({
+      totalPagesVues: a.totals.views,
+      totalInteractions: a.totals.events,
+      vues14Jours: d14.reduce((s, x) => s + x.views, 0),
+      tendance14Jours: d14.map((x) => ({ jour: x.day, vues: x.views, interactions: x.events })),
+      pagesLesPlusVues: Object.entries(a.paths).sort((x, y) => y[1] - x[1]).slice(0, 15).map(([p, n]) => ({ page: p, vues: n })),
+      interactions: Object.entries(a.events).sort((x, y) => y[1] - x[1]).slice(0, 15).map(([e, n]) => ({ nom: e, nombre: n })),
+    });
+  }
+  if (name === "lister_messages") {
+    return JSON.stringify(
+      listMessages().slice(0, 30).map((m) => ({
+        id: m.id, nom: `${m.firstName} ${m.lastName}`, email: m.email,
+        date: m.date.slice(0, 10), objet: m.subject ?? null,
+        extrait: m.message.slice(0, 200), lu: m.read,
+      })),
+    );
+  }
+  if (name === "lister_newsletter") {
+    const subs = listSubscribers();
+    const camps = listCampaigns();
+    return JSON.stringify({
+      inscrits: subs.length,
+      campagnes: camps.map((c) => ({
+        objet: c.subject, statut: c.status,
+        envoyeLe: c.sentAt?.slice(0, 10) ?? null, destinataires: c.sentCount ?? null,
+      })),
+    });
   }
   if (name === "lire_article") {
     const post = getPost(String(input.slug ?? ""));
