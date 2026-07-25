@@ -98,12 +98,19 @@ export async function submitApplication(
   // `fetch` vers Telegram n'aboutisse — le message n'arrivait alors jamais.
   // Message en texte brut (plain) pour éviter tout rejet HTML (emoji, accents).
   try {
-    const { sendTelegram } = await import("@/lib/notify");
+    const { sendTelegram, sendTelegramDocument } = await import("@/lib/notify");
+    const firstName = d.name.trim().split(/\s+/)[0] || d.name;
     const ok = await sendTelegram(
-      `🧑‍💼 Nouvelle candidature — ${job.title}\n${d.name} — ${d.email}${d.phone ? ` — ${d.phone}` : ""}\nExp. : ${experience || "—"} · ${education || "—"} · Dispo : ${availability || "—"}\nCompétences : ${skills.join(", ") || "—"}\nLangues : ${languages.join(", ") || "—"}\n\n${d.message.slice(0, 400)}`,
+      `🧑‍💼 Nouvelle candidature — ${job.title}\n${d.name} — ${d.email}${d.phone ? ` — ${d.phone}` : ""}\nExp. : ${experience || "—"} · ${education || "—"} · Dispo : ${availability || "—"}\nCompétences : ${skills.join(", ") || "—"}\nLangues : ${languages.join(", ") || "—"}\n\n${d.message.slice(0, 400)}\n\n🎩 Répondez ici à Alfred :\n• « invite ${firstName} à un entretien » (e-mail + lien Calendly)\n• « refuse la candidature de ${firstName} » (refus courtois automatique)`,
       { plain: true },
     );
     if (!ok) console.error("[recrutement] alerte Telegram non envoyée (bot/chat non configuré ou refus API)");
+    // Le CV en pièce jointe, juste après l'alerte.
+    await sendTelegramDocument(
+      cvBuffer,
+      `CV-${d.name.replace(/[^\w.-]+/g, "-")}.${(cv.name.match(/\.(pdf|docx?)$/i)?.[1] ?? "pdf").toLowerCase()}`,
+      `📎 CV de ${d.name} — ${job.title}`,
+    );
   } catch (e) {
     console.error("[recrutement] échec alerte Telegram:", e);
   }
