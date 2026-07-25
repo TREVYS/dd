@@ -74,7 +74,7 @@ export async function ingestFile(
     if (!text || text.trim().length < 40) {
       return {
         kind: "error",
-        message: `Je n'ai pas réussi à lire « ${name} » (formats acceptés : PDF, Word .docx, texte, ou une image).`,
+        message: `Je n'ai pas réussi à lire « ${name} » (formats acceptés : PDF, Word .docx, PowerPoint .pptx, texte, ou une image).`,
       };
     }
     addKnowledge(name, source, text);

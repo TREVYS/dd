@@ -49,6 +49,42 @@ async function fromDocx(buf: Buffer): Promise<string> {
   return clean(decodeEntities(text));
 }
 
+// PowerPoint .pptx : ZIP contenant une XML par diapositive — on extrait le
+// texte de chaque diapo (et des notes de l'animateur) dans l'ordre.
+async function fromPptx(buf: Buffer): Promise<string> {
+  const JSZip = (await import("jszip")).default;
+  const zip = await JSZip.loadAsync(buf);
+  const num = (name: string) => Number(name.match(/(\d+)\.xml$/)?.[1] ?? 0);
+  const slideNames = Object.keys(zip.files)
+    .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+    .sort((a, b) => num(a) - num(b));
+  const noteNames = Object.keys(zip.files)
+    .filter((n) => /^ppt\/notesSlides\/notesSlide\d+\.xml$/.test(n))
+    .sort((a, b) => num(a) - num(b));
+
+  const textOf = async (name: string) => {
+    const xml = await zip.file(name)!.async("string");
+    // Les textes vivent dans des balises <a:t>…</a:t> ; un </a:p> = fin de paragraphe.
+    return decodeEntities(
+      xml
+        .replace(/<\/a:p>/g, "\n")
+        .replace(/<a:t>([\s\S]*?)<\/a:t>/g, "$1 ")
+        .replace(/<[^>]+>/g, ""),
+    ).replace(/[ \t]{2,}/g, " ");
+  };
+
+  const parts: string[] = [];
+  for (let i = 0; i < slideNames.length; i++) {
+    const slide = (await textOf(slideNames[i])).trim();
+    if (slide) parts.push(`--- Diapositive ${i + 1} ---\n${slide}`);
+  }
+  for (const n of noteNames) {
+    const note = (await textOf(n)).trim();
+    if (note) parts.push(`(Notes) ${note}`);
+  }
+  return clean(parts.join("\n\n"));
+}
+
 export async function extractFromBuffer(
   buf: Buffer,
   filename: string,
@@ -57,8 +93,9 @@ export async function extractFromBuffer(
   const ext = filename.toLowerCase().split(".").pop() || "";
   if (mime.includes("pdf") || ext === "pdf") return fromPdf(buf);
   if (ext === "docx" || mime.includes("officedocument.wordprocessing")) return fromDocx(buf);
+  if (ext === "pptx" || mime.includes("officedocument.presentation")) return fromPptx(buf);
   if (ext === "txt" || ext === "md" || mime.startsWith("text/")) return clean(buf.toString("utf8"));
-  throw new Error("Format non pris en charge (PDF, Word .docx, .txt ou .md).");
+  throw new Error("Format non pris en charge (PDF, Word .docx, PowerPoint .pptx, .txt ou .md).");
 }
 
 // Page web : on récupère le HTML et on extrait le texte principal.

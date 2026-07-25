@@ -54,7 +54,7 @@ export function KnowledgeDropZone() {
           ref={fileRef}
           type="file"
           multiple
-          accept=".pdf,.doc,.docx,.txt,.md,.zip,image/*"
+          accept=".pdf,.doc,.docx,.pptx,.txt,.md,.zip,image/*"
           style={{ display: "none" }}
           onChange={(e) => upload(e.target.files)}
         />
@@ -64,7 +64,7 @@ export function KnowledgeDropZone() {
           <>
             <b>Glissez-déposez vos fichiers ici</b>
             <span className="muted" style={{ fontSize: ".82rem" }}>
-              PDF, Word, texte, images, ZIP — ou cliquez pour parcourir. Documents → base de
+              PDF, Word, PowerPoint, texte, images, ZIP — ou cliquez pour parcourir. Documents → base de
               connaissance · images → médiathèque · ZIP → déballé automatiquement.
             </span>
           </>

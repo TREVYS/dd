@@ -16,9 +16,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Aucun fichier reçu." }, { status: 400 });
   }
   const isZip = /\.zip$/i.test(f.name) || /zip/i.test(f.type);
-  const cap = isZip ? 15 * 1024 * 1024 : 8 * 1024 * 1024;
+  const cap = isZip ? 30 * 1024 * 1024 : 8 * 1024 * 1024;
   if (f.size > cap) {
-    return NextResponse.json({ error: `Fichier trop volumineux (${isZip ? 15 : 8} Mo max).` }, { status: 400 });
+    return NextResponse.json({ error: `Fichier trop volumineux (${isZip ? 30 : 8} Mo max).` }, { status: 400 });
   }
 
   const buf = Buffer.from(await f.arrayBuffer());
