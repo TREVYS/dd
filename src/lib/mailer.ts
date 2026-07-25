@@ -64,20 +64,34 @@ export type MailInput = {
   html: string;
   replyTo?: string;
   attachments?: MailAttachment[];
+  // true (défaut) : destinataires en Cci (campagnes de masse — ils ne se
+  // voient pas). false : destinataire nominal en « À » (e-mails
+  // transactionnels : refus, invitation, confirmation — meilleur rendu et
+  // meilleure délivrabilité).
+  bcc?: boolean;
 };
 
 // Envoie un e-mail via Graph depuis l'adresse du cabinet.
 // Les destinataires sont mis en Cci (bcc) pour un envoi de masse discret.
-export async function sendMail({ to, subject, html, replyTo, attachments }: MailInput): Promise<void> {
+export async function sendMail({ to, subject, html, replyTo, attachments, bcc = true }: MailInput): Promise<void> {
   const token = await getToken();
   const sender = senderAddress();
 
-  const message: Record<string, unknown> = {
-    subject,
-    body: { contentType: "HTML", content: html },
-    toRecipients: [{ emailAddress: { address: sender } }],
-    bccRecipients: to.map((address) => ({ emailAddress: { address } })),
-  };
+  const recipients = to.map((address) => ({ emailAddress: { address } }));
+  const message: Record<string, unknown> = bcc
+    ? {
+        subject,
+        body: { contentType: "HTML", content: html },
+        // Masse : cabinet en « À », destinataires en Cci.
+        toRecipients: [{ emailAddress: { address: sender } }],
+        bccRecipients: recipients,
+      }
+    : {
+        subject,
+        body: { contentType: "HTML", content: html },
+        // Transactionnel : le destinataire est le vrai « À ».
+        toRecipients: recipients,
+      };
   if (replyTo) message.replyTo = [{ emailAddress: { address: replyTo } }];
   if (attachments?.length) {
     message.attachments = attachments.map((a) => ({

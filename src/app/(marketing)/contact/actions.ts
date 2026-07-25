@@ -105,6 +105,7 @@ export async function submitContact(
       const esc = (s: string) =>
         s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
       await sendMail({
+        bcc: false,
         to: [process.env.CONTACT_TO ?? senderAddress()],
         subject: `Contact site — ${d.subject || "Nouvelle demande"} — ${d.firstName} ${d.lastName}`,
         replyTo: d.email,

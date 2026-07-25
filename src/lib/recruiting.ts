@@ -38,7 +38,7 @@ export async function sendRejectionForApp(app: JobApplication): Promise<{ ok: bo
       );
 
   try {
-    await sendMail({ to: [app.email], subject: `Votre candidature — ${app.jobTitle} — Trevys`, html });
+    await sendMail({ to: [app.email], subject: `Votre candidature — ${app.jobTitle} — Trevys`, html, bcc: false, replyTo: getSetting("recruitEmail") || undefined });
     markApplicationRefused(app.id);
     return { ok: true, detail: `Refus envoyé à ${app.name} (${app.email}).` };
   } catch (e) {
@@ -59,7 +59,7 @@ export async function sendInterviewInviteForApp(app: JobApplication): Promise<{ 
     `<p>Bonne nouvelle : votre candidature au poste de <b>${esc(app.jobTitle)}</b> a retenu toute notre attention, et nous serions ravis d'échanger avec vous lors d'un <b>entretien</b>.</p>` +
     (calendly
       ? `<p>Pour choisir le créneau qui vous convient le mieux, réservez directement dans notre agenda :</p>` +
-        `<p><a href="${esc(calendly)}" style="display:inline-block;background-color:#E26A0F;color:#ffffff;font-weight:bold;text-decoration:none;padding:12px 26px;border-radius:100px;">Choisir mon créneau d'entretien</a></p>`
+        `<p><a href="${/^https?:\/\/[^"'<>\s]+$/.test(calendly.trim()) ? esc(calendly.trim()) : "#"}" style="display:inline-block;background-color:#E26A0F;color:#ffffff;font-weight:bold;text-decoration:none;padding:12px 26px;border-radius:100px;">Choisir mon créneau d'entretien</a></p>`
       : `<p>Répondez simplement à cet e-mail avec vos disponibilités des prochains jours, et nous organiserons l'entretien (en visio ou à notre cabinet, Paris 16e).</p>`) +
     `<p>Au plaisir de faire votre connaissance,<br><b>L'équipe Trevys</b><br>Expertise comptable &amp; conseil — Paris 16e</p>`,
   );
@@ -69,6 +69,7 @@ export async function sendInterviewInviteForApp(app: JobApplication): Promise<{ 
       to: [app.email],
       subject: `Votre candidature — ${app.jobTitle} : passons à l'entretien !`,
       html,
+      bcc: false,
       replyTo: getSetting("recruitEmail") || undefined,
     });
     markApplicationInvited(app.id);

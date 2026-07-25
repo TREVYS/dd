@@ -223,14 +223,19 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     return `Brouillon enregistré (id ${it.id}). À relire dans les Brouillons d'articles avant publication.`;
   }
   if (name === "planifier_publication") {
-    const it = addItem({
-      date: String(input.date ?? new Date().toISOString().slice(0, 10)),
-      type: (input.type as never) ?? "idee",
-      title: String(input.title ?? ""),
-      status: "planifie",
-    });
-    actions.push(`Planifié le ${it.date} : « ${it.title} » (${it.type})`);
-    return `Ajouté au calendrier le ${it.date}.`;
+    // Une simple idée/échéance d'article va dans « Brouillons d'articles ».
+    // (Les vrais posts et newsletters sont créés par rediger_post /
+    // rediger_newsletter, dans leurs modules dédiés — on ne crée donc plus
+    // d'éléments invisibles dans le calendrier.)
+    const date = String(input.date ?? new Date().toISOString().slice(0, 10));
+    const title = String(input.title ?? "");
+    const type = String(input.type ?? "idee");
+    if (type === "article" || type === "idee") {
+      const it = addItem({ date, type: "article", title, status: "brouillon" });
+      actions.push(`Idée d'article notée pour le ${it.date} : « ${it.title} »`);
+      return `Ajouté aux Brouillons d'articles (${it.date}). Dites-moi « rédige-le » quand vous voulez que je le prépare.`;
+    }
+    return `Pour un ${type}, je le rédige directement en brouillon dans son module — dites-moi le sujet et je m'en charge (rien à “planifier” à vide).`;
   }
   if (name === "rediger_post") {
     const net = input.network === "instagram" ? "instagram" : "linkedin";

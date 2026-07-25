@@ -26,7 +26,11 @@ export async function submitApplication(
   }
 
   const job = getJob((formData.get("jobSlug") as string) || "");
-  if (!job) return { ok: false, message: "Offre introuvable." };
+  // On n'accepte de candidature que sur une offre réellement publiée
+  // (et via son slug public, pas un id interne).
+  if (!job || job.status !== "publie" || job.slug !== (formData.get("jobSlug") as string)) {
+    return { ok: false, message: "Cette offre n'est plus disponible." };
+  }
 
   const parsed = schema.safeParse({
     name: formData.get("name"),
@@ -144,6 +148,7 @@ export async function submitApplication(
       const first = d.name.trim().split(/\s+/)[0] || d.name;
       await sendMail({
         to: [d.email],
+        bcc: false,
         replyTo: getSetting("recruitEmail") || undefined,
         subject: `Candidature bien reçue — ${job.title} — Trevys`,
         html:

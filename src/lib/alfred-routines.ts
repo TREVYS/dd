@@ -78,17 +78,23 @@ export function nextDue(r: Routine): Date {
     return next;
   }
   if (r.freq === "hebdomadaire") {
-    const target = r.weekday ?? 1; // lundi par défaut
-    do {
+    // Jour cible borné à 0-6 (une valeur NaN/hors bornes provoquerait une
+    // boucle infinie). Le +7 garantit l'arrêt en une semaine au maximum.
+    const wd = Number(r.weekday);
+    const target = Number.isFinite(wd) ? ((wd % 7) + 7) % 7 : 1;
+    for (let i = 0; i < 7; i++) {
       next.setDate(next.getDate() + 1);
-    } while (next.getDay() !== target);
+      if (next.getDay() === target) return next;
+    }
     return next;
   }
-  // mensuelle
-  const target = Math.min(Math.max(r.monthday ?? 1, 1), 28);
-  do {
+  // mensuelle : jour cible borné à 1-28.
+  const md = Number(r.monthday);
+  const target = Number.isFinite(md) ? Math.min(Math.max(md, 1), 28) : 1;
+  for (let i = 0; i < 31; i++) {
     next.setDate(next.getDate() + 1);
-  } while (next.getDate() !== target);
+    if (next.getDate() === target) return next;
+  }
   return next;
 }
 

@@ -33,20 +33,37 @@ export async function runRoutine(r: Routine): Promise<string> {
   return `Brouillon de post ${r.type === "linkedin" ? "LinkedIn" : "Instagram"} créé`;
 }
 
+// Verrou en mémoire : empêche deux passes concurrentes dans le même process
+// (clic + prefetch Next, deux onglets…) de lancer les mêmes routines.
+let running = false;
+
 // Lance toutes les routines dues. Conçu pour être appelé de manière
 // opportuniste (visite du cockpit) — chaque routine ne tourne qu'une fois
 // par jour au maximum, et les erreurs n'interrompent pas les autres.
 export async function runDueRoutines(): Promise<void> {
-  const due = listRoutines().filter((r) => isDue(r));
-  for (const r of due) {
-    // Marque immédiatement pour éviter une double exécution en parallèle.
-    updateRoutine(r.id, { lastRun: new Date().toISOString(), lastResult: "En cours…" });
-    try {
-      const result = await runRoutine(r);
-      updateRoutine(r.id, { lastResult: result });
-      sendTelegram(`🤖 Routine « ${r.label} » : ${result}. À valider dans le cockpit.`).catch(() => {});
-    } catch (e) {
-      updateRoutine(r.id, { lastResult: `Échec : ${(e as Error).message.slice(0, 160)}` });
+  if (running) return;
+  running = true;
+  try {
+    // On « réclame » d'abord chaque routine due en écrivant lastRun AVANT
+    // de l'exécuter : une seconde passe ne la verra plus comme due (isDue
+    // rejette une routine déjà lancée aujourd'hui).
+    const claimed = listRoutines()
+      .filter((r) => isDue(r))
+      .map((r) => {
+        updateRoutine(r.id, { lastRun: new Date().toISOString(), lastResult: "En cours…" });
+        return r;
+      });
+
+    for (const r of claimed) {
+      try {
+        const result = await runRoutine(r);
+        updateRoutine(r.id, { lastResult: result });
+        sendTelegram(`🤖 Routine « ${r.label} » : ${result}. À valider dans le cockpit.`).catch(() => {});
+      } catch (e) {
+        updateRoutine(r.id, { lastResult: `Échec : ${(e as Error).message.slice(0, 160)}` });
+      }
     }
+  } finally {
+    running = false;
   }
 }

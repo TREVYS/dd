@@ -3,6 +3,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { getSetting } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
+import { appSecret } from "@/lib/app-secret";
 
 // Alfred sur Telegram : le bot du cabinet devient une conversation avec
 // Alfred (mêmes outils que dans le cockpit : articles, posts, newsletters,
@@ -36,8 +37,7 @@ function write(store: Store) {
 // Jeton secret du webhook, dérivé du jeton du bot : rien de nouveau à stocker.
 export function webhookSecret(): string {
   const token = getSetting("telegramBotToken") ?? "";
-  const secret = process.env.AUTH_SECRET || "trevys-tg";
-  return crypto.createHmac("sha256", secret).update(token).digest("hex").slice(0, 32);
+  return crypto.createHmac("sha256", appSecret()).update(token).digest("hex").slice(0, 32);
 }
 
 export const WEBHOOK_URL = `${SITE_URL}/api/telegram/webhook`;

@@ -70,12 +70,12 @@ export function removeCampaign(id: string) {
 // --- Désinscription -------------------------------------------------------
 
 import { SITE_URL } from "@/lib/site";
+import { appSecret } from "@/lib/app-secret";
 
 // Jeton signé propre à chaque adresse : le lien de désinscription ne peut
 // pas être forgé pour désinscrire quelqu'un d'autre.
 export function unsubscribeToken(email: string): string {
-  const secret = process.env.AUTH_SECRET || "trevys-unsub";
-  return crypto.createHmac("sha256", secret).update(email.toLowerCase().trim()).digest("hex").slice(0, 24);
+  return crypto.createHmac("sha256", appSecret()).update(email.toLowerCase().trim()).digest("hex").slice(0, 24);
 }
 
 export function unsubscribeUrl(email: string): string {
@@ -85,26 +85,39 @@ export function unsubscribeUrl(email: string): string {
 // --- Rendu e-mail --------------------------------------------------------
 
 function esc(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
-// URL absolue (les clients mail ne connaissent pas les chemins relatifs).
+// URL absolue et sûre : uniquement http(s) ou chemins internes. Toute autre
+// valeur (javascript:, guillemets, etc.) est neutralisée en "#".
 function abs(url: string): string {
-  return url.startsWith("/") ? `${SITE_URL}${url}` : url;
+  const u = url.trim();
+  if (u.startsWith("/")) return `${SITE_URL}${encodeURI(u)}`;
+  if (/^https?:\/\//i.test(u) && !/["'<>\s]/.test(u)) return u;
+  return "#";
 }
 
 // Markdown simple → HTML (titres, gras, italique, liens, listes, paragraphes).
 function inline(s: string): string {
   return esc(s)
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, txt, url) =>
-      `<a href="${abs(url)}" style="color:#E26A0F;font-weight:600;">${txt}</a>`)
+    // Le texte est déjà échappé ; on capture les liens sur la forme échappée.
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, txt, url) => {
+      const safe = abs(url.replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"'));
+      return `<a href="${esc(safe)}" style="color:#E26A0F;font-weight:600;">${txt}</a>`;
+    })
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
 }
 
 // Bouton « bulletproof » : structure en tableau + couleurs pleines, le seul
 // motif fiable dans Outlook (les dégradés et certains fonds y sont supprimés).
-function emailButton(href: string, label: string): string {
+function emailButton(rawHref: string, label: string): string {
+  const href = esc(abs(rawHref));
   return (
     `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"><tr>` +
     `<td bgcolor="#E26A0F" style="background-color:#E26A0F;border-radius:100px;mso-padding-alt:12px 28px;">` +
@@ -139,11 +152,11 @@ export function markdownToEmailHtml(md: string): string {
     } else if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
       // Image pleine largeur (depuis la médiathèque ou une URL).
       flushList();
-      out.push(`<img src="${abs(m[2])}" alt="${esc(m[1])}" width="532" style="display:block;width:100%;max-width:100%;height:auto;border-radius:10px;margin:0 0 18px;" />`);
+      out.push(`<img src="${esc(abs(m[2]))}" alt="${esc(m[1])}" width="532" style="display:block;width:100%;max-width:100%;height:auto;border-radius:10px;margin:0 0 18px;" />`);
     } else if ((m = line.match(/^\[([^\]]+)\]\(([^)\s]+)\)\s*$/))) {
       // Ligne composée d'un seul lien → bouton d'action (fiable Outlook).
       flushList();
-      out.push(emailButton(abs(m[2]), esc(m[1].replace(/\s*→\s*$/, ""))));
+      out.push(emailButton(m[2], esc(m[1].replace(/\s*→\s*$/, ""))));
     } else if (/^---+$/.test(line.trim())) {
       flushList();
       out.push(`<hr style="border:none;border-top:1px solid #f0e4d3;margin:26px 0;" />`);

@@ -152,12 +152,16 @@ Pour accompagner la forte demande liée à la réforme de la facturation électr
 ];
 
 function readAll(): Job[] {
+  // Les offres de démonstration ne servent QUE pour la première initialisation
+  // (fichier absent). Si le fichier existe mais est illisible, on ne
+  // « ressuscite » pas les seeds (des offres supprimées reviendraient) : on
+  // renvoie une liste vide plutôt que d'altérer les données.
+  if (!fs.existsSync(FILE)) return SEED;
   try {
-    if (!fs.existsSync(FILE)) return SEED;
     const data = JSON.parse(fs.readFileSync(FILE, "utf8"));
-    return Array.isArray(data) ? data : SEED;
+    return Array.isArray(data) ? data : [];
   } catch {
-    return SEED;
+    return [];
   }
 }
 

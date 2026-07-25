@@ -70,6 +70,7 @@ export default async function CampaignEditor({
           <h2 style={{ marginTop: 0 }}>Aperçu</h2>
           <iframe
             title="Aperçu de l'e-mail"
+            sandbox=""
             srcDoc={preview}
             style={{ width: "100%", height: 460, border: "1px solid var(--line)", borderRadius: 12, background: "#fff" }}
           />

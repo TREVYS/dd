@@ -3,12 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import {
-  saveArticle,
-  deleteArticle,
-  savePage,
-  deletePage,
-} from "@/lib/content-admin";
+import { saveArticle, deleteArticle } from "@/lib/content-admin";
 import { saveLegalDoc } from "@/lib/legal";
 
 async function requireUser() {
@@ -44,33 +39,6 @@ export async function deleteArticleAction(formData: FormData) {
   revalidatePath("/blog");
   revalidatePath("/admin/articles");
   redirect("/admin/articles");
-}
-
-export async function savePageAction(formData: FormData) {
-  await requireUser();
-  const originalSlug = (formData.get("originalSlug") as string) || undefined;
-  const slug = savePage(
-    {
-      slug: (formData.get("slug") as string) || undefined,
-      title: (formData.get("title") as string) ?? "",
-      description: (formData.get("description") as string) ?? "",
-      menu: formData.get("menu") === "1",
-      body: (formData.get("body") as string) ?? "",
-    },
-    originalSlug,
-  );
-  revalidatePath("/", "layout");
-  revalidatePath(`/p/${slug}`);
-  revalidatePath("/admin/pages");
-  redirect("/admin/pages");
-}
-
-export async function deletePageAction(formData: FormData) {
-  await requireUser();
-  deletePage(formData.get("slug") as string);
-  revalidatePath("/", "layout");
-  revalidatePath("/admin/pages");
-  redirect("/admin/pages");
 }
 
 export async function saveLegalAction(formData: FormData) {

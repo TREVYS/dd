@@ -64,11 +64,14 @@ export async function runNowAction(formData: FormData) {
   await guard();
   const r = getRoutine(formData.get("id") as string);
   if (!r) return;
+  // Marque lastRun AVANT l'exécution : ferme la fenêtre où le run opportuniste
+  // du layout pourrait relancer la même routine pendant le traitement.
+  updateRoutine(r.id, { lastRun: new Date().toISOString(), lastResult: "En cours…" });
   try {
     const result = await runRoutine(r);
-    updateRoutine(r.id, { lastRun: new Date().toISOString(), lastResult: result });
+    updateRoutine(r.id, { lastResult: result });
   } catch (e) {
-    updateRoutine(r.id, { lastRun: new Date().toISOString(), lastResult: `Échec : ${(e as Error).message.slice(0, 160)}` });
+    updateRoutine(r.id, { lastResult: `Échec : ${(e as Error).message.slice(0, 160)}` });
   }
   revalidatePath(PATH);
   redirect(`${PATH}?ran=1`);
