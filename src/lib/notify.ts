@@ -10,7 +10,9 @@ export function telegramConfigured(): boolean {
 }
 
 // Envoie un message Telegram. Ne lève jamais : renvoie true/false.
-export async function sendTelegram(text: string): Promise<boolean> {
+// plain=true : texte brut (pour les réponses libres d'Alfred, dont le contenu
+// pourrait être rejeté par l'interpréteur HTML de Telegram).
+export async function sendTelegram(text: string, opts?: { plain?: boolean }): Promise<boolean> {
   const token = getSetting("telegramBotToken");
   const chatId = getSetting("telegramChatId");
   if (!token || !chatId) return false;
@@ -21,10 +23,14 @@ export async function sendTelegram(text: string): Promise<boolean> {
       body: JSON.stringify({
         chat_id: chatId,
         text,
-        parse_mode: "HTML",
+        ...(opts?.plain ? {} : { parse_mode: "HTML" }),
         disable_web_page_preview: true,
       }),
     });
+    if (!res.ok && !opts?.plain) {
+      // Repli en texte brut si l'HTML est rejeté.
+      return sendTelegram(text, { plain: true });
+    }
     return res.ok;
   } catch (e) {
     console.error("[notify] échec Telegram:", e);

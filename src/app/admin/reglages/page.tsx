@@ -1,7 +1,8 @@
 import { publicStatus, PROVIDERS } from "@/lib/social";
 import { isSet, settingsStatus } from "@/lib/settings";
 import { mailerConfigured } from "@/lib/mailer";
-import { disconnectSocialAction, saveSettingsAction, changePasswordAction } from "./actions";
+import { disconnectSocialAction, saveSettingsAction, changePasswordAction, enableTelegramAlfredAction, disableTelegramAlfredAction } from "./actions";
+import { telegramWebhookStatus } from "@/lib/telegram-alfred";
 
 export const dynamic = "force-dynamic";
 
@@ -43,13 +44,14 @@ const CFG_GROUPS = [
 export default async function AdminReglages({
   searchParams,
 }: {
-  searchParams: Promise<{ setup?: string; connected?: string; error?: string; saved?: string; pwd?: string }>;
+  searchParams: Promise<{ setup?: string; connected?: string; error?: string; saved?: string; pwd?: string; tga?: string }>;
 }) {
   const sp = await searchParams;
   const accounts = publicStatus();
   const alfredKey = isSet("anthropicApiKey");
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
   const tgOn = isSet("telegramBotToken") && isSet("telegramChatId");
+  const tgAlfred = tgOn ? await telegramWebhookStatus() : { active: false as const };
   const mailOn = mailerConfigured();
   const status = Object.fromEntries(settingsStatus().map((s) => [s.key, s]));
 
@@ -211,6 +213,48 @@ export default async function AdminReglages({
 echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
           </li>
         </ol>
+      </div>
+
+      {/* Alfred sur Telegram */}
+      <div className="adm-card" style={{ marginTop: "1.2rem" }}>
+        <h2>🎩 Parler à Alfred sur Telegram</h2>
+        {sp.tga === "on" && <div className="adm-note" style={{ margin: ".6rem 0 1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Alfred est en ligne sur Telegram — écrivez à votre bot !</div>}
+        {sp.tga === "off" && <div className="adm-note" style={{ margin: ".6rem 0 1rem" }}>Conversation Telegram désactivée.</div>}
+        {sp.tga === "err" && <div className="adm-note" style={{ margin: ".6rem 0 1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>Activation impossible — vérifiez le jeton du bot.</div>}
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: ".7rem", margin: ".2rem 0 1rem",
+            fontWeight: 700, color: tgAlfred.active ? "#2E9E6B" : "#C2410C",
+          }}
+        >
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: tgAlfred.active ? "#2E9E6B" : "#E26A0F" }} />
+          {tgAlfred.active
+            ? "Actif — votre bot Telegram répond avec Alfred (articles, posts, newsletters, routines…)."
+            : "Inactif — activez pour discuter avec Alfred directement depuis Telegram."}
+        </div>
+        {"lastError" in tgAlfred && tgAlfred.lastError && (
+          <p className="muted" style={{ color: "#c0392b", fontSize: ".82rem", margin: "0 0 .8rem" }}>
+            Dernière erreur Telegram : {tgAlfred.lastError}
+          </p>
+        )}
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".88rem", lineHeight: 1.6, margin: "0 0 1rem" }}>
+          Une fois activé, écrivez à votre bot comme dans le cockpit : « rédige un article sur… »,
+          « prépare un post LinkedIn… », « crée une routine hebdomadaire… ». Tout part en brouillon —
+          vous validez ensuite dans le cockpit. Seul votre Chat ID peut lui parler ; <code>/reset</code>{" "}
+          remet la conversation à zéro.
+        </p>
+        <div className="adm-actions">
+          {tgAlfred.active ? (
+            <form action={disableTelegramAlfredAction}>
+              <button className="adm-btn danger sm" type="submit">Désactiver</button>
+            </form>
+          ) : (
+            <form action={enableTelegramAlfredAction}>
+              <button className="adm-btn" type="submit" disabled={!tgOn}>Activer Alfred sur Telegram</button>
+            </form>
+          )}
+          {!tgOn && <span className="muted" style={{ alignSelf: "center", fontSize: ".82rem" }}>Configurez d&apos;abord le jeton du bot et le Chat ID ci-dessus.</span>}
+        </div>
       </div>
 
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>

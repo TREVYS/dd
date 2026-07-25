@@ -31,6 +31,25 @@ export async function saveSettingsAction(formData: FormData) {
   redirect("/admin/reglages?saved=1");
 }
 
+// Active / désactive la conversation avec Alfred sur Telegram (webhook).
+export async function enableTelegramAlfredAction() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Non autorisé");
+  const { enableAlfredOnTelegram } = await import("@/lib/telegram-alfred");
+  const r = await enableAlfredOnTelegram();
+  revalidatePath("/admin/reglages");
+  redirect(`/admin/reglages?tga=${r.ok ? "on" : "err"}`);
+}
+
+export async function disableTelegramAlfredAction() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Non autorisé");
+  const { disableAlfredOnTelegram } = await import("@/lib/telegram-alfred");
+  await disableAlfredOnTelegram();
+  revalidatePath("/admin/reglages");
+  redirect("/admin/reglages?tga=off");
+}
+
 export async function logoutAction() {
   await signOut({ redirectTo: "/login" });
 }
