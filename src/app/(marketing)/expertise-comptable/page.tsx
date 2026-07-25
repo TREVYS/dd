@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
-import { RefLogo } from "../references/ref-logo";
 import { ApprocheArt } from "./approche-art";
 
 export const metadata: Metadata = {
@@ -244,15 +243,7 @@ export default function Page() {
           <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" }}>
             {TOOLS.map((tool) => (
               <div className="mkt-svc" key={tool.t}>
-                <div className="mkt-tool-logo">
-                  <RefLogo
-                    name={tool.t}
-                    srcs={[
-                      `https://logo.clearbit.com/${tool.domain}?size=160`,
-                      `/uploads/refs/${tool.slug}.png`,
-                    ]}
-                  />
-                </div>
+                <span className="mkt-tool-badge" aria-hidden="true">{tool.t.slice(0, 2)}</span>
                 <h3 style={{ fontSize: "1.12rem" }}>{tool.t}</h3>
                 <p>{tool.d}</p>
               </div>

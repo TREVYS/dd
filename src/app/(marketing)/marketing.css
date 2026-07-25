@@ -901,6 +901,9 @@ html,body{overflow-x:hidden}
 @media(max-width:900px){.mkt-appr{grid-template-columns:1fr;gap:2rem}.mkt-appr-svg{max-width:340px}}
 
 /* Logos des outils (page expertise comptable) */
+.mkt-tool-badge{width:46px;height:46px;border-radius:13px;display:inline-grid;place-items:center;margin-bottom:1rem;
+  background:linear-gradient(140deg,#FBB040,var(--o2,#E26A0F));color:#fff;font-weight:800;font-size:1rem;letter-spacing:.02em;
+  box-shadow:0 6px 14px -6px rgba(226,106,15,.55)}
 .mkt-tool-logo{height:52px;display:flex;align-items:center;margin-bottom:1rem}
 .mkt-tool-logo .mkt-ref-img{max-height:44px;max-width:150px;width:auto;object-fit:contain;display:inline-block}
 .mkt-tool-logo .mkt-ref-name{font-weight:800;font-size:1.05rem;color:var(--ink)}
