@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./logo";
 import { OecLogo } from "./oec-logo";
-import { Newsletter } from "./newsletter";
+import { NewsletterPopup } from "./newsletter-popup";
 
 export function Footer() {
   return (
@@ -15,7 +15,7 @@ export function Footer() {
               comptable. Une inscription, pas de spam.
             </p>
           </div>
-          <Newsletter />
+          <NewsletterPopup />
         </div>
         <div className="mkt-foot-top">
           <div className="brand">
