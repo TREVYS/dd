@@ -24,6 +24,7 @@ const GROUPS: Group[] = [
       { href: "/admin/communication/calendrier", label: "Brouillons", ic: "draft", also: ["/admin/communication/reseaux"] },
       { href: "/admin/communication/newsletter", label: "Newsletter", ic: "mail" },
       { href: "/admin/communication/routines", label: "Routines d'Alfred", ic: "repeat" },
+      { href: "/admin/ged", label: "GED — Documents", ic: "folder" },
     ],
   },
   {

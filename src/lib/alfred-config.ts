@@ -8,7 +8,19 @@ import crypto from "node:crypto";
 const FILE = path.join(process.cwd(), "data", "alfred.json");
 
 export type AlfredExample = { id: string; label: string; content: string };
-export type AlfredDoc = { id: string; title: string; source: string; text: string; addedAt: string };
+export type AlfredDoc = { id: string; title: string; source: string; text: string; addedAt: string; theme?: string };
+
+// Thèmes de rangement de la GED — aident Alfred à cibler la bonne
+// documentation selon le sujet traité.
+export const GED_THEMES = [
+  "Facturation électronique",
+  "Fiscalité",
+  "Comptabilité",
+  "IA & innovation",
+  "Cabinet & interne",
+  "Communication",
+  "Autre",
+] as const;
 
 export type AlfredConfig = {
   ton: string;
@@ -78,6 +90,12 @@ export function addKnowledge(title: string, source: string, text: string): Alfre
   return doc;
 }
 
+export function setKnowledgeTheme(id: string, theme: string) {
+  const cfg = readAlfred();
+  cfg.knowledge = (cfg.knowledge ?? []).map((d) => (d.id === id ? { ...d, theme: theme || undefined } : d));
+  write(cfg);
+}
+
 export function removeKnowledge(id: string) {
   const cfg = readAlfred();
   cfg.knowledge = (cfg.knowledge ?? []).filter((d) => d.id !== id);
@@ -101,14 +119,14 @@ export function alfredSystemBlock(): string {
         .map((d) => {
           const slice = d.text.slice(0, Math.max(0, budget));
           budget -= slice.length;
-          return slice ? `### ${d.title} (source : ${d.source})\n${slice}` : "";
+          return slice ? `### ${d.title}${d.theme ? ` [thème : ${d.theme}]` : ""} (source : ${d.source})\n${slice}` : "";
         })
         .filter(Boolean)
         .join("\n\n")
     : "";
 
   const knowledgeBlock = knowledge
-    ? `\n\nBASE DE CONNAISSANCE (documents fournis par le cabinet — appuie-toi dessus pour les faits, la terminologie et les positions officielles) :\n${knowledge}`
+    ? `\n\nBASE DE CONNAISSANCE (documents fournis par le cabinet, rangés par thème — pour un article ou un post, appuie-toi EN PRIORITÉ sur les documents dont le thème correspond au sujet ; ils font foi pour les faits, la terminologie et les positions officielles) :\n${knowledge}`
     : "";
 
   return `Tu t'appelles **Alfred**, le directeur de communication du cabinet Trevys. Tu es fin, cultivé, fiable et bienveillant — un véritable bras droit éditorial, à la manière d'un journaliste chevronné.

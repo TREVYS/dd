@@ -21,6 +21,7 @@ const PATHS: Record<string, React.ReactNode> = {
   calendar: <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />,
   compass: <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm4-13-2.5 6L7 16l2.5-6z" />,
   trophy: <path d="M8 21h8m-4-4v4m-6-17h12v5a6 6 0 0 1-12 0zM6 6H3v2a4 4 0 0 0 4 4m11-6h3v2a4 4 0 0 1-4 4" />,
+  folder: <path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
   sparkle: <path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z" />,
 };
 
