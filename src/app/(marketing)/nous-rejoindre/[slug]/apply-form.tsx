@@ -162,10 +162,9 @@ export function ApplyForm({ jobSlug, jobTitle }: { jobSlug: string; jobTitle: st
         <input type="file" name="cv" required accept=".pdf,.doc,.docx,application/pdf" style={{ ...fieldStyle, padding: ".7rem 1.05rem" }} />
       </label>
       <label style={{ display: "block", marginBottom: "1.25rem" }}>
-        <span style={labelStyle}>Votre message — parcours, motivations, disponibilité</span>
+        <span style={labelStyle}>Votre message — parcours, motivations <em style={{ fontStyle: "normal", color: "var(--ink3)" }}>(optionnel, mais recommandé)</em></span>
         <textarea
           name="message"
-          required
           placeholder={`Quelques lignes sur vous et ce qui vous attire dans le poste « ${jobTitle} »… Vous pouvez y coller un lien vers votre CV.`}
           style={{ ...fieldStyle, minHeight: 140, resize: "vertical" }}
         />

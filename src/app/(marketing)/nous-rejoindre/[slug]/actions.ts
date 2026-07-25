@@ -13,7 +13,7 @@ const schema = z.object({
   email: z.string().email("E-mail invalide").max(160),
   phone: z.string().max(40).optional().default(""),
   linkedin: z.string().max(240).optional().default(""),
-  message: z.string().min(20, "Parlez-nous un peu de vous (20 caractères minimum).").max(6000),
+  message: z.string().max(6000).optional().default(""),
 });
 
 export async function submitApplication(
