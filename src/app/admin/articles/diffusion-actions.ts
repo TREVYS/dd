@@ -24,7 +24,17 @@ export async function diffuseArticleAction(formData: FormData) {
   if (formData.get("net_instagram")) nets.push({ id: "instagram", image: String(formData.get("img_instagram") ?? "") });
 
   for (const n of nets) {
-    const { content } = await draftSocialPost(topic, n.id);
+    // Si la rédaction par Alfred échoue (API indisponible, quota…), on crée
+    // quand même un brouillon-gabarit : l'utilisateur n'est jamais bloqué.
+    let content: string;
+    try {
+      content = (await draftSocialPost(topic, n.id)).content;
+    } catch (e) {
+      console.error(`[diffusion] échec de rédaction Alfred (${n.id}):`, e);
+      content =
+        `✍️ [Brouillon à compléter — Alfred n'a pas pu rédiger]\n\n${topic}\n\n` +
+        `👉 Lire l'article : https://www.trevys.fr/blog\n\n#Trevys #ExpertiseComptable`;
+    }
     addPost({
       network: n.id,
       content,

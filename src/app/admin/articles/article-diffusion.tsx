@@ -1,8 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import { ImageField } from "../image-field";
 import { diffuseArticleAction } from "./diffusion-actions";
+
+// Bouton avec retour visuel : la rédaction par Alfred prend 10-20 secondes,
+// sans cela on croit que le bouton ne fait rien.
+function SubmitBtn({ disabled }: { disabled: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <>
+      <button className="adm-btn" type="submit" disabled={disabled || pending}>
+        {pending ? "Alfred rédige…" : "Préparer les posts"}
+      </button>
+      {pending && (
+        <span className="muted" style={{ fontSize: ".84rem", marginLeft: ".7rem" }}>
+          Un instant — les brouillons arrivent dans « Réseaux sociaux ».
+        </span>
+      )}
+    </>
+  );
+}
 
 // Panneau de diffusion : depuis un article, préparer des posts réseaux avec une
 // image de front au choix par réseau. Les brouillons partent dans la file.
@@ -50,10 +69,8 @@ export function ArticleDiffusion({ title, excerpt }: { title: string; excerpt: s
           <small style={{ color: "var(--ink3)" }}>Sans date : brouillon. Avec une date : planifié.</small>
         </div>
 
-        <div className="adm-actions" style={{ marginTop: ".6rem" }}>
-          <button className="adm-btn" type="submit" disabled={!linkedin && !instagram}>
-            Préparer les posts
-          </button>
+        <div className="adm-actions" style={{ marginTop: ".6rem", alignItems: "center" }}>
+          <SubmitBtn disabled={!linkedin && !instagram} />
         </div>
       </form>
     </div>
