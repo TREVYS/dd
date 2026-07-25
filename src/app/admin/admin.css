@@ -164,6 +164,17 @@
 /* Alertes entrantes empilées */
 .ck-alerts{display:flex;flex-direction:column;gap:.6rem}
 
+/* Liste « À traiter » */
+.ck-todo{display:flex;flex-direction:column;gap:.45rem;margin-top:.6rem}
+.ck-todo-it{display:flex;align-items:center;gap:.7rem;padding:.7rem .85rem;border:1px solid var(--line);
+  border-radius:12px;text-decoration:none;background:var(--bg);transition:border-color .15s,transform .15s}
+.ck-todo-it:hover{border-color:var(--o);transform:translateX(2px)}
+.ck-todo-it.urgent{border-color:#f0dcc2;background:#fdf8f0}
+.ck-todo-it .ic{font-size:1.05rem;flex:none}
+.ck-todo-it .tx{font-size:.9rem;color:var(--ink)}
+.ck-todo-it .tx b{color:var(--o);font-size:1rem}
+.ck-todo-it .go{margin-left:auto;color:var(--o);font-weight:800}
+
 /* Indicateurs clés (KPI) */
 .ck-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
 @media(max-width:900px){.ck-kpis{grid-template-columns:repeat(2,1fr)}}

@@ -46,6 +46,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Première requête après un déploiement : Alfred annonce la mise à jour
+  // sur Telegram (une seule fois par build, non bloquant).
+  import("@/lib/deploy-notify").then((m) => m.notifyDeployOnce()).catch(() => {});
+
   return (
     <html
       lang="fr"
