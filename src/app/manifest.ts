@@ -16,7 +16,7 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       { src: "/uploads/logo.png", sizes: "192x192", type: "image/png" },
       { src: "/uploads/logo.png", sizes: "512x512", type: "image/png" },
-      { src: "/brand/trevys-ts.svg", sizes: "any", type: "image/svg+xml" },
+      { src: "/brand/ts-badge.svg", sizes: "any", type: "image/svg+xml" },
     ],
   };
 }

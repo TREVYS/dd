@@ -18,8 +18,13 @@ export const metadata: Metadata = {
   description:
     "Cabinet d'expertise comptable & de conseil à Paris, augmenté par la technologie.",
   icons: {
-    icon: [{ url: "/uploads/logo.png", type: "image/png" }],
-    shortcut: ["/uploads/logo.png"],
+    // Badge TS embarqué avec le site (vectoriel, net à toutes les tailles).
+    icon: [
+      { url: "/brand/ts-badge.svg", type: "image/svg+xml" },
+      { url: "/uploads/logo.png", type: "image/png" },
+    ],
+    shortcut: ["/brand/ts-badge.svg"],
+    // iOS n'accepte pas le SVG pour l'écran d'accueil : PNG du badge TS.
     apple: "/uploads/logo.png",
   },
   // Application web installable (PWA) : plein écran sur iPhone une fois
