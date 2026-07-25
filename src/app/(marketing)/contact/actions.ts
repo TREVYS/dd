@@ -90,13 +90,19 @@ export async function submitContact(
     console.error("[contact] échec d'archivage:", e);
   }
 
-  // 6) Notification Telegram immédiate (si configurée).
+  // 6) Notification Telegram immédiate (si configurée). On ATTEND l'envoi :
+  // sans `await`, le serveur pouvait clore la requête avant l'aboutissement du
+  // fetch et le message n'arrivait jamais.
   try {
     const { sendTelegram } = await import("@/lib/notify");
-    sendTelegram(
+    const ok = await sendTelegram(
       `📬 Nouveau message via le site\n${d.firstName} ${d.lastName} — ${d.email}${d.phone ? ` — ${d.phone}` : ""}\nSujet : ${d.subject || "—"}\n\n${d.message.slice(0, 500)}`,
-    ).catch(() => {});
-  } catch { /* non bloquant */ }
+      { plain: true },
+    );
+    if (!ok) console.error("[contact] notification Telegram non envoyée (bot/chat non configuré ou refus API)");
+  } catch (e) {
+    console.error("[contact] échec notification Telegram:", e);
+  }
 
   // 7) E-mail vers la boîte du cabinet via Microsoft 365 (Graph).
   try {

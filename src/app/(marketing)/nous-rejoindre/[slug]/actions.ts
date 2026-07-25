@@ -87,13 +87,20 @@ export async function submitApplication(
     availability: availability || undefined,
   });
 
-  // 2) Alerte Telegram.
+  // 2) Alerte Telegram. IMPORTANT : on ATTEND l'envoi. Sans `await`, la Server
+  // Action rend sa réponse et le serveur peut clore la requête avant que le
+  // `fetch` vers Telegram n'aboutisse — le message n'arrivait alors jamais.
+  // Message en texte brut (plain) pour éviter tout rejet HTML (emoji, accents).
   try {
     const { sendTelegram } = await import("@/lib/notify");
-    sendTelegram(
+    const ok = await sendTelegram(
       `🧑‍💼 Nouvelle candidature — ${job.title}\n${d.name} — ${d.email}${d.phone ? ` — ${d.phone}` : ""}\nExp. : ${experience || "—"} · ${education || "—"} · Dispo : ${availability || "—"}\nCompétences : ${skills.join(", ") || "—"}\nLangues : ${languages.join(", ") || "—"}\n\n${d.message.slice(0, 400)}`,
-    ).catch(() => {});
-  } catch { /* non bloquant */ }
+      { plain: true },
+    );
+    if (!ok) console.error("[recrutement] alerte Telegram non envoyée (bot/chat non configuré ou refus API)");
+  } catch (e) {
+    console.error("[recrutement] échec alerte Telegram:", e);
+  }
 
   // 3) Synthèse par e-mail (adresse réglable dans le cockpit), CV en pièce jointe.
   try {
