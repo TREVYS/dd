@@ -20,6 +20,36 @@ import { listUploads } from "@/lib/media";
 export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type AgentResult = { reply: string; actions: string[] };
 
+// --- Choix de la couverture d'article par thème -----------------------------
+// La médiathèque contient des visuels nommés par thème (ia.png,
+// transformation.png, fiscalite.png…). On associe le sujet/thème de l'article
+// au bon fichier ; « actualite » sert de repli générique.
+const COVER_RULES: { file: string; words: string[] }[] = [
+  { file: "ia", words: ["ia", "intelligence artificielle", "agent", "automatisation", "llm", "copilot"] },
+  { file: "facturation-electronique", words: ["facturation", "rfe", "réforme", "reforme", "e-invoicing", "pdp", "facture électronique", "facture electronique", "2026", "2027"] },
+  { file: "fiscalite", words: ["fiscal", "impôt", "impot", "tva", "taxe", "liasse", "déclaration", "declaration", "loi de finances"] },
+  { file: "transformation", words: ["transformation", "process", "processus", "pilotage", "erp", "si finance", "digitalisation", "organisation"] },
+  { file: "innovation", words: ["innovation", "technologie", "outil", "futur", "tendance"] },
+  { file: "actualite", words: ["actualité", "actualite", "défaillance", "defaillance", "conjoncture", "économie", "economie", "marché", "marche"] },
+];
+
+// Renvoie l'URL de la couverture la plus pertinente pour un sujet donné,
+// choisie parmi les fichiers réellement présents dans la médiathèque.
+export function pickCoverFor(topic: string): string | undefined {
+  const t = topic.toLowerCase();
+  const media = listUploads().map((m) => m.url);
+  const find = (base: string) =>
+    media.find((u) => u.toLowerCase().includes(`/${base}.`) || u.toLowerCase().includes(`/${base}-`));
+  for (const rule of COVER_RULES) {
+    if (rule.words.some((w) => t.includes(w))) {
+      const hit = find(rule.file);
+      if (hit) return hit;
+    }
+  }
+  // Aucun thème reconnu : visuel générique demandé par John.
+  return find("5-1") ?? find("actualite") ?? undefined;
+}
+
 const OPERATING = `Tu aides John Lévy à piloter la communication du cabinet : calendrier éditorial, rédaction d'articles pour le site, déclinaison en posts réseaux (LinkedIn surtout) et newsletters. Français impeccable.
 
 Le site www.trevys.fr est ta maison : tu en connais chaque page, chaque article, chaque vidéo et chaque média (voir la connaissance du site ci-dessous). Appuie-toi dessus pour faire des liens internes pertinents, éviter les doublons avec les articles existants, illustrer avec les médias disponibles et rester cohérent avec les pages du site.
@@ -58,7 +88,7 @@ const TOOLS = [
         title: { type: "string" },
         category: { type: "string", description: "Thème : Fiscalité, Comptabilité, Facturation électronique, Innovation…" },
         excerpt: { type: "string", description: "Résumé en 1-2 phrases" },
-        image: { type: "string", description: "URL de l'image de couverture (choisie dans la médiathèque, /uploads/…)" },
+        image: { type: "string", description: "URL de l'image de couverture, choisie dans la médiathèque (/uploads/…) selon le THÈME via le nom du fichier : ia, facturation-electronique, fiscalite, transformation, innovation, actualite. En cas de doute : /uploads/5-1.png. Jamais une photo de personne." },
         body: { type: "string", description: "Contenu complet en Markdown (## sous-titres, listes, gras)" },
       },
       required: ["title", "excerpt", "body"],
@@ -234,6 +264,11 @@ function findApplication(query: string): JobApplication | undefined {
 
 async function runTool(name: string, input: Record<string, unknown>, actions: string[]): Promise<string> {
   if (name === "rediger_article") {
+    // Couverture : celle choisie par Alfred si elle existe vraiment dans la
+    // médiathèque, sinon choix automatique par thème (repli : 5-1.png).
+    const proposed = input.image ? String(input.image) : "";
+    const validImage = proposed && listUploads().some((m) => m.url === proposed) ? proposed : undefined;
+    const image = validImage ?? pickCoverFor(`${input.title ?? ""} ${input.category ?? ""} ${input.excerpt ?? ""}`);
     const it = addItem({
       date: new Date().toISOString().slice(0, 10),
       type: "article",
@@ -241,7 +276,7 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
       status: "brouillon",
       category: input.category ? String(input.category) : "Article",
       excerpt: String(input.excerpt ?? ""),
-      image: input.image ? String(input.image) : undefined,
+      image,
       body: String(input.body ?? ""),
     });
     actions.push(`Brouillon d'article créé : « ${it.title} »`);
@@ -463,7 +498,7 @@ export async function draftArticle(
     .filter((m) => /\.(jpg|jpeg|png|webp)$/i.test(m.name))
     .map((m) => m.url)
     .slice(0, 40);
-  const fallbackImage = mediaUrls[0];
+  const fallbackImage = pickCoverFor(topic) ?? mediaUrls[0];
 
   if (!apiKey) {
     return {
@@ -486,7 +521,14 @@ export async function draftArticle(
       `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n` +
       `Tu rédiges un article complet pour le blog du cabinet. Réponds EXACTEMENT dans ce format, sans rien d'autre :\n` +
       `TITRE: <titre>\nTHEME: <thème court, ex. Facturation électronique>\nRESUME: <1-2 phrases>\nIMAGE: <l'URL de la médiathèque la plus pertinente pour illustrer l'article, choisie dans la liste ci-dessous, ou "aucune">\nCORPS:\n<contenu Markdown structuré avec ## sous-titres, listes, gras — 600 à 900 mots>\n\n` +
-      (mediaUrls.length ? `IMAGES DISPONIBLES DANS LA MÉDIATHÈQUE :\n${mediaUrls.join("\n")}` : "MÉDIATHÈQUE VIDE : réponds IMAGE: aucune"),
+      (mediaUrls.length
+        ? `IMAGES DISPONIBLES DANS LA MÉDIATHÈQUE :\n${mediaUrls.join("\n")}\n\n` +
+          `RÈGLE DE CHOIX DE LA COUVERTURE : les visuels sont nommés par thème — choisis celui dont le NOM correspond au sujet de l'article : ` +
+          `ia.png (intelligence artificielle, automatisation), facturation-electronique.png (réforme, RFE, e-invoicing), fiscalite.png (impôts, TVA, lois de finances), ` +
+          `transformation.png (processus, pilotage, ERP, SI finance), innovation.png (technologies, tendances), actualite.png (actualité économique, conjoncture). ` +
+          `Si aucun thème ne correspond clairement, choisis 5-1.png (visuel générique par défaut). ` +
+          `Ne choisis JAMAIS une photo de personne ni un fichier sans rapport (ex. img-XXXX).`
+        : "MÉDIATHÈQUE VIDE : réponds IMAGE: aucune"),
     messages: [{ role: "user", content: `Rédige un article sur : ${topic}` }],
   });
 
