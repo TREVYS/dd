@@ -235,6 +235,7 @@ export type JobApplication = {
   availability?: string; // ex. « Sous 1 mois »
   read: boolean;
   refusedAt?: string; // ISO — refus envoyé au candidat
+  invitedAt?: string; // ISO — invitation à l'entretien envoyée
 };
 
 // Répertoire privé des CV (jamais servi publiquement).
@@ -303,6 +304,10 @@ export function getApplication(id: string): JobApplication | undefined {
 
 export function markApplicationRefused(id: string) {
   writeApps(readApps().map((a) => (a.id === id ? { ...a, read: true, refusedAt: new Date().toISOString() } : a)));
+}
+
+export function markApplicationInvited(id: string) {
+  writeApps(readApps().map((a) => (a.id === id ? { ...a, read: true, invitedAt: new Date().toISOString() } : a)));
 }
 
 export function removeApplication(id: string) {

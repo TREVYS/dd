@@ -135,6 +135,30 @@ export async function submitApplication(
     console.error("[recrutement] échec d'envoi e-mail:", e);
   }
 
+  // 4) Confirmation au candidat (accusé de réception).
+  try {
+    const { mailerConfigured, sendMail } = await import("@/lib/mailer");
+    const { getSetting } = await import("@/lib/settings");
+    if (mailerConfigured()) {
+      const esc2 = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const first = d.name.trim().split(/\s+/)[0] || d.name;
+      await sendMail({
+        to: [d.email],
+        replyTo: getSetting("recruitEmail") || undefined,
+        subject: `Candidature bien reçue — ${job.title} — Trevys`,
+        html:
+          `<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.7;color:#2a241c;max-width:560px;">` +
+          `<p>Bonjour ${esc2(first)},</p>` +
+          `<p>Nous confirmons la bonne réception de votre candidature au poste de <b>${esc2(job.title)}</b>. Merci pour l'intérêt que vous portez à Trevys !</p>` +
+          `<p>Chaque candidature est lue par un associé : nous revenons vers vous rapidement.</p>` +
+          `<p>À très vite,<br><b>L'équipe Trevys</b><br>Expertise comptable &amp; conseil — Paris 16e</p>` +
+          `</div>`,
+      });
+    }
+  } catch (e) {
+    console.error("[recrutement] échec de la confirmation candidat:", e);
+  }
+
   return {
     ok: true,
     message: "Merci — votre candidature a bien été envoyée. Nous revenons vers vous rapidement.",

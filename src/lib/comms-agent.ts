@@ -7,7 +7,7 @@ import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
 import { addRoutine, listRoutines, describeSchedule, type RoutineFreq, type RoutineType } from "@/lib/alfred-routines";
 import { addCampaign as addCampaignStore } from "@/lib/newsletter-campaigns";
-import { addJob as addJobStore } from "@/lib/jobs";
+import { addJob as addJobStore, listApplications, type JobApplication } from "@/lib/jobs";
 import { setPeoplePhoto, removePeoplePhoto, listPeoplePhotos } from "@/lib/people-photos";
 import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
@@ -30,6 +30,7 @@ Tes moyens d'action (outils) :
 - lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
 - creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
 - definir_photo / retirer_photo : change la photo d'un associé ou d'un consultant du site à partir d'une image de la médiathèque (à faire uniquement sur demande explicite).
+- lister_candidatures / refuser_candidature / inviter_entretien : gère le recrutement. RÈGLE ABSOLUE : refuser ou inviter envoie un e-mail réel au candidat — uniquement sur instruction explicite et non ambiguë de John (sinon, liste et demande confirmation).
 
 Règles : respecte scrupuleusement le ton, la ligne éditoriale et les mots à éviter ci-dessus. Inspire-toi des exemples de publications passées pour retrouver le style « maison ». Après une action, confirme brièvement et propose la suite. Tu prépares, l'humain valide et publie.`;
 
@@ -84,6 +85,33 @@ const TOOLS = [
     name: "lister_calendrier",
     description: "Renvoie les éléments du calendrier éditorial.",
     input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "lister_candidatures",
+    description: "Liste les candidatures reçues (nom, poste, profil, statut). À utiliser avant de refuser ou d'inviter, pour identifier la bonne personne.",
+    input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "refuser_candidature",
+    description: "Envoie un e-mail de refus courtois et personnalisé au candidat (rédigé par toi via le modèle du cabinet). Irréversible : à n'utiliser que sur instruction explicite de John.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        candidat: { type: "string", description: "Nom (ou id) du candidat, tel que listé par lister_candidatures" },
+      },
+      required: ["candidat"],
+    },
+  },
+  {
+    name: "inviter_entretien",
+    description: "Fait passer le candidat à la 2e étape : envoie l'invitation à l'entretien (avec le lien Calendly si configuré). À n'utiliser que sur instruction explicite de John.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        candidat: { type: "string", description: "Nom (ou id) du candidat, tel que listé par lister_candidatures" },
+      },
+      required: ["candidat"],
+    },
   },
   {
     name: "rediger_offre",
@@ -173,7 +201,13 @@ const TOOLS = [
   },
 ];
 
-function runTool(name: string, input: Record<string, unknown>, actions: string[]): string {
+function findApplication(query: string): JobApplication | undefined {
+  const q = query.trim().toLowerCase();
+  const apps = listApplications();
+  return apps.find((a) => a.id === q) ?? apps.find((a) => a.name.toLowerCase().includes(q));
+}
+
+async function runTool(name: string, input: Record<string, unknown>, actions: string[]): Promise<string> {
   if (name === "rediger_article") {
     const it = addItem({
       date: new Date().toISOString().slice(0, 10),
@@ -208,6 +242,32 @@ function runTool(name: string, input: Record<string, unknown>, actions: string[]
     return JSON.stringify(
       listItems().map((i) => ({ date: i.date, type: i.type, title: i.title, status: i.status })),
     );
+  }
+  if (name === "lister_candidatures") {
+    return JSON.stringify(
+      listApplications().slice(0, 25).map((a) => ({
+        id: a.id, nom: a.name, poste: a.jobTitle, date: a.date.slice(0, 10),
+        experience: a.experience ?? null, competences: a.skills ?? [],
+        langues: a.languages ?? [], disponibilite: a.availability ?? null,
+        statut: a.refusedAt ? "refusée" : a.invitedAt ? "entretien proposé" : "à traiter",
+      })),
+    );
+  }
+  if (name === "refuser_candidature") {
+    const app = findApplication(String(input.candidat ?? ""));
+    if (!app) return "Candidat introuvable — utilise lister_candidatures pour vérifier le nom exact.";
+    const { sendRejectionForApp } = await import("@/lib/recruiting");
+    const r = await sendRejectionForApp(app);
+    if (r.ok) actions.push(r.detail);
+    return r.detail;
+  }
+  if (name === "inviter_entretien") {
+    const app = findApplication(String(input.candidat ?? ""));
+    if (!app) return "Candidat introuvable — utilise lister_candidatures pour vérifier le nom exact.";
+    const { sendInterviewInviteForApp } = await import("@/lib/recruiting");
+    const r = await sendInterviewInviteForApp(app);
+    if (r.ok) actions.push(r.detail);
+    return r.detail;
   }
   if (name === "rediger_offre") {
     const j = addJobStore({
@@ -574,7 +634,7 @@ export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
     const toolResults: Anthropic.ToolResultBlockParam[] = [];
     for (const block of res.content) {
       if (block.type === "tool_use") {
-        const out = runTool(block.name, block.input as Record<string, unknown>, actions);
+        const out = await runTool(block.name, block.input as Record<string, unknown>, actions);
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: out });
       }
     }

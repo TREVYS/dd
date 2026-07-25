@@ -13,7 +13,12 @@ const nextConfig: NextConfig = {
   /* Démarrage via server.js (Gandi Simple Hosting) — pas de sortie standalone. */
   // Hébergement mutualisé : on limite le parallélisme de génération des pages
   // (sinon 15 workers → dépassement de ressources / SIGSEGV au build).
-  experimental: { cpus: 1 },
+  experimental: {
+    cpus: 1,
+    // Les candidatures embarquent un CV (jusqu'à 3 Mo) : on relève la limite
+    // des Server Actions (1 Mo par défaut, qui rejetait silencieusement).
+    serverActions: { bodySizeLimit: "4mb" },
+  },
   // Librairies Node lourdes chargées à la demande (extraction de documents) :
   // on évite qu'elles soient empaquetées par le bundler (mémoire de build,
   // compatibilité runtime), elles restent lues depuis node_modules.

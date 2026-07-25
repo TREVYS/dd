@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { listJobs, listApplications } from "@/lib/jobs";
-import { toggleJobAction, deleteJobAction, markAppReadAction, deleteAppAction, sendRejectionAction } from "./actions";
+import { toggleJobAction, deleteJobAction, markAppReadAction, deleteAppAction, sendRejectionAction, sendInviteAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function RecrutementAdmin({
   searchParams,
 }: {
-  searchParams: Promise<{ ok?: string; refus?: string }>;
+  searchParams: Promise<{ ok?: string; refus?: string; invite?: string }>;
 }) {
   const sp = await searchParams;
   const jobs = listJobs();
@@ -27,7 +27,9 @@ export default async function RecrutementAdmin({
       {sp.ok && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Offre enregistrée.</div>}
       {sp.refus === "ok" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Refus envoyé au candidat.</div>}
       {sp.refus === "notconfig" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>Envoi impossible : connexion Microsoft 365 non configurée (Réglages).</div>}
-      {sp.refus === "err" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>L'envoi du refus a échoué. Réessayez.</div>}
+      {sp.refus === "err" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>L'envoi du refus a échoué (Microsoft 365 configuré ?).</div>}
+      {sp.invite === "ok" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Invitation à l'entretien envoyée au candidat.</div>}
+      {sp.invite === "err" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>L'envoi de l'invitation a échoué (Microsoft 365 configuré ?).</div>}
 
       <div className="adm-card" style={{ padding: 0, marginBottom: "1.4rem" }}>
         <table className="adm-table">
@@ -98,6 +100,7 @@ export default async function RecrutementAdmin({
                 </span>
               </div>
               <span className="adm-tag">{a.jobTitle}</span>
+              {a.invitedAt && <span className="adm-chipst pub">Entretien proposé le {new Date(a.invitedAt).toLocaleDateString("fr-FR")}</span>}
               {a.refusedAt && <span className="adm-chipst draft">Refus envoyé le {new Date(a.refusedAt).toLocaleDateString("fr-FR")}</span>}
             </div>
             <div className="muted" style={{ fontSize: ".86rem", margin: ".35rem 0 .7rem" }}>
@@ -126,6 +129,14 @@ export default async function RecrutementAdmin({
                 <form action={markAppReadAction}>
                   <input type="hidden" name="id" value={a.id} />
                   <button className="adm-btn ghost sm" type="submit">Marquer comme lue</button>
+                </form>
+              )}
+              {!a.invitedAt && !a.refusedAt && (
+                <form action={sendInviteAction}>
+                  <input type="hidden" name="id" value={a.id} />
+                  <button className="adm-btn sm" type="submit" style={{ background: "#2E9E6B" }}>
+                    Inviter à un entretien
+                  </button>
                 </form>
               )}
               {!a.refusedAt && (
