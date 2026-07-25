@@ -4,11 +4,11 @@ type Item = { src?: string; text?: string; alt: string };
 
 // Accueil : 6 références phares, avec leur vrai logo (repli sur le nom).
 const CLIENTS_FEATURED: { name: string; domain: string }[] = [
-  { name: "AG2R La Mondiale", domain: "ag2rlamondiale.fr" },
+  { name: "Groupe BPCE", domain: "bpce.fr" },
+  { name: "LCL", domain: "lcl.fr" },
   { name: "EDF", domain: "edf.fr" },
-  { name: "BPCE Groupe", domain: "bpce.fr" },
+  { name: "AG2R La Mondiale", domain: "ag2rlamondiale.fr" },
   { name: "Natixis", domain: "natixis.com" },
-  { name: "La Banque Postale", domain: "labanquepostale.fr" },
   { name: "Publicis", domain: "publicis.com" },
 ];
 
