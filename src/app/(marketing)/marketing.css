@@ -230,6 +230,7 @@
 
 .mkt-ncta .mkt-ncta-guide{display:inline-flex}
 .mkt-ncta .mkt-ncta-rdvm{display:none}
+.mkt-ncta .mkt-ncta-postuler{display:none}
 /* Logo : complet sur desktop, monogramme « TS » sur mobile */
 .mkt-logo-wrap{display:inline-flex;align-items:center}
 .mkt-nav .nlogo .mkt-logo-full{display:block}
@@ -242,6 +243,7 @@
   /* Sur mobile : bouton compact « Un rdv ? », le reste passe dans le menu */
   .mkt-links,.mkt-ncta .btn-ghost,.mkt-ncta .mkt-ncta-rdv,.mkt-ncta .mkt-ncta-guide{display:none}
   .mkt-ncta .mkt-ncta-rdvm{display:inline-flex;white-space:nowrap}
+  .mkt-ncta .mkt-ncta-postuler{display:inline-flex;white-space:nowrap}
   .mkt-burger{display:flex}
   .mkt-hero-in{grid-template-columns:1fr}
   .mkt-visual{min-height:380px;order:2}.mkt-copy{order:1}

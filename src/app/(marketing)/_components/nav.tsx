@@ -164,7 +164,10 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
           >
             Guide RFE
           </a>
-          {/* Version compacte mobile de la prise de rendez-vous */}
+          {/* Boutons compacts mobile : postuler + prise de rendez-vous */}
+          <Link className="btn btn-sm btn-ghost mkt-ncta-postuler" href="/nous-rejoindre">
+            Postuler
+          </Link>
           <Link className="btn btn-sm btn-gold mkt-ncta-rdvm" href="/rendez-vous">
             Un rdv&nbsp;?
           </Link>
