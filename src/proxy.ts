@@ -29,7 +29,7 @@ const PUBLIC_PREFIXES = [
   "/icons",
 ];
 
-const PUBLIC_FILES = ["/sitemap.xml", "/robots.txt"];
+const PUBLIC_FILES = ["/sitemap.xml", "/robots.txt", "/manifest.webmanifest"];
 
 function isPublicPath(pathname: string): boolean {
   if (pathname === "/") return true; // accueil du site vitrine

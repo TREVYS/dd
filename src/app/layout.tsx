@@ -22,6 +22,18 @@ export const metadata: Metadata = {
     shortcut: ["/uploads/logo.png"],
     apple: "/uploads/logo.png",
   },
+  // Application web installable (PWA) : plein écran sur iPhone une fois
+  // ajoutée à l'écran d'accueil.
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Trevys",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport = {
+  themeColor: "#F5811F",
 };
 
 export default function RootLayout({
