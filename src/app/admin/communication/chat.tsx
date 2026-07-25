@@ -15,7 +15,31 @@ export function CommsChat() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  // Trombone : envoie un fichier à Alfred (image → médiathèque,
+  // document → base de connaissance) et l'annonce dans la conversation.
+  const sendFile = async (files: FileList | null) => {
+    if (!files?.length || uploading) return;
+    const f = files[0];
+    setUploading(true);
+    setTurns((t) => [...t, { role: "user", content: `📎 ${f.name}` }]);
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      const r = await fetch("/api/admin/comms/upload", { method: "POST", body: fd });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error ?? "Échec de l'envoi.");
+      setTurns((t) => [...t, { role: "assistant", content: d.message }]);
+    } catch (e) {
+      setTurns((t) => [...t, { role: "assistant", content: (e as Error).message }]);
+    }
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
+    setTimeout(() => scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight), 50);
+  };
 
   const send = async (text: string) => {
     const msg = text.trim();
@@ -92,9 +116,32 @@ export function CommsChat() {
         }}
       >
         <input
+          ref={fileRef}
+          type="file"
+          accept=".pdf,.doc,.docx,.txt,.md,image/*"
+          style={{ display: "none" }}
+          onChange={(e) => sendFile(e.target.files)}
+        />
+        <button
+          type="button"
+          className="adm-chat-clip"
+          title="Transmettre un fichier à Alfred (image, PDF, Word…)"
+          aria-label="Joindre un fichier"
+          disabled={uploading}
+          onClick={() => fileRef.current?.click()}
+        >
+          {uploading ? (
+            <span className="adm-spin" style={{ margin: 0, borderColor: "var(--o-soft)", borderTopColor: "var(--o)" }} />
+          ) : (
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.4 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.4 17.4a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
+          )}
+        </button>
+        <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Demandez un article, un calendrier, un post LinkedIn…"
+          placeholder="Demandez un article, un post… ou transmettez un fichier 📎"
           disabled={busy}
         />
         <button className="adm-btn" type="submit" disabled={busy || !input.trim()}>

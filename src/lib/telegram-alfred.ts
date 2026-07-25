@@ -92,12 +92,20 @@ export async function telegramWebhookStatus(): Promise<{ active: boolean; url?: 
 // Traite un message entrant. Renvoie true si le message a été pris en charge.
 export async function handleTelegramMessage(update: {
   update_id?: number;
-  message?: { text?: string; chat?: { id?: number | string } };
+  message?: {
+    text?: string;
+    caption?: string;
+    chat?: { id?: number | string };
+    document?: { file_id?: string; file_name?: string; mime_type?: string; file_size?: number };
+    photo?: { file_id: string; file_size?: number }[];
+  };
 }): Promise<void> {
   const text = update.message?.text?.trim();
+  const doc = update.message?.document;
+  const photo = update.message?.photo?.at(-1); // la plus grande taille
   const chatId = String(update.message?.chat?.id ?? "");
   const updateId = update.update_id;
-  if (!text || !chatId) return;
+  if ((!text && !doc && !photo) || !chatId) return;
 
   // Seul le Chat ID configuré (toi) peut parler à Alfred.
   const allowed = getSetting("telegramChatId");
@@ -113,20 +121,55 @@ export async function handleTelegramMessage(update: {
 
   const { sendTelegram } = await import("@/lib/notify");
 
-  if (text === "/start") {
+  // Pièce jointe (document ou photo) : Alfred la range dans sa GED —
+  // image → médiathèque, PDF/Word/texte → base de connaissance.
+  if (doc?.file_id || photo?.file_id) {
+    const token = getSetting("telegramBotToken");
+    if (!token) return;
+    const fileId = doc?.file_id ?? photo!.file_id;
+    const size = doc?.file_size ?? photo?.file_size ?? 0;
+    if (size > 8 * 1024 * 1024) {
+      await sendTelegram("Fichier trop volumineux (8 Mo max) — envoyez une version plus légère.", { plain: true });
+      return;
+    }
+    try {
+      const infoRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${encodeURIComponent(fileId)}`);
+      const info = (await infoRes.json()) as { result?: { file_path?: string } };
+      const filePath = info.result?.file_path;
+      if (!filePath) throw new Error("fichier introuvable côté Telegram");
+      const bin = await fetch(`https://api.telegram.org/file/bot${token}/${filePath}`);
+      const buf = Buffer.from(await bin.arrayBuffer());
+      const name = doc?.file_name ?? filePath.split("/").pop() ?? "photo.jpg";
+      const mime = doc?.mime_type ?? (photo ? "image/jpeg" : "");
+      const { ingestFile } = await import("@/lib/alfred-ingest");
+      const r = await ingestFile(buf, name, mime, "Telegram");
+      await sendTelegram(`🎩 ${r.message}`, { plain: true });
+      // La légende éventuelle est traitée comme un message classique ensuite.
+      if (!update.message?.caption?.trim()) return;
+    } catch (e) {
+      console.error("[telegram-alfred] échec réception fichier:", e);
+      await sendTelegram("Je n'ai pas réussi à récupérer ce fichier — réessayez.", { plain: true });
+      return;
+    }
+  }
+
+  const effectiveText = text ?? update.message?.caption?.trim() ?? "";
+  if (!effectiveText) return;
+
+  if (effectiveText === "/start") {
     await sendTelegram(
       "🎩 Alfred à votre service. Dites-moi tout : « rédige un article sur… », « prépare un post LinkedIn… », « une newsletter sur nos derniers articles », « crée une routine hebdo… ». Tout part en brouillon dans le cockpit — vous validez, je m'occupe du reste. (/reset pour repartir de zéro)",
     );
     return;
   }
-  if (text === "/reset") {
+  if (effectiveText === "/reset") {
     write({ ...read(), turns: [] });
     await sendTelegram("🧹 Conversation remise à zéro. Je vous écoute.");
     return;
   }
 
   // Historique + appel de l'agent (mêmes outils que le cockpit).
-  const turns = [...read().turns, { role: "user" as const, content: text }].slice(-MAX_TURNS);
+  const turns = [...read().turns, { role: "user" as const, content: effectiveText }].slice(-MAX_TURNS);
   try {
     const { runCommsAgent } = await import("@/lib/comms-agent");
     const { reply, actions } = await runCommsAgent(turns);
