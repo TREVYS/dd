@@ -79,6 +79,7 @@ Tes moyens d'action (outils) :
   1. propose des articles (via la connaissance du site), et compose le brouillon avec composer_mailing_articles ;
   2. demande la cible avec les chiffres de lister_contacts (« tous » les abonnés ou seulement les « actifs » — ont ouvert un e-mail dans les 90 derniers jours) ;
   3. ATTENDS LE GO EXPLICITE de John (« envoie », « c'est parti », « go ») — puis appelle envoyer_mailing. RÈGLE ABSOLUE : jamais d'envoi sans ce go clair et sans avoir annoncé la cible et le nombre de destinataires. L'envoi est cadencé (anti-spam) : il part en arrière-plan et John reçoit une confirmation Telegram à la fin.
+- inviter_contacts : John te donne une liste d'e-mails (dans le chat ou sur Telegram) → tu envoies à chacun l'invitation opt-in du cabinet (boutons Oui / Non merci). Les déjà-abonnés, les refus passés et les déjà-invités sont écartés automatiquement. UNIQUEMENT sur instruction explicite — annonce le nombre d'invitations avant si la demande est ambiguë.
 - supprimer_article / depublier_article : supprime définitivement un article publié du site, ou le dépublie (retour en brouillon). UNIQUEMENT sur instruction explicite de John — jamais de ta propre initiative. Pour plusieurs articles, appelle l'outil pour chacun.
 - supprimer_brouillon_article / supprimer_post / supprimer_newsletter_brouillon : supprime un brouillon d'article, un post en attente, ou un mailing en brouillon (les mailings déjà envoyés restent : c'est l'historique).
 
@@ -299,6 +300,18 @@ const TOOLS = [
         cible: { type: "string", enum: ["tous", "actifs"], description: "Segment destinataire" },
       },
       required: ["mailing", "cible"],
+    },
+  },
+  {
+    name: "inviter_contacts",
+    description:
+      "Envoie l'invitation opt-in newsletter (Oui / Non merci) à une liste d'e-mails fournie par John. Filtre automatiquement les déjà-abonnés, refus et déjà-invités. ENVOIE DE VRAIS E-MAILS : uniquement sur instruction explicite.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        emails: { type: "array", items: { type: "string" }, description: "Les adresses e-mail à inviter" },
+      },
+      required: ["emails"],
     },
   },
   {
@@ -641,6 +654,33 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     })();
     actions.push(`Envoi du mailing « ${camp.subject} » lancé (${recipients.length} destinataires, cible ${cible})`);
     return `Envoi lancé : « ${camp.subject} » vers ${recipients.length} contact(s) (cible : ${cible}). L'envoi est cadencé contre le spam — confirmation Telegram dès que c'est terminé.`;
+  }
+  if (name === "inviter_contacts") {
+    const raw = Array.isArray(input.emails) ? input.emails.map(String) : [];
+    const valid = [...new Set(raw.map((e) => e.trim().toLowerCase()).filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)))];
+    if (valid.length === 0) return "Aucune adresse e-mail valide dans la liste.";
+    const { mailerConfigured, sendPersonalized } = await import("@/lib/mailer");
+    if (!mailerConfigured()) return "Envoi impossible : Microsoft 365 n'est pas configuré (Réglages).";
+    const { isDeclined, isInvited, markInvited, buildOptinEmail, OPTIN_SUBJECT } = await import("@/lib/newsletter-optin");
+    const existing = new Set(listSubscribers().map((x) => x.email.toLowerCase()));
+    const targets = valid.filter((e) => !existing.has(e) && !isDeclined(e) && !isInvited(e));
+    const skipped = valid.length - targets.length;
+    if (targets.length === 0) {
+      return `Aucun nouvel envoi : ces ${valid.length} contact(s) sont déjà abonnés, déjà invités ou ont refusé.`;
+    }
+    // Envoi en arrière-plan (cadencé) ; confirmation Telegram à la fin.
+    targets.forEach((e) => markInvited(e));
+    (async () => {
+      try {
+        const sent = await sendPersonalized(targets, OPTIN_SUBJECT, (email) => buildOptinEmail(email));
+        const { sendTelegram } = await import("@/lib/notify");
+        await sendTelegram(`✅ ${sent} invitation(s) opt-in envoyée(s)${skipped ? ` (${skipped} contact(s) écarté(s) : déjà abonnés/invités/refus)` : ""}. Les « Oui » rejoindront automatiquement vos abonnés.`, { plain: true });
+      } catch (e) {
+        console.error("[inviter_contacts] échec:", e);
+      }
+    })();
+    actions.push(`${targets.length} invitation(s) opt-in lancée(s)`);
+    return `C'est parti : ${targets.length} invitation(s) en cours d'envoi${skipped ? ` (${skipped} écarté(s) : déjà abonnés, déjà invités ou refus)` : ""}. Confirmation Telegram à la fin. Les « Oui » s'ajouteront automatiquement à la base.`;
   }
   if (name === "supprimer_article") {
     const slug = String(input.slug ?? "").trim();
