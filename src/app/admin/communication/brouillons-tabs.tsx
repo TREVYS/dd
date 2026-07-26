@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { href: "/admin/communication/calendrier", label: "Articles" },
   { href: "/admin/communication/reseaux", label: "Réseaux sociaux" },
+  { href: "/admin/communication/mailings", label: "Mailings" },
 ];
 
 export function BrouillonsTabs() {
