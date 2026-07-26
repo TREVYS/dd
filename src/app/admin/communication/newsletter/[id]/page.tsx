@@ -7,7 +7,7 @@ import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { MarkdownEditor } from "../../../markdown-editor";
 import { SubjectField } from "../subject-field";
 import { RecipientsField } from "../recipients-field";
-import { saveCampaignAction, deleteCampaignAction, sendTestAction, sendCampaignAction } from "../actions";
+import { saveCampaignAction, deleteCampaignAction, sendTestAction, sendCampaignAction, scheduleCampaignAction } from "../actions";
 import { campaignReport } from "@/lib/newsletter-stats";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +17,7 @@ export default async function CampaignEditor({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string; tested?: string; sent?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; tested?: string; sent?: string; error?: string; planned?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -52,6 +52,8 @@ export default async function CampaignEditor({
       </div>
 
       {sp.saved && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Modifications enregistrées.</div>}
+      {sp.planned === "1" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Envoi programmé — il partira automatiquement à la date choisie (tous les abonnés), avec confirmation Telegram.</div>}
+      {sp.planned === "0" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0e2cf", background: "#fdf8f0" }}>Programmation annulée — le mailing reste en brouillon.</div>}
       {sp.tested && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>E-mail de test envoyé.</div>}
       {sp.sent && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Mailing envoyé à {sp.sent} inscrit(s).</div>}
       {sp.error && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>{errMsg[sp.error] ?? "Une erreur est survenue."}</div>}
@@ -145,6 +147,26 @@ export default async function CampaignEditor({
           <EmailPreview html={preview} live={!sent} />
         </div>
       </div>
+
+      {/* Programmation */}
+      {!sent && (
+        <div className="adm-card" style={{ marginTop: "1.2rem" }}>
+          <h2>Programmer l&apos;envoi</h2>
+          <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: ".2rem 0 1rem" }}>
+            Choisissez une date : le mailing partira automatiquement ce jour-là à <b>tous les abonnés</b>
+            (avec suivi des ouvertures/clics et confirmation Telegram).
+            {c.sendAt && <> Actuellement programmé pour le <b>{c.sendAt}</b>.</>}
+          </p>
+          <form action={scheduleCampaignAction} style={{ display: "flex", gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
+            <input type="hidden" name="id" value={c.id} />
+            <input type="date" name="sendAt" defaultValue={c.sendAt ?? ""} min={new Date().toISOString().slice(0, 10)} />
+            <button className="adm-btn ghost sm" type="submit">Programmer</button>
+            {c.sendAt && (
+              <button className="adm-btn danger sm" type="submit" name="sendAt" value="">Annuler la programmation</button>
+            )}
+          </form>
+        </div>
+      )}
 
       {/* Envoi */}
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>

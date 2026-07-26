@@ -16,6 +16,7 @@ export type Campaign = {
   createdAt: string;
   sentAt?: string;
   sentCount?: number;
+  sendAt?: string; // AAAA-MM-JJ — envoi programmé (traité par le planificateur)
 };
 
 function readAll(): Campaign[] {

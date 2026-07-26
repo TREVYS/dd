@@ -190,3 +190,16 @@ export async function sendOptinInvitesAction(formData: FormData) {
   revalidatePath("/admin/communication/newsletter");
   redirect(`/admin/communication/newsletter?optin=sent&n=${sent}&skipped=${all.length - targets.length}`);
 }
+
+// Programme (ou annule la programmation de) l'envoi d'un mailing en brouillon.
+// À la date choisie, le planificateur l'envoie à tous les abonnés.
+export async function scheduleCampaignAction(formData: FormData) {
+  await guard();
+  const id = formData.get("id") as string;
+  const sendAt = ((formData.get("sendAt") as string) || "").trim();
+  if (!id) return;
+  updateCampaign(id, { sendAt: sendAt || undefined });
+  revalidatePath(`/admin/communication/newsletter/${id}`);
+  revalidatePath("/admin/communication/mailings");
+  redirect(`/admin/communication/newsletter/${id}?planned=${sendAt ? "1" : "0"}`);
+}

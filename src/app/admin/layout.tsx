@@ -31,6 +31,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // Annonce de mise à jour (repli : si la première visite du site ne l'a pas
   // déjà déclenchée, l'ouverture du cockpit s'en charge).
   import("@/lib/deploy-notify").then((m) => m.notifyDeployOnce()).catch(() => {});
+  // Publications programmées (posts, articles, mailings) dues aujourd'hui.
+  import("@/lib/scheduler").then((m) => m.runScheduledPublications()).catch(() => {});
 
   const name = session.user.name ?? session.user.email ?? "Admin";
   const initials = name.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();

@@ -39,7 +39,10 @@ export default function MailingDraftsPage() {
                 <td style={{ fontWeight: 600, paddingLeft: "1.1rem" }}>
                   <Link href={`/admin/communication/newsletter/${c.id}`} className="adm-link">{c.subject}</Link>
                 </td>
-                <td className="muted">{new Date(c.createdAt).toLocaleDateString("fr-FR")}</td>
+                <td className="muted">
+                  {new Date(c.createdAt).toLocaleDateString("fr-FR")}
+                  {c.sendAt && <span className="adm-tag" style={{ marginLeft: ".5rem", background: "var(--o-soft)", color: "var(--o2)", fontWeight: 700 }}>programmé le {c.sendAt}</span>}
+                </td>
                 <td style={{ textAlign: "right", paddingRight: "1.1rem" }}>
                   <div className="adm-actions" style={{ justifyContent: "flex-end" }}>
                     <Link className="adm-btn ghost sm" href={`/admin/communication/newsletter/${c.id}`}>

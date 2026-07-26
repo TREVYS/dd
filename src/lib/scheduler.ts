@@ -1,0 +1,113 @@
+// Planificateur des publications programmées. Déclenché de manière
+// opportuniste (trafic du site via /api/track, ouverture du cockpit) :
+// - posts réseaux « planifiés » dont la date est arrivée → publication réelle ;
+// - brouillons d'articles planifiés datés → publication sur le blog ;
+// - mailings programmés → envoi (cadencé anti-spam).
+// Chaque succès/échec est notifié sur Telegram.
+
+let running = false;
+
+function today(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export async function runScheduledPublications(): Promise<void> {
+  if (running) return;
+  running = true;
+  try {
+    const d = today();
+    const { sendTelegram } = await import("@/lib/notify");
+
+    // 1) Posts réseaux planifiés.
+    try {
+      const { listPosts, updatePost } = await import("@/lib/social-posts");
+      const due = listPosts().filter(
+        (p) => p.status === "planifie" && p.scheduledDate && p.scheduledDate <= d && p.lastTry !== d,
+      );
+      for (const p of due) {
+        // On « réclame » la tentative du jour avant d'agir (pas de doublon).
+        updatePost(p.id, { lastTry: d });
+        const { publishPost } = await import("@/lib/social");
+        const res = await publishPost(p.network, p.content, p.image);
+        if (res.ok) {
+          updatePost(p.id, { status: "publie", publishedAt: new Date().toISOString() });
+          await sendTelegram(
+            `📣 Post ${p.network === "linkedin" ? "LinkedIn" : "Instagram"} planifié publié :\n« ${p.content.slice(0, 120)}… »`,
+            { plain: true },
+          ).catch(() => {});
+        } else {
+          await sendTelegram(
+            `⚠️ Publication planifiée impossible (${p.network}) : ${res.error ?? "erreur inconnue"}\nLe post reste dans Brouillons → Réseaux sociaux — nouvelle tentative demain.`,
+            { plain: true },
+          ).catch(() => {});
+        }
+      }
+    } catch (e) {
+      console.error("[scheduler] posts:", e);
+    }
+
+    // 2) Brouillons d'articles planifiés (avec contenu) dont la date est passée.
+    try {
+      const { listItems, removeItem } = await import("@/lib/editorial");
+      const { saveArticle } = await import("@/lib/content-admin");
+      const due = listItems().filter(
+        (i) => i.type === "article" && i.status === "planifie" && i.date && i.date <= d && i.body,
+      );
+      for (const it of due) {
+        const slug = saveArticle({
+          title: it.title,
+          date: d,
+          category: it.category || "Article",
+          excerpt: it.excerpt || "",
+          image: it.image || "",
+          body: it.body!,
+        });
+        removeItem(it.id);
+        await sendTelegram(
+          `📰 Article planifié publié sur le site : « ${it.title} »\nhttps://www.trevys.fr/blog/${slug}`,
+          { plain: true },
+        ).catch(() => {});
+      }
+    } catch (e) {
+      console.error("[scheduler] articles:", e);
+    }
+
+    // 3) Mailings programmés (envoi à tous les abonnés).
+    try {
+      const { listCampaigns, updateCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl } = await import("@/lib/newsletter-campaigns");
+      const { mailerConfigured, sendPersonalized } = await import("@/lib/mailer");
+      const due = listCampaigns().filter((c) => c.status === "brouillon" && c.sendAt && c.sendAt <= d);
+      for (const camp of due) {
+        // Réclamation : on retire la programmation avant d'envoyer (pas de double envoi).
+        updateCampaign(camp.id, { sendAt: undefined });
+        if (!mailerConfigured()) {
+          await sendTelegram(`⚠️ Mailing programmé « ${camp.subject} » non envoyé : Microsoft 365 non configuré.`, { plain: true }).catch(() => {});
+          continue;
+        }
+        const { listSubscribers } = await import("@/lib/newsletter");
+        const recipients = [...new Set(listSubscribers().map((x) => x.email.toLowerCase()))];
+        if (recipients.length === 0) {
+          await sendTelegram(`⚠️ Mailing programmé « ${camp.subject} » non envoyé : aucun abonné.`, { plain: true }).catch(() => {});
+          continue;
+        }
+        const { openPixelUrl, trackLinks } = await import("@/lib/newsletter-stats");
+        const bodyHtml = markdownToEmailHtml(camp.body);
+        try {
+          const count = await sendPersonalized(recipients, camp.subject, (email) =>
+            trackLinks(wrapEmail(bodyHtml, unsubscribeUrl(email)), camp.id, email) +
+            `<img src="${openPixelUrl(camp.id, email)}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;" />`,
+          );
+          updateCampaign(camp.id, { status: "envoye", sentAt: new Date().toISOString(), sentCount: count });
+          await sendTelegram(`💌 Mailing programmé envoyé : « ${camp.subject} » → ${count} contact(s). Analyse dans le cockpit.`, { plain: true }).catch(() => {});
+        } catch (e) {
+          await sendTelegram(`⚠️ Échec de l'envoi du mailing programmé « ${camp.subject} » — il reste en brouillon (reprogrammez-le).`, { plain: true }).catch(() => {});
+          console.error("[scheduler] mailing:", e);
+        }
+      }
+    } catch (e) {
+      console.error("[scheduler] mailings:", e);
+    }
+  } finally {
+    running = false;
+  }
+}

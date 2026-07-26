@@ -4,6 +4,8 @@ import { trackView, trackEvent, classifySource } from "@/lib/analytics";
 // Endpoint public de collecte (balise côté client). Aucune donnée personnelle,
 // aucun cookie : la provenance n'est comptée qu'au premier écran de la visite.
 export async function POST(req: Request) {
+  // Le trafic du site sert d'horloge au planificateur (publications programmées).
+  import("@/lib/scheduler").then((m) => m.runScheduledPublications()).catch(() => {});
   try {
     const body = (await req.json()) as {
       type?: string;

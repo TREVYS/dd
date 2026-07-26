@@ -17,6 +17,7 @@ export type SocialPost = {
   scheduledDate?: string; // AAAA-MM-JJ
   createdAt: string;
   publishedAt?: string;
+  lastTry?: string; // AAAA-MM-JJ — dernière tentative de publication auto
 };
 
 function read(): SocialPost[] {
