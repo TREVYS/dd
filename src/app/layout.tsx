@@ -20,8 +20,9 @@ export const metadata: Metadata = {
   icons: {
     // Badge TS embarqué avec le site (vectoriel, net à toutes les tailles).
     icon: [
-      { url: "/brand/ts-badge.svg", type: "image/svg+xml" },
-      { url: "/uploads/logo.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/brand/ts-badge.svg", type: "image/svg+xml", sizes: "any" },
+      { url: "/uploads/logo.png", type: "image/png", sizes: "192x192" },
     ],
     shortcut: ["/brand/ts-badge.svg"],
     // iOS n'accepte pas le SVG pour l'écran d'accueil : PNG du badge TS.
