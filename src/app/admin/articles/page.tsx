@@ -1,11 +1,24 @@
 import Link from "next/link";
 import { getAllPosts, formatDateFr } from "@/lib/blog";
-import { deleteArticleAction } from "../actions";
+import { ArticlesTable, type ArticleRow } from "./articles-table";
 
 export const dynamic = "force-dynamic";
 
-export default function AdminArticles() {
-  const posts = getAllPosts();
+export default async function AdminArticles({
+  searchParams,
+}: {
+  searchParams: Promise<{ bulk?: string; n?: string }>;
+}) {
+  const sp = await searchParams;
+  const posts: ArticleRow[] = getAllPosts().map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    category: p.category,
+    dateLabel: formatDateFr(p.date),
+    image: p.image,
+    search: `${p.title} ${p.category} ${p.excerpt ?? ""} ${p.slug}`.toLowerCase(),
+  }));
+
   return (
     <>
       <div className="adm-h">
@@ -16,47 +29,19 @@ export default function AdminArticles() {
         <Link className="adm-btn" href="/admin/articles/new">+ Nouvel article</Link>
       </div>
 
-      <div className="adm-card" style={{ padding: 0 }}>
-        <table className="adm-table">
-          <thead>
-            <tr>
-              <th style={{ width: 72 }}></th>
-              <th>Titre</th>
-              <th>Thème</th>
-              <th>Date</th>
-              <th style={{ textAlign: "right" }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {posts.map((p) => (
-              <tr key={p.slug}>
-                <td style={{ padding: ".6rem .5rem .6rem 1.2rem" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  {p.image ? <img className="adm-thumb" src={p.image} alt="" /> : <span className="adm-thumb" />}
-                </td>
-                <td>
-                  <div style={{ fontWeight: 700 }}>{p.title}</div>
-                  <div className="muted">/blog/{p.slug}</div>
-                </td>
-                <td><span className="adm-tag">{p.category}</span></td>
-                <td className="muted">{formatDateFr(p.date)}</td>
-                <td>
-                  <div className="adm-actions" style={{ justifyContent: "flex-end" }}>
-                    <Link className="adm-btn ghost sm" href={`/admin/articles/${p.slug}`}>Modifier</Link>
-                    <form action={deleteArticleAction}>
-                      <input type="hidden" name="slug" value={p.slug} />
-                      <button className="adm-btn danger sm" type="submit">Supprimer</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {posts.length === 0 && (
-              <tr><td colSpan={5} className="muted" style={{ padding: "1.4rem" }}>Aucun article.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {sp.bulk === "delete" && (
+        <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+          {sp.n} article{Number(sp.n) > 1 ? "s" : ""} supprimé{Number(sp.n) > 1 ? "s" : ""}.
+        </div>
+      )}
+      {sp.bulk === "unpublish" && (
+        <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+          {sp.n} article{Number(sp.n) > 1 ? "s" : ""} dépublié{Number(sp.n) > 1 ? "s" : ""} — à retrouver dans les{" "}
+          <Link href="/admin/communication/calendrier" className="adm-link">Brouillons</Link>.
+        </div>
+      )}
+
+      <ArticlesTable posts={posts} />
     </>
   );
 }

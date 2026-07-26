@@ -41,6 +41,44 @@ export async function deleteArticleAction(formData: FormData) {
   redirect("/admin/articles");
 }
 
+// Action groupée sur une sélection d'articles : suppression, ou dépublication
+// (l'article quitte le blog et redevient un brouillon à retravailler).
+export async function bulkArticlesAction(formData: FormData) {
+  await requireUser();
+  const slugs = formData.getAll("slugs").map(String).filter(Boolean);
+  const op = String(formData.get("op") ?? "");
+  if (slugs.length === 0 || !["delete", "unpublish"].includes(op)) {
+    redirect("/admin/articles");
+  }
+
+  if (op === "unpublish") {
+    const { getRawArticle } = await import("@/lib/content-admin");
+    const { addItem } = await import("@/lib/editorial");
+    for (const slug of slugs) {
+      const a = getRawArticle(slug);
+      if (!a) continue;
+      addItem({
+        date: new Date().toISOString().slice(0, 10),
+        type: "article",
+        title: a.title,
+        status: "brouillon",
+        category: a.category || "Article",
+        excerpt: a.excerpt || "",
+        image: a.image || undefined,
+        body: a.body || "",
+      });
+      deleteArticle(slug);
+    }
+  } else {
+    for (const slug of slugs) deleteArticle(slug);
+  }
+
+  revalidatePath("/blog");
+  revalidatePath("/admin/articles");
+  revalidatePath("/admin/communication/calendrier");
+  redirect(`/admin/articles?bulk=${op}&n=${slugs.length}`);
+}
+
 export async function saveLegalAction(formData: FormData) {
   await requireUser();
   const slug = formData.get("slug") as string;
