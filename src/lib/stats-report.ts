@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { readAnalytics, lastDays } from "@/lib/analytics";
+import { readAnalytics, lastDays, type Analytics } from "@/lib/analytics";
 import { getSetting } from "@/lib/settings";
 
 // Synthèse d'audience « pour dirigeant » : top 3 des pages, navigation,
@@ -72,6 +72,79 @@ export function buildStatsSummary(): StatsSummary {
     .sort((x, y) => y[1] - x[1])
     .map(([name, count]) => ({ name, count, pct: Math.round((count / devTotal) * 100) }));
   return { totalViews: a.totals.views, views7, views7Prev, trendPct, top3, topEvents, topSources, devices, engagementPct };
+}
+
+// --- Analyse par période (jour / semaine / mois / année) -------------------
+export type Periode = "jour" | "semaine" | "mois" | "annee";
+
+export type PeriodStats = {
+  label: string;
+  views: number; // vues de la période
+  prevViews: number; // période précédente (comparaison)
+  trendPct: number | null;
+  events: number;
+  series: { label: string; views: number }[]; // barres du graphe
+};
+
+function sumRange(a: Analytics, from: Date, to: Date): { views: number; events: number } {
+  let views = 0, events = 0;
+  const d = new Date(from);
+  while (d <= to) {
+    const k = d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+    views += a.days[k]?.views ?? 0;
+    events += a.days[k]?.events ?? 0;
+    d.setDate(d.getDate() + 1);
+  }
+  return { views, events };
+}
+
+export function periodStats(a: Analytics, periode: Periode): PeriodStats {
+  const now = new Date();
+  const dayKey = (d: Date) => d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+  const shift = (n: number) => { const d = new Date(now); d.setDate(d.getDate() + n); return d; };
+
+  if (periode === "jour") {
+    const views = a.days[dayKey(now)]?.views ?? 0;
+    const events = a.days[dayKey(now)]?.events ?? 0;
+    const prevViews = a.days[dayKey(shift(-1))]?.views ?? 0;
+    // Graphe : les 7 derniers jours pour situer la journée.
+    const series = Array.from({ length: 7 }, (_, i) => {
+      const d = shift(i - 6);
+      return { label: dayKey(d).slice(8), views: a.days[dayKey(d)]?.views ?? 0 };
+    });
+    return { label: "Aujourd'hui", views, prevViews, trendPct: prevViews > 0 ? Math.round(((views - prevViews) / prevViews) * 100) : null, events, series };
+  }
+
+  if (periode === "semaine" || periode === "mois") {
+    const n = periode === "semaine" ? 7 : 30;
+    const cur = sumRange(a, shift(-(n - 1)), now);
+    const prev = sumRange(a, shift(-(2 * n - 1)), shift(-n));
+    const series = Array.from({ length: n }, (_, i) => {
+      const d = shift(i - (n - 1));
+      return { label: dayKey(d).slice(8), views: a.days[dayKey(d)]?.views ?? 0 };
+    });
+    return {
+      label: periode === "semaine" ? "7 derniers jours" : "30 derniers jours",
+      views: cur.views, prevViews: prev.views,
+      trendPct: prev.views > 0 ? Math.round(((cur.views - prev.views) / prev.views) * 100) : null,
+      events: cur.events, series,
+    };
+  }
+
+  // Année : 12 mois glissants, barres mensuelles.
+  const months: { label: string; views: number }[] = [];
+  let views = 0, events = 0;
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const prefix = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    let mv = 0;
+    for (const [k, v] of Object.entries(a.days)) {
+      if (k.startsWith(prefix)) { mv += v.views; events += v.events; }
+    }
+    views += mv;
+    months.push({ label: d.toLocaleDateString("fr-FR", { month: "short" }), views: mv });
+  }
+  return { label: "12 derniers mois", views, prevViews: 0, trendPct: null, events, series: months };
 }
 
 // Texte de secours (sans IA) : déjà utile, jamais bloquant.

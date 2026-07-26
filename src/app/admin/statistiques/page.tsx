@@ -1,13 +1,29 @@
 import { readAnalytics, lastDays } from "@/lib/analytics";
-import { buildStatsSummary, alfredTrafficAnalysis, pageLabel } from "@/lib/stats-report";
+import Link from "next/link";
+import { buildStatsSummary, alfredTrafficAnalysis, pageLabel, periodStats, type Periode } from "@/lib/stats-report";
 import { telegramConfigured } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
 const RANK_COLORS = ["#E8B33C", "#B9BDC7", "#C98A5A"];
 
-export default async function AdminStats() {
+const PERIODES: { id: Periode; label: string }[] = [
+  { id: "jour", label: "Jour" },
+  { id: "semaine", label: "Semaine" },
+  { id: "mois", label: "Mois" },
+  { id: "annee", label: "Année" },
+];
+
+export default async function AdminStats({
+  searchParams,
+}: {
+  searchParams: Promise<{ periode?: string }>;
+}) {
+  const sp = await searchParams;
+  const periode: Periode = (["jour", "semaine", "mois", "annee"].includes(sp.periode ?? "") ? sp.periode : "semaine") as Periode;
   const a = readAnalytics();
+  const ps = periodStats(a, periode);
+  const maxSerie = Math.max(1, ...ps.series.map((x) => x.views));
   const s = buildStatsSummary();
   const analysis = await alfredTrafficAnalysis();
   const tg = telegramConfigured();
@@ -38,21 +54,52 @@ export default async function AdminStats() {
         </p>
       </div>
 
+      {/* Période d'analyse */}
+      <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap", marginBottom: "1.2rem" }}>
+        {PERIODES.map((pp) => (
+          <Link
+            key={pp.id}
+            href={`/admin/statistiques?periode=${pp.id}`}
+            className={periode === pp.id ? "adm-btn sm" : "adm-btn ghost sm"}
+          >
+            {pp.label}
+          </Link>
+        ))}
+      </div>
+
       {/* Chiffres clés */}
       <div className="adm-grid">
         <div className="adm-kpi">
-          <div className="k">Vues — 7 derniers jours</div>
+          <div className="k">Vues — {ps.label}</div>
           <div className="v o">
-            {s.views7.toLocaleString("fr-FR")}
-            {s.trendPct !== null && (
-              <span style={{ fontSize: ".8rem", fontWeight: 700, marginLeft: ".5rem", color: s.trendPct >= 0 ? "#2E9E6B" : "#c0392b" }}>
-                {s.trendPct >= 0 ? "▲" : "▼"} {Math.abs(s.trendPct)} %
+            {ps.views.toLocaleString("fr-FR")}
+            {ps.trendPct !== null && (
+              <span style={{ fontSize: ".8rem", fontWeight: 700, marginLeft: ".5rem", color: ps.trendPct >= 0 ? "#2E9E6B" : "#c0392b" }}>
+                {ps.trendPct >= 0 ? "▲" : "▼"} {Math.abs(ps.trendPct)} %
               </span>
             )}
           </div>
         </div>
+        <div className="adm-kpi"><div className="k">Interactions — {ps.label}</div><div className="v">{ps.events.toLocaleString("fr-FR")}</div></div>
         <div className="adm-kpi"><div className="k">Engagement</div><div className="v">{s.engagementPct} %</div></div>
         <div className="adm-kpi"><div className="k">Vues (depuis le début)</div><div className="v">{s.totalViews.toLocaleString("fr-FR")}</div></div>
+      </div>
+
+      {/* Évolution sur la période */}
+      <div className="adm-card">
+        <h2>Évolution — {ps.label}</h2>
+        <div className="ck-bars2">
+          {ps.series.map((pt, i) => (
+            <div className="col" key={`${pt.label}-${i}`}>
+              <div
+                className={`bar${i === ps.series.length - 1 ? " on" : ""}`}
+                style={{ height: `${(pt.views / maxSerie) * 100}%` }}
+                title={`${pt.label} · ${pt.views} vues`}
+              />
+              <div className="lb">{pt.label}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="adm-cols2">
