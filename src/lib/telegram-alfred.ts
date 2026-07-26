@@ -158,7 +158,7 @@ export async function handleTelegramMessage(update: {
 
   if (effectiveText === "/start") {
     await sendTelegram(
-      "🎩 Alfred à votre service. Dites-moi tout : « rédige un article sur… », « prépare un post LinkedIn… », « une newsletter sur nos derniers articles », « crée une routine hebdo… ». Tout part en brouillon dans le cockpit — vous validez, je m'occupe du reste. (/reset pour repartir de zéro)",
+      "🎩 Alfred à votre service — votre assistant polyvalent. Rédaction (articles, posts, newsletters, offres, posts RH…), questions pro (fiscalité, RFE, RH — je consulte votre GED), recrutement, statistiques, conseils. Envoyez-moi aussi vos fichiers, je les range. Tout contenu part en brouillon dans le cockpit — vous validez. (/reset pour repartir de zéro)",
     );
     return;
   }
