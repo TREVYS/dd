@@ -75,6 +75,10 @@ Tes moyens d'action (outils) :
 - lister_statistiques : consulte la fréquentation du site (pages vues, pages les plus consultées, interactions, tendance récente) pour répondre aux questions sur l'audience.
 - lister_messages : consulte les messages reçus via le formulaire de contact.
 - lister_newsletter : consulte l'état de la newsletter (nombre d'inscrits, campagnes envoyées/brouillons).
+- composer_mailing_articles / lister_contacts / envoyer_mailing : tu peux piloter une campagne de mailing DE BOUT EN BOUT, en dialoguant avec John (cockpit ou Telegram) :
+  1. propose des articles (via la connaissance du site), et compose le brouillon avec composer_mailing_articles ;
+  2. demande la cible avec les chiffres de lister_contacts (« tous » les abonnés ou seulement les « actifs » — ont ouvert un e-mail dans les 90 derniers jours) ;
+  3. ATTENDS LE GO EXPLICITE de John (« envoie », « c'est parti », « go ») — puis appelle envoyer_mailing. RÈGLE ABSOLUE : jamais d'envoi sans ce go clair et sans avoir annoncé la cible et le nombre de destinataires. L'envoi est cadencé (anti-spam) : il part en arrière-plan et John reçoit une confirmation Telegram à la fin.
 - supprimer_article / depublier_article : supprime définitivement un article publié du site, ou le dépublie (retour en brouillon). UNIQUEMENT sur instruction explicite de John — jamais de ta propre initiative. Pour plusieurs articles, appelle l'outil pour chacun.
 - supprimer_brouillon_article / supprimer_post / supprimer_newsletter_brouillon : supprime un brouillon d'article, un post en attente, ou un mailing en brouillon (les mailings déjà envoyés restent : c'est l'historique).
 
@@ -267,6 +271,37 @@ const TOOLS = [
     input_schema: { type: "object" as const, properties: {} },
   },
   {
+    name: "composer_mailing_articles",
+    description:
+      "Compose un brouillon de mailing à partir d'articles publiés du site (titres, résumés, boutons « Lire l'article »). Renvoie l'id du brouillon. N'ENVOIE RIEN.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        slugs: { type: "array", items: { type: "string" }, description: "Slugs des articles à inclure" },
+        objet: { type: "string", description: "Objet de l'e-mail (optionnel — proposé automatiquement sinon)" },
+      },
+      required: ["slugs"],
+    },
+  },
+  {
+    name: "lister_contacts",
+    description: "Renvoie les segments d'abonnés newsletter : total, actifs (ouverture < 90 jours), inactifs. À utiliser pour proposer la cible d'un mailing.",
+    input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "envoyer_mailing",
+    description:
+      "ENVOIE RÉELLEMENT un mailing en brouillon aux abonnés (cible « tous » ou « actifs »). Irréversible. UNIQUEMENT après un GO explicite de John, en ayant annoncé la cible et le nombre de destinataires. L'envoi part en arrière-plan (cadencé anti-spam) ; John est prévenu sur Telegram à la fin.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        mailing: { type: "string", description: "Objet (ou id) du mailing en brouillon" },
+        cible: { type: "string", enum: ["tous", "actifs"], description: "Segment destinataire" },
+      },
+      required: ["mailing", "cible"],
+    },
+  },
+  {
     name: "supprimer_article",
     description: "Supprime DÉFINITIVEMENT un article publié du site (irréversible). Uniquement sur instruction explicite de John.",
     input_schema: {
@@ -324,6 +359,9 @@ const TOOLS = [
     },
   },
 ];
+
+// Envois de mailing en cours (verrou anti double-lancement).
+const SENDING = new Set<string>();
 
 function findApplication(query: string): JobApplication | undefined {
   const q = query.trim().toLowerCase();
@@ -527,6 +565,82 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
         envoyeLe: c.sentAt?.slice(0, 10) ?? null, destinataires: c.sentCount ?? null,
       })),
     });
+  }
+  if (name === "composer_mailing_articles") {
+    const slugs = Array.isArray(input.slugs) ? input.slugs.map(String) : [];
+    const posts = slugs.map((sl) => getPost(sl)).filter((p): p is NonNullable<ReturnType<typeof getPost>> => !!p);
+    if (posts.length === 0) return "Aucun article trouvé pour ces slugs — vérifie dans la liste des articles publiés.";
+    const { SITE_URL } = await import("@/lib/site");
+    const intro = posts.length === 1
+      ? "Bonjour,\n\nNotre dernière analyse pourrait vous intéresser :"
+      : "Bonjour,\n\nVoici nos dernières analyses, sélectionnées pour vous :";
+    const body =
+      `${intro}\n\n` +
+      posts.map((p) => `## ${p.meta.title}\n\n${p.meta.excerpt ?? ""}\n\n[Lire l'article →](${SITE_URL}/blog/${p.meta.slug})`).join("\n\n---\n\n") +
+      `\n\nBonne lecture,\n\nL'équipe Trevys\n[www.trevys.fr](${SITE_URL})`;
+    let subject = String(input.objet ?? "").trim();
+    if (!subject) subject = await suggestSubject(body);
+    const camp = addCampaignStore(subject, body);
+    actions.push(`Brouillon de mailing composé : « ${camp.subject} » (${posts.length} article${posts.length > 1 ? "s" : ""})`);
+    return `Mailing composé en brouillon (id ${camp.id}) : « ${camp.subject} », avec ${posts.length} article(s) : ${posts.map((p) => `« ${p.meta.title} »`).join(", ")}. Demande maintenant la cible (tous / actifs) puis attends le GO avant d'envoyer.`;
+  }
+  if (name === "lister_contacts") {
+    const { contactActivity } = await import("@/lib/newsletter-stats");
+    const subs = listSubscribers();
+    const activity = contactActivity();
+    const ninety = Date.now() - 90 * 24 * 3600 * 1000;
+    const actifs = subs.filter((x) => {
+      const a = activity[x.email.toLowerCase()];
+      return a?.lastOpen && new Date(a.lastOpen).getTime() > ninety;
+    }).length;
+    return JSON.stringify({ total: subs.length, actifs, inactifsOuInconnus: subs.length - actifs });
+  }
+  if (name === "envoyer_mailing") {
+    const q = String(input.mailing ?? "").trim().toLowerCase();
+    const cible = input.cible === "actifs" ? "actifs" : "tous";
+    const { mailerConfigured, sendPersonalized } = await import("@/lib/mailer");
+    if (!mailerConfigured()) return "Envoi impossible : Microsoft 365 n'est pas configuré (Réglages).";
+    const { getCampaign, updateCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl, listCampaigns: lc2 } = await import("@/lib/newsletter-campaigns");
+    const drafts = lc2().filter((x) => x.status === "brouillon");
+    const camp = (getCampaign(q)?.status === "brouillon" ? getCampaign(q) : undefined) ?? drafts.find((x) => x.subject.toLowerCase().includes(q));
+    if (!camp) return `Mailing en brouillon introuvable pour « ${q} ». Brouillons : ${drafts.map((x) => `« ${x.subject} »`).join(", ") || "aucun"}.`;
+    if (SENDING.has(camp.id)) return "Cet envoi est déjà en cours — patience, la confirmation Telegram arrive.";
+
+    const { contactActivity, openPixelUrl, trackLinks } = await import("@/lib/newsletter-stats");
+    let recipients = listSubscribers().map((x) => x.email.toLowerCase());
+    if (cible === "actifs") {
+      const activity = contactActivity();
+      const ninety = Date.now() - 90 * 24 * 3600 * 1000;
+      recipients = recipients.filter((e) => {
+        const a = activity[e];
+        return a?.lastOpen && new Date(a.lastOpen).getTime() > ninety;
+      });
+    }
+    recipients = [...new Set(recipients)];
+    if (recipients.length === 0) return `Aucun destinataire dans le segment « ${cible} » — envoi annulé.`;
+
+    // Envoi en arrière-plan (cadencé anti-spam) ; confirmation Telegram à la fin.
+    SENDING.add(camp.id);
+    const bodyHtml = markdownToEmailHtml(camp.body);
+    (async () => {
+      try {
+        const count = await sendPersonalized(recipients, camp.subject, (email) =>
+          trackLinks(wrapEmail(bodyHtml, unsubscribeUrl(email)), camp.id, email) +
+          `<img src="${openPixelUrl(camp.id, email)}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;" />`,
+        );
+        updateCampaign(camp.id, { status: "envoye", sentAt: new Date().toISOString(), sentCount: count });
+        const { sendTelegram } = await import("@/lib/notify");
+        await sendTelegram(`✅ Mailing « ${camp.subject} » envoyé à ${count}/${recipients.length} contact(s) (cible : ${cible}). Analyse disponible dans le cockpit.`, { plain: true });
+      } catch (e) {
+        console.error("[envoyer_mailing] échec:", e);
+        const { sendTelegram } = await import("@/lib/notify");
+        await sendTelegram(`⚠️ L'envoi du mailing « ${camp.subject} » a rencontré un problème — vérifiez le cockpit.`, { plain: true }).catch(() => {});
+      } finally {
+        SENDING.delete(camp.id);
+      }
+    })();
+    actions.push(`Envoi du mailing « ${camp.subject} » lancé (${recipients.length} destinataires, cible ${cible})`);
+    return `Envoi lancé : « ${camp.subject} » vers ${recipients.length} contact(s) (cible : ${cible}). L'envoi est cadencé contre le spam — confirmation Telegram dès que c'est terminé.`;
   }
   if (name === "supprimer_article") {
     const slug = String(input.slug ?? "").trim();
