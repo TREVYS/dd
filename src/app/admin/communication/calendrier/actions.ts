@@ -1,5 +1,6 @@
 "use server";
 
+import { parisToday } from "@/lib/dates";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -14,7 +15,7 @@ async function guard() {
 export async function addCalendarAction(formData: FormData) {
   await guard();
   addItem({
-    date: (formData.get("date") as string) || new Date().toISOString().slice(0, 10),
+    date: (formData.get("date") as string) || parisToday(),
     type: ((formData.get("type") as string) || "idee") as ItemType,
     title: (formData.get("title") as string) || "Sans titre",
     status: "planifie",
@@ -51,7 +52,7 @@ export async function publishDraftAction(formData: FormData) {
   if (!item || item.type !== "article" || !item.body) return;
   const slug = saveArticle({
     title: item.title,
-    date: new Date().toISOString().slice(0, 10),
+    date: parisToday(),
     category: item.category || "Article",
     excerpt: item.excerpt || "",
     image: item.image || "",

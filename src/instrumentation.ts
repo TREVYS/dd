@@ -35,6 +35,9 @@ async function tick() {
 export async function register() {
   // Uniquement dans le vrai serveur Node (ni Edge, ni pendant le build).
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
+  // Heure de Paris pour tout le processus (le serveur Gandi tourne en GMT) :
+  // toutes les dates/heures affichées et calculées suivent l'heure française.
+  process.env.TZ = "Europe/Paris";
   if (process.env.NEXT_PHASE === "phase-production-build") return;
 
   // Premier passage peu après le démarrage, puis toutes les 5 minutes.

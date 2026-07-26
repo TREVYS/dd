@@ -1,3 +1,4 @@
+import { parisDateOf, parisToday } from "@/lib/dates";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -45,7 +46,7 @@ function write(a: Analytics) {
 }
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return parisToday();
 }
 
 // Classe l'adresse de provenance en source lisible.
@@ -100,7 +101,7 @@ export function lastDays(a: Analytics, n = 14): { day: string; views: number; ev
   for (let i = n - 1; i >= 0; i--) {
     const dt = new Date();
     dt.setDate(dt.getDate() - i);
-    const day = dt.toISOString().slice(0, 10);
+    const day = parisDateOf(dt);
     const v = a.days[day] ?? { views: 0, events: 0 };
     out.push({ day, views: v.views, events: v.events });
   }

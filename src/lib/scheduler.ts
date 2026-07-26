@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 // Planificateur des publications programmées. Déclenché de manière
 // opportuniste (trafic du site via /api/track, ouverture du cockpit) :
 // - posts réseaux « planifiés » dont la date est arrivée → publication réelle ;
@@ -8,7 +9,7 @@
 let running = false;
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return parisToday();
 }
 
 export async function runScheduledPublications(): Promise<void> {

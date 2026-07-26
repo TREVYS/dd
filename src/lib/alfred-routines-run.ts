@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 import { listRoutines, updateRoutine, isDue, inferRoutineType, type Routine } from "@/lib/alfred-routines";
 import { draftArticle, draftSocialPost, draftNewsletter } from "@/lib/comms-agent";
 import { addItem } from "@/lib/editorial";
@@ -19,7 +20,7 @@ export async function runRoutine(r: Routine): Promise<string> {
   if (r.type === "article") {
     const a = await draftArticle(r.topic);
     addItem({
-      date: new Date().toISOString().slice(0, 10),
+      date: parisToday(),
       type: "article",
       title: a.title,
       status: "brouillon",

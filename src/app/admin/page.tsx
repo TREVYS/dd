@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 import Link from "next/link";
 import { Icon } from "./icons";
 import { readAnalytics, lastDays } from "@/lib/analytics";
@@ -60,7 +61,7 @@ export default function AdminDashboard() {
   const social = listPosts();
   const postDrafts = social.filter((p) => p.status === "brouillon").length;
   const newsDrafts = listCampaigns().filter((c) => c.status === "brouillon").length;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = parisToday();
   const nextPlanned = social
     .filter((p) => p.status === "planifie" && p.scheduledDate && p.scheduledDate >= today)
     .sort((x, y) => (x.scheduledDate! < y.scheduledDate! ? -1 : 1))[0];

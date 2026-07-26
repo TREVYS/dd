@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 import type Anthropic from "@anthropic-ai/sdk";
 import { addItem, listItems } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
@@ -390,7 +391,7 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     const validImage = proposed && listUploads().some((m) => m.url === proposed) ? proposed : undefined;
     const image = validImage ?? pickCoverFor(`${input.title ?? ""} ${input.category ?? ""} ${input.excerpt ?? ""}`);
     const it = addItem({
-      date: new Date().toISOString().slice(0, 10),
+      date: parisToday(),
       type: "article",
       title: String(input.title ?? "Sans titre"),
       status: "brouillon",
@@ -407,7 +408,7 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     // (Les vrais posts et newsletters sont créés par rediger_post /
     // rediger_newsletter, dans leurs modules dédiés — on ne crée donc plus
     // d'éléments invisibles dans le calendrier.)
-    const date = String(input.date ?? new Date().toISOString().slice(0, 10));
+    const date = String(input.date ?? parisToday());
     const title = String(input.title ?? "");
     const type = String(input.type ?? "idee");
     if (type === "article" || type === "idee") {
@@ -697,7 +698,7 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     const a = getRawArticle(slug);
     if (!a) return `Article introuvable pour le slug « ${slug} ».`;
     addItem({
-      date: new Date().toISOString().slice(0, 10),
+      date: parisToday(),
       type: "article",
       title: a.title,
       status: "brouillon",

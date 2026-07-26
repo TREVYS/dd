@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
@@ -48,6 +49,6 @@ export function listLegalDocs(): { slug: string; title: string; updated?: string
 // Met à jour un document légal existant (titre + contenu). Tamponne la date.
 export function saveLegalDoc(slug: string, title: string, content: string): void {
   if (!fs.existsSync(LEGAL_DIR)) fs.mkdirSync(LEGAL_DIR, { recursive: true });
-  const fm = { title: title.trim(), updated: new Date().toISOString().slice(0, 10) };
+  const fm = { title: title.trim(), updated: parisToday() };
   fs.writeFileSync(path.join(LEGAL_DIR, `${slug}.mdx`), matter.stringify(`\n${content.trim()}\n`, fm), "utf8");
 }

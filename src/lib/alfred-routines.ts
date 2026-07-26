@@ -76,8 +76,10 @@ export function removeRoutine(id: string) {
 
 // ---- Échéances ------------------------------------------------------------
 
+import { parisDateOf } from "@/lib/dates";
+
 function dayKey(d: Date): string {
-  return d.toISOString().slice(0, 10);
+  return parisDateOf(d);
 }
 
 // Prochaine échéance après la dernière exécution (ou la création).

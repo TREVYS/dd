@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
@@ -44,7 +45,7 @@ export function saveArticle(input: ArticleInput, originalSlug?: string): string 
 
   const frontmatter: Record<string, string> = {
     title: input.title.trim(),
-    date: input.date || new Date().toISOString().slice(0, 10),
+    date: input.date || parisToday(),
     category: input.category.trim() || "Article",
     excerpt: input.excerpt.trim(),
   };

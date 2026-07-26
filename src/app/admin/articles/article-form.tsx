@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 import Link from "next/link";
 import { saveArticleAction } from "../actions";
 import { MarkdownEditor } from "../markdown-editor";
@@ -24,7 +25,7 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
         </div>
         <div className="adm-field">
           <label>Date de publication</label>
-          <input type="date" name="date" defaultValue={article?.date ?? new Date().toISOString().slice(0, 10)} />
+          <input type="date" name="date" defaultValue={article?.date ?? parisToday()} />
         </div>
       </div>
 

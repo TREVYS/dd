@@ -1,5 +1,6 @@
 "use server";
 
+import { parisToday } from "@/lib/dates";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -58,7 +59,7 @@ export async function bulkArticlesAction(formData: FormData) {
       const a = getRawArticle(slug);
       if (!a) continue;
       addItem({
-        date: new Date().toISOString().slice(0, 10),
+        date: parisToday(),
         type: "article",
         title: a.title,
         status: "brouillon",

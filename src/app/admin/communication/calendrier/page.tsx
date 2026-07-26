@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 import { BrouillonsTabs } from "../brouillons-tabs";
 import Link from "next/link";
 import { listItems } from "@/lib/editorial";
@@ -37,7 +38,7 @@ export default function CalendrierPage() {
         <form action={addCalendarAction} className="adm-actions" style={{ alignItems: "flex-end", gap: ".7rem", flexWrap: "wrap" }}>
           <div className="adm-field" style={{ margin: 0 }}>
             <label>Date</label>
-            <input type="date" name="date" defaultValue={new Date().toISOString().slice(0, 10)} />
+            <input type="date" name="date" defaultValue={parisToday()} />
           </div>
           <input type="hidden" name="type" value="article" />
           <div className="adm-field" style={{ margin: 0, flex: 1, minWidth: 200 }}>

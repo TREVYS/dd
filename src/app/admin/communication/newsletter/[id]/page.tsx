@@ -1,3 +1,4 @@
+import { parisToday } from "@/lib/dates";
 import { EmailPreview } from "./email-preview";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -159,7 +160,7 @@ export default async function CampaignEditor({
           </p>
           <form action={scheduleCampaignAction} style={{ display: "flex", gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
             <input type="hidden" name="id" value={c.id} />
-            <input type="date" name="sendAt" defaultValue={c.sendAt ?? ""} min={new Date().toISOString().slice(0, 10)} />
+            <input type="date" name="sendAt" defaultValue={c.sendAt ?? ""} min={parisToday()} />
             <button className="adm-btn ghost sm" type="submit">Programmer</button>
             {c.sendAt && (
               <button className="adm-btn danger sm" type="submit" name="sendAt" value="">Annuler la programmation</button>
