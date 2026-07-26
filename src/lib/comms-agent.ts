@@ -75,6 +75,10 @@ Tes moyens d'action (outils) :
 - lister_statistiques : consulte la fréquentation du site (pages vues, pages les plus consultées, interactions, tendance récente) pour répondre aux questions sur l'audience.
 - lister_messages : consulte les messages reçus via le formulaire de contact.
 - lister_newsletter : consulte l'état de la newsletter (nombre d'inscrits, campagnes envoyées/brouillons).
+- supprimer_article / depublier_article : supprime définitivement un article publié du site, ou le dépublie (retour en brouillon). UNIQUEMENT sur instruction explicite de John — jamais de ta propre initiative. Pour plusieurs articles, appelle l'outil pour chacun.
+- supprimer_brouillon_article / supprimer_post / supprimer_newsletter_brouillon : supprime un brouillon d'article, un post en attente, ou un mailing en brouillon (les mailings déjà envoyés restent : c'est l'historique).
+
+Tu obéis aux consignes de John : quand il te demande clairement de supprimer, dépublier ou nettoyer (même plusieurs éléments d'un coup), fais-le sans demander de re-confirmation, puis rends compte précisément de ce qui a été fait. En cas d'ambiguïté sur QUEL élément (titre approchant, doublons), liste et demande UNE précision.
 
 Tu as une vue d'ensemble de toute l'activité du cabinet (fréquentation, recrutement, messages, newsletter) — reprise dans la CONNAISSANCE DU SITE et interrogeable en détail via ces outils. Réponds aux questions de John sur les statistiques, les candidatures, les messages ou la newsletter en t'appuyant dessus.
 
@@ -261,6 +265,51 @@ const TOOLS = [
     name: "lister_newsletter",
     description: "Renvoie l'état de la newsletter : nombre d'inscrits et campagnes (envoyées / brouillons).",
     input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "supprimer_article",
+    description: "Supprime DÉFINITIVEMENT un article publié du site (irréversible). Uniquement sur instruction explicite de John.",
+    input_schema: {
+      type: "object" as const,
+      properties: { slug: { type: "string", description: "Slug de l'article (fin de l'URL /blog/<slug>)" } },
+      required: ["slug"],
+    },
+  },
+  {
+    name: "depublier_article",
+    description: "Retire un article publié du site et le remet en brouillon (récupérable dans Brouillons). Uniquement sur instruction explicite de John.",
+    input_schema: {
+      type: "object" as const,
+      properties: { slug: { type: "string", description: "Slug de l'article" } },
+      required: ["slug"],
+    },
+  },
+  {
+    name: "supprimer_brouillon_article",
+    description: "Supprime un brouillon d'article (liste via lister_calendrier). Uniquement sur instruction explicite.",
+    input_schema: {
+      type: "object" as const,
+      properties: { titre: { type: "string", description: "Titre (ou id) du brouillon" } },
+      required: ["titre"],
+    },
+  },
+  {
+    name: "supprimer_post",
+    description: "Supprime un post réseaux en attente (brouillon ou planifié). Uniquement sur instruction explicite.",
+    input_schema: {
+      type: "object" as const,
+      properties: { contenu: { type: "string", description: "Début du texte du post (ou son id) pour l'identifier" } },
+      required: ["contenu"],
+    },
+  },
+  {
+    name: "supprimer_newsletter_brouillon",
+    description: "Supprime un mailing en BROUILLON (les campagnes envoyées sont conservées : historique). Uniquement sur instruction explicite.",
+    input_schema: {
+      type: "object" as const,
+      properties: { objet: { type: "string", description: "Objet (ou id) du mailing brouillon" } },
+      required: ["objet"],
+    },
   },
   {
     name: "lire_article",
@@ -478,6 +527,64 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
         envoyeLe: c.sentAt?.slice(0, 10) ?? null, destinataires: c.sentCount ?? null,
       })),
     });
+  }
+  if (name === "supprimer_article") {
+    const slug = String(input.slug ?? "").trim();
+    const post = getPost(slug);
+    if (!post) return `Article introuvable pour le slug « ${slug} » — vérifie dans la liste des articles publiés.`;
+    const { deleteArticle } = await import("@/lib/content-admin");
+    deleteArticle(slug);
+    actions.push(`Article supprimé : « ${post.meta.title} »`);
+    return `Article « ${post.meta.title} » supprimé définitivement du site.`;
+  }
+  if (name === "depublier_article") {
+    const slug = String(input.slug ?? "").trim();
+    const { getRawArticle, deleteArticle } = await import("@/lib/content-admin");
+    const a = getRawArticle(slug);
+    if (!a) return `Article introuvable pour le slug « ${slug} ».`;
+    addItem({
+      date: new Date().toISOString().slice(0, 10),
+      type: "article",
+      title: a.title,
+      status: "brouillon",
+      category: a.category || "Article",
+      excerpt: a.excerpt || "",
+      image: a.image || undefined,
+      body: a.body || "",
+    });
+    deleteArticle(slug);
+    actions.push(`Article dépublié : « ${a.title} » (retour en brouillon)`);
+    return `Article « ${a.title} » retiré du site et rangé dans les Brouillons — récupérable à tout moment.`;
+  }
+  if (name === "supprimer_brouillon_article") {
+    const q = String(input.titre ?? "").trim().toLowerCase();
+    const items = listItems().filter((i) => i.status !== "publie");
+    const it = items.find((i) => i.id === q) ?? items.find((i) => i.title.toLowerCase().includes(q));
+    if (!it) return `Brouillon introuvable pour « ${q} ». Brouillons existants : ${items.slice(0, 15).map((i) => `« ${i.title} »`).join(", ") || "aucun"}.`;
+    const { removeItem } = await import("@/lib/editorial");
+    removeItem(it.id);
+    actions.push(`Brouillon supprimé : « ${it.title} »`);
+    return `Brouillon « ${it.title} » supprimé.`;
+  }
+  if (name === "supprimer_post") {
+    const q = String(input.contenu ?? "").trim().toLowerCase();
+    const { listPosts, deletePost } = await import("@/lib/social-posts");
+    const pending = listPosts().filter((x) => x.status !== "publie");
+    const p = pending.find((x) => x.id === q) ?? pending.find((x) => x.content.toLowerCase().includes(q));
+    if (!p) return `Post introuvable pour « ${q} ». Posts en attente : ${pending.slice(0, 10).map((x) => `« ${x.content.slice(0, 50)}… »`).join(" ; ") || "aucun"}.`;
+    deletePost(p.id);
+    actions.push(`Post ${p.network} supprimé`);
+    return `Post supprimé (${p.network}) : « ${p.content.slice(0, 80)}… »`;
+  }
+  if (name === "supprimer_newsletter_brouillon") {
+    const q = String(input.objet ?? "").trim().toLowerCase();
+    const { listCampaigns: lc, removeCampaign } = await import("@/lib/newsletter-campaigns");
+    const drafts = lc().filter((x) => x.status === "brouillon");
+    const c = drafts.find((x) => x.id === q) ?? drafts.find((x) => x.subject.toLowerCase().includes(q));
+    if (!c) return `Mailing en brouillon introuvable pour « ${q} ». Brouillons : ${drafts.slice(0, 10).map((x) => `« ${x.subject} »`).join(", ") || "aucun"}. (Les campagnes envoyées ne sont pas supprimables — historique.)`;
+    removeCampaign(c.id);
+    actions.push(`Mailing brouillon supprimé : « ${c.subject} »`);
+    return `Mailing « ${c.subject} » supprimé.`;
   }
   if (name === "lire_article") {
     const post = getPost(String(input.slug ?? ""));
