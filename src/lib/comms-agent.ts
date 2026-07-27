@@ -4,6 +4,7 @@ import { addItem, listItems } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
 import { alfredSystemBlock, readAlfred, GED_THEMES } from "@/lib/alfred-config";
 import { getStudio } from "@/lib/ig-studio";
+import { feedbackBlock } from "@/lib/alfred-feedback";
 import { siteKnowledgeBlock } from "@/lib/site-knowledge";
 import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
@@ -101,7 +102,7 @@ function buildSystem(): string {
       studioBlock = `\n\n---\n\nSTUDIO INSTAGRAM (goûts de John pour les visuels) : ${st.style.trim() || "(pas de note)"} — ${st.templates.length} maquette(s) de fond configurée(s).`;
     }
   } catch { /* studio absent : sans incidence */ }
-  return `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE (état actuel, généré à l'instant) :\n\n${siteKnowledgeBlock()}\n\n---\n\n${OPERATING}${studioBlock}`;
+  return `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE (état actuel, généré à l'instant) :\n\n${siteKnowledgeBlock()}\n\n---\n\n${OPERATING}${studioBlock}${feedbackBlock()}`;
 }
 
 const TOOLS = [
@@ -818,7 +819,7 @@ export async function draftSocialPost(
   const res = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1200,
-    system: `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\nTu rédiges UNIQUEMENT le texte final d'un post ${netLabel}, prêt à publier, sans commentaire ni balise. ${consignes}`,
+    system: `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\nTu rédiges UNIQUEMENT le texte final d'un post ${netLabel}, prêt à publier, sans commentaire ni balise. ${consignes}${feedbackBlock()}`,
     messages: [{ role: "user", content: `Rédige un post ${netLabel} sur : ${topic}` }],
   });
 
@@ -829,6 +830,77 @@ export async function draftSocialPost(
     .trim();
 
   return { content: content || topic, generated: true };
+}
+
+// Assistant de remplissage du planning : Alfred prépare en un appel un
+// calendrier de posts (LinkedIn + Instagram) sur une semaine ou un mois,
+// enregistrés PLANIFIÉS (dates/heures posées) — relisibles et déplaçables
+// dans le Planning avant leur publication automatique.
+export async function planPosts(period: "semaine" | "mois"): Promise<number> {
+  const { parisDateOf } = await import("@/lib/dates");
+  // Créneaux : LinkedIn lun/mer/ven 09:00, Instagram mar/jeu 12:30,
+  // sur 1 ou 4 semaines, à partir de demain.
+  const slots: { date: string; time: string; network: "linkedin" | "instagram" }[] = [];
+  const weeks = period === "mois" ? 4 : 1;
+  const d = new Date();
+  for (let i = 1; slots.length < weeks * 5 && i <= weeks * 7 + 7; i++) {
+    const day = new Date(d.getTime() + i * 86_400_000);
+    const wd = day.toLocaleDateString("fr-FR", { weekday: "long", timeZone: "Europe/Paris" });
+    const date = parisDateOf(day);
+    if (["lundi", "mercredi", "vendredi"].includes(wd)) slots.push({ date, time: "09:00", network: "linkedin" });
+    if (["mardi", "jeudi"].includes(wd)) slots.push({ date, time: "12:30", network: "instagram" });
+  }
+
+  const apiKey = getSetting("anthropicApiKey");
+  type Planned = { date: string; network: string; contenu: string; visuel_titre?: string };
+  let items: Planned[] = [];
+  if (apiKey) {
+    const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+    const client = new AnthropicSDK({ apiKey });
+    const res = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 8000,
+      system:
+        `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n` +
+        `Tu prépares un PLANNING de posts pour les créneaux fournis. Varie les sujets (articles du site, vidéos, conseils pratiques, coulisses du cabinet) sans te répéter. ` +
+        `TON : humain, chaleureux, une pointe d'humour, question finale — jamais corporate. LinkedIn : 6-9 lignes, lien d'article seul sur sa ligne, 3-4 hashtags. Instagram : 5-7 lignes, quelques emojis, 5-8 hashtags, et fournis "visuel_titre" (max 9 mots). ` +
+        `Réponds UNIQUEMENT avec un tableau JSON (aucun texte autour) : [{"date":"AAAA-MM-JJ","network":"linkedin|instagram","contenu":"…","visuel_titre":"…"}] — un objet par créneau fourni, aux dates exactes fournies.${feedbackBlock()}`,
+      messages: [{
+        role: "user",
+        content: `Créneaux à remplir :\n${slots.map((s) => `- ${s.date} ${s.network}`).join("\n")}`,
+      }],
+    });
+    const raw = res.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("").trim()
+      .replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) items = parsed as Planned[];
+    } catch (e) {
+      console.error("[alfred] planPosts JSON:", e);
+    }
+  }
+
+  let n = 0;
+  for (const slot of slots) {
+    const it = items.find(
+      (x) => x.date === slot.date && x.network === slot.network && typeof x.contenu === "string" && x.contenu.trim(),
+    );
+    const content = it?.contenu?.trim() ??
+      `✍️ [Brouillon à compléter — ${slot.network === "linkedin" ? "LinkedIn" : "Instagram"}]\n\nSujet à définir pour le ${slot.date}.`;
+    let image: string | undefined;
+    if (slot.network === "instagram") {
+      try {
+        const { makeInstagramVisual } = await import("@/lib/ig-visual");
+        const titre = (it?.visuel_titre ?? "").trim() || content.split("\n")[0].replace(/[#*✍️\[\]]/g, "").slice(0, 60);
+        if (titre) image = (await makeInstagramVisual(titre)).url;
+      } catch (e) {
+        console.error("[alfred] planPosts visuel:", e);
+      }
+    }
+    addPost({ network: slot.network, content, status: "planifie", scheduledDate: slot.date, scheduledTime: slot.time, image });
+    n++;
+  }
+  return n;
 }
 
 // Rédige un article complet (appel modèle unique). Sans clé API, renvoie un

@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { listPosts, type SocialPost } from "@/lib/social-posts";
 import { parisToday } from "@/lib/dates";
-import { schedulePostAction, deletePostAction, publishPostAction } from "../reseaux/actions";
+import { schedulePostAction, deletePostAction, publishPostAction, generatePlanAction } from "../reseaux/actions";
+import { PlanningCalendar, type CalChip } from "./planning-calendar";
+import { PendingButton } from "../../pending-button";
+import { FeedbackThumbs } from "../../feedback-thumbs";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +49,7 @@ function NetDot({ n }: { n: "linkedin" | "instagram" }) {
 export default async function PlanningPage({
   searchParams,
 }: {
-  searchParams: Promise<{ m?: string; r?: string; post?: string; puberr?: string }>;
+  searchParams: Promise<{ m?: string; r?: string; post?: string; puberr?: string; gen?: string }>;
 }) {
   const sp = await searchParams;
   const today = parisToday();
@@ -85,6 +88,32 @@ export default async function PlanningPage({
   const weeks = monthGrid(year, month);
   const planned = posts.filter((p) => p.status === "planifie" && p.scheduledDate);
 
+  // Compteurs : posts positionnés (planifiés + publiés) semaine / mois / année.
+  const dayOf = (p: SocialPost) =>
+    p.status === "planifie" ? p.scheduledDate : p.status === "publie" ? p.publishedAt?.slice(0, 10) : undefined;
+  const now = new Date(`${today}T12:00:00`);
+  const monday = new Date(now.getTime() - ((now.getDay() + 6) % 7) * 86_400_000);
+  const weekStart = monday.toISOString().slice(0, 10);
+  const weekEnd = new Date(monday.getTime() + 6 * 86_400_000).toISOString().slice(0, 10);
+  const positioned = all.map(dayOf).filter((x): x is string => !!x);
+  const counts = {
+    semaine: positioned.filter((x) => x >= weekStart && x <= weekEnd).length,
+    mois: positioned.filter((x) => x.slice(0, 7) === today.slice(0, 7)).length,
+    annee: positioned.filter((x) => x.slice(0, 4) === today.slice(0, 4)).length,
+  };
+
+  // Données sérialisables pour la grille interactive (glisser-déposer).
+  const byDayChips: Record<string, CalChip[]> = {};
+  for (const [day, list] of byDay) {
+    byDayChips[day] = list.map((p) => ({
+      id: p.id,
+      network: p.network,
+      status: p.status,
+      time: p.scheduledTime,
+      snippet: p.content.slice(0, 60),
+    }));
+  }
+
   return (
     <>
       <div className="adm-h">
@@ -99,6 +128,36 @@ export default async function PlanningPage({
           La publication a échoué — le post reste tel quel. Détail : {sp.puberr}
         </div>
       )}
+
+      {sp.gen && (
+        <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+          Alfred a préparé <b>{sp.gen} posts planifiés</b> — relisez-les sur le calendrier (clic pour ouvrir, glisser pour déplacer). Ils partiront automatiquement à leur heure.
+        </div>
+      )}
+
+      {/* Compteurs */}
+      <div className="adm-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", marginBottom: "1rem" }}>
+        <div className="adm-kpi"><div className="k">Posts cette semaine</div><div className="v o">{counts.semaine}</div></div>
+        <div className="adm-kpi"><div className="k">Ce mois-ci</div><div className="v">{counts.mois}</div></div>
+        <div className="adm-kpi"><div className="k">Cette année</div><div className="v">{counts.annee}</div></div>
+        <div className="adm-kpi"><div className="k">Brouillons en attente</div><div className="v">{drafts.length}</div></div>
+      </div>
+
+      {/* Assistant de remplissage */}
+      <div className="adm-card" style={{ background: "linear-gradient(180deg,#FFF7F0,#fff)" }}>
+        <h2 style={{ marginBottom: ".4rem" }}>Assistant de remplissage</h2>
+        <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 .8rem" }}>
+          Alfred prépare un planning complet (LinkedIn lun/mer/ven 9 h, Instagram mar/jeu 12 h 30, visuels générés) —
+          posé sur le calendrier en planifié, à relire, déplacer ou supprimer avant l&apos;heure de publication.
+        </p>
+        <form action={generatePlanAction} style={{ display: "flex", gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
+          <select name="period" style={{ maxWidth: 220 }}>
+            <option value="semaine">La semaine à venir (5 posts)</option>
+            <option value="mois">Le mois à venir (20 posts)</option>
+          </select>
+          <PendingButton pendingLabel="Alfred prépare le planning…">Remplir le planning avec Alfred</PendingButton>
+        </form>
+      </div>
 
       {/* Barre d'outils */}
       <div className="pl-toolbar">
@@ -116,33 +175,17 @@ export default async function PlanningPage({
         </div>
       </div>
 
-      {/* Calendrier (PC) */}
+      {/* Calendrier (PC) — cartes déplaçables par glisser-déposer */}
       <div className="adm-card pl-calcard">
-        <div className="pl-grid">
-          {DAYS.map((d) => (
-            <div key={d} className="pl-dayhead">{d}</div>
-          ))}
-          {weeks.flat().map((day, i) =>
-            day === null ? (
-              <div key={`e${i}`} className="pl-cell off" />
-            ) : (
-              <div key={day} className={`pl-cell${day === today ? " today" : ""}`}>
-                <span className="pl-daynum">{Number(day.slice(8))}</span>
-                {(byDay.get(day) ?? []).map((p) => (
-                  <Link
-                    key={p.id}
-                    href={`?m=${cur}${filter ? `&r=${filter}` : ""}&post=${p.id}#post-detail`}
-                    className={`pl-chip ${p.network}${p.status === "publie" ? " done" : ""}${selected?.id === p.id ? " sel" : ""}`}
-                    title={p.content}
-                  >
-                    {p.status === "publie" ? "✓ " : p.scheduledTime ? `${p.scheduledTime} ` : ""}
-                    {p.content.slice(0, 34)}
-                  </Link>
-                ))}
-              </div>
-            ),
-          )}
-        </div>
+        <PlanningCalendar
+          weeks={weeks}
+          byDay={byDayChips}
+          today={today}
+          cur={cur}
+          filter={filter}
+          selectedId={selected?.id}
+          dayHeads={[...DAYS]}
+        />
         <div className="pl-legend">
           <span><i className="pl-sw" style={{ background: "#0A66C2" }} /> LinkedIn</span>
           <span><i className="pl-sw" style={{ background: "linear-gradient(135deg,#F58529,#DD2A7B,#8134AF)" }} /> Instagram</span>
@@ -181,7 +224,10 @@ export default async function PlanningPage({
             <h2 style={{ margin: 0 }}>
               {selected.status === "publie" ? "Post publié" : selected.status === "planifie" ? "Post planifié" : "Brouillon"}
             </h2>
-            <Link className="adm-btn ghost sm" href={qs(cur)} style={{ marginLeft: "auto" }}>Fermer</Link>
+            <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: ".8rem" }}>
+              <FeedbackThumbs kind="post" refId={selected.id} excerpt={selected.content} back={`/admin/communication/planning?m=${cur}&post=${selected.id}`} />
+              <Link className="adm-btn ghost sm" href={qs(cur)}>Fermer</Link>
+            </span>
           </div>
           {selected.image && (
             // eslint-disable-next-line @next/next/no-img-element

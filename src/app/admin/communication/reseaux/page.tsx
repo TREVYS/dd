@@ -3,6 +3,7 @@ import { listPosts, type PostStatus } from "@/lib/social-posts";
 import { publicStatus } from "@/lib/social";
 import { PostComposer } from "./post-composer";
 import { ImageField } from "../../image-field";
+import { FeedbackThumbs } from "../../feedback-thumbs";
 import { schedulePostAction, deletePostAction, publishPostAction, deleteAllDraftsAction, setPostImageAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -108,6 +109,9 @@ export default async function ReseauxPage({
                         {p.status === "planifie" && p.scheduledDate ? `Prévu le ${p.scheduledDate}${p.scheduledTime ? ` à ${p.scheduledTime}` : ""}` : ""}
                         {p.status === "publie" && p.publishedAt ? `Publié le ${new Date(p.publishedAt).toLocaleDateString("fr-FR")}` : ""}
                         {p.status === "brouillon" ? "Brouillon" : ""}
+                      </span>
+                      <span style={{ marginLeft: "auto" }}>
+                        <FeedbackThumbs kind="post" refId={p.id} excerpt={p.content} back="/admin/communication/reseaux" />
                       </span>
                     </div>
                     {p.image && (

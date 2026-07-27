@@ -464,3 +464,18 @@
   .pl-calcard{display:none}
   .pl-listcard{display:block}
 }
+
+/* Pouces d'apprentissage d'Alfred */
+.adm-thumbs{display:inline-flex;align-items:center;gap:.35rem}
+.adm-thumbs small{font-size:.72rem;color:var(--ink3);margin-left:.25rem}
+.adm-thumb{border:1px solid var(--line);background:#fff;border-radius:9px;width:30px;height:30px;cursor:pointer;
+  display:inline-grid;place-items:center;transition:border-color .15s,background .15s}
+.adm-thumb svg{width:15px;height:15px;fill:none;stroke:var(--ink2);stroke-width:2;stroke-linejoin:round}
+.adm-thumb:hover{border-color:var(--o)}
+.adm-thumb.on{background:#2E9E6B;border-color:#2E9E6B}
+.adm-thumb.on svg{stroke:#fff}
+.adm-thumb.on.down{background:#C0392B;border-color:#C0392B}
+.pl-cell.over{background:var(--o-tint);border-color:var(--o);border-style:dashed}
+.pl-grid.busy{opacity:.6;pointer-events:none}
+.pl-chip{cursor:grab}
+.pl-chip.done{cursor:pointer}

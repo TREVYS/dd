@@ -89,3 +89,23 @@ export async function saveLegalAction(formData: FormData) {
   revalidatePath("/admin/legal");
   redirect("/admin/legal");
 }
+
+// Pouce haut / pouce bas sur une création d'Alfred : mémorisé et réinjecté
+// dans ses consignes pour qu'il apprenne les goûts de John.
+export async function alfredFeedbackAction(formData: FormData) {
+  await requireUser();
+  const { addFeedback } = await import("@/lib/alfred-feedback");
+  const kind = String(formData.get("kind") ?? "post");
+  addFeedback({
+    id: String(formData.get("refId") ?? ""),
+    kind: (["post", "article", "newsletter", "visuel"].includes(kind) ? kind : "post") as
+      import("@/lib/alfred-feedback").FeedbackKind,
+    verdict: formData.get("verdict") === "down" ? "down" : "up",
+    excerpt: String(formData.get("excerpt") ?? ""),
+  });
+  const back = String(formData.get("back") ?? "");
+  if (back.startsWith("/admin")) {
+    revalidatePath(back.split("?")[0]);
+    redirect(back);
+  }
+}

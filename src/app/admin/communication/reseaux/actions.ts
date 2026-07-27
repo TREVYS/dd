@@ -94,3 +94,22 @@ export async function publishPostAction(formData: FormData) {
   updatePost(id, { status: "publie", publishedAt: new Date().toISOString() });
   revalidatePath(PATH);
 }
+
+// Déplacement d'une carte du planning (glisser-déposer) : change la date,
+// garde l'heure. Un brouillon déposé sur un jour devient planifié.
+export async function movePostAction(id: string, scheduledDate: string) {
+  if (!id || !/^\d{4}-\d{2}-\d{2}$/.test(scheduledDate)) return;
+  updatePost(id, { status: "planifie", scheduledDate });
+  revalidatePath("/admin/communication/planning");
+  revalidatePath(PATH);
+}
+
+// Assistant de remplissage : Alfred prépare un planning de posts sur une
+// semaine ou un mois (LinkedIn + Instagram, visuels générés), en planifié.
+export async function generatePlanAction(formData: FormData) {
+  const period = formData.get("period") === "mois" ? "mois" : "semaine";
+  const { planPosts } = await import("@/lib/comms-agent");
+  const n = await planPosts(period);
+  revalidatePath("/admin/communication/planning");
+  redirect(`/admin/communication/planning?gen=${n}`);
+}
