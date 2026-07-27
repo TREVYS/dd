@@ -305,7 +305,7 @@ const TOOLS = [
   },
   {
     name: "lister_contacts",
-    description: "Renvoie les segments d'abonnés newsletter : total, actifs (ouverture < 90 jours), inactifs. À utiliser pour proposer la cible d'un mailing.",
+    description: "Renvoie les segments d'abonnés newsletter : total, actifs (ouverture < 90 jours), inactifs, clients du cabinet, et la répartition par profil (DAF, BNC, BNC santé…). À utiliser pour proposer la cible d'un mailing.",
     input_schema: { type: "object" as const, properties: {} },
   },
   {
@@ -317,6 +317,8 @@ const TOOLS = [
       properties: {
         mailing: { type: "string", description: "Objet (ou id) du mailing en brouillon" },
         cible: { type: "string", enum: ["tous", "actifs"], description: "Segment destinataire" },
+        filtre_client: { type: "string", enum: ["oui", "non"], description: "Optionnel : restreindre aux clients du cabinet (oui) ou aux non-clients (non)" },
+        filtre_profil: { type: "string", description: "Optionnel : restreindre à un profil exact (ex. DAF, BNC, BNC santé)" },
         confirmer_envoi_rapproche: {
           type: "boolean",
           description:
@@ -651,7 +653,10 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
       const a = activity[x.email.toLowerCase()];
       return a?.lastOpen && new Date(a.lastOpen).getTime() > ninety;
     }).length;
-    return JSON.stringify({ total: subs.length, actifs, inactifsOuInconnus: subs.length - actifs });
+    const clients = subs.filter((x) => x.client === true).length;
+    const parProfil: Record<string, number> = {};
+    for (const x of subs) if (x.profil) parProfil[x.profil] = (parProfil[x.profil] ?? 0) + 1;
+    return JSON.stringify({ total: subs.length, actifs, inactifsOuInconnus: subs.length - actifs, clients, nonClients: subs.length - clients, parProfil });
   }
   if (name === "envoyer_mailing") {
     const q = String(input.mailing ?? "").trim().toLowerCase();
@@ -676,7 +681,15 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     }
 
     const { contactActivity, openPixelUrl, trackLinks } = await import("@/lib/newsletter-stats");
-    let recipients = listSubscribers().map((x) => x.email.toLowerCase());
+    const fClient = input.filtre_client === "oui" ? "oui" : input.filtre_client === "non" ? "non" : "";
+    const fProfil = String(input.filtre_profil ?? "").trim().toLowerCase();
+    let pool = listSubscribers().filter((x) => {
+      if (fClient === "oui" && x.client !== true) return false;
+      if (fClient === "non" && x.client === true) return false;
+      if (fProfil && (x.profil ?? "").toLowerCase() !== fProfil) return false;
+      return true;
+    });
+    let recipients = pool.map((x) => x.email.toLowerCase());
     if (cible === "actifs") {
       const activity = contactActivity();
       const ninety = Date.now() - 90 * 24 * 3600 * 1000;

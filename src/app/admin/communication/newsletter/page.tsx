@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { PendingButton } from "../../pending-button";
-import { listSubscribers, unreadCount, listUnsubscribed } from "@/lib/newsletter";
+import { listSubscribers, unreadCount, listUnsubscribed, PROFILS } from "@/lib/newsletter";
 import { listVideos } from "@/lib/videos";
 import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { getAllPosts, getPost, formatDateFr } from "@/lib/blog";
-import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction, sendOptinInvitesAction } from "./actions";
+import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction, sendOptinInvitesAction, importContactsAction, updateSubscriberAction } from "./actions";
 import { campaignOpens, contactActivity } from "@/lib/newsletter-stats";
 import { optinStats } from "@/lib/newsletter-optin";
 import { ArticlePicker, type PickPost } from "./article-picker";
@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function NewsletterAdmin({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; optin?: string; n?: string; skipped?: string }>;
+  searchParams: Promise<{ error?: string; optin?: string; n?: string; skipped?: string; imp?: string; a?: string; u?: string; s?: string }>;
 }) {
   const sp = await searchParams;
   const subs = listSubscribers();
@@ -294,17 +294,57 @@ export default async function NewsletterAdmin({
           : "Notifications Telegram non configurées (voir Réglages) pour être alerté à chaque inscription."}
       </div>
 
+      {sp.imp && (
+        <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: sp.imp === "ok" ? "#bfe3c9" : "#f0d5d1", background: sp.imp === "ok" ? "#f1faf3" : "#fdf3f2" }}>
+          {sp.imp === "ok"
+            ? <>Import terminé : <b>{sp.a} ajouté(s)</b>, {sp.u} mis à jour, {sp.s} ignoré(s) (adresse invalide ou désinscrit).</>
+            : sp.imp === "toobig"
+              ? "Fichier trop volumineux (4 Mo maximum)."
+              : "Aucun contact exploitable dans ce fichier — vérifiez qu'il contient une colonne d'adresses e-mail."}
+        </div>
+      )}
+
+      <div className="adm-card">
+        <h2>Importer des contacts (fichier plat)</h2>
+        <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 .8rem" }}>
+          CSV, TXT ou export Excel « CSV » — colonnes <code>email</code>, <code>nom</code>, <code>client</code> (oui/non),{" "}
+          <code>profil</code> (DAF, BNC, BNC santé…), dans n&apos;importe quel ordre, avec ou sans ligne d&apos;en-tête.
+          Les contacts existants sont mis à jour, les désinscrits ne sont jamais réimportés.
+        </p>
+        <form action={importContactsAction} style={{ display: "flex", gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
+          <input type="file" name="file" accept=".csv,.txt,.tsv,text/csv,text/plain" required />
+          <PendingButton pendingLabel="Import en cours…">Importer</PendingButton>
+        </form>
+      </div>
+
       <div className="adm-card">
         <h2>Inscrits</h2>
+        <datalist id="nl-profils">
+          {PROFILS.map((p) => <option key={p} value={p} />)}
+        </datalist>
         <table className="adm-table">
           <thead>
-            <tr><th>E-mail</th><th>Origine</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
+            <tr><th>Contact</th><th>Catégories</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
           </thead>
           <tbody>
             {topSubs.map((s) => (
               <tr key={s.email} style={!s.read ? { fontWeight: 700 } : undefined}>
-                <td>{!s.read && <span style={{ color: "#E26A0F", marginRight: ".4rem" }}>●</span>}{s.email}</td>
-                <td className="muted">{s.source}</td>
+                <td>
+                  {!s.read && <span style={{ color: "#E26A0F", marginRight: ".4rem" }}>●</span>}
+                  {s.email}
+                  {s.name && <div className="muted" style={{ fontSize: ".78rem", fontWeight: 400 }}>{s.name}</div>}
+                </td>
+                <td>
+                  <form action={updateSubscriberAction} className="ck-catform">
+                    <input type="hidden" name="email" value={s.email} />
+                    <input name="name" defaultValue={s.name ?? ""} placeholder="Nom" style={{ width: 90 }} />
+                    <label title="Client du cabinet">
+                      <input type="checkbox" name="client" defaultChecked={s.client === true} /> client
+                    </label>
+                    <input name="profil" defaultValue={s.profil ?? ""} placeholder="Profil" list="nl-profils" style={{ width: 90 }} />
+                    <button className="adm-btn ghost sm" type="submit">OK</button>
+                  </form>
+                </td>
                 <td className="muted">{new Date(s.date).toLocaleString("fr-FR")}</td>
                 <td>
                   {(() => {
@@ -339,8 +379,11 @@ export default async function NewsletterAdmin({
               <tbody>
                 {restSubs.map((s) => (
                   <tr key={s.email}>
-                    <td>{s.email}</td>
-                    <td className="muted">{s.source}</td>
+                    <td>{s.email}{s.name ? ` — ${s.name}` : ""}</td>
+                    <td className="muted">
+                      {s.client && <span className="adm-tag" style={{ marginRight: ".3rem" }}>client</span>}
+                      {s.profil ?? s.source}
+                    </td>
                     <td className="muted">{new Date(s.date).toLocaleDateString("fr-FR")}</td>
                     <td>
                       {(() => {

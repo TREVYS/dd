@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { markAllRead, listSubscribers, removeSubscriber } from "@/lib/newsletter";
+import { markAllRead, listSubscribers, removeSubscriber, updateSubscriber, importContacts, parseContactsFile } from "@/lib/newsletter";
 import {
   addCampaign,
   getCampaign,
@@ -30,6 +30,34 @@ export async function deleteSubscriberAction(formData: FormData) {
   await guard();
   const email = (formData.get("email") as string) || "";
   if (email) removeSubscriber(email);
+  revalidatePath("/admin/communication/newsletter");
+}
+
+// Import en masse d'un fichier plat de contacts (CSV/TSV — colonnes email,
+// nom, client, profil dans n'importe quel ordre, avec ou sans en-tête).
+export async function importContactsAction(formData: FormData) {
+  await guard();
+  const file = formData.get("file") as File | null;
+  if (!file || file.size === 0) redirect("/admin/communication/newsletter?imp=empty");
+  if (file.size > 4 * 1024 * 1024) redirect("/admin/communication/newsletter?imp=toobig");
+  const text = Buffer.from(await file.arrayBuffer()).toString("utf8");
+  const rows = parseContactsFile(text);
+  if (rows.length === 0) redirect("/admin/communication/newsletter?imp=none");
+  const res = importContacts(rows);
+  revalidatePath("/admin/communication/newsletter");
+  redirect(`/admin/communication/newsletter?imp=ok&a=${res.added}&u=${res.updated}&s=${res.skipped}`);
+}
+
+// Met à jour les catégories d'un contact (client du cabinet / profil / nom).
+export async function updateSubscriberAction(formData: FormData) {
+  await guard();
+  const email = (formData.get("email") as string) || "";
+  if (!email) return;
+  updateSubscriber(email, {
+    name: ((formData.get("name") as string) || "").trim() || undefined,
+    client: formData.get("client") === "on",
+    profil: ((formData.get("profil") as string) || "").trim() || undefined,
+  });
   revalidatePath("/admin/communication/newsletter");
 }
 
@@ -172,7 +200,20 @@ export async function sendCampaignAction(formData: FormData) {
 
   const set = new Set<string>();
   if (formData.get("includeSubscribers")) {
-    listSubscribers().forEach((s) => set.add(s.email.toLowerCase()));
+    // Moteur de sélection : axe client (tous/clients/non-clients), axe profil,
+    // et recherche libre (e-mail, nom, profil).
+    const fClient = (formData.get("fClient") as string) || "tous";
+    const fProfil = ((formData.get("fProfil") as string) || "").trim().toLowerCase();
+    const fq = ((formData.get("fq") as string) || "").trim().toLowerCase();
+    listSubscribers()
+      .filter((s) => {
+        if (fClient === "oui" && s.client !== true) return false;
+        if (fClient === "non" && s.client === true) return false;
+        if (fProfil && (s.profil ?? "").toLowerCase() !== fProfil) return false;
+        if (fq && !`${s.email} ${s.name ?? ""} ${s.profil ?? ""}`.toLowerCase().includes(fq)) return false;
+        return true;
+      })
+      .forEach((s) => set.add(s.email.toLowerCase()));
   }
   parseEmails((formData.get("recipients") as string) || "").forEach((e) => set.add(e));
   const recipients = [...set];

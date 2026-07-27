@@ -590,3 +590,22 @@
   .adm-grid{grid-template-columns:1fr 1fr;gap:.5rem}
   .adm-kpi .v{font-size:1.25rem}
 }
+
+/* Catégorisation des contacts (newsletter) */
+.ck-catform{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.ck-catform input[name]{border:1px solid var(--line);border-radius:8px;padding:.3rem .5rem;font:inherit;font-size:.78rem}
+.ck-catform label{display:inline-flex;align-items:center;gap:.25rem;font-size:.78rem;color:var(--ink2);white-space:nowrap}
+.ck-catform input[type=checkbox]{accent-color:var(--o)}
+/* Moteur de sélection des destinataires */
+.tp{border:1px solid var(--line);border-radius:12px;background:#faf8f5;padding:.8rem .9rem;margin:0 0 .9rem}
+.tp-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.tp-row select,.tp-row input{border:1px solid var(--line);border-radius:9px;padding:.45rem .6rem;font:inherit;font-size:.85rem;background:#fff}
+.tp-row input[type=search]{flex:1;min-width:180px}
+.tp-count{margin-top:.6rem;font-size:.86rem;color:var(--ink2)}
+.tp-count b{color:var(--o2);font-size:1rem}
+.tp-toggle{border:none;background:none;color:var(--o);font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;margin-left:.6rem;text-decoration:underline}
+.tp-list{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.55rem}
+.tp-chip{display:inline-flex;align-items:center;gap:.3rem;background:#fff;border:1px solid var(--line);border-radius:100px;
+  padding:.2rem .6rem;font-size:.76rem;color:var(--ink2)}
+.tp-chip i{font-style:normal;font-size:.66rem;font-weight:700;background:var(--bg);border-radius:100px;padding:.05rem .4rem;color:var(--ink3)}
+.tp-chip i.cl{background:var(--o);color:#fff}

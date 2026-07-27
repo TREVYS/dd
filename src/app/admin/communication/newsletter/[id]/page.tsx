@@ -3,11 +3,12 @@ import { EmailPreview } from "./email-preview";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl, lastSentInfo, SEND_COOLDOWN_DAYS } from "@/lib/newsletter-campaigns";
-import { listSubscribers } from "@/lib/newsletter";
+import { PROFILS, listSubscribers } from "@/lib/newsletter";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { MarkdownEditor } from "../../../markdown-editor";
 import { SubjectField } from "../subject-field";
 import { ConfirmSubmit } from "../../../confirm-submit";
+import { TargetPicker } from "../target-picker";
 import { RecipientsField } from "../recipients-field";
 import { saveCampaignAction, deleteCampaignAction, sendTestAction, sendCampaignAction, scheduleCampaignAction } from "../actions";
 import { campaignReport } from "@/lib/newsletter-stats";
@@ -206,24 +207,10 @@ export default async function CampaignEditor({
             <b>Inclure les {count} inscrit(s) à la newsletter</b>
           </label>
           {count > 0 && (
-            <details style={{ margin: "0 0 .9rem", fontSize: ".85rem" }}>
-              <summary style={{ cursor: "pointer", color: "var(--o)", fontWeight: 600 }}>
-                Voir les adresses des inscrits
-              </summary>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem", marginTop: ".55rem" }}>
-                {subscribers.map((s) => (
-                  <span
-                    key={s.email}
-                    style={{
-                      padding: ".25rem .65rem", borderRadius: 100, background: "#faf8f5",
-                      border: "1px solid var(--line)", color: "var(--ink2)", fontSize: ".8rem",
-                    }}
-                  >
-                    {s.email}
-                  </span>
-                ))}
-              </div>
-            </details>
+            <TargetPicker
+              contacts={subscribers.map((s) => ({ email: s.email, name: s.name, client: s.client, profil: s.profil }))}
+              profils={PROFILS}
+            />
           )}
           <RecipientsField subscribers={subscribers.map((s) => s.email)} />
           <div className="adm-actions">
