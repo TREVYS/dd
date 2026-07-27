@@ -21,7 +21,13 @@ export default async function AdminVideos({
       </div>
 
       {sp.ok && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Vidéo ajoutée.</div>}
-      {sp.err && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>Lien YouTube non reconnu. Collez une URL comme https://youtu.be/… ou l&apos;identifiant.</div>}
+      {sp.err && (
+        <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+          {sp.err === "notfound"
+            ? "Cette vidéo n&apos;existe pas sur YouTube (identifiant introuvable) — vérifiez le lien : c&apos;est lui qui sert de miniature dans la newsletter."
+            : "Lien YouTube non reconnu. Collez une URL comme https://youtu.be/… ou l&apos;identifiant."}
+        </div>
+      )}
 
       <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
         <h2>Ajouter une vidéo</h2>

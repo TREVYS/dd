@@ -160,7 +160,9 @@ function emailVideo(url: string, label: string): string {
     `style="margin:8px 0 20px;background-color:#faf6ef;border:1px solid #eadfcd;border-radius:10px;"><tr>` +
     (thumb
       ? `<td width="150" style="padding:10px 0 10px 10px;vertical-align:middle;">` +
-        `<a href="${href}"><img src="${thumb}" alt="${esc(label)}" width="150" style="display:block;width:150px;height:auto;border-radius:8px;border:0;" /></a></td>`
+        // Dimensions fixes (16:9) : si la miniature ne charge pas, la carte
+        // reste compacte au lieu d'afficher un grand carré cassé.
+        `<a href="${href}"><img src="${thumb}" alt="" width="150" height="84" style="display:block;width:150px;height:84px;object-fit:cover;border-radius:8px;border:0;background-color:#e8e0d2;" /></a></td>`
       : "") +
     `<td style="padding:10px 14px;vertical-align:middle;font-family:Arial,Helvetica,sans-serif;">` +
     `<span style="display:block;font-size:14px;font-weight:bold;color:#1a1208;line-height:1.4;margin-bottom:4px;">${esc(label || "Notre vidéo")}</span>` +
