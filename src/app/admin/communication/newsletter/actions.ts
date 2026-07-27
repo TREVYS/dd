@@ -43,6 +43,7 @@ export async function createArticlesCampaignAction(formData: FormData) {
 
   const { getPost } = await import("@/lib/blog");
   const { SITE_URL } = await import("@/lib/site");
+  const { metierOf } = await import("@/lib/metier");
   const posts = slugs
     .map((s) => getPost(s))
     .filter((p): p is NonNullable<ReturnType<typeof getPost>> => !!p);
@@ -68,7 +69,7 @@ export async function createArticlesCampaignAction(formData: FormData) {
     posts
       .map(
         (p) =>
-          `## ${p.meta.title}\n\n${p.meta.excerpt ?? ""}\n\n[Lire l'article →](${SITE_URL}/blog/${p.meta.slug})`,
+          `[[${metierOf(p.meta.category)}]]\n## ${p.meta.title}\n\n${p.meta.excerpt ?? ""}\n\n[Lire l'article →](${SITE_URL}/blog/${p.meta.slug})`,
       )
       .join("\n\n---\n\n") +
     videoBlock +

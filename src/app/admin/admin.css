@@ -73,6 +73,12 @@
 .ck-chip:disabled{opacity:.55;cursor:default}
 
 /* Sélection d'articles à diffuser (newsletter) */
+.ck-metier-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.7rem}
+.ck-chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ck-chip.on[data-metier="Consulting"]{background:#1f2a44;border-color:#1f2a44}
+.ck-chip.on[data-metier="Expertise comptable"]{background:var(--o);border-color:var(--o)}
+.ck-tag-metier[data-metier="Consulting"]{background:#1f2a44;color:#fff;border-color:#1f2a44}
+.ck-tag-metier[data-metier="Expertise comptable"]{background:var(--o);color:#fff;border-color:var(--o)}
 .ck-artsearch{display:flex;align-items:center;gap:.55rem;background:#fff;border:1px solid var(--line);
   border-radius:12px;padding:.55rem .85rem;margin-bottom:.7rem}
 .ck-artsearch svg{width:16px;height:16px;stroke:var(--ink3);fill:none;stroke-width:2;flex:none}

@@ -6,15 +6,19 @@ export type PickPost = {
   slug: string;
   title: string;
   category: string;
+  metier: string; // "Consulting" | "Expertise comptable"
   dateLabel: string;
   search: string; // titre + résumé + contenu, en minuscules
 };
 
-// Sélecteur d'articles à diffuser, avec recherche par mots-clés dans le TITRE
-// et dans le CONTENU de l'article. Les cases restent montées (masquées en CSS)
-// pour ne pas perdre les articles déjà cochés quand on filtre.
+const METIERS = ["Consulting", "Expertise comptable"] as const;
+
+// Sélecteur d'articles à diffuser : recherche par mots-clés (titre + contenu)
+// et filtre par métier (Consulting / Expertise comptable). Les cases restent
+// montées (masquées en CSS) pour ne pas perdre les articles déjà cochés.
 export function ArticlePicker({ posts }: { posts: PickPost[] }) {
   const [q, setQ] = useState("");
+  const [metier, setMetier] = useState<string>("");
 
   const terms = useMemo(
     () => q.toLowerCase().split(/\s+/).map((t) => t.trim()).filter(Boolean),
@@ -22,6 +26,7 @@ export function ArticlePicker({ posts }: { posts: PickPost[] }) {
   );
 
   function matches(p: PickPost): boolean {
+    if (metier && p.metier !== metier) return false;
     if (terms.length === 0) return true;
     // Tous les mots-clés doivent être présents (titre + contenu).
     return terms.every((t) => p.search.includes(t));
@@ -49,6 +54,27 @@ export function ArticlePicker({ posts }: { posts: PickPost[] }) {
         )}
       </div>
 
+      <div className="ck-metier-chips" role="group" aria-label="Filtrer par métier">
+        <button
+          type="button"
+          className={`ck-chip${metier === "" ? " on" : ""}`}
+          onClick={() => setMetier("")}
+        >
+          Tous
+        </button>
+        {METIERS.map((m) => (
+          <button
+            key={m}
+            type="button"
+            className={`ck-chip${metier === m ? " on" : ""}`}
+            data-metier={m}
+            onClick={() => setMetier(metier === m ? "" : m)}
+          >
+            {m}
+          </button>
+        ))}
+      </div>
+
       <div className="ck-artpick">
         {posts.map((p) => (
           <label
@@ -60,6 +86,7 @@ export function ArticlePicker({ posts }: { posts: PickPost[] }) {
             <span className="ck-artpick-body">
               <span className="t">{p.title}</span>
               <span className="m">
+                <span className="adm-tag ck-tag-metier" data-metier={p.metier}>{p.metier}</span>{" "}
                 <span className="adm-tag">{p.category}</span> {p.dateLabel}
               </span>
             </span>
@@ -68,7 +95,7 @@ export function ArticlePicker({ posts }: { posts: PickPost[] }) {
         {posts.length === 0 && <p className="muted">Aucun article publié pour l&apos;instant.</p>}
         {posts.length > 0 && visibleCount === 0 && (
           <p className="muted" style={{ padding: ".4rem 0" }}>
-            Aucun article ne correspond à « {q} ».
+            Aucun article ne correspond{metier ? ` (${metier})` : ""}{q ? ` à « ${q} »` : ""}.
           </p>
         )}
       </div>

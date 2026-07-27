@@ -127,6 +127,22 @@ function emailButton(rawHref: string, label: string): string {
   );
 }
 
+// Pastille d'étiquette (ex. métier) : [[Consulting]] ou [[Expertise comptable]]
+// seuls sur leur ligne. Couleurs par métier, ton neutre pour le reste.
+function emailTag(label: string): string {
+  const l = label.toLowerCase();
+  const [bg, fg, border] = l.startsWith("consulting")
+    ? ["#1f2a44", "#ffffff", "#1f2a44"]
+    : l.startsWith("expertise")
+      ? ["#E26A0F", "#ffffff", "#C2410C"]
+      : ["#f6efe3", "#6b5f4c", "#eadfcd"];
+  return (
+    `<span style="display:inline-block;padding:4px 12px;margin:0 6px 0 0;font-family:Arial,Helvetica,sans-serif;` +
+    `font-size:11px;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;color:${fg};` +
+    `background-color:${bg};border:1px solid ${border};border-radius:100px;">${esc(label)}</span>`
+  );
+}
+
 // Identifiant YouTube depuis une URL (youtu.be/ID ou youtube.com/watch?v=ID).
 function youtubeId(url: string): string | null {
   const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
@@ -175,6 +191,11 @@ export function markdownToEmailHtml(md: string): string {
     } else if (/^#{3}\s+/.test(line)) {
       flushList();
       out.push(`<h3 style="font-family:Arial,Helvetica,sans-serif;font-size:17px;margin:20px 0 8px;color:#1a1208;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
+    } else if (/^(\[\[[^\]]+\]\]\s*)+$/.test(line.trim())) {
+      // Ligne composée uniquement d'étiquettes [[…]] → rangée de pastilles.
+      flushList();
+      const tags = [...line.matchAll(/\[\[([^\]]+)\]\]/g)].map((t) => emailTag(t[1].trim()));
+      out.push(`<div style="margin:26px 0 -18px;">${tags.join("")}</div>`);
     } else if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
       // Image pleine largeur (depuis la médiathèque ou une URL).
       flushList();

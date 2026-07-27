@@ -60,12 +60,14 @@ export default async function NewsletterAdmin({
   const olderCamps = campaigns.slice(3);
   // Tous les articles publiés, avec un index de recherche (titre + résumé +
   // contenu) pour filtrer par mots-clés dans le sélecteur ci-dessous.
+  const { metierOf } = await import("@/lib/metier");
   const pickPosts: PickPost[] = getAllPosts().map((p) => {
     const content = getPost(p.slug)?.content ?? "";
     return {
       slug: p.slug,
       title: p.title,
       category: p.category,
+      metier: metierOf(p.category),
       dateLabel: formatDateFr(p.date),
       search: `${p.title} ${p.excerpt} ${content}`.toLowerCase(),
     };

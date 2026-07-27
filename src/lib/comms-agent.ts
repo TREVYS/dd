@@ -194,7 +194,7 @@ const TOOLS = [
       type: "object" as const,
       properties: {
         subject: { type: "string", description: "Objet de l'e-mail — court, accrocheur, chaleureux" },
-        body: { type: "string", description: "Contenu complet en Markdown. Un lien seul sur sa ligne devient un bouton ; un lien YouTube seul sur sa ligne devient une carte vidéo (miniature + bouton Regarder) — utilise les vidéos du site listées dans la connaissance du site quand c'est pertinent." },
+        body: { type: "string", description: "Contenu complet en Markdown. Un lien seul sur sa ligne devient un bouton ; un lien YouTube seul sur sa ligne devient une carte vidéo (miniature + bouton Regarder) — utilise les vidéos du site listées dans la connaissance du site quand c'est pertinent. Étiquette métier au-dessus d'un titre d'article : [[Consulting]] ou [[Expertise comptable]] seul sur sa ligne devient une pastille colorée — utilise-la pour situer chaque article partagé." },
       },
       required: ["subject", "body"],
     },
