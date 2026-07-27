@@ -2,7 +2,7 @@ import { parisToday } from "@/lib/dates";
 import { EmailPreview } from "./email-preview";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCampaign, markdownToEmailHtml, wrapEmail } from "@/lib/newsletter-campaigns";
+import { getCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl } from "@/lib/newsletter-campaigns";
 import { listSubscribers } from "@/lib/newsletter";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { MarkdownEditor } from "../../../markdown-editor";
@@ -28,7 +28,7 @@ export default async function CampaignEditor({
   const subscribers = listSubscribers();
   const count = subscribers.length;
   const mailOn = mailerConfigured();
-  const preview = wrapEmail(markdownToEmailHtml(c.body || "_(Votre message apparaîtra ici.)_"));
+  const preview = wrapEmail(markdownToEmailHtml(c.body || "_(Votre message apparaîtra ici.)_"), unsubscribeUrl("exemple@trevys.fr"));
   const sent = c.status === "envoye";
   const report = sent ? campaignReport(c.id) : null;
   const sentN = c.sentCount ?? 0;

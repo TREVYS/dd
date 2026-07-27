@@ -11,7 +11,13 @@ export async function POST(req: Request) {
   if (!session?.user) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   try {
     const { body } = (await req.json()) as { body?: string };
-    const html = wrapEmail(markdownToEmailHtml((body ?? "").trim() || "_(Votre message apparaîtra ici.)_"));
+    // L'aperçu montre le gabarit complet, bouton « Se désinscrire » compris
+    // (à l'envoi, chaque destinataire reçoit son lien signé personnel).
+    const { unsubscribeUrl } = await import("@/lib/newsletter-campaigns");
+    const html = wrapEmail(
+      markdownToEmailHtml((body ?? "").trim() || "_(Votre message apparaîtra ici.)_"),
+      unsubscribeUrl("exemple@trevys.fr"),
+    );
     return NextResponse.json({ html });
   } catch {
     return NextResponse.json({ error: "Aperçu impossible." }, { status: 400 });
