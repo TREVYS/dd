@@ -836,20 +836,44 @@ export async function draftSocialPost(
 // calendrier de posts (LinkedIn + Instagram) sur une semaine ou un mois,
 // enregistrés PLANIFIÉS (dates/heures posées) — relisibles et déplaçables
 // dans le Planning avant leur publication automatique.
-export async function planPosts(period: "semaine" | "mois"): Promise<number> {
+export type PlanOptions = {
+  liPerWeek?: number; // posts LinkedIn par semaine (0-5, défaut 3)
+  igPerWeek?: number; // posts Instagram par semaine (0-5, défaut 2)
+  themes?: string; // thèmes souhaités (texte libre)
+  liTime?: string; // heure LinkedIn (défaut 09:00)
+  igTime?: string; // heure Instagram (défaut 12:30)
+};
+
+export async function planPosts(period: "semaine" | "mois", opts: PlanOptions = {}): Promise<number> {
   const { parisDateOf } = await import("@/lib/dates");
-  // Créneaux : LinkedIn lun/mer/ven 09:00, Instagram mar/jeu 12:30,
-  // sur 1 ou 4 semaines, à partir de demain.
+  const clamp = (v: number | undefined, dflt: number) =>
+    Math.max(0, Math.min(5, Number.isFinite(v) ? (v as number) : dflt));
+  const liN = clamp(opts.liPerWeek, 3);
+  const igN = clamp(opts.igPerWeek, 2);
+  const liTime = /^\d{2}:\d{2}$/.test(opts.liTime ?? "") ? opts.liTime! : "09:00";
+  const igTime = /^\d{2}:\d{2}$/.test(opts.igTime ?? "") ? opts.igTime! : "12:30";
+  // Jours préférés par cadence : LinkedIn plutôt lun/mer/ven, Instagram mar/jeu.
+  const LI_DAYS = ["lundi", "mercredi", "vendredi", "mardi", "jeudi"].slice(0, liN);
+  const IG_DAYS = ["mardi", "jeudi", "lundi", "mercredi", "vendredi"].slice(0, igN);
+
   const slots: { date: string; time: string; network: "linkedin" | "instagram" }[] = [];
   const weeks = period === "mois" ? 4 : 1;
   const d = new Date();
-  for (let i = 1; slots.length < weeks * 5 && i <= weeks * 7 + 7; i++) {
+  for (let i = 1; i <= weeks * 7 + 7 && slots.length < weeks * (liN + igN); i++) {
     const day = new Date(d.getTime() + i * 86_400_000);
     const wd = day.toLocaleDateString("fr-FR", { weekday: "long", timeZone: "Europe/Paris" });
     const date = parisDateOf(day);
-    if (["lundi", "mercredi", "vendredi"].includes(wd)) slots.push({ date, time: "09:00", network: "linkedin" });
-    if (["mardi", "jeudi"].includes(wd)) slots.push({ date, time: "12:30", network: "instagram" });
+    if (LI_DAYS.includes(wd) && slots.filter((s) => s.network === "linkedin").length < weeks * liN) {
+      slots.push({ date, time: liTime, network: "linkedin" });
+    }
+    if (IG_DAYS.includes(wd) && slots.filter((s) => s.network === "instagram").length < weeks * igN) {
+      slots.push({ date, time: igTime, network: "instagram" });
+    }
   }
+  if (slots.length === 0) return 0;
+  const themesLine = (opts.themes ?? "").trim()
+    ? `\nTHÈMES IMPOSÉS PAR JOHN (répartis-les sur les créneaux) : ${opts.themes!.trim()}`
+    : "";
 
   const apiKey = getSetting("anthropicApiKey");
   type Planned = { date: string; network: string; contenu: string; visuel_titre?: string };
@@ -867,7 +891,7 @@ export async function planPosts(period: "semaine" | "mois"): Promise<number> {
         `Réponds UNIQUEMENT avec un tableau JSON (aucun texte autour) : [{"date":"AAAA-MM-JJ","network":"linkedin|instagram","contenu":"…","visuel_titre":"…"}] — un objet par créneau fourni, aux dates exactes fournies.${feedbackBlock()}`,
       messages: [{
         role: "user",
-        content: `Créneaux à remplir :\n${slots.map((s) => `- ${s.date} ${s.network}`).join("\n")}`,
+        content: `Créneaux à remplir :\n${slots.map((s) => `- ${s.date} ${s.network}`).join("\n")}${themesLine}`,
       }],
     });
     const raw = res.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("").trim()

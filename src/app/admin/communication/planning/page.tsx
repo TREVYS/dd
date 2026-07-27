@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { listPosts, type SocialPost } from "@/lib/social-posts";
 import { parisToday } from "@/lib/dates";
-import { schedulePostAction, deletePostAction, publishPostAction, generatePlanAction } from "../reseaux/actions";
+import { schedulePostAction, deletePostAction, publishPostAction } from "../reseaux/actions";
 import { PlanningCalendar, type CalChip } from "./planning-calendar";
-import { PendingButton } from "../../pending-button";
+import { PlanWizard } from "./plan-wizard";
 import { FeedbackThumbs } from "../../feedback-thumbs";
 
 export const dynamic = "force-dynamic";
@@ -143,20 +143,17 @@ export default async function PlanningPage({
         <div className="adm-kpi"><div className="k">Brouillons en attente</div><div className="v">{drafts.length}</div></div>
       </div>
 
-      {/* Assistant de remplissage */}
-      <div className="adm-card" style={{ background: "linear-gradient(180deg,#FFF7F0,#fff)" }}>
-        <h2 style={{ marginBottom: ".4rem" }}>Assistant de remplissage</h2>
-        <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 .8rem" }}>
-          Alfred prépare un planning complet (LinkedIn lun/mer/ven 9 h, Instagram mar/jeu 12 h 30, visuels générés) —
-          posé sur le calendrier en planifié, à relire, déplacer ou supprimer avant l&apos;heure de publication.
-        </p>
-        <form action={generatePlanAction} style={{ display: "flex", gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
-          <select name="period" style={{ maxWidth: 220 }}>
-            <option value="semaine">La semaine à venir (5 posts)</option>
-            <option value="mois">Le mois à venir (20 posts)</option>
-          </select>
-          <PendingButton pendingLabel="Alfred prépare le planning…">Remplir le planning avec Alfred</PendingButton>
-        </form>
+      {/* Assistant de remplissage (fenêtre de paramétrage, PC) */}
+      <div className="adm-card pl-calcard" style={{ background: "linear-gradient(180deg,#FFF7F0,#fff)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 260 }}>
+            <h2 style={{ marginBottom: ".3rem" }}>Assistant de remplissage</h2>
+            <p className="muted" style={{ fontSize: ".86rem", margin: 0 }}>
+              Choisissez la cadence, les thèmes et le design — Alfred rédige et pose tout sur le calendrier en planifié.
+            </p>
+          </div>
+          <PlanWizard />
+        </div>
       </div>
 
       {/* Barre d'outils */}

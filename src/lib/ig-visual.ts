@@ -37,6 +37,7 @@ function wrapText(text: string, max: number, maxLines: number): string[] {
 export async function makeInstagramVisual(
   title: string,
   subtitle?: string,
+  templateUrl?: string, // maquette imposée (Studio design) — sinon rotation
 ): Promise<{ url: string }> {
   // Chargé à l'exécution via createRequire : sharp est natif et ne doit
   // jamais entrer dans les bundles (l'inclusion Edge casse le build).
@@ -51,7 +52,12 @@ export async function makeInstagramVisual(
     return fs.existsSync(p);
   });
   let base: import("sharp").Sharp;
-  if (usable.length > 0) {
+  const forced = templateUrl && fs.existsSync(path.join(UPLOAD_DIR, path.basename(templateUrl)))
+    ? path.join(UPLOAD_DIR, path.basename(templateUrl))
+    : null;
+  if (forced) {
+    base = sharp(forced).resize(W, W, { fit: "cover" });
+  } else if (usable.length > 0) {
     const idx = ((studio.lastTemplate ?? -1) + 1) % usable.length;
     saveStudio({ lastTemplate: idx });
     base = sharp(path.join(UPLOAD_DIR, path.basename(usable[idx]))).resize(W, W, { fit: "cover" });

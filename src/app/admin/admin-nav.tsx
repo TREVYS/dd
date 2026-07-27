@@ -23,6 +23,7 @@ const GROUPS: Group[] = [
       // « Brouillons » regroupe articles + réseaux sociaux (onglets internes).
       { href: "/admin/communication/calendrier", label: "Brouillons", ic: "draft", also: ["/admin/communication/reseaux", "/admin/communication/mailings"] },
       { href: "/admin/communication/planning", label: "Planning", ic: "calendar" },
+      { href: "/admin/communication/design", label: "Studio design", ic: "image" },
       { href: "/admin/communication/newsletter", label: "Newsletter", ic: "mail" },
       { href: "/admin/communication/routines", label: "Routines d'Alfred", ic: "repeat" },
       { href: "/admin/ged", label: "GED — Documents", ic: "folder" },

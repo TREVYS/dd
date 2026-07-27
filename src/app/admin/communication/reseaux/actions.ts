@@ -109,7 +109,30 @@ export async function movePostAction(id: string, scheduledDate: string) {
 export async function generatePlanAction(formData: FormData) {
   const period = formData.get("period") === "mois" ? "mois" : "semaine";
   const { planPosts } = await import("@/lib/comms-agent");
-  const n = await planPosts(period);
+  const n = await planPosts(period, {
+    liPerWeek: Number(formData.get("liPerWeek") ?? 3),
+    igPerWeek: Number(formData.get("igPerWeek") ?? 2),
+    themes: String(formData.get("themes") ?? ""),
+    liTime: String(formData.get("liTime") ?? ""),
+    igTime: String(formData.get("igTime") ?? ""),
+  });
   revalidatePath("/admin/communication/planning");
   redirect(`/admin/communication/planning?gen=${n}`);
+}
+
+// Aperçu du design Instagram (fenêtre de l'assistant) : génère un visuel
+// d'exemple avec les maquettes du Studio, sans créer de post.
+export async function previewIgVisualAction(
+  _prev: { url?: string; error?: string },
+  formData: FormData,
+): Promise<{ url?: string; error?: string }> {
+  try {
+    const { makeInstagramVisual } = await import("@/lib/ig-visual");
+    const title = String(formData.get("title") ?? "").trim() || "Votre titre ici";
+    const subtitle = String(formData.get("subtitle") ?? "").trim() || undefined;
+    const { url } = await makeInstagramVisual(title, subtitle);
+    return { url };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 }
