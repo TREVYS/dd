@@ -35,7 +35,28 @@ export async function runScheduledPublications(): Promise<void> {
       for (const p of due) {
         // On « réclame » la tentative du jour avant d'agir (pas de doublon).
         updatePost(p.id, { lastTry: d });
-        const { publishPost } = await import("@/lib/social");
+        const { publishPost, readSocial } = await import("@/lib/social");
+
+        // Relais Instagram manuel : compte non connecté → le post part sur
+        // Telegram (visuel + légende) pour une publication à la main.
+        if (p.network === "instagram" && !readSocial().instagram.connected) {
+          const { sendTelegramPhoto } = await import("@/lib/notify");
+          const caption = `📸 À publier sur Instagram maintenant :\n\n${p.content}`;
+          const sent = p.image
+            ? await sendTelegramPhoto(p.image, caption.slice(0, 1000))
+            : await sendTelegram(caption, { plain: true });
+          if (sent) {
+            updatePost(p.id, { status: "publie", publishedAt: new Date().toISOString(), deliveredVia: "telegram" });
+            await sendTelegram(
+              "☝️ Instagram n'est pas connecté : copiez la légende ci-dessus, enregistrez l'image et publiez depuis l'app Instagram. (Connectez Instagram dans Réglages pour l'automatiser.)",
+              { plain: true },
+            ).catch(() => {});
+          } else {
+            await sendTelegram(`⚠️ Post Instagram planifié non transmis (Telegram indisponible) — il reste planifié.`, { plain: true }).catch(() => {});
+          }
+          continue;
+        }
+
         const res = await publishPost(p.network, p.content, p.image);
         if (res.ok) {
           updatePost(p.id, { status: "publie", publishedAt: new Date().toISOString() });

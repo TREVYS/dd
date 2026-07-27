@@ -16,6 +16,7 @@ export type SocialPost = {
   image?: string; // URL de l'image jointe
   scheduledDate?: string; // AAAA-MM-JJ
   scheduledTime?: string; // HH:MM (heure de Paris) — vide = dès le matin
+  deliveredVia?: "telegram"; // relais manuel : transmis sur Telegram pour publication à la main
   createdAt: string;
   publishedAt?: string;
   lastTry?: string; // AAAA-MM-JJ — dernière tentative de publication auto

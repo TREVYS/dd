@@ -107,7 +107,9 @@ export default async function ReseauxPage({
                       <NetBadge n={p.network} />
                       <span className="muted" style={{ fontSize: ".78rem" }}>
                         {p.status === "planifie" && p.scheduledDate ? `Prévu le ${p.scheduledDate}${p.scheduledTime ? ` à ${p.scheduledTime}` : ""}` : ""}
-                        {p.status === "publie" && p.publishedAt ? `Publié le ${new Date(p.publishedAt).toLocaleDateString("fr-FR")}` : ""}
+                        {p.status === "publie" && p.publishedAt
+                          ? `${p.deliveredVia === "telegram" ? "Transmis sur Telegram (publication manuelle)" : "Publié"} le ${new Date(p.publishedAt).toLocaleDateString("fr-FR")}`
+                          : ""}
                         {p.status === "brouillon" ? "Brouillon" : ""}
                       </span>
                       <span style={{ marginLeft: "auto" }}>

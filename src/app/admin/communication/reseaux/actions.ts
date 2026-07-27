@@ -86,6 +86,28 @@ export async function publishPostAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const post = getPost(id);
   if (!post) return;
+
+  // Relais Instagram manuel : compte non connecté → transmission Telegram
+  // (visuel + légende) pour publication à la main depuis le téléphone.
+  if (post.network === "instagram") {
+    const { readSocial } = await import("@/lib/social");
+    if (!readSocial().instagram.connected) {
+      const { sendTelegramPhoto, sendTelegram } = await import("@/lib/notify");
+      const caption = `📸 À publier sur Instagram :\n\n${post.content}`;
+      const sent = post.image
+        ? await sendTelegramPhoto(post.image, caption.slice(0, 1000))
+        : await sendTelegram(caption, { plain: true });
+      if (!sent) {
+        revalidatePath(PATH);
+        redirect(`${PATH}?puberr=${encodeURIComponent("Instagram non connecté et Telegram indisponible — rien n'est parti.")}`);
+      }
+      updatePost(id, { status: "publie", publishedAt: new Date().toISOString(), deliveredVia: "telegram" });
+      revalidatePath(PATH);
+      revalidatePath("/admin/communication/planning");
+      return;
+    }
+  }
+
   const res = await publishPost(post.network, post.content, post.image);
   if (!res.ok) {
     revalidatePath(PATH);

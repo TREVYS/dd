@@ -37,6 +37,33 @@ export async function sendTelegramDocument(
   }
 }
 
+// Envoie une photo (fichier local de la médiathèque ou URL publique) avec sa
+// légende — utilisé par le relais Instagram manuel. Ne lève jamais.
+export async function sendTelegramPhoto(image: string, caption?: string): Promise<boolean> {
+  const token = getSetting("telegramBotToken");
+  const chatId = getSetting("telegramChatId");
+  if (!token || !chatId) return false;
+  try {
+    const fd = new FormData();
+    fd.append("chat_id", chatId);
+    if (caption) fd.append("caption", caption.slice(0, 1000));
+    if (image.startsWith("/")) {
+      const fs = await import("node:fs");
+      const path = await import("node:path");
+      const full = path.join(process.cwd(), "public", "uploads", path.basename(image));
+      if (!fs.existsSync(full)) return false;
+      fd.append("photo", new Blob([new Uint8Array(fs.readFileSync(full))]), path.basename(image));
+    } else {
+      fd.append("photo", image); // URL publique : Telegram la télécharge lui-même
+    }
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: "POST", body: fd });
+    return res.ok;
+  } catch (e) {
+    console.error("[notify] échec envoi photo Telegram:", e);
+    return false;
+  }
+}
+
 export async function sendTelegram(text: string, opts?: { plain?: boolean }): Promise<boolean> {
   const token = getSetting("telegramBotToken");
   const chatId = getSetting("telegramChatId");
