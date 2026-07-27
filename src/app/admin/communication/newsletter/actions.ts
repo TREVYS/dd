@@ -43,7 +43,7 @@ export async function createArticlesCampaignAction(formData: FormData) {
 
   const { getPost } = await import("@/lib/blog");
   const { SITE_URL } = await import("@/lib/site");
-  const { metierOf, METIERS } = await import("@/lib/metier");
+  const { articleMetier, METIERS } = await import("@/lib/metier");
   const posts = slugs
     .map((s) => getPost(s))
     .filter((p): p is NonNullable<ReturnType<typeof getPost>> => !!p);
@@ -69,7 +69,7 @@ export async function createArticlesCampaignAction(formData: FormData) {
   // chaque article apparaît en petite vignette, alternée droite / gauche.
   let n = 0;
   const blocks = METIERS.map((m) => {
-    const inBlock = posts.filter((p) => metierOf(p.meta.category) === m);
+    const inBlock = posts.filter((p) => articleMetier(p.meta) === m);
     if (inBlock.length === 0) return "";
     return (
       `[[${m}]]\n` +

@@ -11,6 +11,7 @@ export type ArticleInput = {
   title: string;
   date: string;
   category: string;
+  metier?: string; // Consulting / Expertise comptable / Transverse (vide = auto)
   excerpt: string;
   author?: string;
   image?: string;
@@ -30,6 +31,7 @@ export function getRawArticle(slug: string): ArticleInput | null {
     title: String(data.title ?? ""),
     date: String(data.date ?? ""),
     category: String(data.category ?? "Article"),
+    metier: data.metier ? String(data.metier) : "",
     excerpt: String(data.excerpt ?? ""),
     author: data.author ? String(data.author) : "",
     image: data.image ? String(data.image) : "",
@@ -49,6 +51,7 @@ export function saveArticle(input: ArticleInput, originalSlug?: string): string 
     category: input.category.trim() || "Article",
     excerpt: input.excerpt.trim(),
   };
+  if (input.metier?.trim()) frontmatter.metier = input.metier.trim();
   if (input.author?.trim()) frontmatter.author = input.author.trim();
   if (input.image?.trim()) frontmatter.image = input.image.trim();
 

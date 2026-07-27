@@ -21,6 +21,7 @@ export async function saveArticleAction(formData: FormData) {
       title: (formData.get("title") as string) ?? "",
       date: (formData.get("date") as string) ?? "",
       category: (formData.get("category") as string) ?? "",
+      metier: (formData.get("metier") as string) ?? "",
       excerpt: (formData.get("excerpt") as string) ?? "",
       author: (formData.get("author") as string) ?? "",
       image: (formData.get("image") as string) ?? "",

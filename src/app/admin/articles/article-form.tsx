@@ -6,6 +6,7 @@ import { ImageField } from "../image-field";
 import { ArticleDiffusion } from "./article-diffusion";
 import type { ArticleInput } from "@/lib/content-admin";
 import { getAllPosts } from "@/lib/blog";
+import { METIERS, metierOf } from "@/lib/metier";
 
 export function ArticleForm({ article }: { article?: ArticleInput }) {
   const isEdit = !!article?.slug;
@@ -47,6 +48,18 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
           <label>Date de publication</label>
           <input type="date" name="date" defaultValue={article?.date ?? parisToday()} />
         </div>
+      </div>
+
+      <div className="adm-field">
+        <label>Étiquette métier <small>(affichée dans la newsletter — « Automatique » la déduit de la catégorie)</small></label>
+        <select name="metier" defaultValue={article?.metier ?? ""}>
+          <option value="">
+            Automatique{article?.category ? ` (${metierOf(article.category)})` : ""}
+          </option>
+          {METIERS.map((m) => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
       </div>
 
       <div className="adm-row2">

@@ -9,6 +9,7 @@ export type PostMeta = {
   title: string;
   date: string; // ISO yyyy-mm-dd
   category: string;
+  metier?: string; // Consulting / Expertise comptable / Transverse (vide = auto)
   excerpt: string;
   author?: string;
   image?: string;
@@ -31,6 +32,7 @@ export function getAllPosts(): PostMeta[] {
         title: String(data.title ?? slug),
         date: String(data.date ?? ""),
         category: String(data.category ?? "Article"),
+        metier: data.metier ? String(data.metier) : undefined,
         excerpt: String(data.excerpt ?? ""),
         author: data.author ? String(data.author) : undefined,
         image: data.image ? String(data.image) : undefined,
@@ -54,6 +56,7 @@ export function getPost(slug: string): { meta: PostMeta; content: string } | nul
       title: String(data.title ?? slug),
       date: String(data.date ?? ""),
       category: String(data.category ?? "Article"),
+      metier: data.metier ? String(data.metier) : undefined,
       excerpt: String(data.excerpt ?? ""),
       author: data.author ? String(data.author) : undefined,
       image: data.image ? String(data.image) : undefined,
