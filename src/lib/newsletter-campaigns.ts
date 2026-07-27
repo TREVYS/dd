@@ -187,16 +187,25 @@ export function markdownToEmailHtml(md: string): string {
     if (/^#{2}\s+/.test(line)) {
       flushList();
       out.push(
-        `<h2 style="font-family:Arial,Helvetica,sans-serif;font-size:21px;line-height:1.3;margin:28px 0 10px;color:#1a1208;border-left:4px solid #F5811F;padding-left:14px;">${inline(line.replace(/^#{2}\s+/, ""))}</h2>`,
+        `<h2 style="font-family:Arial,Helvetica,sans-serif;font-size:21px;line-height:1.3;margin:28px 0 10px;clear:both;color:#1a1208;border-left:4px solid #F5811F;padding-left:14px;">${inline(line.replace(/^#{2}\s+/, ""))}</h2>`,
       );
     } else if (/^#{3}\s+/.test(line)) {
       flushList();
-      out.push(`<h3 style="font-family:Arial,Helvetica,sans-serif;font-size:17px;margin:20px 0 8px;color:#1a1208;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
+      out.push(`<h3 style="font-family:Arial,Helvetica,sans-serif;font-size:17px;margin:20px 0 8px;clear:both;color:#1a1208;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
     } else if (/^(\[\[[^\]]+\]\]\s*)+$/.test(line.trim())) {
       // Ligne composée uniquement d'étiquettes [[…]] → rangée de pastilles.
       flushList();
       const tags = [...line.matchAll(/\[\[([^\]]+)\]\]/g)].map((t) => emailTag(t[1].trim()));
-      out.push(`<div style="margin:24px 0 -12px;">${tags.join("")}</div>`);
+      out.push(`<div style="margin:24px 0 -12px;clear:both;">${tags.join("")}</div>`);
+    } else if ((m = line.match(/^!\[([^\]]*)\|(droite|gauche|right|left)\]\(([^)\s]+)\)\s*$/i))) {
+      // Image flottante : ![alt|droite](url) ou ![alt|gauche](url) — petite
+      // vignette autour de laquelle le texte s'enroule (couvertures d'articles).
+      flushList();
+      const right = /droite|right/i.test(m[2]);
+      out.push(
+        `<img src="${esc(abs(m[3]))}" alt="${esc(m[1])}" width="150" align="${right ? "right" : "left"}" ` +
+        `style="width:150px;height:auto;border-radius:8px;border:1px solid #eadfcd;margin:${right ? "4px 0 10px 16px" : "4px 16px 10px 0"};" />`,
+      );
     } else if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
       // Image pleine largeur (depuis la médiathèque ou une URL).
       flushList();
@@ -212,7 +221,7 @@ export function markdownToEmailHtml(md: string): string {
       }
     } else if (/^---+$/.test(line.trim())) {
       flushList();
-      out.push(`<hr style="border:none;border-top:1px solid #f0e4d3;margin:26px 0;" />`);
+      out.push(`<hr style="border:none;border-top:1px solid #f0e4d3;margin:26px 0;clear:both;" />`);
     } else if (/^[-*]\s+/.test(line)) {
       (list ??= []).push(`<li style="margin:0 0 6px;">${inline(line.replace(/^[-*]\s+/, ""))}</li>`);
     } else if (line.trim() === "") {
@@ -266,12 +275,16 @@ export function wrapEmail(bodyHtml: string, unsubUrl?: string, footerNote?: stri
           <a href="${SITE_URL}/rendez-vous" style="color:#E26A0F;font-weight:bold;text-decoration:none;">Prendre rendez-vous</a>
         </td></tr>
 
-        <!-- Pied de page (compact) -->
-        <tr><td align="center" style="padding:8px 10px 18px;${font}font-size:10px;color:#a89b86;line-height:1.6;">
-          <b style="color:#8a7d67;">T.A. Trevys Advisory</b> &middot; 1 rue Le Nôtre, 75116 Paris &middot; contact@trevys-advisory.fr<br>
+        <!-- Pied de page (compact, centré) -->
+        <tr><td align="center" style="padding:10px 10px 20px;${font}font-size:10px;color:#a89b86;line-height:1.8;text-align:center;">
+          <b style="color:#8a7d67;font-size:11px;">T.A. Trevys Advisory</b><br>
+          1 rue Le Nôtre, 75116 Paris<br>
+          <a href="mailto:contact@trevys-advisory.fr" style="color:#a89b86;text-decoration:none;">contact@trevys-advisory.fr</a><br>
           ${footerNote ?? "Vous recevez cet e-mail car vous êtes inscrit à nos analyses."}<br>
           ${unsubUrl
-            ? `<a href="${unsubUrl}" style="display:inline-block;margin-top:7px;padding:5px 14px;font-size:10px;color:#8a7d67;border:1px solid #d8cbb4;border-radius:100px;text-decoration:none;">Se désinscrire</a>`
+            ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:8px auto 0;"><tr><td align="center" style="border:1px solid #d8cbb4;border-radius:100px;">` +
+              `<a href="${unsubUrl}" style="display:inline-block;padding:5px 14px;${font}font-size:10px;color:#8a7d67;text-decoration:none;border-radius:100px;">Se désinscrire</a>` +
+              `</td></tr></table>`
             : ""}
         </td></tr>
 
