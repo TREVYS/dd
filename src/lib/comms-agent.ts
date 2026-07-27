@@ -189,7 +189,7 @@ const TOOLS = [
   {
     name: "rediger_newsletter",
     description:
-      "Enregistre un brouillon de newsletter (rédigée par toi) dans le module Newsletter, en attente de relecture et d'envoi par l'humain. Format e-mail : salutation, ## sous-titres, listes, liens vers les articles du site, signature « L'équipe Trevys ».",
+      "Enregistre un brouillon de newsletter (rédigée par toi) dans le module Newsletter, en attente de relecture et d'envoi par l'humain. Format e-mail : salutation, ## sous-titres, listes, liens vers les articles du site. Signature « L'équipe Trevys » chaleureuse avec une pointe d'humour, suivie d'un bouton [Découvrir www.trevys.fr](https://www.trevys.fr) (lien seul sur sa ligne) et d'un PS avec un lien vers la page LinkedIn du cabinet (https://www.linkedin.com/company/trevys-advisory/).",
     input_schema: {
       type: "object" as const,
       properties: {

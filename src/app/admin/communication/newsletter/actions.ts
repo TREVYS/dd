@@ -87,7 +87,11 @@ export async function createArticlesCampaignAction(formData: FormData) {
     `${intro}\n\n` +
     blocks.join("\n\n---\n\n") +
     videoBlock +
-    `\n\nBonne lecture,\n\nL'équipe Trevys\n[www.trevys.fr](${SITE_URL})`;
+    `\n\n---\n\n` +
+    `Bonne lecture — et si un article vous trotte dans la tête, répondez-nous : un humain (pas un robot) vous lira.\n\n` +
+    `**L'équipe Trevys**\n\n` +
+    `[Découvrir www.trevys.fr](${SITE_URL})\n\n` +
+    `PS : les coulisses, les débats et un peu d'audace, c'est [sur LinkedIn](https://www.linkedin.com/company/trevys-advisory/) que ça se passe.`;
 
   // Objet : saisi, sinon proposé par Alfred (ton chaleureux, pas trop sérieux).
   let subject = ((formData.get("subject") as string) || "").trim();
