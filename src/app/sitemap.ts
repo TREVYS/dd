@@ -17,6 +17,7 @@ const ROUTES = [
   "/notre-ecosysteme",
   "/references",
   "/blog",
+  "/newsletter",
   "/contact",
   "/rendez-vous",
   "/mentions-legales",
