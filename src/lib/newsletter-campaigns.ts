@@ -68,6 +68,20 @@ export function removeCampaign(id: string) {
   writeAll(readAll().filter((c) => c.id !== id));
 }
 
+// --- Garde-fou anti-sur-sollicitation -------------------------------------
+// Avant tout envoi, on vérifie le dernier mailing parti : s'il date de moins
+// de SEND_COOLDOWN_DAYS jours, l'envoi exige une confirmation humaine.
+export const SEND_COOLDOWN_DAYS = 15;
+
+export function lastSentInfo(excludeId?: string): { subject: string; sentAt: string; days: number } | null {
+  const sent = readAll()
+    .filter((c) => c.status === "envoye" && c.sentAt && c.id !== excludeId)
+    .sort((a, b) => b.sentAt!.localeCompare(a.sentAt!));
+  if (sent.length === 0) return null;
+  const days = Math.floor((Date.now() - Date.parse(sent[0].sentAt!)) / 86_400_000);
+  return { subject: sent[0].subject, sentAt: sent[0].sentAt!, days };
+}
+
 // --- Désinscription -------------------------------------------------------
 
 import { SITE_URL } from "@/lib/site";

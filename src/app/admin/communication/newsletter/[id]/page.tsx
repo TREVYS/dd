@@ -2,11 +2,12 @@ import { parisToday } from "@/lib/dates";
 import { EmailPreview } from "./email-preview";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl } from "@/lib/newsletter-campaigns";
+import { getCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl, lastSentInfo, SEND_COOLDOWN_DAYS } from "@/lib/newsletter-campaigns";
 import { listSubscribers } from "@/lib/newsletter";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { MarkdownEditor } from "../../../markdown-editor";
 import { SubjectField } from "../subject-field";
+import { ConfirmSubmit } from "../../../confirm-submit";
 import { RecipientsField } from "../recipients-field";
 import { saveCampaignAction, deleteCampaignAction, sendTestAction, sendCampaignAction, scheduleCampaignAction } from "../actions";
 import { campaignReport } from "@/lib/newsletter-stats";
@@ -29,6 +30,12 @@ export default async function CampaignEditor({
   const count = subscribers.length;
   const mailOn = mailerConfigured();
   const preview = wrapEmail(markdownToEmailHtml(c.body || "_(Votre message apparaîtra ici.)_"), unsubscribeUrl("exemple@trevys.fr"));
+  // Garde-fou anti-sur-sollicitation : dernier envoi < 15 jours → pop-up.
+  const last = lastSentInfo(c.id);
+  const guardMsg =
+    last && last.days < SEND_COOLDOWN_DAYS
+      ? `Attention : vous avez déjà envoyé un message à votre communauté il y a ${last.days === 0 ? "moins d'un jour" : `${last.days} jour${last.days > 1 ? "s" : ""}`} (« ${last.subject} »).\n\nÊtes-vous sûr de vouloir envoyer un nouveau mailing maintenant ? (Recommandation : espacer d'au moins ${SEND_COOLDOWN_DAYS} jours pour ne pas lasser vos contacts.)`
+      : undefined;
   const sent = c.status === "envoye";
   const report = sent ? campaignReport(c.id) : null;
   const sentN = c.sentCount ?? 0;
@@ -220,7 +227,9 @@ export default async function CampaignEditor({
           )}
           <RecipientsField subscribers={subscribers.map((s) => s.email)} />
           <div className="adm-actions">
-            <button className="adm-btn" type="submit" disabled={!mailOn}>Envoyer le mailing</button>
+            {mailOn
+              ? <ConfirmSubmit message={guardMsg}>Envoyer le mailing</ConfirmSubmit>
+              : <button className="adm-btn" type="submit" disabled>Envoyer le mailing</button>}
           </div>
           <p className="muted" style={{ marginTop: ".6rem", color: "var(--ink3)", fontSize: ".82rem" }}>
             Les destinataires sont mis en copie cachée (Cci) : ils ne se voient pas entre eux.

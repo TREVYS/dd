@@ -109,6 +109,19 @@ export async function runScheduledPublications(): Promise<void> {
       for (const camp of due) {
         // Réclamation : on retire la programmation avant d'envoyer (pas de double envoi).
         updateCampaign(camp.id, { sendAt: undefined });
+
+        // Garde-fou anti-sur-sollicitation : un mailing est déjà parti il y a
+        // moins de 15 jours → on RETIENT l'envoi programmé (contrôle humain).
+        const { lastSentInfo, SEND_COOLDOWN_DAYS } = await import("@/lib/newsletter-campaigns");
+        const last = lastSentInfo(camp.id);
+        if (last && last.days < SEND_COOLDOWN_DAYS) {
+          await sendTelegram(
+            `✋ Mailing programmé « ${camp.subject} » RETENU : vous avez déjà écrit à votre communauté il y a ${last.days} jour(s) (« ${last.subject} »).\n` +
+            `Rien n'est parti — pour l'envoyer malgré tout, ouvrez le mailing dans le cockpit et cliquez « Envoyer » (une confirmation vous sera demandée), ou dites-moi « envoie-le quand même ».`,
+            { plain: true },
+          ).catch(() => {});
+          continue;
+        }
         if (!mailerConfigured()) {
           await sendTelegram(`⚠️ Mailing programmé « ${camp.subject} » non envoyé : Microsoft 365 non configuré.`, { plain: true }).catch(() => {});
           continue;

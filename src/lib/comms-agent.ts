@@ -81,7 +81,7 @@ Tes moyens d'action (outils) :
 - composer_mailing_articles / lister_contacts / envoyer_mailing : tu peux piloter une campagne de mailing DE BOUT EN BOUT, en dialoguant avec John (cockpit ou Telegram) :
   1. propose des articles (via la connaissance du site), et compose le brouillon avec composer_mailing_articles ;
   2. demande la cible avec les chiffres de lister_contacts (« tous » les abonnés ou seulement les « actifs » — ont ouvert un e-mail dans les 90 derniers jours) ;
-  3. ATTENDS LE GO EXPLICITE de John (« envoie », « c'est parti », « go ») — puis appelle envoyer_mailing. RÈGLE ABSOLUE : jamais d'envoi sans ce go clair et sans avoir annoncé la cible et le nombre de destinataires. L'envoi est cadencé (anti-spam) : il part en arrière-plan et John reçoit une confirmation Telegram à la fin.
+  3. ATTENDS LE GO EXPLICITE de John (« envoie », « c'est parti », « go ») — puis appelle envoyer_mailing. RÈGLE ABSOLUE : jamais d'envoi sans ce go clair et sans avoir annoncé la cible et le nombre de destinataires. L'envoi est cadencé (anti-spam) : il part en arrière-plan et John reçoit une confirmation Telegram à la fin. GARDE-FOU : si un mailing est parti il y a moins de 15 jours, l'outil refusera — préviens John (dernier envoi, il y a combien de jours) et n'insiste que s'il confirme explicitement (alors confirmer_envoi_rapproche=true).
 - inviter_contacts : John te donne une liste d'e-mails (dans le chat ou sur Telegram) → tu envoies à chacun l'invitation opt-in du cabinet (boutons Oui / Non merci). Les déjà-abonnés, les refus passés et les déjà-invités sont écartés automatiquement. UNIQUEMENT sur instruction explicite — annonce le nombre d'invitations avant si la demande est ambiguë.
 - supprimer_article / depublier_article : supprime définitivement un article publié du site, ou le dépublie (retour en brouillon). UNIQUEMENT sur instruction explicite de John — jamais de ta propre initiative. Pour plusieurs articles, appelle l'outil pour chacun.
 - supprimer_brouillon_article / supprimer_post / supprimer_newsletter_brouillon : supprime un brouillon d'article, un post en attente, ou un mailing en brouillon (les mailings déjà envoyés restent : c'est l'historique).
@@ -317,6 +317,11 @@ const TOOLS = [
       properties: {
         mailing: { type: "string", description: "Objet (ou id) du mailing en brouillon" },
         cible: { type: "string", enum: ["tous", "actifs"], description: "Segment destinataire" },
+        confirmer_envoi_rapproche: {
+          type: "boolean",
+          description:
+            "À true UNIQUEMENT si John a explicitement confirmé vouloir envoyer alors qu'un mailing est déjà parti il y a moins de 15 jours (l'outil te le signalera). Ne le mets jamais de ta propre initiative.",
+        },
       },
       required: ["mailing", "cible"],
     },
@@ -658,6 +663,17 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     const camp = (getCampaign(q)?.status === "brouillon" ? getCampaign(q) : undefined) ?? drafts.find((x) => x.subject.toLowerCase().includes(q));
     if (!camp) return `Mailing en brouillon introuvable pour « ${q} ». Brouillons : ${drafts.map((x) => `« ${x.subject} »`).join(", ") || "aucun"}.`;
     if (SENDING.has(camp.id)) return "Cet envoi est déjà en cours — patience, la confirmation Telegram arrive.";
+
+    // Garde-fou anti-sur-sollicitation : dernier envoi < 15 jours → il faut
+    // une confirmation humaine explicite avant de repartir vers la communauté.
+    const { lastSentInfo, SEND_COOLDOWN_DAYS } = await import("@/lib/newsletter-campaigns");
+    const last = lastSentInfo(camp.id);
+    if (last && last.days < SEND_COOLDOWN_DAYS && input.confirmer_envoi_rapproche !== true) {
+      return (
+        `ENVOI RETENU (garde-fou) : un mailing est déjà parti il y a ${last.days} jour(s) (« ${last.subject} »), soit moins de ${SEND_COOLDOWN_DAYS} jours. ` +
+        `Préviens John et demande-lui s'il confirme malgré tout. S'il confirme explicitement, rappelle envoyer_mailing avec confirmer_envoi_rapproche=true.`
+      );
+    }
 
     const { contactActivity, openPixelUrl, trackLinks } = await import("@/lib/newsletter-stats");
     let recipients = listSubscribers().map((x) => x.email.toLowerCase());
