@@ -5,9 +5,18 @@ import { MarkdownEditor } from "../markdown-editor";
 import { ImageField } from "../image-field";
 import { ArticleDiffusion } from "./article-diffusion";
 import type { ArticleInput } from "@/lib/content-admin";
+import { getAllPosts } from "@/lib/blog";
 
 export function ArticleForm({ article }: { article?: ArticleInput }) {
   const isEdit = !!article?.slug;
+  // Catégories déjà utilisées (les plus fréquentes d'abord) : suggérées
+  // pendant la saisie, sans empêcher d'en créer une nouvelle.
+  const counts = new Map<string, number>();
+  for (const p of getAllPosts()) {
+    const c = p.category.trim();
+    if (c && c.toLowerCase() !== "uncategorized") counts.set(c, (counts.get(c) ?? 0) + 1);
+  }
+  const categories = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
   return (
     <>
     <form action={saveArticleAction} className="adm-form">
@@ -21,7 +30,18 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
       <div className="adm-row2">
         <div className="adm-field">
           <label>Thème / catégorie</label>
-          <input name="category" defaultValue={article?.category ?? ""} placeholder="Fiscalité, Comptabilité…" />
+          <input
+            name="category"
+            defaultValue={article?.category ?? ""}
+            placeholder="Fiscalité, Comptabilité…"
+            list="admin-categories"
+            autoComplete="off"
+          />
+          <datalist id="admin-categories">
+            {categories.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
         </div>
         <div className="adm-field">
           <label>Date de publication</label>
