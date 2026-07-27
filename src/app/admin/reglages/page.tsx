@@ -48,7 +48,7 @@ const CFG_GROUPS = [
 export default async function AdminReglages({
   searchParams,
 }: {
-  searchParams: Promise<{ setup?: string; connected?: string; error?: string; saved?: string; pwd?: string; tga?: string; igtest?: string }>;
+  searchParams: Promise<{ setup?: string; connected?: string; error?: string; why?: string; saved?: string; pwd?: string; tga?: string; igtest?: string }>;
 }) {
   const sp = await searchParams;
   const accounts = publicStatus();
@@ -95,7 +95,21 @@ export default async function AdminReglages({
         <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
           {sp.error === "noinsta"
             ? "Connexion Meta réussie, mais aucun compte Instagram professionnel relié à une de vos Pages Facebook n'a été trouvé. Passez votre compte Instagram en « professionnel » et reliez-le à votre Page Facebook, puis reconnectez."
-            : "La connexion a échoué. Réessayez, ou vérifiez la configuration développeur."}
+            : "La connexion a échoué."}
+          {sp.why && (
+            <div style={{ marginTop: ".5rem", fontSize: ".85rem" }}>
+              <b>Détail renvoyé par la plateforme :</b> {sp.why}
+            </div>
+          )}
+          <details style={{ marginTop: ".6rem", fontSize: ".85rem" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 700 }}>Check-list Instagram / Meta (les 4 causes classiques)</summary>
+            <ol style={{ margin: ".5rem 0 0", paddingLeft: "1.2rem", lineHeight: 1.7 }}>
+              <li>Dans l&apos;app Meta (developers.facebook.com) → <b>Facebook Login → Settings</b>, l&apos;URL de redirection <code>https://www.trevys.fr/api/admin/social/instagram/callback</code> doit être dans « Valid OAuth Redirect URIs ».</li>
+              <li>L&apos;app doit être en mode <b>Live</b> (pas Development), ou votre compte Facebook ajouté comme <b>testeur/administrateur</b> de l&apos;app.</li>
+              <li>Votre compte Instagram doit être <b>professionnel</b> et <b>relié à une Page Facebook</b> dont vous êtes admin (réglable dans l&apos;app Instagram → Compte professionnel).</li>
+              <li>Client ID / Client Secret de l&apos;app Meta bien renseignés ci-dessus (rubrique « Instagram / Meta »), puis « Connecter ».</li>
+            </ol>
+          </details>
         </div>
       )}
 

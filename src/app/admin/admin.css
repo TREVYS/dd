@@ -551,3 +551,42 @@
   .pl-wiz-overlay{padding:.6rem}
   .pl-wiz{max-height:94vh}
 }
+
+/* ===== Passe mobile globale : navigation + dimensionnement ===== */
+@media(max-width:820px){
+  /* iOS zoome sur tout champ < 16px : on force 16px dans le cockpit mobile */
+  .adm input,.adm select,.adm textarea{font-size:16px}
+  .adm-h h1{font-size:1.22rem}
+  .adm-h p{font-size:.84rem}
+  .adm-card{padding:1.05rem 1rem;border-radius:14px}
+  .adm-card h2{font-size:.98rem}
+  /* Tuiles KPI : 2 par ligne, compactes */
+  .adm-grid{grid-template-columns:repeat(2,1fr);gap:.7rem;margin-bottom:1.2rem}
+  .adm-kpi{padding:.85rem .9rem;border-radius:13px}
+  .adm-kpi .v{font-size:1.45rem}
+  .adm-kpi .k{font-size:.66rem}
+  .adm-actions{flex-wrap:wrap;gap:.5rem}
+  .adm-btn{padding:.6rem 1rem}
+  /* Sélecteur d'articles : une colonne, moins haut */
+  .ck-artpick{grid-template-columns:1fr;max-height:280px}
+  /* Détails de campagnes / listes : rien ne déborde */
+  .adm-note{font-size:.86rem;padding:.75rem .9rem}
+  details summary{font-size:.88rem}
+  code{word-break:break-all}
+  /* Studio design + assistant : aperçus pleine largeur */
+  .dsg-visual,.dsg-visual.ph,.pl-wiz-visual,.pl-wiz-visual.ph{max-width:100%}
+  .pl-wiz-previewrow{padding:.8rem 1rem 1.1rem}
+  .pl-wiz-previewrow input{min-width:0;flex:1 1 100%}
+  .pl-wiz-head{padding:1rem 1rem .4rem}
+  .pl-wiz-body{padding:.3rem 1rem 0}
+  /* Réglages : groupes en une colonne, textes des clés lisibles */
+  .adm-field label{font-size:.84rem}
+  /* Pouces + entêtes de posts : passent à la ligne proprement */
+  .adm-post-head{flex-wrap:wrap;row-gap:.4rem}
+  /* Chat Alfred : zone de saisie confortable */
+  .adm-chat-clip{width:44px;height:44px}
+}
+@media(max-width:400px){
+  .adm-grid{grid-template-columns:1fr 1fr;gap:.5rem}
+  .adm-kpi .v{font-size:1.25rem}
+}

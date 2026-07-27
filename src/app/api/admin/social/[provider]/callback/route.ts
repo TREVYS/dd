@@ -21,6 +21,13 @@ export async function GET(
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
 
+  // Refus ou erreur renvoyée par la plateforme (Meta/LinkedIn) : on la montre
+  // telle quelle dans Réglages plutôt qu'un message générique.
+  const platformError = url.searchParams.get("error_description") || url.searchParams.get("error_reason") || url.searchParams.get("error");
+  if (platformError) {
+    return NextResponse.redirect(`${SITE_URL}/admin/reglages?error=oauth&why=${encodeURIComponent(platformError.slice(0, 300))}`);
+  }
+
   // Vérification CSRF via le cookie posé au démarrage.
   const cookie = req.headers
     .get("cookie")
@@ -50,8 +57,16 @@ export async function GET(
     const data = (await tokenRes.json()) as {
       access_token?: string;
       expires_in?: number;
+      error?: { message?: string } | string;
+      error_description?: string;
     };
-    if (!data.access_token) throw new Error("no token");
+    if (!data.access_token) {
+      const why =
+        (typeof data.error === "object" ? data.error?.message : data.error) ||
+        data.error_description ||
+        `échange de jeton refusé (HTTP ${tokenRes.status})`;
+      throw new Error(why);
+    }
 
     // LinkedIn : on récupère l'identité réelle (OpenID userinfo) pour
     // construire l'URN de l'auteur — indispensable pour publier ensuite.
@@ -89,7 +104,9 @@ export async function GET(
       );
       const pages = (await pagesRes.json()) as {
         data?: { name?: string; instagram_business_account?: { id: string; username?: string } }[];
+        error?: { message?: string };
       };
+      if (pages.error?.message) throw new Error(`Meta : ${pages.error.message}`);
       const withIg = pages.data?.find((p) => p.instagram_business_account?.id);
       if (!withIg?.instagram_business_account) {
         // Pas de compte IG pro relié : on n'enregistre pas une connexion inutilisable.
@@ -109,8 +126,9 @@ export async function GET(
       accessToken,
       expiresAt,
     });
-  } catch {
-    return NextResponse.redirect(`${SITE_URL}/admin/reglages?error=oauth`);
+  } catch (e) {
+    const why = encodeURIComponent(String((e as Error).message ?? "").slice(0, 300));
+    return NextResponse.redirect(`${SITE_URL}/admin/reglages?error=oauth&why=${why}`);
   }
 
   const res = NextResponse.redirect(`${SITE_URL}/admin/reglages?connected=${provider}`);
