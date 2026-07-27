@@ -59,7 +59,10 @@ export function PostComposer() {
         <div className="adm-row2">
           <div className="adm-field">
             <label>Programmer <small>(optionnel — laisser vide = brouillon)</small></label>
-            <input type="date" name="scheduledDate" />
+            <div style={{ display: "flex", gap: ".5rem" }}>
+              <input type="date" name="scheduledDate" />
+              <input type="time" name="scheduledTime" />
+            </div>
           </div>
           <div className="adm-field" style={{ justifyContent: "flex-end", display: "flex", alignItems: "flex-end" }}>
             <button className="adm-btn" type="submit" disabled={!content.trim()}>Ajouter à la file</button>

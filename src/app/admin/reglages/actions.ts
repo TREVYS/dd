@@ -88,3 +88,41 @@ export async function disconnectSocialAction(formData: FormData) {
   disconnect(provider);
   revalidatePath("/admin/reglages");
 }
+
+// --- Studio Instagram -----------------------------------------------------
+// Goûts visuels + maquettes de fond utilisés pour générer les visuels des
+// posts Instagram (par Alfred ou depuis le composeur).
+
+export async function saveIgStudioAction(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Non autorisé");
+  const { getStudio, saveStudio } = await import("@/lib/ig-studio");
+  const style = String(formData.get("style") ?? "").trim();
+  const add = String(formData.get("addTemplate") ?? "").trim();
+  const templates = [...getStudio().templates];
+  if (add && !templates.includes(add)) templates.push(add);
+  saveStudio({ style, templates });
+  revalidatePath("/admin/reglages");
+  redirect("/admin/reglages?saved=1");
+}
+
+export async function removeIgTemplateAction(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Non autorisé");
+  const { getStudio, saveStudio } = await import("@/lib/ig-studio");
+  const url = String(formData.get("url") ?? "");
+  saveStudio({ templates: getStudio().templates.filter((t) => t !== url) });
+  revalidatePath("/admin/reglages");
+}
+
+// Génère un visuel d'essai pour vérifier le rendu des maquettes.
+export async function testIgVisualAction() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Non autorisé");
+  const { makeInstagramVisual } = await import("@/lib/ig-visual");
+  const { url } = await makeInstagramVisual(
+    "La facturation électronique, sans jargon",
+    "Le point en 3 minutes par Trevys",
+  );
+  redirect(`/admin/reglages?igtest=${encodeURIComponent(url)}`);
+}

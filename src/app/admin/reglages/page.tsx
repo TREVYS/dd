@@ -1,7 +1,9 @@
 import { publicStatus, PROVIDERS } from "@/lib/social";
 import { isSet, settingsStatus } from "@/lib/settings";
 import { mailerConfigured } from "@/lib/mailer";
-import { disconnectSocialAction, saveSettingsAction, enableTelegramAlfredAction, disableTelegramAlfredAction } from "./actions";
+import { disconnectSocialAction, saveSettingsAction, enableTelegramAlfredAction, disableTelegramAlfredAction, saveIgStudioAction, removeIgTemplateAction, testIgVisualAction } from "./actions";
+import { getStudio } from "@/lib/ig-studio";
+import { ImageField } from "../image-field";
 import { telegramWebhookStatus } from "@/lib/telegram-alfred";
 import { getDeployInfo } from "@/lib/deploy-notify";
 import { ReglagesTabs } from "./reglages-tabs";
@@ -46,7 +48,7 @@ const CFG_GROUPS = [
 export default async function AdminReglages({
   searchParams,
 }: {
-  searchParams: Promise<{ setup?: string; connected?: string; error?: string; saved?: string; pwd?: string; tga?: string }>;
+  searchParams: Promise<{ setup?: string; connected?: string; error?: string; saved?: string; pwd?: string; tga?: string; igtest?: string }>;
 }) {
   const sp = await searchParams;
   const accounts = publicStatus();
@@ -142,6 +144,62 @@ export default async function AdminReglages({
           </div>
         </form>
       </div>
+
+      {(() => {
+        const studio = getStudio();
+        return (
+          <div className="adm-card">
+            <h2>Studio Instagram — maquettes &amp; goûts</h2>
+            <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: "0 0 1rem" }}>
+              Alfred génère les visuels des posts Instagram (1080×1080) à partir de vos maquettes de fond,
+              en rotation, avec le titre par-dessus. Sans maquette, il utilise un fond aux couleurs du cabinet.
+              Décrivez aussi ce que vous aimez : Alfred en tient compte.
+            </p>
+            <form action={saveIgStudioAction}>
+              <div className="adm-field">
+                <label>Ce que j&apos;aime <small>(style, couleurs, ce qu&apos;il faut éviter…)</small></label>
+                <textarea
+                  name="style"
+                  defaultValue={studio.style}
+                  placeholder="Ex. : sobre et premium, orange Trevys en accent, photos lumineuses, pas de visuels surchargés…"
+                  style={{ minHeight: 90 }}
+                />
+              </div>
+              <div className="adm-field">
+                <label>Ajouter une maquette de fond <small>(image de la médiathèque ou import — idéalement carrée)</small></label>
+                <ImageField name="addTemplate" />
+              </div>
+              <div className="adm-actions">
+                <button className="adm-btn" type="submit">Enregistrer le studio</button>
+              </div>
+            </form>
+            {studio.templates.length > 0 && (
+              <div style={{ display: "flex", gap: ".8rem", flexWrap: "wrap", marginTop: "1rem" }}>
+                {studio.templates.map((t) => (
+                  <div key={t} style={{ textAlign: "center" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={t} alt="" style={{ width: 110, height: 110, objectFit: "cover", borderRadius: 10, border: "1px solid var(--line)" }} />
+                    <form action={removeIgTemplateAction}>
+                      <input type="hidden" name="url" value={t} />
+                      <button className="adm-btn danger sm" type="submit" style={{ marginTop: ".3rem" }}>Retirer</button>
+                    </form>
+                  </div>
+                ))}
+              </div>
+            )}
+            <form action={testIgVisualAction} style={{ marginTop: "1rem" }}>
+              <button className="adm-btn ghost sm" type="submit">Générer un visuel d&apos;essai</button>
+            </form>
+            {sp.igtest && (
+              <div style={{ marginTop: "1rem" }}>
+                <p className="muted" style={{ fontSize: ".85rem", marginBottom: ".5rem" }}>Visuel d&apos;essai (enregistré dans la médiathèque) :</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={sp.igtest} alt="Visuel d'essai" style={{ width: 280, borderRadius: 12, border: "1px solid var(--line)" }} />
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <div className="adm-card">
         <h2>Alfred — clé API (Intelligence artificielle)</h2>

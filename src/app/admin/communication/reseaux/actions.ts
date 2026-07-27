@@ -32,12 +32,14 @@ export async function createPostAction(formData: FormData) {
   const content = String(formData.get("content") ?? "").trim();
   if (!content) return;
   const scheduledDate = String(formData.get("scheduledDate") ?? "");
+  const scheduledTime = String(formData.get("scheduledTime") ?? "");
   const image = String(formData.get("image") ?? "");
   addPost({
     network: net(formData.get("network")),
     content,
     status: scheduledDate ? "planifie" : "brouillon",
     scheduledDate: scheduledDate || undefined,
+    scheduledTime: (scheduledDate && scheduledTime) || undefined,
     image: image || undefined,
   });
   revalidatePath(PATH);
@@ -46,8 +48,14 @@ export async function createPostAction(formData: FormData) {
 export async function schedulePostAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const scheduledDate = String(formData.get("scheduledDate") ?? "");
-  updatePost(id, { status: scheduledDate ? "planifie" : "brouillon", scheduledDate: scheduledDate || undefined });
+  const scheduledTime = String(formData.get("scheduledTime") ?? "");
+  updatePost(id, {
+    status: scheduledDate ? "planifie" : "brouillon",
+    scheduledDate: scheduledDate || undefined,
+    scheduledTime: (scheduledDate && scheduledTime) || undefined,
+  });
   revalidatePath(PATH);
+  revalidatePath("/admin/communication/planning");
 }
 
 export async function deletePostAction(formData: FormData) {

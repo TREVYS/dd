@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
   // Librairies Node lourdes chargées à la demande (extraction de documents) :
   // on évite qu'elles soient empaquetées par le bundler (mémoire de build,
   // compatibilité runtime), elles restent lues depuis node_modules.
-  serverExternalPackages: ["pdf-parse", "jszip"],
+  serverExternalPackages: ["pdf-parse", "jszip", "sharp"],
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

@@ -3,6 +3,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { addItem, listItems } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
 import { alfredSystemBlock, readAlfred, GED_THEMES } from "@/lib/alfred-config";
+import { getStudio } from "@/lib/ig-studio";
 import { siteKnowledgeBlock } from "@/lib/site-knowledge";
 import { getPost } from "@/lib/blog";
 import { getSetting } from "@/lib/settings";
@@ -63,7 +64,7 @@ Le site www.trevys.fr est ta maison : tu en connais chaque page, chaque article,
 
 Tes moyens d'action (outils) :
 - rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement.
-- rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications. TON des posts : humain, chaleureux, une pointe d'humour — jamais corporate ni « robot IA » — et termine toujours par une question ouverte qui invite l'audience à réagir en commentaires.
+- rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications. TON des posts : humain, chaleureux, une pointe d'humour — jamais corporate ni « robot IA » — et termine toujours par une question ouverte qui invite l'audience à réagir en commentaires. Pour Instagram, fournis TOUJOURS visuel_titre (titre court affiché en grand sur le visuel généré à partir des maquettes du Studio) et si utile visuel_sous_titre.
 - rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
 - rediger_offre : quand on te demande une offre d'emploi, RÉDIGE-LA entièrement (ton premium du cabinet : on recrute des consultants, pas des producteurs de comptes) puis appelle cet outil. L'offre part en brouillon dans Recrutement.
 - planifier_publication : ajoute une échéance à la zone de brouillons/propositions (article, post LinkedIn, newsletter…).
@@ -91,7 +92,16 @@ Tu as une vue d'ensemble de toute l'activité du cabinet (fréquentation, recrut
 Règles : respecte scrupuleusement le ton, la ligne éditoriale et les mots à éviter ci-dessus. Inspire-toi des exemples de publications passées pour retrouver le style « maison ». Après une action, confirme brièvement et propose la suite. Tu prépares, l'humain valide et publie.`;
 
 function buildSystem(): string {
-  return `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE (état actuel, généré à l'instant) :\n\n${siteKnowledgeBlock()}\n\n---\n\n${OPERATING}`;
+  // Goûts visuels du Studio Instagram (Réglages) : Alfred en tient compte
+  // pour les titres de visuels et le ton des posts Instagram.
+  let studioBlock = "";
+  try {
+    const st = getStudio();
+    if (st.style.trim() || st.templates.length > 0) {
+      studioBlock = `\n\n---\n\nSTUDIO INSTAGRAM (goûts de John pour les visuels) : ${st.style.trim() || "(pas de note)"} — ${st.templates.length} maquette(s) de fond configurée(s).`;
+    }
+  } catch { /* studio absent : sans incidence */ }
+  return `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE (état actuel, généré à l'instant) :\n\n${siteKnowledgeBlock()}\n\n---\n\n${OPERATING}${studioBlock}`;
 }
 
 const TOOLS = [
@@ -133,6 +143,12 @@ const TOOLS = [
       properties: {
         network: { type: "string", enum: ["linkedin", "instagram"] },
         content: { type: "string", description: "Texte final du post (avec hashtags)" },
+        visuel_titre: {
+          type: "string",
+          description:
+            "Instagram uniquement : titre court (max ~9 mots) affiché en grand sur le visuel généré automatiquement (maquettes du Studio Instagram des Réglages). Obligatoire pour Instagram — l'image est requise par la plateforme.",
+        },
+        visuel_sous_titre: { type: "string", description: "Sous-titre optionnel du visuel (une ligne)" },
       },
       required: ["network", "content"],
     },
@@ -420,9 +436,24 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
   }
   if (name === "rediger_post") {
     const net = input.network === "instagram" ? "instagram" : "linkedin";
-    const p = addPost({ network: net, content: String(input.content ?? ""), status: "brouillon" });
-    actions.push(`Brouillon de post ${net === "linkedin" ? "LinkedIn" : "Instagram"} créé`);
-    return `Post enregistré (id ${p.id}) dans la file de publications, en brouillon.`;
+    // Instagram : un visuel est généré (maquettes + goûts du Studio des
+    // Réglages) — la plateforme exige une image pour publier.
+    let image: string | undefined;
+    if (net === "instagram") {
+      try {
+        const { makeInstagramVisual } = await import("@/lib/ig-visual");
+        const titre = String(input.visuel_titre ?? "").trim() ||
+          String(input.content ?? "").split("\n")[0].replace(/[#*]/g, "").slice(0, 60);
+        if (titre) {
+          image = (await makeInstagramVisual(titre, String(input.visuel_sous_titre ?? "").trim() || undefined)).url;
+        }
+      } catch (e) {
+        console.error("[alfred] visuel instagram:", e);
+      }
+    }
+    const p = addPost({ network: net, content: String(input.content ?? ""), status: "brouillon", image });
+    actions.push(`Brouillon de post ${net === "linkedin" ? "LinkedIn" : "Instagram"} créé${image ? " (visuel généré)" : ""}`);
+    return `Post enregistré (id ${p.id}) dans la file de publications, en brouillon.${image ? ` Visuel généré : ${image} (modifiable dans le cockpit).` : ""}`;
   }
   if (name === "lister_calendrier") {
     return JSON.stringify(

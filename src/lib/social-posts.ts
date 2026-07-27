@@ -15,6 +15,7 @@ export type SocialPost = {
   status: PostStatus;
   image?: string; // URL de l'image jointe
   scheduledDate?: string; // AAAA-MM-JJ
+  scheduledTime?: string; // HH:MM (heure de Paris) — vide = dès le matin
   createdAt: string;
   publishedAt?: string;
   lastTry?: string; // AAAA-MM-JJ — dernière tentative de publication auto
@@ -49,6 +50,7 @@ export function addPost(input: {
   content: string;
   status?: PostStatus;
   scheduledDate?: string;
+  scheduledTime?: string;
   image?: string;
 }): SocialPost {
   const posts = read();
@@ -59,6 +61,7 @@ export function addPost(input: {
     status: input.status ?? "brouillon",
     image: input.image || undefined,
     scheduledDate: input.scheduledDate || undefined,
+    scheduledTime: input.scheduledTime || undefined,
     createdAt: new Date().toISOString(),
   };
   posts.push(post);

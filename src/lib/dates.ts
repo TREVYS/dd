@@ -9,3 +9,13 @@ export function parisToday(): string {
 export function parisDateOf(d: Date): string {
   return d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
 }
+
+// Heure de Paris au format HH:MM (24 h) — pour comparer aux heures planifiées.
+export function parisTimeHM(): string {
+  return new Date().toLocaleTimeString("fr-FR", {
+    timeZone: "Europe/Paris",
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}

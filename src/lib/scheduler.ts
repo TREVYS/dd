@@ -17,13 +17,20 @@ export async function runScheduledPublications(): Promise<void> {
   running = true;
   try {
     const d = today();
+    const { parisTimeHM } = await import("@/lib/dates");
+    const hm = parisTimeHM();
     const { sendTelegram } = await import("@/lib/notify");
 
-    // 1) Posts réseaux planifiés.
+    // 1) Posts réseaux planifiés — à l'heure de Paris près : un post du jour
+    // n'est publié qu'une fois son heure passée (pas d'heure = dès le matin).
     try {
       const { listPosts, updatePost } = await import("@/lib/social-posts");
       const due = listPosts().filter(
-        (p) => p.status === "planifie" && p.scheduledDate && p.scheduledDate <= d && p.lastTry !== d,
+        (p) =>
+          p.status === "planifie" &&
+          p.scheduledDate &&
+          (p.scheduledDate < d || (p.scheduledDate === d && (!p.scheduledTime || p.scheduledTime <= hm))) &&
+          p.lastTry !== d,
       );
       for (const p of due) {
         // On « réclame » la tentative du jour avant d'agir (pas de doublon).

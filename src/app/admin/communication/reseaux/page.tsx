@@ -105,7 +105,7 @@ export default async function ReseauxPage({
                     <div className="adm-post-head">
                       <NetBadge n={p.network} />
                       <span className="muted" style={{ fontSize: ".78rem" }}>
-                        {p.status === "planifie" && p.scheduledDate ? `Prévu le ${p.scheduledDate}` : ""}
+                        {p.status === "planifie" && p.scheduledDate ? `Prévu le ${p.scheduledDate}${p.scheduledTime ? ` à ${p.scheduledTime}` : ""}` : ""}
                         {p.status === "publie" && p.publishedAt ? `Publié le ${new Date(p.publishedAt).toLocaleDateString("fr-FR")}` : ""}
                         {p.status === "brouillon" ? "Brouillon" : ""}
                       </span>
@@ -132,6 +132,7 @@ export default async function ReseauxPage({
                         <form action={schedulePostAction} className="adm-post-sched">
                           <input type="hidden" name="id" value={p.id} />
                           <input type="date" name="scheduledDate" defaultValue={p.scheduledDate ?? ""} />
+                          <input type="time" name="scheduledTime" defaultValue={p.scheduledTime ?? ""} />
                           <button className="adm-btn ghost sm" type="submit">Programmer</button>
                         </form>
                         <form action={publishPostAction}>
