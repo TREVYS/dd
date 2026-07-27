@@ -127,6 +127,31 @@ function emailButton(rawHref: string, label: string): string {
   );
 }
 
+// Identifiant YouTube depuis une URL (youtu.be/ID ou youtube.com/watch?v=ID).
+function youtubeId(url: string): string | null {
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
+  return m ? m[1] : null;
+}
+
+// Carte vidéo pour e-mail : miniature YouTube cliquable + bouton « Regarder ».
+// (Aucun client mail ne lit la vidéo en place : c'est le motif fiable.)
+function emailVideo(url: string, label: string): string {
+  const id = youtubeId(url);
+  const href = esc(abs(url));
+  const thumb = id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "";
+  return (
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:8px 0 22px;"><tr><td align="center">` +
+    (thumb
+      ? `<a href="${href}"><img src="${thumb}" alt="${esc(label)}" width="532" style="display:block;width:100%;max-width:100%;height:auto;border-radius:12px;border:1px solid #eadfcd;" /></a>`
+      : "") +
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:12px auto 0;"><tr>` +
+    `<td align="center" bgcolor="#E26A0F" style="border-radius:100px;">` +
+    `<a href="${href}" style="display:inline-block;padding:12px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:100px;">&#9654;&nbsp; ${esc(label || "Regarder la vidéo")}</a>` +
+    `</td></tr></table>` +
+    `</td></tr></table>`
+  );
+}
+
 export function markdownToEmailHtml(md: string): string {
   const lines = md.replace(/\r\n/g, "\n").split("\n");
   const out: string[] = [];
@@ -155,9 +180,14 @@ export function markdownToEmailHtml(md: string): string {
       flushList();
       out.push(`<img src="${esc(abs(m[2]))}" alt="${esc(m[1])}" width="532" style="display:block;width:100%;max-width:100%;height:auto;border-radius:10px;margin:0 0 18px;" />`);
     } else if ((m = line.match(/^\[([^\]]+)\]\(([^)\s]+)\)\s*$/))) {
-      // Ligne composée d'un seul lien → bouton d'action (fiable Outlook).
       flushList();
-      out.push(emailButton(m[2], esc(m[1].replace(/\s*→\s*$/, ""))));
+      if (youtubeId(m[2])) {
+        // Lien YouTube seul sur sa ligne → carte vidéo (miniature + bouton).
+        out.push(emailVideo(m[2], m[1].replace(/^[▶►\s]+/, "").replace(/\s*→\s*$/, "")));
+      } else {
+        // Ligne composée d'un seul lien → bouton d'action (fiable Outlook).
+        out.push(emailButton(m[2], esc(m[1].replace(/\s*→\s*$/, ""))));
+      }
     } else if (/^---+$/.test(line.trim())) {
       flushList();
       out.push(`<hr style="border:none;border-top:1px solid #f0e4d3;margin:26px 0;" />`);

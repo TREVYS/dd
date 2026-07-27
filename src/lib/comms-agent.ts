@@ -194,7 +194,7 @@ const TOOLS = [
       type: "object" as const,
       properties: {
         subject: { type: "string", description: "Objet de l'e-mail — court, accrocheur, chaleureux" },
-        body: { type: "string", description: "Contenu complet en Markdown (un lien seul sur sa ligne devient un bouton)" },
+        body: { type: "string", description: "Contenu complet en Markdown. Un lien seul sur sa ligne devient un bouton ; un lien YouTube seul sur sa ligne devient une carte vidéo (miniature + bouton Regarder) — utilise les vidéos du site listées dans la connaissance du site quand c'est pertinent." },
       },
       required: ["subject", "body"],
     },

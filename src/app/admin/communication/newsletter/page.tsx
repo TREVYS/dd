@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PendingButton } from "../../pending-button";
 import { listSubscribers, unreadCount } from "@/lib/newsletter";
+import { listVideos } from "@/lib/videos";
 import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
@@ -22,6 +23,7 @@ export default async function NewsletterAdmin({
   const unread = unreadCount();
   const tg = telegramConfigured();
   const campaigns = listCampaigns();
+  const videos = listVideos();
   const mailOn = mailerConfigured();
 
   // Statistiques d'ouverture (pixel de suivi, par contact).
@@ -134,6 +136,17 @@ export default async function NewsletterAdmin({
         </p>
         <form action={createArticlesCampaignAction}>
           <ArticlePicker posts={pickPosts} />
+          {videos.length > 0 && (
+            <div className="adm-field" style={{ marginTop: "1rem", maxWidth: 520 }}>
+              <label>Joindre une vidéo <small>(optionnel — miniature cliquable + bouton « ▶ Regarder » dans l&apos;e-mail)</small></label>
+              <select name="video" defaultValue="">
+                <option value="">Aucune vidéo</option>
+                {videos.map((v) => (
+                  <option key={v.id} value={v.id}>{v.title}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="adm-field" style={{ marginTop: "1rem", maxWidth: 520 }}>
             <label>Objet de l&apos;e-mail <small>(optionnel — proposé automatiquement)</small></label>
             <input name="subject" placeholder="Ex. Nos dernières analyses — Trevys" />

@@ -52,6 +52,17 @@ export async function createArticlesCampaignAction(formData: FormData) {
       ? "Bonjour,\n\nNotre dernière analyse pourrait vous intéresser :"
       : "Bonjour,\n\nVoici nos dernières analyses, sélectionnées pour vous :";
 
+  // Vidéo à partager (optionnelle) : carte miniature + bouton dans l'e-mail.
+  let videoBlock = "";
+  const videoId = ((formData.get("video") as string) || "").trim();
+  if (videoId) {
+    const { listVideos } = await import("@/lib/videos");
+    const v = listVideos().find((x) => x.id === videoId);
+    if (v) {
+      videoBlock = `\n\n---\n\n## En vidéo : ${v.title}\n\n[${v.title}](https://youtu.be/${v.youtubeId})`;
+    }
+  }
+
   const body =
     `${intro}\n\n` +
     posts
@@ -60,6 +71,7 @@ export async function createArticlesCampaignAction(formData: FormData) {
           `## ${p.meta.title}\n\n${p.meta.excerpt ?? ""}\n\n[Lire l'article →](${SITE_URL}/blog/${p.meta.slug})`,
       )
       .join("\n\n---\n\n") +
+    videoBlock +
     `\n\nBonne lecture,\n\nL'équipe Trevys\n[www.trevys.fr](${SITE_URL})`;
 
   // Objet : saisi, sinon proposé par Alfred (ton chaleureux, pas trop sérieux).
