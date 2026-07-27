@@ -55,6 +55,32 @@ export function removeSubscriber(email: string): boolean {
   return true;
 }
 
+// --- Désinscrits ----------------------------------------------------------
+// Journal des personnes qui ont cliqué « Se désinscrire » : elles restent
+// identifiables dans le cockpit (et ne sont jamais réinvitées par erreur).
+const UNSUB_FILE = path.join(process.cwd(), "data", "newsletter-unsubscribed.json");
+
+export type Unsubscribed = { email: string; date: string };
+
+export function listUnsubscribed(): Unsubscribed[] {
+  try {
+    if (!fs.existsSync(UNSUB_FILE)) return [];
+    return JSON.parse(fs.readFileSync(UNSUB_FILE, "utf8")) as Unsubscribed[];
+  } catch {
+    return [];
+  }
+}
+
+export function markUnsubscribed(email: string) {
+  const e = email.toLowerCase().trim();
+  const items = listUnsubscribed();
+  if (items.some((u) => u.email === e)) return;
+  items.unshift({ email: e, date: new Date().toISOString() });
+  const dir = path.dirname(UNSUB_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(UNSUB_FILE, JSON.stringify(items, null, 2), "utf8");
+}
+
 export function markAllRead() {
   const store = read();
   store.subscribers.forEach((s) => (s.read = true));

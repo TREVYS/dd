@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PendingButton } from "../../pending-button";
-import { listSubscribers, unreadCount } from "@/lib/newsletter";
+import { listSubscribers, unreadCount, listUnsubscribed } from "@/lib/newsletter";
 import { listVideos } from "@/lib/videos";
 import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns } from "@/lib/newsletter-campaigns";
@@ -20,6 +20,7 @@ export default async function NewsletterAdmin({
 }) {
   const sp = await searchParams;
   const subs = listSubscribers();
+  const unsubscribed = listUnsubscribed();
   const unread = unreadCount();
   const tg = telegramConfigured();
   const campaigns = listCampaigns();
@@ -358,6 +359,29 @@ export default async function NewsletterAdmin({
                 ))}
               </tbody>
             </table>
+          </details>
+        )}
+
+        {unsubscribed.length > 0 && (
+          <details style={{ marginTop: ".9rem" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: ".88rem", color: "var(--ink2)" }}>
+              Désinscrits ({unsubscribed.length})
+            </summary>
+            <table className="adm-table" style={{ marginTop: ".6rem" }}>
+              <tbody>
+                {unsubscribed.map((u) => (
+                  <tr key={u.email}>
+                    <td>{u.email}</td>
+                    <td className="muted" style={{ textAlign: "right" }}>
+                      désinscrit le {new Date(u.date).toLocaleDateString("fr-FR")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="muted" style={{ fontSize: ".82rem", marginTop: ".5rem" }}>
+              Ces adresses ne sont jamais réinvitées automatiquement.
+            </p>
           </details>
         )}
       </div>

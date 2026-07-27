@@ -11,7 +11,7 @@ export type PickPost = {
   search: string; // titre + résumé + contenu, en minuscules
 };
 
-const METIERS = ["Consulting", "Expertise comptable"] as const;
+const METIERS = ["Consulting", "Expertise comptable", "Transverse"] as const;
 
 // Sélecteur d'articles à diffuser : recherche par mots-clés (titre + contenu)
 // et filtre par métier (Consulting / Expertise comptable). Les cases restent

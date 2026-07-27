@@ -43,7 +43,7 @@ export async function createArticlesCampaignAction(formData: FormData) {
 
   const { getPost } = await import("@/lib/blog");
   const { SITE_URL } = await import("@/lib/site");
-  const { metierOf } = await import("@/lib/metier");
+  const { metierOf, METIERS } = await import("@/lib/metier");
   const posts = slugs
     .map((s) => getPost(s))
     .filter((p): p is NonNullable<ReturnType<typeof getPost>> => !!p);
@@ -60,18 +60,29 @@ export async function createArticlesCampaignAction(formData: FormData) {
     const { listVideos } = await import("@/lib/videos");
     const v = listVideos().find((x) => x.id === videoId);
     if (v) {
-      videoBlock = `\n\n---\n\n## En vidéo : ${v.title}\n\n[${v.title}](https://youtu.be/${v.youtubeId})`;
+      videoBlock = `\n\n---\n\n### En vidéo\n\n[${v.title}](https://youtu.be/${v.youtubeId})`;
     }
   }
 
+  // Articles regroupés en blocs métier : Consulting / Expertise comptable /
+  // Transverse (seuls les blocs non vides apparaissent).
+  const blocks = METIERS.map((m) => {
+    const inBlock = posts.filter((p) => metierOf(p.meta.category) === m);
+    if (inBlock.length === 0) return "";
+    return (
+      `[[${m}]]\n` +
+      inBlock
+        .map(
+          (p) =>
+            `### ${p.meta.title}\n\n${p.meta.excerpt ?? ""}\n\n[Lire l'article →](${SITE_URL}/blog/${p.meta.slug})`,
+        )
+        .join("\n\n")
+    );
+  }).filter(Boolean);
+
   const body =
     `${intro}\n\n` +
-    posts
-      .map(
-        (p) =>
-          `[[${metierOf(p.meta.category)}]]\n## ${p.meta.title}\n\n${p.meta.excerpt ?? ""}\n\n[Lire l'article →](${SITE_URL}/blog/${p.meta.slug})`,
-      )
-      .join("\n\n---\n\n") +
+    blocks.join("\n\n---\n\n") +
     videoBlock +
     `\n\nBonne lecture,\n\nL'équipe Trevys\n[www.trevys.fr](${SITE_URL})`;
 
@@ -194,8 +205,10 @@ export async function sendOptinInvitesAction(formData: FormData) {
   if (all.length === 0) redirect("/admin/communication/newsletter?optin=empty");
 
   const { isDeclined, isInvited, markInvited, buildOptinEmail, OPTIN_SUBJECT } = await import("@/lib/newsletter-optin");
+  const { listUnsubscribed } = await import("@/lib/newsletter");
   const existing = new Set(listSubscribers().map((x) => x.email.toLowerCase()));
-  const targets = all.filter((e) => !existing.has(e) && !isDeclined(e) && !isInvited(e));
+  const unsub = new Set(listUnsubscribed().map((u) => u.email));
+  const targets = all.filter((e) => !existing.has(e) && !unsub.has(e) && !isDeclined(e) && !isInvited(e));
   if (targets.length === 0) redirect("/admin/communication/newsletter?optin=none");
 
   const sent = await sendPersonalized(targets, OPTIN_SUBJECT, (email) => buildOptinEmail(email));

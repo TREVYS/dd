@@ -137,8 +137,8 @@ function emailTag(label: string): string {
       ? ["#E26A0F", "#ffffff", "#C2410C"]
       : ["#f6efe3", "#6b5f4c", "#eadfcd"];
   return (
-    `<span style="display:inline-block;padding:4px 12px;margin:0 6px 0 0;font-family:Arial,Helvetica,sans-serif;` +
-    `font-size:11px;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;color:${fg};` +
+    `<span style="display:inline-block;padding:2px 9px;margin:0 5px 0 0;font-family:Arial,Helvetica,sans-serif;` +
+    `font-size:10px;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;color:${fg};` +
     `background-color:${bg};border:1px solid ${border};border-radius:100px;">${esc(label)}</span>`
   );
 }
@@ -149,21 +149,22 @@ function youtubeId(url: string): string | null {
   return m ? m[1] : null;
 }
 
-// Carte vidéo pour e-mail : miniature YouTube cliquable + bouton « Regarder ».
+// Carte vidéo discrète : petite miniature à gauche, titre et lien à droite.
 // (Aucun client mail ne lit la vidéo en place : c'est le motif fiable.)
 function emailVideo(url: string, label: string): string {
   const id = youtubeId(url);
   const href = esc(abs(url));
-  const thumb = id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "";
+  const thumb = id ? `https://i.ytimg.com/vi/${id}/mqdefault.jpg` : "";
   return (
-    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:8px 0 22px;"><tr><td align="center">` +
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" ` +
+    `style="margin:8px 0 20px;background-color:#faf6ef;border:1px solid #eadfcd;border-radius:10px;"><tr>` +
     (thumb
-      ? `<a href="${href}"><img src="${thumb}" alt="${esc(label)}" width="532" style="display:block;width:100%;max-width:100%;height:auto;border-radius:12px;border:1px solid #eadfcd;" /></a>`
+      ? `<td width="150" style="padding:10px 0 10px 10px;vertical-align:middle;">` +
+        `<a href="${href}"><img src="${thumb}" alt="${esc(label)}" width="150" style="display:block;width:150px;height:auto;border-radius:8px;border:0;" /></a></td>`
       : "") +
-    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:12px auto 0;"><tr>` +
-    `<td align="center" bgcolor="#E26A0F" style="border-radius:100px;">` +
-    `<a href="${href}" style="display:inline-block;padding:12px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:100px;">&#9654;&nbsp; ${esc(label || "Regarder la vidéo")}</a>` +
-    `</td></tr></table>` +
+    `<td style="padding:10px 14px;vertical-align:middle;font-family:Arial,Helvetica,sans-serif;">` +
+    `<span style="display:block;font-size:14px;font-weight:bold;color:#1a1208;line-height:1.4;margin-bottom:4px;">${esc(label || "Notre vidéo")}</span>` +
+    `<a href="${href}" style="font-size:13px;font-weight:bold;color:#E26A0F;text-decoration:none;">Regarder la vidéo&nbsp;&rarr;</a>` +
     `</td></tr></table>`
   );
 }
@@ -195,7 +196,7 @@ export function markdownToEmailHtml(md: string): string {
       // Ligne composée uniquement d'étiquettes [[…]] → rangée de pastilles.
       flushList();
       const tags = [...line.matchAll(/\[\[([^\]]+)\]\]/g)].map((t) => emailTag(t[1].trim()));
-      out.push(`<div style="margin:26px 0 -18px;">${tags.join("")}</div>`);
+      out.push(`<div style="margin:24px 0 -12px;">${tags.join("")}</div>`);
     } else if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
       // Image pleine largeur (depuis la médiathèque ou une URL).
       flushList();
@@ -265,16 +266,13 @@ export function wrapEmail(bodyHtml: string, unsubUrl?: string, footerNote?: stri
           <a href="${SITE_URL}/rendez-vous" style="color:#E26A0F;font-weight:bold;text-decoration:none;">Prendre rendez-vous</a>
         </td></tr>
 
-        <!-- Pied de page -->
-        <tr><td align="center" style="padding:8px 10px 20px;${font}font-size:12px;color:#9d907c;line-height:1.7;">
-          <b style="color:#6b5f4c;">T.A. Trevys Advisory</b> — Expertise comptable &amp; conseil<br>
-          1 rue Le Nôtre, 75116 Paris &middot; contact@trevys-advisory.fr<br>
+        <!-- Pied de page (compact) -->
+        <tr><td align="center" style="padding:8px 10px 18px;${font}font-size:10px;color:#a89b86;line-height:1.6;">
+          <b style="color:#8a7d67;">T.A. Trevys Advisory</b> &middot; 1 rue Le Nôtre, 75116 Paris &middot; contact@trevys-advisory.fr<br>
           ${footerNote ?? "Vous recevez cet e-mail car vous êtes inscrit à nos analyses."}<br>
           ${unsubUrl
-            ? `<a href="${unsubUrl}" style="color:#9d907c;text-decoration:underline;">Se désinscrire en un clic</a>`
-            : footerNote
-              ? ""
-              : `Pour ne plus les recevoir, répondez simplement &laquo;&nbsp;stop&nbsp;&raquo;.`}
+            ? `<a href="${unsubUrl}" style="display:inline-block;margin-top:7px;padding:5px 14px;font-size:10px;color:#8a7d67;border:1px solid #d8cbb4;border-radius:100px;text-decoration:none;">Se désinscrire</a>`
+            : ""}
         </td></tr>
 
       </table>

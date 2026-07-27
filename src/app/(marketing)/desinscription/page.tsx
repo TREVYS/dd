@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { unsubscribeToken } from "@/lib/newsletter-campaigns";
-import { removeSubscriber } from "@/lib/newsletter";
+import { removeSubscriber, markUnsubscribed } from "@/lib/newsletter";
 
 export const metadata: Metadata = {
   title: "Désinscription",
@@ -21,6 +21,7 @@ export default async function Page({
   const email = (e ?? "").trim();
   const valid = !!email && !!t && unsubscribeToken(email) === t;
   const removed = valid ? removeSubscriber(email) : false;
+  if (valid) markUnsubscribed(email);
 
   return (
     <section className="sec">
