@@ -41,6 +41,7 @@ export async function createPostAction(formData: FormData) {
     scheduledDate: scheduledDate || undefined,
     scheduledTime: (scheduledDate && scheduledTime) || undefined,
     image: image || undefined,
+    liTarget: formData.get("liTarget") === "page" ? "page" : "profil",
   });
   revalidatePath(PATH);
 }
@@ -108,7 +109,7 @@ export async function publishPostAction(formData: FormData) {
     }
   }
 
-  const res = await publishPost(post.network, post.content, post.image);
+  const res = await publishPost(post.network, post.content, post.image, { target: post.liTarget });
   if (!res.ok) {
     revalidatePath(PATH);
     redirect(`${PATH}?puberr=${encodeURIComponent(res.error ?? "échec inconnu")}`);

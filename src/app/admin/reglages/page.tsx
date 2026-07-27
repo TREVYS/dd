@@ -38,6 +38,7 @@ const CFG_GROUPS = [
   { title: "LinkedIn (app développeur)", fields: [
     { k: "linkedinClientId", label: "Client ID", ph: "", secret: false },
     { k: "linkedinClientSecret", label: "Client Secret", ph: "", secret: true },
+    { k: "linkedinOrgId", label: "ID de la Page entreprise (numérique — visible dans l'URL admin de la page)", ph: "ex. 105443456", secret: false },
   ] },
   { title: "Instagram / Meta (app développeur)", fields: [
     { k: "instagramClientId", label: "Client ID", ph: "", secret: false },

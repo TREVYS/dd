@@ -57,11 +57,11 @@ export async function runScheduledPublications(): Promise<void> {
           continue;
         }
 
-        const res = await publishPost(p.network, p.content, p.image);
+        const res = await publishPost(p.network, p.content, p.image, { target: p.liTarget });
         if (res.ok) {
           updatePost(p.id, { status: "publie", publishedAt: new Date().toISOString() });
           await sendTelegram(
-            `📣 Post ${p.network === "linkedin" ? "LinkedIn" : "Instagram"} planifié publié :\n« ${p.content.slice(0, 120)}… »`,
+            `📣 Post ${p.network === "linkedin" ? (p.liTarget === "page" ? "LinkedIn (Page entreprise)" : "LinkedIn") : "Instagram"} planifié publié :\n« ${p.content.slice(0, 120)}… »`,
             { plain: true },
           ).catch(() => {});
         } else {

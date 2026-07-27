@@ -150,6 +150,7 @@ const TOOLS = [
             "Instagram uniquement : titre court (max ~9 mots) affiché en grand sur le visuel généré automatiquement (maquettes du Studio Instagram des Réglages). Obligatoire pour Instagram — l'image est requise par la plateforme.",
         },
         visuel_sous_titre: { type: "string", description: "Sous-titre optionnel du visuel (une ligne)" },
+        cible_linkedin: { type: "string", enum: ["profil", "page"], description: "LinkedIn uniquement : publier sur le profil personnel de John (défaut) ou sur la Page entreprise Trevys — utilise \"page\" quand John parle de la page entreprise." },
       },
       required: ["network", "content"],
     },
@@ -452,7 +453,13 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
         console.error("[alfred] visuel instagram:", e);
       }
     }
-    const p = addPost({ network: net, content: String(input.content ?? ""), status: "brouillon", image });
+    const p = addPost({
+      network: net,
+      content: String(input.content ?? ""),
+      status: "brouillon",
+      image,
+      liTarget: net === "linkedin" && input.cible_linkedin === "page" ? "page" : "profil",
+    });
     actions.push(`Brouillon de post ${net === "linkedin" ? "LinkedIn" : "Instagram"} créé${image ? " (visuel généré)" : ""}`);
     return `Post enregistré (id ${p.id}) dans la file de publications, en brouillon.${image ? ` Visuel généré : ${image} (modifiable dans le cockpit).` : ""}`;
   }

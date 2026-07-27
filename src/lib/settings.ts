@@ -21,7 +21,8 @@ export type SettingKey =
   | "msClientId"
   | "msClientSecret"
   | "msSender"
-  | "recruitEmail";
+  | "recruitEmail"
+  | "linkedinOrgId";
 
 // Correspondance avec les variables d'environnement (repli).
 const ENV: Record<SettingKey, string> = {
@@ -40,6 +41,7 @@ const ENV: Record<SettingKey, string> = {
   msClientSecret: "MS_CLIENT_SECRET",
   msSender: "MS_SENDER",
   recruitEmail: "RECRUIT_EMAIL",
+  linkedinOrgId: "LINKEDIN_ORG_ID",
 };
 
 // Champs sensibles (masqués à l'affichage).

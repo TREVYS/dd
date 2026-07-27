@@ -13,7 +13,7 @@ const KEYS: SettingKey[] = [
   "linkedinClientId", "linkedinClientSecret",
   "instagramClientId", "instagramClientSecret",
   "msTenantId", "msClientId", "msClientSecret", "msSender",
-  "recruitEmail",
+  "recruitEmail", "linkedinOrgId",
 ];
 
 // Enregistre les clés/API saisies dans le cockpit. Les champs laissés vides

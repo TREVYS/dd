@@ -105,6 +105,9 @@ export default async function ReseauxPage({
                   <div key={p.id} className="adm-post">
                     <div className="adm-post-head">
                       <NetBadge n={p.network} />
+                      {p.network === "linkedin" && p.liTarget === "page" && (
+                        <span className="adm-tag" style={{ background: "#0A66C2", color: "#fff", borderColor: "#0A66C2" }}>Page entreprise</span>
+                      )}
                       <span className="muted" style={{ fontSize: ".78rem" }}>
                         {p.status === "planifie" && p.scheduledDate ? `Prévu le ${p.scheduledDate}${p.scheduledTime ? ` à ${p.scheduledTime}` : ""}` : ""}
                         {p.status === "publie" && p.publishedAt

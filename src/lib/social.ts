@@ -36,7 +36,7 @@ export const PROVIDERS: {
     label: "LinkedIn",
     authorizeUrl: "https://www.linkedin.com/oauth/v2/authorization",
     tokenUrl: "https://www.linkedin.com/oauth/v2/accessToken",
-    scope: "openid profile w_member_social",
+    scope: "openid profile w_member_social w_organization_social",
     clientIdEnv: "LINKEDIN_CLIENT_ID",
     clientSecretEnv: "LINKEDIN_CLIENT_SECRET",
     docUrl: "https://www.linkedin.com/developers/apps",
@@ -102,6 +102,7 @@ export async function publishPost(
   provider: Provider,
   content: string,
   image?: string,
+  opts?: { target?: "profil" | "page" },
 ): Promise<{ ok: boolean; error?: string }> {
   const store = readSocial();
   const conn = store[provider];
@@ -114,8 +115,16 @@ export async function publishPost(
   try {
     if (provider === "linkedin") {
       // Nécessite le scope w_member_social et l'URN de l'auteur (sub OpenID),
-      // enregistré à la connexion du compte.
-      const author = conn.authorUrn;
+      // enregistré à la connexion du compte. Pour la Page entreprise :
+      // scope w_organization_social + ID numérique de la page (Réglages).
+      let author = conn.authorUrn;
+      if (opts?.target === "page") {
+        const orgId = (getSetting("linkedinOrgId") ?? "").replace(/\D/g, "");
+        if (!orgId) {
+          return { ok: false, error: "ID de la Page entreprise manquant — renseignez-le dans Réglages (rubrique LinkedIn)." };
+        }
+        author = `urn:li:organization:${orgId}`;
+      }
       if (!author) {
         return { ok: false, error: "Compte à reconnecter (identifiant d'auteur manquant) — Réglages → Réseaux sociaux" };
       }

@@ -42,6 +42,15 @@ export function PostComposer() {
       {/* Enregistrement dans la file */}
       <form action={createPostAction} style={{ marginTop: "1rem" }}>
         <input type="hidden" name="network" value={network} />
+        {network === "linkedin" && (
+          <div className="adm-field">
+            <label>Publier sur</label>
+            <select name="liTarget" defaultValue="profil" style={{ maxWidth: 320 }}>
+              <option value="profil">Mon profil personnel</option>
+              <option value="page">La Page entreprise Trevys</option>
+            </select>
+          </div>
+        )}
         <div className="adm-field">
           <label>Texte du post</label>
           <textarea

@@ -17,6 +17,7 @@ export type SocialPost = {
   scheduledDate?: string; // AAAA-MM-JJ
   scheduledTime?: string; // HH:MM (heure de Paris) — vide = dès le matin
   deliveredVia?: "telegram"; // relais manuel : transmis sur Telegram pour publication à la main
+  liTarget?: "profil" | "page"; // LinkedIn : profil personnel ou Page entreprise
   createdAt: string;
   publishedAt?: string;
   lastTry?: string; // AAAA-MM-JJ — dernière tentative de publication auto
@@ -53,6 +54,7 @@ export function addPost(input: {
   scheduledDate?: string;
   scheduledTime?: string;
   image?: string;
+  liTarget?: "profil" | "page";
 }): SocialPost {
   const posts = read();
   const post: SocialPost = {
@@ -63,6 +65,7 @@ export function addPost(input: {
     image: input.image || undefined,
     scheduledDate: input.scheduledDate || undefined,
     scheduledTime: input.scheduledTime || undefined,
+    liTarget: input.liTarget,
     createdAt: new Date().toISOString(),
   };
   posts.push(post);
