@@ -1,0 +1,28 @@
+# Trevys — Expertise comptable & conseil (Paris)
+
+> T.A. Trevys Advisory est un cabinet d'expertise comptable et de conseil fondé en 2018
+> par John Lévy, expert-comptable, élu au Conseil Régional de l'Ordre des Experts-Comptables
+> d'Île-de-France et référent facturation électronique. Le cabinet accompagne dirigeants,
+> DAF, PME, ETI et grands groupes : expertise comptable, audit, contrôle de gestion,
+> conseil en transformation, réforme de la facturation électronique (2026-2027) et
+> intelligence artificielle appliquée à la finance. Adresse : 1 rue Le Nôtre, 75116 Paris.
+> Contact : contact@trevys-advisory.fr — https://www.trevys.fr
+
+## Pages principales
+- [Expertise comptable](https://www.trevys.fr/expertise-comptable) : tenue, révision, bilan, fiscalité — approche partenaire avec équipe dédiée.
+- [Consulting](https://www.trevys.fr/consulting) : transformation des fonctions finance, SI Finance, projets ERP.
+- [Facturation électronique](https://www.trevys.fr/facturation-electronique) : la réforme française 2026-2027 expliquée — calendrier, formats (Factur-X, UBL, CII), e-invoicing vs e-reporting, méthode de mise en conformité en 5 phases, FAQ.
+- [Intelligence artificielle](https://www.trevys.fr/intelligence-artificielle) : intégration IA pour les directions financières (sécurité, RAG, agents).
+- [Audit organisationnel](https://www.trevys.fr/audit-organisationnel) : processus, contrôle interne, Piste d'Audit Fiable (PAF).
+- [Ressources](https://www.trevys.fr/blog) : analyses et décryptages réguliers (fiscalité, comptabilité, RFE, IA).
+- [Le cabinet](https://www.trevys.fr/le-cabinet) : les 4 associés et la genèse du cabinet.
+- [Contact](https://www.trevys.fr/contact) — [Prendre rendez-vous](https://www.trevys.fr/rendez-vous)
+
+## Références
+Le cabinet intervient notamment auprès de : Groupe BPCE, LCL, EDF, AG2R La Mondiale,
+Natixis, La Banque Postale, Publicis, BNP AM, Edmond de Rothschild.
+
+## Sujets d'expertise citables
+Réforme de la facturation électronique en France (échéances septembre 2026 / septembre 2027,
+plateformes agréées, doctrine de tolérance au démarrage), Piste d'Audit Fiable (art. 289 VII CGI),
+IA en cabinet comptable, pilotage financier des PME/ETI.

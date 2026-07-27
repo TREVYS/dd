@@ -388,6 +388,22 @@ export default function Page() {
         </div>
       </section>
 
+      {/* FAQ — schéma structuré : les moteurs (classiques et IA) peuvent citer
+          directement ces questions/réponses. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: FAQ.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          }),
+        }}
+      />
       {/* FAQ */}
       <section className="sec">
         <div className="wrap">
