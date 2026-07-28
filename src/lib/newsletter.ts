@@ -94,7 +94,13 @@ export function importContacts(
 // Interprète un fichier plat : séparateur ; , ou tabulation, avec ou sans
 // ligne d'en-tête (email / nom / client / profil, dans n'importe quel ordre).
 export function parseContactsFile(text: string): { email: string; name?: string; client?: boolean; profil?: string }[] {
-  const lines = text.replace(/^﻿/, "").split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const lines = text
+    .replace(/^﻿/, "")
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    // Lignes vides et commentaires (# …) ignorés : le modèle fourni en
+    // contient, il doit être ré-importable tel quel.
+    .filter((l) => l && !l.startsWith("#"));
   if (lines.length === 0) return [];
   const sep = (l: string) => (l.includes("\t") ? "\t" : l.includes(";") ? ";" : ",");
   const split = (l: string) => l.split(sep(l)).map((c) => c.trim().replace(/^"|"$/g, ""));
@@ -138,7 +144,7 @@ export function parseContactsFile(text: string): { email: string; name?: string;
       client: clientCell !== undefined ? truthy(clientCell) : undefined,
       profil: restNoClient[1],
     };
-  }).filter((r) => r.email);
+  }).filter((r) => r.email.includes("@"));
 }
 
 export function unreadCount(): number {

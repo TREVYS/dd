@@ -261,6 +261,9 @@ export default async function NewsletterAdmin({
               Voir les {olderCamps.length} campagne{olderCamps.length > 1 ? "s" : ""} plus ancienne{olderCamps.length > 1 ? "s" : ""}
             </summary>
             <table className="adm-table" style={{ marginTop: ".6rem" }}>
+              <thead>
+                <tr><th>Contact</th><th>Catégories</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
+              </thead>
               <tbody>
                 {olderCamps.map((c) => (
                   <tr key={c.id}>
@@ -315,6 +318,20 @@ export default async function NewsletterAdmin({
           <input type="file" name="file" accept=".csv,.txt,.tsv,text/csv,text/plain" required />
           <PendingButton pendingLabel="Import en cours…">Importer</PendingButton>
         </form>
+        <div style={{ display: "flex", gap: ".6rem", flexWrap: "wrap", marginTop: ".9rem" }}>
+          <a className="adm-btn ghost sm" href="/admin/communication/newsletter/modele-contacts.csv" download>
+            Télécharger le modèle CSV
+          </a>
+          {subs.length > 0 && (
+            <a className="adm-btn ghost sm" href="/admin/communication/newsletter/export-contacts.csv" download>
+              Exporter mes {subs.length} contacts
+            </a>
+          )}
+        </div>
+        <p className="muted" style={{ fontSize: ".82rem", marginTop: ".6rem" }}>
+          Astuce : exportez votre base, complétez les colonnes <code>client</code> et <code>profil</code> dans Excel,
+          puis réimportez le fichier — tous les contacts seront catégorisés d&apos;un coup.
+        </p>
       </div>
 
       <div className="adm-card">
@@ -373,16 +390,29 @@ export default async function NewsletterAdmin({
         {restSubs.length > 0 && (
           <details style={{ marginTop: ".6rem" }}>
             <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: ".88rem", color: "var(--ink2)" }}>
-              Voir les {restSubs.length} autre{restSubs.length > 1 ? "s" : ""} inscrit{restSubs.length > 1 ? "s" : ""}
+              Voir et catégoriser les {restSubs.length} autre{restSubs.length > 1 ? "s" : ""} inscrit{restSubs.length > 1 ? "s" : ""}
             </summary>
             <table className="adm-table" style={{ marginTop: ".6rem" }}>
+              <thead>
+                <tr><th>Contact</th><th>Catégories</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
+              </thead>
               <tbody>
                 {restSubs.map((s) => (
                   <tr key={s.email}>
-                    <td>{s.email}{s.name ? ` — ${s.name}` : ""}</td>
-                    <td className="muted">
-                      {s.client && <span className="adm-tag" style={{ marginRight: ".3rem" }}>client</span>}
-                      {s.profil ?? s.source}
+                    <td>
+                      {s.email}
+                      {s.name && <div className="muted" style={{ fontSize: ".78rem" }}>{s.name}</div>}
+                    </td>
+                    <td>
+                      <form action={updateSubscriberAction} className="ck-catform">
+                        <input type="hidden" name="email" value={s.email} />
+                        <input name="name" defaultValue={s.name ?? ""} placeholder="Nom" style={{ width: 90 }} />
+                        <label title="Client du cabinet">
+                          <input type="checkbox" name="client" defaultChecked={s.client === true} /> client
+                        </label>
+                        <input name="profil" defaultValue={s.profil ?? ""} placeholder="Profil" list="nl-profils" style={{ width: 90 }} />
+                        <button className="adm-btn ghost sm" type="submit">OK</button>
+                      </form>
                     </td>
                     <td className="muted">{new Date(s.date).toLocaleDateString("fr-FR")}</td>
                     <td>
@@ -411,6 +441,9 @@ export default async function NewsletterAdmin({
               Désinscrits ({unsubscribed.length})
             </summary>
             <table className="adm-table" style={{ marginTop: ".6rem" }}>
+              <thead>
+                <tr><th>Contact</th><th>Catégories</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
+              </thead>
               <tbody>
                 {unsubscribed.map((u) => (
                   <tr key={u.email}>
