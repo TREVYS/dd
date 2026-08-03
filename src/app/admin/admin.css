@@ -609,3 +609,16 @@
   padding:.2rem .6rem;font-size:.76rem;color:var(--ink2)}
 .tp-chip i{font-style:normal;font-size:.66rem;font-weight:700;background:var(--bg);border-radius:100px;padding:.05rem .4rem;color:var(--ink3)}
 .tp-chip i.cl{background:var(--o);color:#fff}
+
+/* Onglets du module Newsletter */
+.nl-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.3rem;border-bottom:1px solid var(--line);padding-bottom:.6rem}
+.nl-tab{display:inline-flex;align-items:center;gap:.45rem;padding:.5rem .95rem;border-radius:100px;text-decoration:none;
+  font-size:.88rem;font-weight:700;color:var(--ink2);border:1px solid var(--line);background:#fff;transition:.15s}
+.nl-tab:hover{border-color:var(--o);color:var(--o2)}
+.nl-tab.on{background:var(--o);border-color:var(--o);color:#fff}
+.nl-tab .n{font-size:.7rem;font-weight:800;background:var(--bg);color:var(--ink2);border-radius:100px;padding:.05rem .45rem}
+.nl-tab.on .n{background:rgba(255,255,255,.28);color:#fff}
+.nl-draftrow{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;
+  background:#faf8f5;padding:.6rem .8rem}
+.nl-draftrow .t{flex:1;min-width:180px;font-weight:600;font-size:.9rem}
+@media(max-width:820px){.nl-tabs{gap:.3rem}.nl-tab{padding:.45rem .7rem;font-size:.8rem}}

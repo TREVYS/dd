@@ -10,57 +10,48 @@ import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignA
 import { campaignOpens, contactActivity } from "@/lib/newsletter-stats";
 import { optinStats } from "@/lib/newsletter-optin";
 import { ArticlePicker, type PickPost } from "./article-picker";
+import { NewsletterTabs, type NlVue } from "./newsletter-tabs";
+import { SubscribersTable, type SubRow } from "./subscribers-table";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewsletterAdmin({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; optin?: string; n?: string; skipped?: string; imp?: string; a?: string; u?: string; s?: string }>;
+  searchParams: Promise<{
+    vue?: string; error?: string; optin?: string; n?: string; skipped?: string;
+    imp?: string; a?: string; u?: string; s?: string;
+  }>;
 }) {
   const sp = await searchParams;
+  const vue: NlVue =
+    sp.vue === "preparation" || sp.vue === "suivi" ? sp.vue : "inscrits";
+
   const subs = listSubscribers();
   const unsubscribed = listUnsubscribed();
   const unread = unreadCount();
   const tg = telegramConfigured();
   const campaigns = listCampaigns();
-  const videos = listVideos();
   const mailOn = mailerConfigured();
 
   // Statistiques d'ouverture (pixel de suivi, par contact).
   const activity = contactActivity();
   const sentCamps = campaigns.filter((c) => c.status === "envoye" && (c.sentCount ?? 0) > 0);
+  const drafts = campaigns.filter((c) => c.status === "brouillon");
   const withOpens = sentCamps.map((c) => ({ c, opens: campaignOpens(c.id) }));
   const totSent = withOpens.reduce((x, y) => x + (y.c.sentCount ?? 0), 0);
   const totOpens = withOpens.reduce((x, y) => x + y.opens, 0);
   const avgOpenRate = totSent > 0 ? Math.round((totOpens / totSent) * 100) : null;
-  const last = withOpens[0]; // campagnes triées de la plus récente à la plus ancienne
-  const lastRate = last && (last.c.sentCount ?? 0) > 0 ? Math.round((last.opens / last.c.sentCount!) * 100) : null;
   const ninety = Date.now() - 90 * 24 * 3600 * 1000;
-  const activeCount = subs.filter((x) => {
-    const a = activity[x.email.toLowerCase()];
-    return a?.lastOpen && new Date(a.lastOpen).getTime() > ninety;
-  }).length;
-  // Inscrits : actifs d'abord, puis du plus récent au plus ancien ;
-  // seuls les 10 premiers sont affichés, le reste est replié.
   const isActive = (email: string) => {
     const a = activity[email.toLowerCase()];
     return !!(a?.lastOpen && new Date(a.lastOpen).getTime() > ninety);
   };
-  const sortedSubs = subs.slice().sort((x, y) => {
-    const ax = isActive(x.email) ? 1 : 0;
-    const ay = isActive(y.email) ? 1 : 0;
-    if (ax !== ay) return ay - ax;
-    return y.date.localeCompare(x.date);
-  });
-  const topSubs = sortedSubs.slice(0, 10);
-  const restSubs = sortedSubs.slice(10);
+  const activeCount = subs.filter((x) => isActive(x.email)).length;
+  const clientCount = subs.filter((x) => x.client === true).length;
 
-  // Historique : les 3 dernières campagnes visibles, le reste replié.
-  const recentCamps = campaigns.slice(0, 3);
-  const olderCamps = campaigns.slice(3);
-  // Tous les articles publiés, avec un index de recherche (titre + résumé +
-  // contenu) pour filtrer par mots-clés dans le sélecteur ci-dessous.
+  // Articles publiés (sélecteur de diffusion) + vidéos du site.
+  const videos = listVideos();
   const { articleMetier } = await import("@/lib/metier");
   const pickPosts: PickPost[] = getAllPosts().map((p) => {
     const content = getPost(p.slug)?.content ?? "";
@@ -79,388 +70,318 @@ export default async function NewsletterAdmin({
       <div className="adm-h">
         <div>
           <h1>Newsletter {unread > 0 && <span className="adm-soon" style={{ background: "#E26A0F", color: "#fff" }}>{unread} nouveau{unread > 1 ? "x" : ""}</span>}</h1>
-          <p>Préparez vos mailings et suivez vos inscrits. {subs.length} inscription{subs.length > 1 ? "s" : ""} au total.</p>
+          <p>
+            {vue === "inscrits" && "Votre base de contacts : catégories, ancienneté et activité."}
+            {vue === "preparation" && "Composez un mailing et choisissez précisément vos destinataires."}
+            {vue === "suivi" && "Vos campagnes en cours et passées, avec leurs résultats."}
+          </p>
         </div>
-        {unread > 0 && (
+        {vue === "inscrits" && unread > 0 && (
           <form action={markNewsletterReadAction}>
             <button className="adm-btn ghost" type="submit">Tout marquer comme lu</button>
           </form>
         )}
       </div>
 
-      {/* Statut de l'envoi Microsoft 365 */}
-      <div
-        className="adm-note"
-        style={{
-          marginBottom: "1.2rem",
-          borderColor: mailOn ? "#bfe3c9" : "#f0e2cf",
-          background: mailOn ? "#f1faf3" : "#fdf8f0",
-        }}
-      >
-        {mailOn
-          ? `Envoi Microsoft 365 actif — les mailings partent de ${senderAddress()}.`
-          : "Envoi Microsoft 365 non configuré. Renseignez la connexion Office 365 dans les Réglages pour envoyer depuis contact@trevys-advisory.fr."}
-        {" "}
-        <Link href="/admin/reglages" className="adm-link">Réglages →</Link>
-      </div>
+      <NewsletterTabs
+        vue={vue}
+        counts={{ inscrits: subs.length, preparation: drafts.length, suivi: sentCamps.length }}
+      />
 
-      {/* Indicateurs clés */}
-      <div className="adm-grid">
-        <div className="adm-kpi"><div className="k">Abonnés</div><div className="v o">{subs.length}</div></div>
-        <div className="adm-kpi">
-          <div className="k">Taux d&apos;ouverture moyen</div>
-          <div className="v">{avgOpenRate !== null ? `${avgOpenRate} %` : "—"}</div>
-        </div>
-        <div className="adm-kpi">
-          <div className="k">Dernière campagne</div>
-          <div className="v">{lastRate !== null ? `${lastRate} %` : "—"}</div>
-        </div>
-        <div className="adm-kpi"><div className="k">Contacts actifs (90 j)</div><div className="v">{activeCount}</div></div>
-      </div>
-      {sentCamps.length > 0 && (
-        <p className="muted" style={{ fontSize: ".78rem", color: "var(--ink3)", margin: "-.4rem 0 1.2rem" }}>
-          Ouvertures mesurées par pixel depuis cette mise à jour (certains clients mail comme Apple Mail
-          préchargent les images : le taux est un ordre de grandeur).
-        </p>
-      )}
+      {/* ===================== Onglet 1 : INSCRIPTIONS ===================== */}
+      {vue === "inscrits" && (
+        <>
+          <div className="adm-grid">
+            <div className="adm-kpi"><div className="k">Inscrits</div><div className="v o">{subs.length}</div></div>
+            <div className="adm-kpi"><div className="k">Clients du cabinet</div><div className="v">{clientCount}</div></div>
+            <div className="adm-kpi"><div className="k">Actifs (90 j)</div><div className="v">{activeCount}</div></div>
+            <div className="adm-kpi"><div className="k">Désinscrits</div><div className="v">{unsubscribed.length}</div></div>
+          </div>
 
-      {sp.error === "noselection" && (
-        <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
-          Sélectionnez au moins un article à diffuser.
-        </div>
-      )}
-
-      {/* Diffuser des articles publiés */}
-      <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
-        <h2>Diffuser des articles à vos clients</h2>
-        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: ".2rem 0 1rem" }}>
-          Cochez les articles à pousser : le mailing est composé automatiquement (titres, résumés,
-          boutons « Lire l&apos;article »). Vous le relisez, l&apos;ajustez, puis l&apos;envoyez.
-        </p>
-        <form action={createArticlesCampaignAction}>
-          <ArticlePicker posts={pickPosts} />
-          {videos.length > 0 && (
-            <div className="adm-field" style={{ marginTop: "1rem", maxWidth: 520 }}>
-              <label>Joindre une vidéo <small>(optionnel — miniature cliquable + bouton « ▶ Regarder » dans l&apos;e-mail)</small></label>
-              <select name="video" defaultValue="">
-                <option value="">Aucune vidéo</option>
-                {videos.map((v) => (
-                  <option key={v.id} value={v.id}>{v.title}</option>
-                ))}
-              </select>
+          {sp.imp && (
+            <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: sp.imp === "ok" ? "#bfe3c9" : "#f0d5d1", background: sp.imp === "ok" ? "#f1faf3" : "#fdf3f2" }}>
+              {sp.imp === "ok"
+                ? <>Import terminé : <b>{sp.a} ajouté(s)</b>, {sp.u} mis à jour, {sp.s} ignoré(s) (adresse invalide ou désinscrit).</>
+                : sp.imp === "toobig"
+                  ? "Fichier trop volumineux (4 Mo maximum)."
+                  : "Aucun contact exploitable dans ce fichier — vérifiez qu'il contient une colonne d'adresses e-mail."}
             </div>
           )}
-          <div className="adm-field" style={{ marginTop: "1rem", maxWidth: 520 }}>
-            <label>Objet de l&apos;e-mail <small>(optionnel — proposé automatiquement)</small></label>
-            <input name="subject" placeholder="Ex. Nos dernières analyses — Trevys" />
-          </div>
-          <div className="adm-actions" style={{ marginTop: ".8rem" }}>
-            <PendingButton pendingLabel="Alfred compose…">Composer le mailing</PendingButton>
-          </div>
-        </form>
-      </div>
 
-      {/* Invitation opt-in d'une base de contacts */}
-      <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
-        <h2>Inviter une base de contacts (opt-in)</h2>
-        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: ".2rem 0 1rem" }}>
-          Collez les e-mails de contacts rencontrés par vos équipes : chacun reçoit une invitation
-          chaleureuse avec deux boutons <b>Oui</b> / <b>Non merci</b>. Les « Oui » rejoignent
-          automatiquement vos abonnés ; les « Non » sont mémorisés et ne seront jamais réinvités.
-          Les contacts déjà abonnés ou déjà invités sont écartés d&apos;office.
-        </p>
-        {(() => { const st = optinStats(); return st.invited > 0 ? (
-          <p className="muted" style={{ fontSize: ".8rem", margin: "0 0 .8rem" }}>
-            {st.invited} invitation{st.invited > 1 ? "s" : ""} envoyée{st.invited > 1 ? "s" : ""} à ce jour · {st.declined} refus.
-          </p>
-        ) : null; })()}
-        {sp.optin === "sent" && (
-          <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
-            {sp.n} invitation{Number(sp.n) > 1 ? "s" : ""} envoyée{Number(sp.n) > 1 ? "s" : ""}.
-            {Number(sp.skipped) > 0 && ` ${sp.skipped} contact(s) écarté(s) (déjà abonnés, déjà invités ou refus).`}
+          <div className="adm-card">
+            <h2>Vos inscrits</h2>
+            <datalist id="nl-profils">
+              {PROFILS.map((p) => <option key={p} value={p} />)}
+            </datalist>
+            <SubscribersTable
+              rows={subs.map<SubRow>((s) => {
+                const a = activity[s.email.toLowerCase()];
+                return {
+                  email: s.email,
+                  name: s.name,
+                  client: s.client,
+                  profil: s.profil,
+                  date: s.date,
+                  read: s.read,
+                  opens: a?.opens ?? 0,
+                  lastOpen: a?.lastOpen,
+                  active: isActive(s.email),
+                };
+              })}
+              profils={PROFILS}
+              updateAction={updateSubscriberAction}
+              deleteAction={deleteSubscriberAction}
+            />
           </div>
-        )}
-        {sp.optin === "none" && (
-          <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0e2cf", background: "#fdf8f0" }}>
-            Aucun nouvel envoi : tous ces contacts sont déjà abonnés, déjà invités ou ont refusé.
-          </div>
-        )}
-        {sp.optin === "empty" && (
-          <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
-            Aucune adresse e-mail valide trouvée.
-          </div>
-        )}
-        {sp.optin === "notconfig" && (
-          <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
-            Configurez d&apos;abord l&apos;envoi Microsoft 365 dans les Réglages.
-          </div>
-        )}
-        <form action={sendOptinInvitesAction}>
-          <div className="adm-field">
-            <label>Adresses e-mail <small>(séparées par des virgules, espaces ou retours à la ligne)</small></label>
-            <textarea name="contacts" required style={{ minHeight: 110 }} placeholder={"jean@entreprise.fr\nmarie@societe.com"} />
-          </div>
-          <div className="adm-actions" style={{ marginTop: ".6rem" }}>
-            <PendingButton pendingLabel="Envoi des invitations…">Envoyer les invitations</PendingButton>
-          </div>
-        </form>
-      </div>
 
-      {/* Nouveau mailing */}
-      <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
-        <h2>Préparer un mailing libre</h2>
-        <form action={createCampaignAction} className="adm-form" style={{ marginTop: ".6rem" }}>
-          <div className="adm-field">
-            <label>Objet de l&apos;e-mail</label>
-            <input name="subject" required placeholder="Ex. Facturation électronique : ce qui change en 2026" />
-          </div>
-          <div className="adm-actions">
-            <button className="adm-btn" type="submit">Créer et rédiger</button>
-          </div>
-        </form>
-      </div>
-
-      {/* Campagnes : les 3 dernières, le reste replié */}
-      <div className="adm-card" style={{ padding: 0, marginBottom: "1.2rem" }}>
-        <table className="adm-table">
-          <thead>
-            <tr><th style={{ paddingLeft: "1.1rem" }}>Objet</th><th>Statut</th><th>Envoi</th><th>Ouvertures</th><th></th></tr>
-          </thead>
-          <tbody>
-            {recentCamps.map((c) => (
-              <tr key={c.id}>
-                <td style={{ fontWeight: 600, paddingLeft: "1.1rem" }}>
-                  <Link href={`/admin/communication/newsletter/${c.id}`} className="adm-link">{c.subject}</Link>
-                </td>
-                <td>
-                  <span className={`adm-chipst ${c.status === "envoye" ? "pub" : "draft"}`}>
-                    {c.status === "envoye" ? "Envoyé" : "Brouillon"}
+          {unsubscribed.length > 0 && (
+            <div className="adm-card">
+              <h2>Désinscrits ({unsubscribed.length})</h2>
+              <p className="muted" style={{ fontSize: ".84rem", margin: "0 0 .7rem" }}>
+                Ces adresses ne reçoivent plus rien et ne sont jamais réinvitées automatiquement.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem" }}>
+                {unsubscribed.map((u) => (
+                  <span key={u.email} className="tp-chip" title={`Désinscrit le ${new Date(u.date).toLocaleDateString("fr-FR")}`}>
+                    {u.email}<i>{new Date(u.date).toLocaleDateString("fr-FR")}</i>
                   </span>
-                </td>
-                <td className="muted">
-                  {c.sentAt ? `${c.sentCount ?? 0} dest. · ${new Date(c.sentAt).toLocaleDateString("fr-FR")}` : "—"}
-                </td>
-                <td>
-                  {c.status === "envoye" && (c.sentCount ?? 0) > 0
-                    ? (() => { const o = campaignOpens(c.id); return <b>{o} <span className="muted" style={{ fontWeight: 500 }}>({Math.round((o / c.sentCount!) * 100)} %)</span></b>; })()
-                    : <span className="muted">—</span>}
-                </td>
-                <td style={{ textAlign: "right", paddingRight: "1.1rem" }}>
-                  <Link className="adm-btn ghost sm" href={`/admin/communication/newsletter/${c.id}`}>Ouvrir</Link>
-                </td>
-              </tr>
-            ))}
-            {campaigns.length === 0 && (
-              <tr><td colSpan={5} className="muted" style={{ padding: "1.2rem" }}>Aucun mailing préparé pour l&apos;instant.</td></tr>
-            )}
-          </tbody>
-        </table>
-        {olderCamps.length > 0 && (
-          <details style={{ padding: ".6rem 1.1rem 1rem" }}>
-            <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: ".88rem", color: "var(--ink2)" }}>
-              Voir les {olderCamps.length} campagne{olderCamps.length > 1 ? "s" : ""} plus ancienne{olderCamps.length > 1 ? "s" : ""}
-            </summary>
-            <table className="adm-table" style={{ marginTop: ".6rem" }}>
-              <thead>
-                <tr><th>Contact</th><th>Catégories</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
-              </thead>
-              <tbody>
-                {olderCamps.map((c) => (
-                  <tr key={c.id}>
-                    <td style={{ fontWeight: 600 }}>
-                      <Link href={`/admin/communication/newsletter/${c.id}`} className="adm-link">{c.subject}</Link>
-                    </td>
-                    <td className="muted">{c.sentAt ? `${c.sentCount ?? 0} dest. · ${new Date(c.sentAt).toLocaleDateString("fr-FR")}` : "brouillon"}</td>
-                    <td>
-                      {c.status === "envoye" && (c.sentCount ?? 0) > 0
-                        ? (() => { const o = campaignOpens(c.id); return <>{o} ouv. ({Math.round((o / c.sentCount!) * 100)} %)</>; })()
-                        : "—"}
-                    </td>
-                  </tr>
                 ))}
-              </tbody>
-            </table>
-          </details>
-        )}
-      </div>
+              </div>
+            </div>
+          )}
 
-      <div
-        className="adm-note"
-        style={{
-          marginBottom: "1.2rem",
-          borderColor: tg ? "#bfe3c9" : "#f0e2cf",
-          background: tg ? "#f1faf3" : "#fdf8f0",
-        }}
-      >
-        {tg
-          ? "Notifications Telegram actives — chaque nouvelle inscription vous est envoyée."
-          : "Notifications Telegram non configurées (voir Réglages) pour être alerté à chaque inscription."}
-      </div>
+          <div className="adm-card">
+            <h2>Importer / exporter des contacts</h2>
+            <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 .8rem" }}>
+              CSV ou export Excel — colonnes <code>email</code>, <code>nom</code>, <code>client</code> (oui/non),{" "}
+              <code>profil</code>, dans n&apos;importe quel ordre. Les contacts existants sont mis à jour,
+              les désinscrits ne sont jamais réimportés.
+            </p>
+            <form action={importContactsAction} style={{ display: "flex", gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
+              <input type="file" name="file" accept=".csv,.txt,.tsv,text/csv,text/plain" required />
+              <PendingButton pendingLabel="Import en cours…">Importer</PendingButton>
+            </form>
+            <div style={{ display: "flex", gap: ".6rem", flexWrap: "wrap", marginTop: ".9rem" }}>
+              <a className="adm-btn ghost sm" href="/admin/communication/newsletter/modele-contacts.csv" download>
+                Télécharger le modèle CSV
+              </a>
+              {subs.length > 0 && (
+                <a className="adm-btn ghost sm" href="/admin/communication/newsletter/export-contacts.csv" download>
+                  Exporter mes {subs.length} contacts
+                </a>
+              )}
+            </div>
+            <p className="muted" style={{ fontSize: ".82rem", marginTop: ".6rem" }}>
+              Astuce : exportez, complétez <code>client</code> et <code>profil</code> dans Excel, réimportez — tout est catégorisé d&apos;un coup.
+            </p>
+          </div>
 
-      {sp.imp && (
-        <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: sp.imp === "ok" ? "#bfe3c9" : "#f0d5d1", background: sp.imp === "ok" ? "#f1faf3" : "#fdf3f2" }}>
-          {sp.imp === "ok"
-            ? <>Import terminé : <b>{sp.a} ajouté(s)</b>, {sp.u} mis à jour, {sp.s} ignoré(s) (adresse invalide ou désinscrit).</>
-            : sp.imp === "toobig"
-              ? "Fichier trop volumineux (4 Mo maximum)."
-              : "Aucun contact exploitable dans ce fichier — vérifiez qu'il contient une colonne d'adresses e-mail."}
-        </div>
+          <div className="adm-card">
+            <h2>Inviter une base de contacts (opt-in)</h2>
+            <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 .9rem" }}>
+              Chaque contact reçoit une invitation avec deux boutons <b>Oui</b> / <b>Non merci</b>. Les « Oui »
+              rejoignent vos abonnés ; les « Non » ne seront jamais réinvités. Déjà abonnés et déjà invités sont écartés.
+            </p>
+            {(() => { const st = optinStats(); return st.invited > 0 ? (
+              <p className="muted" style={{ fontSize: ".8rem", margin: "0 0 .8rem" }}>
+                {st.invited} invitation{st.invited > 1 ? "s" : ""} envoyée{st.invited > 1 ? "s" : ""} à ce jour · {st.declined} refus.
+              </p>
+            ) : null; })()}
+            {sp.optin === "sent" && (
+              <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+                {sp.n} invitation{Number(sp.n) > 1 ? "s" : ""} envoyée{Number(sp.n) > 1 ? "s" : ""}.
+                {Number(sp.skipped) > 0 && ` ${sp.skipped} contact(s) écarté(s).`}
+              </div>
+            )}
+            {sp.optin === "none" && (
+              <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0e2cf", background: "#fdf8f0" }}>
+                Aucun nouvel envoi : tous ces contacts sont déjà abonnés, déjà invités ou ont refusé.
+              </div>
+            )}
+            {sp.optin === "empty" && (
+              <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+                Aucune adresse e-mail valide trouvée.
+              </div>
+            )}
+            {sp.optin === "notconfig" && (
+              <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+                Configurez d&apos;abord l&apos;envoi Microsoft 365 dans les Réglages.
+              </div>
+            )}
+            <form action={sendOptinInvitesAction}>
+              <div className="adm-field">
+                <label>Adresses e-mail <small>(virgules, espaces ou retours à la ligne)</small></label>
+                <textarea name="contacts" required style={{ minHeight: 100 }} placeholder={"jean@entreprise.fr\nmarie@societe.com"} />
+              </div>
+              <div className="adm-actions" style={{ marginTop: ".6rem" }}>
+                <PendingButton pendingLabel="Envoi des invitations…">Envoyer les invitations</PendingButton>
+              </div>
+            </form>
+          </div>
+
+          <div
+            className="adm-note"
+            style={{ borderColor: tg ? "#bfe3c9" : "#f0e2cf", background: tg ? "#f1faf3" : "#fdf8f0" }}
+          >
+            {tg
+              ? "Notifications Telegram actives — chaque nouvelle inscription vous est envoyée."
+              : "Notifications Telegram non configurées (voir Réglages) pour être alerté à chaque inscription."}
+          </div>
+        </>
       )}
 
-      <div className="adm-card">
-        <h2>Importer des contacts (fichier plat)</h2>
-        <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 .8rem" }}>
-          CSV, TXT ou export Excel « CSV » — colonnes <code>email</code>, <code>nom</code>, <code>client</code> (oui/non),{" "}
-          <code>profil</code> (DAF, BNC, BNC santé…), dans n&apos;importe quel ordre, avec ou sans ligne d&apos;en-tête.
-          Les contacts existants sont mis à jour, les désinscrits ne sont jamais réimportés.
-        </p>
-        <form action={importContactsAction} style={{ display: "flex", gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
-          <input type="file" name="file" accept=".csv,.txt,.tsv,text/csv,text/plain" required />
-          <PendingButton pendingLabel="Import en cours…">Importer</PendingButton>
-        </form>
-        <div style={{ display: "flex", gap: ".6rem", flexWrap: "wrap", marginTop: ".9rem" }}>
-          <a className="adm-btn ghost sm" href="/admin/communication/newsletter/modele-contacts.csv" download>
-            Télécharger le modèle CSV
-          </a>
-          {subs.length > 0 && (
-            <a className="adm-btn ghost sm" href="/admin/communication/newsletter/export-contacts.csv" download>
-              Exporter mes {subs.length} contacts
-            </a>
+      {/* =================== Onglet 2 : PRÉPARATION ======================= */}
+      {vue === "preparation" && (
+        <>
+          <div
+            className="adm-note"
+            style={{ marginBottom: "1.2rem", borderColor: mailOn ? "#bfe3c9" : "#f0e2cf", background: mailOn ? "#f1faf3" : "#fdf8f0" }}
+          >
+            {mailOn
+              ? `Envoi actif — les mailings partent de ${senderAddress()}.`
+              : "Envoi Microsoft 365 non configuré : renseignez la connexion Office 365 dans les Réglages."}
+            {" "}
+            <Link href="/admin/reglages" className="adm-link">Réglages →</Link>
+          </div>
+
+          {sp.error === "noselection" && (
+            <div className="adm-note" style={{ marginBottom: "1.2rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+              Sélectionnez au moins un article à diffuser.
+            </div>
           )}
-        </div>
-        <p className="muted" style={{ fontSize: ".82rem", marginTop: ".6rem" }}>
-          Astuce : exportez votre base, complétez les colonnes <code>client</code> et <code>profil</code> dans Excel,
-          puis réimportez le fichier — tous les contacts seront catégorisés d&apos;un coup.
-        </p>
-      </div>
 
-      <div className="adm-card">
-        <h2>Inscrits</h2>
-        <datalist id="nl-profils">
-          {PROFILS.map((p) => <option key={p} value={p} />)}
-        </datalist>
-        <table className="adm-table">
-          <thead>
-            <tr><th>Contact</th><th>Catégories</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
-          </thead>
-          <tbody>
-            {topSubs.map((s) => (
-              <tr key={s.email} style={!s.read ? { fontWeight: 700 } : undefined}>
-                <td>
-                  {!s.read && <span style={{ color: "#E26A0F", marginRight: ".4rem" }}>●</span>}
-                  {s.email}
-                  {s.name && <div className="muted" style={{ fontSize: ".78rem", fontWeight: 400 }}>{s.name}</div>}
-                </td>
-                <td>
-                  <form action={updateSubscriberAction} className="ck-catform">
-                    <input type="hidden" name="email" value={s.email} />
-                    <input name="name" defaultValue={s.name ?? ""} placeholder="Nom" style={{ width: 90 }} />
-                    <label title="Client du cabinet">
-                      <input type="checkbox" name="client" defaultChecked={s.client === true} /> client
-                    </label>
-                    <input name="profil" defaultValue={s.profil ?? ""} placeholder="Profil" list="nl-profils" style={{ width: 90 }} />
-                    <button className="adm-btn ghost sm" type="submit">OK</button>
-                  </form>
-                </td>
-                <td className="muted">{new Date(s.date).toLocaleString("fr-FR")}</td>
-                <td>
-                  {(() => {
-                    const a = activity[s.email.toLowerCase()];
-                    if (!a?.opens) return <span className="muted">—</span>;
-                    const active = isActive(s.email);
-                    return (
-                      <span style={{ fontSize: ".82rem", fontWeight: 600, color: active ? "#2E9E6B" : "var(--ink3)" }}>
-                        {active ? "● Actif" : "○ Inactif"} · {a.opens} ouv.
-                        {a.lastOpen ? ` · ${new Date(a.lastOpen).toLocaleDateString("fr-FR")}` : ""}
-                      </span>
-                    );
-                  })()}
-                </td>
-                <td style={{ textAlign: "right" }}>
-                  <form action={deleteSubscriberAction}>
-                    <input type="hidden" name="email" value={s.email} />
-                    <button className="adm-btn danger sm" type="submit">Supprimer</button>
-                  </form>
-                </td>
-              </tr>
-            ))}
-            {subs.length === 0 && <tr><td colSpan={5} className="muted">Aucune inscription pour l&apos;instant.</td></tr>}
-          </tbody>
-        </table>
-        {restSubs.length > 0 && (
-          <details style={{ marginTop: ".6rem" }}>
-            <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: ".88rem", color: "var(--ink2)" }}>
-              Voir et catégoriser les {restSubs.length} autre{restSubs.length > 1 ? "s" : ""} inscrit{restSubs.length > 1 ? "s" : ""}
-            </summary>
-            <table className="adm-table" style={{ marginTop: ".6rem" }}>
-              <thead>
-                <tr><th>Contact</th><th>Catégories</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
-              </thead>
-              <tbody>
-                {restSubs.map((s) => (
-                  <tr key={s.email}>
-                    <td>
-                      {s.email}
-                      {s.name && <div className="muted" style={{ fontSize: ".78rem" }}>{s.name}</div>}
-                    </td>
-                    <td>
-                      <form action={updateSubscriberAction} className="ck-catform">
-                        <input type="hidden" name="email" value={s.email} />
-                        <input name="name" defaultValue={s.name ?? ""} placeholder="Nom" style={{ width: 90 }} />
-                        <label title="Client du cabinet">
-                          <input type="checkbox" name="client" defaultChecked={s.client === true} /> client
-                        </label>
-                        <input name="profil" defaultValue={s.profil ?? ""} placeholder="Profil" list="nl-profils" style={{ width: 90 }} />
-                        <button className="adm-btn ghost sm" type="submit">OK</button>
-                      </form>
-                    </td>
-                    <td className="muted">{new Date(s.date).toLocaleDateString("fr-FR")}</td>
-                    <td>
-                      {(() => {
-                        const a = activity[s.email.toLowerCase()];
-                        if (!a?.opens) return <span className="muted">—</span>;
-                        return <span className="muted" style={{ fontSize: ".82rem" }}>{a.opens} ouv.</span>;
-                      })()}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <form action={deleteSubscriberAction}>
-                        <input type="hidden" name="email" value={s.email} />
-                        <button className="adm-btn danger sm" type="submit">Supprimer</button>
-                      </form>
-                    </td>
-                  </tr>
+          {drafts.length > 0 && (
+            <div className="adm-card">
+              <h2>Mailings en préparation ({drafts.length})</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: ".5rem" }}>
+                {drafts.map((c) => (
+                  <div key={c.id} className="nl-draftrow">
+                    <span className="t">{c.subject}</span>
+                    {c.sendAt && <span className="adm-tag">programmé le {c.sendAt}</span>}
+                    <Link className="adm-btn sm" href={`/admin/communication/newsletter/${c.id}`}>
+                      Relire, cibler &amp; envoyer
+                    </Link>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </details>
-        )}
+              </div>
+              <p className="muted" style={{ fontSize: ".82rem", marginTop: ".7rem" }}>
+                Le choix des destinataires (clients / non-clients, profil, recherche) se fait à l&apos;ouverture du mailing,
+                juste avant l&apos;envoi.
+              </p>
+            </div>
+          )}
 
-        {unsubscribed.length > 0 && (
-          <details style={{ marginTop: ".9rem" }}>
-            <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: ".88rem", color: "var(--ink2)" }}>
-              Désinscrits ({unsubscribed.length})
-            </summary>
-            <table className="adm-table" style={{ marginTop: ".6rem" }}>
-              <thead>
-                <tr><th>Contact</th><th>Catégories</th><th>Date</th><th>Activité</th><th style={{ textAlign: "right" }}>Actions</th></tr>
-              </thead>
-              <tbody>
-                {unsubscribed.map((u) => (
-                  <tr key={u.email}>
-                    <td>{u.email}</td>
-                    <td className="muted" style={{ textAlign: "right" }}>
-                      désinscrit le {new Date(u.date).toLocaleDateString("fr-FR")}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="muted" style={{ fontSize: ".82rem", marginTop: ".5rem" }}>
-              Ces adresses ne sont jamais réinvitées automatiquement.
+          <div className="adm-card">
+            <h2>Composer à partir d&apos;articles</h2>
+            <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 1rem" }}>
+              Cochez les articles : le mailing est composé automatiquement (blocs par métier, vignettes,
+              boutons « Lire l&apos;article »). Vous le relisez et choisissez vos destinataires avant l&apos;envoi.
             </p>
-          </details>
-        )}
-      </div>
+            <form action={createArticlesCampaignAction}>
+              <ArticlePicker posts={pickPosts} />
+              {videos.length > 0 && (
+                <div className="adm-field" style={{ marginTop: "1rem", maxWidth: 520 }}>
+                  <label>Joindre une vidéo <small>(optionnel — carte cliquable dans l&apos;e-mail)</small></label>
+                  <select name="video" defaultValue="">
+                    <option value="">Aucune vidéo</option>
+                    {videos.map((v) => (
+                      <option key={v.id} value={v.id}>{v.title}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div className="adm-field" style={{ marginTop: "1rem", maxWidth: 520 }}>
+                <label>Objet de l&apos;e-mail <small>(optionnel — proposé par Alfred)</small></label>
+                <input name="subject" placeholder="Ex. Nos dernières analyses — Trevys" />
+              </div>
+              <div className="adm-actions" style={{ marginTop: ".8rem" }}>
+                <PendingButton pendingLabel="Alfred compose…">Composer le mailing</PendingButton>
+              </div>
+            </form>
+          </div>
+
+          <div className="adm-card">
+            <h2>Préparer un mailing libre</h2>
+            <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 .8rem" }}>
+              Pour un message qui ne part pas d&apos;articles (vœux, invitation, annonce du cabinet).
+            </p>
+            <form action={createCampaignAction} className="adm-form">
+              <div className="adm-field">
+                <label>Objet de l&apos;e-mail</label>
+                <input name="subject" required placeholder="Ex. Facturation électronique : ce qui change en 2026" />
+              </div>
+              <div className="adm-actions">
+                <button className="adm-btn" type="submit">Créer et rédiger</button>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+
+      {/* ====================== Onglet 3 : SUIVI ========================== */}
+      {vue === "suivi" && (
+        <>
+          <div className="adm-grid">
+            <div className="adm-kpi"><div className="k">Campagnes envoyées</div><div className="v o">{sentCamps.length}</div></div>
+            <div className="adm-kpi"><div className="k">E-mails distribués</div><div className="v">{totSent}</div></div>
+            <div className="adm-kpi">
+              <div className="k">Taux d&apos;ouverture moyen</div>
+              <div className="v">{avgOpenRate !== null ? `${avgOpenRate} %` : "—"}</div>
+            </div>
+            <div className="adm-kpi"><div className="k">En préparation</div><div className="v">{drafts.length}</div></div>
+          </div>
+
+          <div className="adm-card" style={{ padding: 0 }}>
+            <table className="adm-table">
+              <thead>
+                <tr>
+                  <th style={{ paddingLeft: "1.1rem" }}>Objet</th>
+                  <th>Statut</th><th>Envoi</th><th>Ouvertures</th><th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.map((c) => (
+                  <tr key={c.id}>
+                    <td style={{ fontWeight: 600, paddingLeft: "1.1rem" }}>
+                      <Link href={`/admin/communication/newsletter/${c.id}`} className="adm-link">{c.subject}</Link>
+                    </td>
+                    <td>
+                      <span className={`adm-chipst ${c.status === "envoye" ? "pub" : "draft"}`}>
+                        {c.status === "envoye" ? "Envoyé" : c.sendAt ? "Programmé" : "Brouillon"}
+                      </span>
+                    </td>
+                    <td className="muted">
+                      {c.sentAt
+                        ? `${c.sentCount ?? 0} dest. · ${new Date(c.sentAt).toLocaleDateString("fr-FR")}`
+                        : c.sendAt ? `prévu le ${c.sendAt}` : "—"}
+                    </td>
+                    <td>
+                      {c.status === "envoye" && (c.sentCount ?? 0) > 0
+                        ? (() => { const o = campaignOpens(c.id); return <b>{o} <span className="muted" style={{ fontWeight: 500 }}>({Math.round((o / c.sentCount!) * 100)} %)</span></b>; })()
+                        : <span className="muted">—</span>}
+                    </td>
+                    <td style={{ textAlign: "right", paddingRight: "1.1rem" }}>
+                      <Link className="adm-btn ghost sm" href={`/admin/communication/newsletter/${c.id}`}>
+                        {c.status === "envoye" ? "Analyse" : "Ouvrir"}
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+                {campaigns.length === 0 && (
+                  <tr><td colSpan={5} className="muted" style={{ padding: "1.2rem" }}>Aucune campagne pour l&apos;instant.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {sentCamps.length > 0 && (
+            <p className="muted" style={{ fontSize: ".8rem", color: "var(--ink3)" }}>
+              Ouvertures mesurées par pixel de suivi (certains clients mail préchargent les images :
+              le taux est un ordre de grandeur). Ouvrez une campagne pour le détail par contact et par lien.
+            </p>
+          )}
+        </>
+      )}
     </>
   );
 }
