@@ -91,7 +91,7 @@ export function SubscribersTable({
         </div>
       </div>
 
-      <table className="adm-table">
+      <table className="adm-table nl-subs">
         <thead>
           <tr>
             <th>Contact</th>
@@ -104,12 +104,12 @@ export function SubscribersTable({
         <tbody>
           {visible.map((s) => (
             <tr key={s.email} style={!s.read ? { fontWeight: 700 } : undefined}>
-              <td>
+              <td data-l="Contact">
                 {!s.read && <span style={{ color: "#E26A0F", marginRight: ".4rem" }} title="Nouvelle inscription">●</span>}
                 {s.email}
                 {s.name && <div className="muted" style={{ fontSize: ".78rem", fontWeight: 400 }}>{s.name}</div>}
               </td>
-              <td>
+              <td data-l="Client / profil">
                 <form action={updateAction} className="ck-catform">
                   <input type="hidden" name="email" value={s.email} />
                   <input name="name" defaultValue={s.name ?? ""} placeholder="Nom" style={{ width: 90 }} />
@@ -120,10 +120,10 @@ export function SubscribersTable({
                   <button className="adm-btn ghost sm" type="submit">OK</button>
                 </form>
               </td>
-              <td className="muted" style={{ whiteSpace: "nowrap" }}>
+              <td data-l="Inscrit le" className="muted" style={{ whiteSpace: "nowrap" }}>
                 {new Date(s.date).toLocaleDateString("fr-FR")}
               </td>
-              <td>
+              <td data-l="Activité">
                 {s.opens === 0 ? (
                   <span className="muted">jamais ouvert</span>
                 ) : (
@@ -133,7 +133,7 @@ export function SubscribersTable({
                   </span>
                 )}
               </td>
-              <td style={{ textAlign: "right" }}>
+              <td data-l="" style={{ textAlign: "right" }}>
                 <form action={deleteAction}>
                   <input type="hidden" name="email" value={s.email} />
                   <button className="adm-btn danger sm" type="submit">Supprimer</button>

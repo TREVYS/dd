@@ -332,7 +332,7 @@ export default async function NewsletterAdmin({
           </div>
 
           <div className="adm-card" style={{ padding: 0 }}>
-            <table className="adm-table">
+            <table className="adm-table nl-camps">
               <thead>
                 <tr>
                   <th style={{ paddingLeft: "1.1rem" }}>Objet</th>
@@ -342,25 +342,25 @@ export default async function NewsletterAdmin({
               <tbody>
                 {campaigns.map((c) => (
                   <tr key={c.id}>
-                    <td style={{ fontWeight: 600, paddingLeft: "1.1rem" }}>
+                    <td data-l="Objet" style={{ fontWeight: 600, paddingLeft: "1.1rem" }}>
                       <Link href={`/admin/communication/newsletter/${c.id}`} className="adm-link">{c.subject}</Link>
                     </td>
-                    <td>
+                    <td data-l="Statut">
                       <span className={`adm-chipst ${c.status === "envoye" ? "pub" : "draft"}`}>
                         {c.status === "envoye" ? "Envoyé" : c.sendAt ? "Programmé" : "Brouillon"}
                       </span>
                     </td>
-                    <td className="muted">
+                    <td data-l="Envoi" className="muted">
                       {c.sentAt
                         ? `${c.sentCount ?? 0} dest. · ${new Date(c.sentAt).toLocaleDateString("fr-FR")}`
                         : c.sendAt ? `prévu le ${c.sendAt}` : "—"}
                     </td>
-                    <td>
+                    <td data-l="Ouvertures">
                       {c.status === "envoye" && (c.sentCount ?? 0) > 0
                         ? (() => { const o = campaignOpens(c.id); return <b>{o} <span className="muted" style={{ fontWeight: 500 }}>({Math.round((o / c.sentCount!) * 100)} %)</span></b>; })()
                         : <span className="muted">—</span>}
                     </td>
-                    <td style={{ textAlign: "right", paddingRight: "1.1rem" }}>
+                    <td data-l="" style={{ textAlign: "right", paddingRight: "1.1rem" }}>
                       <Link className="adm-btn ghost sm" href={`/admin/communication/newsletter/${c.id}`}>
                         {c.status === "envoye" ? "Analyse" : "Ouvrir"}
                       </Link>
