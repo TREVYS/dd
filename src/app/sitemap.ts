@@ -20,7 +20,9 @@ const ROUTES = [
   "/newsletter",
   "/contact",
   "/rendez-vous",
-  "/mentions-legales",
+  // Pages volontairement en « noindex » (mentions légales, désinscription,
+  // espace client) : elles ne figurent PAS ici — un sitemap ne doit lister
+  // que des pages indexables, sinon la Search Console signale l'incohérence.
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
