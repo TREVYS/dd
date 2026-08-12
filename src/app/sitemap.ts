@@ -3,6 +3,7 @@ import { getAllPosts } from "@/lib/blog";
 import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
 import { SITE_URL } from "@/lib/site";
+import { LOCAL_PAGES, localPagePath } from "@/lib/local-pages";
 
 const BASE = SITE_URL;
 
@@ -45,6 +46,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
+  // Pages « métier + localisation » (accessibles depuis le pied de page).
+  const localEntries: MetadataRoute.Sitemap = LOCAL_PAGES.map((p) => ({
+    url: `${BASE}${localPagePath(p)}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   const blogEntries: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
     url: `${BASE}/blog/${post.slug}`,
     lastModified: post.date ? new Date(post.date) : now,
@@ -52,5 +61,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...peopleEntries, ...blogEntries];
+  return [...staticEntries, ...peopleEntries, ...localEntries, ...blogEntries];
 }

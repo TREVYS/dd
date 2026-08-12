@@ -968,3 +968,16 @@ html,body{overflow-x:hidden}
 .mkt-vid-close{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;border:none;
   background:#fff;color:#241a12;font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 @media(max-width:600px){.mkt-vid-close{top:-8px;right:2px}}
+
+/* Pages « métier + localisation » */
+.mkt-loc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem}
+.mkt-loc-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.6rem 1.7rem}
+.mkt-loc-card h2{font-size:1.05rem;font-weight:800;margin-bottom:.6rem;color:var(--ink)}
+.mkt-loc-card p{color:var(--ink2);line-height:1.7;font-size:.94rem;margin:0}
+/* Bandeau discret des pages de proximité, en pied de page */
+.mkt-foot-local{border-top:1px solid var(--line);margin-top:2.4rem;padding-top:1.4rem}
+.mkt-foot-local h5{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);
+  font-weight:700;margin-bottom:.8rem}
+.mkt-foot-local .links{display:flex;flex-wrap:wrap;gap:.4rem .9rem}
+.mkt-foot-local .links a{font-size:.82rem;color:var(--ink3);text-decoration:none;line-height:1.6}
+.mkt-foot-local .links a:hover{color:var(--violet)}

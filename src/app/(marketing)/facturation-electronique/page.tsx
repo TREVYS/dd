@@ -89,6 +89,26 @@ const FAQ = [
     q: "Que devient le Portail Public de Facturation (PPF) ?",
     a: "Le PPF ne transmet plus directement les factures (fin du « schéma en Y »). Il joue désormais le rôle d'annuaire des entreprises et de concentrateur des données de transactions, qu'il relaie à l'administration fiscale.",
   },
+  {
+    q: "Comment choisir sa Plateforme Agréée ?",
+    a: "Le choix se fait sur quatre critères : la couverture de vos cas d'usage réels (factures d'acompte, avoirs, autofacturation, opérations internationales), l'interfaçage avec votre système d'information et votre logiciel comptable, la solidité de l'opérateur et son immatriculation effective, et enfin le coût complet (abonnement, volumétrie, intégration). Nous établissons le cahier des charges et la grille de comparaison — sans accord commercial avec un éditeur.",
+  },
+  {
+    q: "Quel est le coût de la mise en conformité ?",
+    a: "Il combine l'abonnement à la Plateforme Agréée (souvent quelques dizaines à quelques centaines d'euros par mois selon la volumétrie), les éventuels développements d'interfaçage, et le temps interne de préparation. Pour une PME, l'essentiel du coût est organisationnel, pas logiciel : c'est la remise à plat des processus et des référentiels clients/fournisseurs qui demande le plus d'effort.",
+  },
+  {
+    q: "Que se passe-t-il si une facture est rejetée par la plateforme ?",
+    a: "Elle n'est pas considérée comme émise : le délai de paiement ne court pas et l'encaissement est retardé d'autant. Les causes les plus fréquentes sont un référentiel client incomplet (SIREN, adresse de facturation) ou des mentions obligatoires manquantes. C'est précisément pourquoi la qualité de vos données clients doit être traitée avant l'échéance, pas après le premier rejet.",
+  },
+  {
+    q: "Faut-il archiver différemment ses factures électroniques ?",
+    a: "Oui. L'obligation de conservation reste de six ans au titre fiscal (dix ans au titre commercial), mais elle porte désormais sur le format structuré, avec des exigences d'authenticité, d'intégrité et de lisibilité. Un archivage à valeur probante (SAE) et une piste d'audit fiable documentée deviennent des sujets à part entière — c'est l'angle mort le plus fréquent des projets que nous auditons.",
+  },
+  {
+    q: "Nos petits fournisseurs sont-ils concernés eux aussi ?",
+    a: "Oui, dès lors qu'ils sont assujettis à la TVA et établis en France. Tous doivent être capables de recevoir des factures électroniques au 1ᵉʳ septembre 2026, quelle que soit leur taille. Anticipez la communication vers vos fournisseurs : un fournisseur non prêt, c'est un flux d'achats bloqué de votre côté.",
+  },
 ];
 
 export default function Page() {

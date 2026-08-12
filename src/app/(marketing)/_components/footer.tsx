@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "./logo";
 import { OecLogo } from "./oec-logo";
 import { NewsletterPopup } from "./newsletter-popup";
+import { LOCAL_PAGES, localPagePath } from "@/lib/local-pages";
 
 export function Footer() {
   return (
@@ -63,6 +64,17 @@ export function Footer() {
             <Link href="/mentions-legales">Mentions légales</Link>
           </div>
         </div>
+        {/* Accès discret aux pages de proximité : référencées par les moteurs,
+            hors de la navigation principale. */}
+        <div className="mkt-foot-local">
+          <h5>Nos expertises près de chez vous</h5>
+          <div className="links">
+            {LOCAL_PAGES.map((p) => (
+              <Link key={localPagePath(p)} href={localPagePath(p)}>{p.h1}</Link>
+            ))}
+          </div>
+        </div>
+
         <div className="mkt-foot-bot">
           <p>
             © {new Date().getFullYear()} T.A. Trevys Advisory · EURL · 1 rue

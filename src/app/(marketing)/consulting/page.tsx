@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FaqSection } from "../_components/faq-section";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 import { SilhouetteAvatar } from "../_components/silhouette-avatar";
@@ -26,6 +27,36 @@ const TAGS = [
   "Systèmes d'information Finance", "Projets ERP", "Gestion de projet", "AMOA",
   "Transformation digitale", "Conduite du changement", "Gouvernance des processus",
   "Optimisation des organisations", "Réforme de la facturation électronique",
+];
+
+
+// Questions fréquentes sur les métiers du conseil : capte les recherches
+// formulées en question et alimente les extraits enrichis (FAQPage).
+const FAQ = [
+  {
+    q: "Qu'apporte un cabinet de conseil adossé à un expert-comptable ?",
+    a: "L'accès aux chiffres réels, et la continuité. Un consultant externe passe des semaines à comprendre votre modèle économique ; nos équipes l'ont sous les yeux. Les recommandations sont donc chiffrées à partir de votre comptabilité, et leur mise en œuvre est suivie dans la durée par la même maison — pas transmise dans un rapport puis abandonnée.",
+  },
+  {
+    q: "Qu'est-ce qu'un DAF externalisé, et pour quelle taille d'entreprise ?",
+    a: "C'est une direction financière à temps partagé : quelques jours par mois pour piloter la performance, la trésorerie, le financement et les relations bancaires. C'est pertinent en général à partir de 2 M€ de chiffre d'affaires, ou plus tôt en cas de forte croissance, de multi-sites ou d'opération en préparation (levée, acquisition, cession).",
+  },
+  {
+    q: "En quoi consiste un audit organisationnel ?",
+    a: "Un diagnostic factuel de vos processus : où le temps se perd, où les erreurs se répètent, où le contrôle interne est insuffisant. Il combine entretiens, observation des flux réels et mesure des délais, et débouche sur un plan d'action priorisé par effort et par impact — pas sur un simple constat.",
+  },
+  {
+    q: "Combien de temps dure une mission de conseil ?",
+    a: "Un diagnostic ciblé se traite en 3 à 6 semaines. Un accompagnement de transformation (facturation électronique, refonte du pilotage, structuration de la fonction finance) s'étale sur 6 à 18 mois, avec des points d'étape réguliers. Nous privilégions des livrables intermédiaires courts à un rapport final découvert trop tard.",
+  },
+  {
+    q: "Êtes-vous indépendants des éditeurs de logiciels ?",
+    a: "Oui, totalement. Nous n'avons aucun accord de revente ni commission avec les éditeurs ou les Plateformes Agréées. C'est la condition d'un conseil crédible : quand nous recommandons un outil, c'est parce qu'il correspond à vos flux, pas à nos intérêts.",
+  },
+  {
+    q: "Comment se déroule une mission d'accompagnement à la facturation électronique ?",
+    a: "En trois temps : diagnostic et cartographie de vos flux de facturation, choix de la Plateforme Agréée (cahier des charges, consultation, grille de comparaison), puis conduite du changement (procédures cibles, formation des équipes, tests, documentation). Comptez 10 à 18 mois pour une organisation de taille moyenne — d'où l'intérêt d'engager le sujet maintenant.",
+  },
 ];
 
 export default function Page() {
@@ -141,6 +172,11 @@ export default function Page() {
           <Link className="btn btn-gold" href="/contact">Échanger avec un consultant</Link>
         </div>
       </section>
+      <FaqSection
+        items={FAQ}
+        path="/consulting"
+        intro={<h2>Vos questions sur <em>nos métiers de conseil</em></h2>}
+      />
     </>
   );
 }

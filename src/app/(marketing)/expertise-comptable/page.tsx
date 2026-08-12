@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FaqSection } from "../_components/faq-section";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
 import { ApprocheArt } from "./approche-art";
@@ -75,6 +76,36 @@ const POLES = [
     n: "04",
     t: "Juridique & Fiscal",
     d: "Nos juristes et fiscalistes soutiennent vos projets et sécurisent vos décisions, au plus près de vos enjeux.",
+  },
+];
+
+
+// Questions fréquentes : capte les recherches formulées en question et
+// alimente les extraits enrichis (FAQPage) de Google.
+const FAQ = [
+  {
+    q: "Combien coûte un expert-comptable pour une PME ?",
+    a: "Les honoraires dépendent du volume d'écritures, du nombre de salariés et de l'étendue de la mission (tenue, révision, paie, conseil). Chez Trevys, ils sont forfaitaires et fixés dans une lettre de mission : vous savez à l'avance ce qui est inclus, sans facturation surprise en fin d'exercice. Pour une TPE, l'ordre de grandeur du marché se situe entre 150 et 400 € HT par mois ; une PME avec paie et reporting se situe au-delà.",
+  },
+  {
+    q: "Comment changer d'expert-comptable en cours d'année ?",
+    a: "C'est possible à tout moment, et plus simple qu'on ne le croit. Nous prenons contact avec votre confrère (lettre de courtoisie prévue par le code de déontologie), récupérons les balances, historiques et déclarations, puis reprenons le dossier sans interruption. Vous n'avez ni à attendre la clôture, ni à gérer la transition vous-même.",
+  },
+  {
+    q: "Quelle différence entre expert-comptable et commissaire aux comptes ?",
+    a: "L'expert-comptable établit et présente vos comptes, vous conseille et vous accompagne au quotidien : il travaille pour vous. Le commissaire aux comptes certifie les comptes dans l'intérêt des tiers (associés, banques, État) : sa mission est un contrôle indépendant, obligatoire au-delà de certains seuils. Les deux fonctions sont incompatibles sur une même entreprise.",
+  },
+  {
+    q: "L'expert-comptable est-il obligatoire ?",
+    a: "Non, aucune loi ne l'impose : un dirigeant peut tenir sa comptabilité lui-même. Mais l'établissement des comptes annuels engage sa responsabilité, et les erreurs (TVA, charges non déductibles, amortissements) coûtent généralement bien plus que les honoraires. Faire appel à un professionnel inscrit à l'Ordre sécurise aussi vos relations avec les banques et l'administration.",
+  },
+  {
+    q: "Quels documents devons-nous vous transmettre, et comment ?",
+    a: "Factures d'achats et de ventes, relevés bancaires, notes de frais, contrats et éléments de paie. Tout passe par votre espace client sécurisé : vous déposez, la collecte et le rapprochement sont largement automatisés. Fini les classeurs déposés au cabinet en fin d'année.",
+  },
+  {
+    q: "Sous quel délai obtient-on son bilan ?",
+    a: "Notre engagement : des comptes présentés dans les trois mois suivant la clôture, avec un rendez-vous de restitution pour en tirer les décisions utiles. Nous produisons aussi des situations intermédiaires en cours d'exercice — un bilan découvert huit mois après la clôture ne sert plus à piloter.",
   },
 ];
 
@@ -264,6 +295,11 @@ export default function Page() {
           </Link>
         </div>
       </section>
+      <FaqSection
+        items={FAQ}
+        path="/expertise-comptable"
+        intro={<h2>Vos questions sur <em>l&apos;expertise comptable</em></h2>}
+      />
     </>
   );
 }
