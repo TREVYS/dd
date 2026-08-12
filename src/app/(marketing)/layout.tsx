@@ -104,8 +104,17 @@ const JSON_LD = {
         streetAddress: "1 rue Le Nôtre",
         postalCode: "75116",
         addressLocality: "Paris",
+        addressRegion: "Île-de-France",
         addressCountry: "FR",
       },
+      // Coordonnées du cabinet : renforce le référencement local (« expert-comptable
+      // Paris 16 », recherches « près de moi », panneau Google Maps).
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 48.8617,
+        longitude: 2.2855,
+      },
+      hasMap: "https://www.google.com/maps/search/?api=1&query=1+rue+Le+N%C3%B4tre+75116+Paris",
       founder: {
         "@type": "Person",
         name: "John Lévy",
