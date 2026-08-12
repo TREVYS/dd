@@ -115,6 +115,72 @@ export const LOCAL_PAGES: LocalPage[] = [
     liens: [EC, CONSEIL, RDV],
   },
   {
+    famille: "expert-comptable",
+    slug: "e-commerce",
+    h1: "Expert-comptable pour l'e-commerce",
+    title: "Expert-comptable e-commerce — TVA, OSS, marketplaces | Trevys",
+    description:
+      "Cabinet spécialisé dans la comptabilité e-commerce : TVA intracommunautaire et guichet OSS, ventes à distance, marketplaces (Amazon, Shopify), rapprochement des encaissements Stripe et PayPal.",
+    chapeau:
+      "L'e-commerce concentre les sujets qui font trébucher une comptabilité classique : des milliers de transactions, plusieurs canaux de vente, des flux d'encaissement qui ne correspondent jamais au chiffre d'affaires, et une TVA qui change selon le pays de l'acheteur. Nous traitons ces sujets tous les jours, avec des outils qui absorbent le volume au lieu de le subir.",
+    lieu: "France et ventes à distance dans l'Union européenne",
+    atouts: [
+      { titre: "TVA et guichet OSS maîtrisés", texte: "Franchissement du seuil de 10 000 € de ventes à distance, inscription au guichet unique OSS, ventilation par taux et par pays de destination, déclarations trimestrielles. Le poste où les redressements sont les plus fréquents — et les plus évitables." },
+      { titre: "Marketplaces et encaissements", texte: "Amazon, Shopify, eBay, Stripe, PayPal : chaque plateforme a sa logique de commissions, de retenues et de versements différés. Nous rapprochons les versements réels du chiffre d'affaires réel, pour que votre marge soit juste." },
+      { titre: "Stocks et marge par produit", texte: "Valorisation des stocks, coût de revient complet (achat, transport, douane, commissions, logistique), marge par référence. Vendre plus ne sert à rien si l'on ignore ce qui rapporte vraiment." },
+    ],
+    faq: [
+      { q: "Comment fonctionne la TVA sur les ventes à l'étranger ?", a: "Au-delà de 10 000 € de ventes à distance annuelles vers l'Union européenne (tous pays confondus), la TVA devient due dans le pays de l'acheteur, à son taux. Le guichet unique OSS permet de tout déclarer en France plutôt que de s'immatriculer dans chaque pays : c'est la solution à privilégier dans la quasi-totalité des cas, à condition de ventiler correctement ses ventes par pays dès le départ." },
+      { q: "Comment traitez-vous les volumes de transactions ?", a: "Par intégration automatisée des exports de vos plateformes et de vos processeurs de paiement, avec des contrôles de cohérence. Nous ne saisissons pas des milliers de lignes à la main : nous rapprochons des flux et nous investiguons les écarts. C'est ce qui rend l'e-commerce traitable à un coût raisonnable." },
+      { q: "Faut-il un stock valorisé même en dropshipping ?", a: "En dropshipping pur, vous ne détenez pas de stock : la question ne se pose pas de la même façon, mais celle du fait générateur et du traitement des importations, oui. Dès qu'il y a détention de marchandises (y compris en entrepôt logistique tiers, type FBA), un inventaire valorisé à la clôture est obligatoire." },
+    ],
+    liens: [EC, RFE, RDV],
+  },
+  {
+    famille: "expert-comptable",
+    slug: "esn-et-societes-informatiques",
+    h1: "Expert-comptable pour ESN et sociétés informatiques",
+    title: "Expert-comptable ESN et éditeurs de logiciels — Trevys Advisory",
+    description:
+      "Cabinet pour ESN, sociétés de conseil IT et éditeurs de logiciels : suivi de la rentabilité par mission, TJM et taux d'occupation, CIR, revenus récurrents (SaaS), portage et sous-traitance.",
+    chapeau:
+      "Dans une ESN, la comptabilité générale ne dit presque rien de la santé de l'entreprise : ce qui compte, c'est le taux d'occupation des consultants, la marge par mission et le décalage entre facturation client et paiement des sous-traitants. Nous construisons ce pilotage-là, en plus d'un socle comptable irréprochable.",
+    lieu: "Paris et Île-de-France",
+    atouts: [
+      { titre: "Rentabilité par mission et par consultant", texte: "TJM, taux d'occupation (TACE), marge brute par mission et par client, suivi de l'inter-contrat. Les indicateurs qui font la différence entre une ESN qui croît et une ESN qui grossit." },
+      { titre: "Travaux en cours et revenus récurrents", texte: "Reconnaissance du chiffre d'affaires sur les projets au forfait, factures à établir, produits constatés d'avance sur les abonnements SaaS. Un poste souvent mal traité, qui fausse le résultat d'un exercice sur l'autre." },
+      { titre: "CIR, CII et statut JEI", texte: "Éligibilité des travaux de développement, valorisation des temps passés, constitution d'un dossier défendable en cas de contrôle. Un crédit d'impôt mal documenté est une créance fragile." },
+    ],
+    faq: [
+      { q: "Comment suivre la rentabilité de chaque mission ?", a: "En rapprochant, mission par mission, le chiffre d'affaires facturé, le coût chargé du consultant affecté et les éventuels frais et sous-traitance. Cela suppose une comptabilité analytique légère mais rigoureuse, alimentée par vos outils de gestion des temps. Nous la mettons en place et la restituons dans un tableau de bord mensuel." },
+      { q: "Le développement logiciel ouvre-t-il droit au CIR ?", a: "Pas automatiquement. Le développement d'une fonctionnalité, même complexe, ne suffit pas : il faut démontrer une incertitude technique et une démarche de résolution qui dépasse l'état de l'art. Le CII (crédit d'impôt innovation) est souvent plus adapté aux prototypes et nouveaux produits. Nous qualifions les travaux avant de chiffrer, pas l'inverse." },
+      { q: "Comment traiter la sous-traitance et le portage ?", a: "Chaque contrat a ses incidences : TVA, responsabilité, requalification possible, et surtout impact sur la trésorerie puisque vous payez souvent le sous-traitant avant d'être payé par le client final. Nous sécurisons le traitement comptable et intégrons ce décalage dans le prévisionnel de trésorerie." },
+    ],
+    liens: [EC, CONSEIL, RDV],
+  },
+  {
+    famille: "expert-comptable",
+    slug: "societes-de-prestation-de-services",
+    h1: "Expert-comptable pour les sociétés de prestation de services",
+    title: "Expert-comptable prestation de services et conseil — Trevys",
+    description:
+      "Cabinet pour agences, sociétés de conseil et prestataires de services : TVA sur les encaissements, travaux en cours, gestion des acomptes, rentabilité par client et par mission.",
+    chapeau:
+      "Les sociétés de services vivent de leur temps et de leurs compétences : peu de stock, peu d'immobilisations, mais des sujets bien à elles — la TVA exigible à l'encaissement, les prestations commencées non facturées, les acomptes, et une rentabilité qui se joue sur quelques points de marge. Nous structurons ce pilotage et sécurisons les postes sensibles.",
+    lieu: "Paris et Île-de-France",
+    atouts: [
+      { titre: "TVA sur les encaissements", texte: "Pour les prestations de services, la TVA est en principe exigible au paiement, pas à la facturation. Une règle simple sur le papier, source d'erreurs récurrentes en pratique — surtout avec des acomptes, des clients étrangers ou des impayés." },
+      { titre: "Travaux en cours et acomptes", texte: "Prestations engagées non facturées, factures à établir, produits constatés d'avance : le rattachement correct des produits à l'exercice change le résultat, l'impôt et l'image donnée à vos partenaires financiers." },
+      { titre: "Rentabilité par mission et par client", texte: "Temps passé contre honoraires facturés, marge par client, détection des dossiers qui coûtent plus qu'ils ne rapportent. Dans une société de services, c'est souvent 20 % des clients qui absorbent 80 % des dépassements." },
+    ],
+    faq: [
+      { q: "Quand la TVA est-elle exigible sur une prestation de services ?", a: "À l'encaissement du prix (ou de l'acompte), et non à l'émission de la facture — sauf option pour les débits, qui rend la TVA exigible à la facturation. L'option peut simplifier le suivi mais avance la sortie de trésorerie : le bon choix dépend de vos délais de paiement réels. Nous chiffrons les deux avant d'opter." },
+      { q: "Comment traiter une prestation commencée mais non terminée à la clôture ?", a: "Elle doit être rattachée à l'exercice au cours duquel elle a été réalisée, via les travaux en cours ou les factures à établir, selon l'avancement et les termes du contrat. C'est le point le plus fréquemment redressé dans les sociétés de services, et celui qui fausse le plus les comparaisons d'un exercice à l'autre." },
+      { q: "Faut-il facturer des acomptes ?", a: "Oui, dans la quasi-totalité des cas. L'acompte sécurise l'engagement du client et allège votre besoin en fonds de roulement — le poste qui met le plus souvent en difficulté les sociétés de services en croissance. Nous vous aidons à calibrer le pourcentage et l'échéancier selon votre cycle de production." },
+    ],
+    liens: [EC, CONSEIL, RDV],
+  },
+  {
     famille: "conseil",
     slug: "daf-externalise-paris",
     h1: "DAF externalisé à Paris",
