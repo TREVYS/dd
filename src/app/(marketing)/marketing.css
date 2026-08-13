@@ -981,3 +981,54 @@ html,body{overflow-x:hidden}
 .mkt-foot-local .links{display:flex;flex-wrap:wrap;gap:.4rem .9rem}
 .mkt-foot-local .links a{font-size:.82rem;color:var(--ink3);text-decoration:none;line-height:1.6}
 .mkt-foot-local .links a:hover{color:var(--violet)}
+
+/* Simulateur de rémunération du dirigeant */
+.sim{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:1.8rem}
+.sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.sim-field{margin-bottom:1.3rem}
+.sim-field label{display:block;font-weight:700;font-size:.92rem;color:var(--ink);margin-bottom:.5rem}
+.sim-field label small{display:block;font-weight:400;font-size:.8rem;color:var(--ink3);line-height:1.5;margin-top:.2rem}
+.sim-money{display:flex;align-items:center;gap:.5rem}
+.sim-money input{flex:1;border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem;font:inherit;font-size:1rem;
+  font-weight:700;color:var(--ink);background:#fff}
+.sim-money span{font-weight:700;color:var(--ink3)}
+.sim-field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem;font:inherit;font-size:.95rem;background:#fff}
+.sim-row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.sim-toggle{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.sim-toggle button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:.7rem .8rem;cursor:pointer;
+  font:inherit;font-size:.86rem;font-weight:700;color:var(--ink2);text-align:left;transition:.15s}
+.sim-toggle button small{display:block;font-weight:400;font-size:.76rem;color:var(--ink3);margin-top:.15rem}
+.sim-toggle button:hover{border-color:var(--violet)}
+.sim-toggle button.on{background:var(--violet);border-color:var(--violet);color:#fff}
+.sim-toggle button.on small{color:rgba(255,255,255,.85)}
+.sim-range{width:100%;accent-color:var(--violet);margin:.3rem 0 .2rem}
+.sim-range-lbl{display:flex;justify-content:space-between;font-size:.74rem;color:var(--ink3)}
+.sim-out{background:#faf7f2;border-radius:16px;padding:1.4rem}
+.sim-hero{text-align:center;padding:.5rem 0 1.2rem;border-bottom:1px solid var(--line);margin-bottom:1rem}
+.sim-hero .k{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);font-weight:700}
+.sim-hero .v{display:block;font-size:2.2rem;font-weight:800;color:var(--violet);line-height:1.2;margin:.25rem 0}
+.sim-hero .s{display:block;font-size:.82rem;color:var(--ink3)}
+.sim-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.sim-table th{text-align:left;font-weight:600;color:var(--ink2);padding:.45rem 0;vertical-align:top}
+.sim-table th small{display:block;font-weight:400;font-size:.74rem;color:var(--ink3)}
+.sim-table td{text-align:right;font-weight:700;color:var(--ink);padding:.45rem 0;white-space:nowrap}
+.sim-table td.neg{color:#b4472e}
+.sim-table tr.sep th,.sim-table tr.sep td{border-top:1px solid var(--line);padding-top:.8rem}
+.sim-compare{margin-top:1.2rem;padding:.9rem 1rem;background:#fff;border:1px solid var(--line);border-radius:12px;font-size:.86rem;line-height:1.65}
+.sim-compare b{color:var(--ink)}
+.sim-compare p{margin:.4rem 0 0;color:var(--ink2)}
+.sim-note{font-size:.8rem;color:var(--ink3)}
+.sim-cta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.1rem}
+.sim-sources{background:#faf7f2;border:1px solid var(--line);border-radius:16px;padding:1.6rem 1.8rem}
+.sim-sources h2{font-size:1.05rem;font-weight:800;margin-bottom:.7rem}
+.sim-sources p{color:var(--ink2);line-height:1.7;font-size:.9rem}
+.sim-sources ul{margin:.8rem 0;padding-left:1.1rem;color:var(--ink2);font-size:.88rem;line-height:1.85}
+.sim-sources a{color:var(--violet);text-decoration:underline}
+.sim-disclaimer{margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--line);font-size:.84rem;color:var(--ink3);line-height:1.7}
+@media(max-width:860px){
+  .sim{padding:1.1rem}
+  .sim-grid{grid-template-columns:1fr;gap:1.4rem}
+  .sim-row2,.sim-toggle{grid-template-columns:1fr}
+  .sim-hero .v{font-size:1.8rem}
+  .sim-sources{padding:1.2rem 1.1rem}
+}

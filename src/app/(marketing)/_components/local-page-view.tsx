@@ -8,6 +8,7 @@ import { localPagePath } from "@/lib/local-pages";
 const FAMILLE_LABEL: Record<LocalPage["famille"], { nom: string; path: string }> = {
   "expert-comptable": { nom: "Expertise comptable", path: "/expertise-comptable" },
   conseil: { nom: "Conseil", path: "/consulting" },
+  situation: { nom: "Votre situation", path: "/contact" },
 };
 
 // Gabarit des pages « métier + localisation ». Contenu propre à chaque page

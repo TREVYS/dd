@@ -69,9 +69,16 @@ export function Footer() {
         <div className="mkt-foot-local">
           <h5>Nos expertises près de chez vous</h5>
           <div className="links">
-            {LOCAL_PAGES.map((p) => (
+            {LOCAL_PAGES.filter((p) => p.famille !== "situation").map((p) => (
               <Link key={localPagePath(p)} href={localPagePath(p)}>{p.h1}</Link>
             ))}
+          </div>
+          <h5 style={{ marginTop: "1.1rem" }}>Vous êtes dans cette situation ?</h5>
+          <div className="links">
+            {LOCAL_PAGES.filter((p) => p.famille === "situation").map((p) => (
+              <Link key={localPagePath(p)} href={localPagePath(p)}>{p.h1}</Link>
+            ))}
+            <Link href="/simulateurs/remuneration-dirigeant">Simulateur : rémunération ou dividendes</Link>
           </div>
         </div>
 

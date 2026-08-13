@@ -6,7 +6,7 @@
 export type LocalFaq = { q: string; a: string };
 
 export type LocalPage = {
-  famille: "expert-comptable" | "conseil";
+  famille: "expert-comptable" | "conseil" | "situation";
   slug: string;
   h1: string;
   title: string; // balise <title>
@@ -245,6 +245,100 @@ export const LOCAL_PAGES: LocalPage[] = [
       { q: "Que contient la restitution ?", a: "Une cartographie des processus, les dysfonctionnements constatés avec leur impact estimé, et un plan d'action priorisé. Le tout présenté à la direction, pas seulement transmis par e-mail." },
     ],
     liens: [AUDIT, IA, RDV],
+  },
+
+  // --- Pages « situation » : intention forte, prospects déjà décidés --------
+  {
+    famille: "situation",
+    slug: "changer-d-expert-comptable",
+    h1: "Changer d'expert-comptable",
+    title: "Changer d'expert-comptable : démarches, délais, à quel moment | Trevys",
+    description:
+      "Comment changer d'expert-comptable : la procédure réelle, le rôle de la lettre de courtoisie, les documents à récupérer, le bon moment dans l'exercice. Aucune démarche à votre charge.",
+    chapeau:
+      "Beaucoup de dirigeants restent des années dans un cabinet qui ne leur convient plus, persuadés que changer sera long, coûteux ou conflictuel. Ce n'est pas le cas : la procédure est encadrée par le code de déontologie, elle prend quelques jours, et c'est le nouveau cabinet qui s'en charge. Voici ce qui se passe réellement.",
+    lieu: "Paris et Île-de-France",
+    atouts: [
+      { titre: "Nous faisons les démarches", texte: "Nous adressons la lettre de courtoisie à votre confrère, récupérons les balances, historiques, déclarations et dossiers de travail. Vous n'avez rien à négocier ni à réclamer vous-même." },
+      { titre: "À n'importe quel moment", texte: "Aucune obligation d'attendre la clôture. Nous reprenons en cours d'exercice à partir de la dernière balance, avec un point de contrôle sur les à-nouveaux et les postes en suspens." },
+      { titre: "Un état des lieux offert", texte: "Avant tout engagement, nous examinons vos derniers comptes et vous disons franchement ce qui va, ce qui ne va pas, et ce que nous ferions différemment. Sans obligation de suite." },
+    ],
+    faq: [
+      { q: "Faut-il prévenir soi-même son expert-comptable actuel ?", a: "Vous devez lui notifier la fin de la mission selon les termes de votre lettre de mission (souvent un préavis de trois mois, parfois moins). Mais le contact professionnel — la lettre de courtoisie et la demande de transmission du dossier — relève du nouveau cabinet. C'est une obligation déontologique entre confrères, prévue par le code de déontologie des experts-comptables." },
+      { q: "L'ancien cabinet peut-il refuser de transmettre le dossier ?", a: "Il doit transmettre les documents qui vous appartiennent : pièces comptables, balances, grands livres, déclarations déposées. Il peut en revanche exercer un droit de rétention sur ses propres dossiers de travail en cas d'honoraires impayés. En pratique, régler le solde dû lève l'essentiel des blocages — et nous savons gérer les cas de tension." },
+      { q: "Quel est le meilleur moment pour changer ?", a: "Juste après le dépôt des comptes annuels, c'est le plus confortable : le dossier est à jour et la reprise est nette. Mais si la relation ne fonctionne plus, ou si vous découvrez des erreurs, il n'y a aucune raison d'attendre douze mois de plus. Une reprise en cours d'exercice est parfaitement gérable." },
+      { q: "Le changement coûte-t-il quelque chose ?", a: "Chez nous, la reprise du dossier et l'état des lieux initial ne sont pas facturés : ils font partie de l'entrée en relation. Vous ne payez que la mission qui commence, aux conditions fixées dans la lettre de mission." },
+    ],
+    liens: [EC, { label: "Nous écrire", href: "/contact" }, RDV],
+  },
+  {
+    famille: "situation",
+    slug: "creer-son-entreprise",
+    h1: "Créer son entreprise : les choix qui comptent",
+    title: "Créer son entreprise : SAS ou SARL, statut du dirigeant | Trevys",
+    description:
+      "Création d'entreprise : choisir entre SAS et SARL, statut social du dirigeant, capital, régime de TVA, premières échéances. L'accompagnement d'un expert-comptable dès le départ.",
+    chapeau:
+      "Créer une société prend quelques jours. Réparer un mauvais choix de départ prend des années — et coûte souvent bien plus cher que l'accompagnement qui l'aurait évité. Forme sociale, statut du dirigeant, répartition du capital, régime fiscal : voici les décisions qui vous suivront, et comment les prendre en connaissance de cause.",
+    lieu: "Paris et Île-de-France",
+    atouts: [
+      { titre: "SAS ou SARL : le vrai arbitrage", texte: "Ce n'est pas une question de mode. Le président de SAS est assimilé salarié (protection sociale plus large, charges plus élevées) ; le gérant majoritaire de SARL est travailleur indépendant (cotisations plus faibles, couverture plus légère, dividendes partiellement cotisés). Le bon choix dépend de votre rémunération cible et de vos besoins de protection." },
+      { titre: "Capital, pacte et associés", texte: "Montant du capital, apports en nature, répartition entre associés, clauses de sortie : ce qui se règle facilement au départ devient inextricable après le premier désaccord." },
+      { titre: "Les premières échéances", texte: "Régime de TVA, option à l'impôt sur les sociétés, exercice de référence, déclarations de démarrage : nous posons le calendrier de vos douze premiers mois pour qu'aucune échéance ne vous surprenne." },
+    ],
+    faq: [
+      { q: "SAS ou SARL : que choisir ?", a: "En simplifiant : la SAS offre une grande souplesse statutaire et une meilleure protection sociale au dirigeant, au prix de charges nettement plus élevées ; la SARL coûte moins cher en cotisations mais encadre davantage le fonctionnement, et les dividendes du gérant majoritaire sont soumis à cotisations au-delà de 10 % du capital. Si vous vous versez une rémunération significative, l'écart de charges pèse lourd ; si vous privilégiez la protection sociale et l'entrée d'investisseurs, la SAS s'impose souvent." },
+      { q: "Quel capital social prévoir ?", a: "Légalement, 1 € suffit en SAS comme en SARL. En pratique, un capital trop faible nuit à votre crédibilité bancaire et, en SARL, réduit le seuil de 10 % en dessous duquel les dividendes échappent aux cotisations. Un capital cohérent avec les besoins de démarrage — souvent quelques milliers d'euros — est un meilleur signal." },
+      { q: "Faut-il un expert-comptable dès la création ?", a: "Idéalement avant : les décisions structurantes se prennent au moment de la rédaction des statuts, pas après. Un accompagnement au démarrage coûte une fraction de ce que coûte une transformation de société ou une régularisation fiscale deux ans plus tard." },
+      { q: "Quand la première déclaration de TVA intervient-elle ?", a: "Cela dépend du régime choisi à la création : franchise en base (pas de TVA facturée ni déclarée sous les seuils), régime simplifié (une déclaration annuelle avec acomptes) ou régime réel normal (déclaration mensuelle ou trimestrielle). Ce choix influe sur votre trésorerie et sur votre charge administrative : nous le calibrons selon votre volume d'activité prévisionnel." },
+    ],
+    liens: [EC, { label: "Simulateur rémunération dirigeant", href: "/simulateurs/remuneration-dirigeant" }, RDV],
+  },
+  {
+    famille: "situation",
+    slug: "ceder-ou-transmettre-son-entreprise",
+    h1: "Céder ou transmettre son entreprise",
+    title: "Céder son entreprise : valorisation, fiscalité, calendrier | Trevys",
+    description:
+      "Préparer la cession ou la transmission de son entreprise : valorisation, audit préparatoire, fiscalité de la plus-value, apport-cession, pacte Dutreil, calendrier réaliste.",
+    chapeau:
+      "Une cession se prépare deux à trois ans à l'avance. C'est le délai nécessaire pour présenter des comptes lisibles, réduire la dépendance de l'entreprise à votre personne, et arbitrer une fiscalité qui peut varier de plusieurs centaines de milliers d'euros selon le montage retenu. Commencer six mois avant, c'est accepter de vendre moins cher et de payer plus.",
+    lieu: "Paris et Île-de-France",
+    atouts: [
+      { titre: "Valorisation et préparation", texte: "Estimation par plusieurs méthodes, retraitement du résultat, identification de ce qui décote la valeur (dépendance au dirigeant, concentration client, retards déclaratifs) et plan de correction avant la mise en vente." },
+      { titre: "Audit préparatoire", texte: "Nous passons votre dossier au crible avant que l'acquéreur ne le fasse : social, fiscal, juridique, contrats. Une mauvaise surprise découverte pendant les négociations coûte toujours plus cher qu'un point réglé en amont." },
+      { titre: "Fiscalité de la cession", texte: "Plus-value professionnelle ou de cession de titres, abattements applicables, apport-cession, transmission familiale et pacte Dutreil : le choix du schéma se décide avant la vente, jamais après la signature." },
+    ],
+    faq: [
+      { q: "Combien vaut mon entreprise ?", a: "Il n'existe pas un prix mais une fourchette, obtenue en croisant plusieurs méthodes : multiple de l'excédent brut d'exploitation retraité, actualisation des flux de trésorerie prévisionnels, valeur patrimoniale, et comparables du secteur. Le retraitement du résultat — rémunération du dirigeant, charges non récurrentes, loyers intra-groupe — pèse souvent plus que le choix de la méthode." },
+      { q: "Comment est imposée la plus-value de cession ?", a: "Pour une cession de titres par une personne physique, la plus-value relève par défaut du prélèvement forfaitaire unique de 31,4 % (12,8 % d'impôt et 18,6 % de prélèvements sociaux). Des dispositifs spécifiques peuvent modifier fortement la note : départ à la retraite du dirigeant, apport-cession avec report d'imposition, ou transmission familiale sous pacte Dutreil. Chacun impose des conditions strictes à respecter avant l'opération." },
+      { q: "Quand faut-il commencer à préparer ?", a: "Deux à trois ans avant la cession envisagée. C'est le temps nécessaire pour produire deux ou trois exercices de comptes propres et cohérents, réduire votre indispensabilité opérationnelle, régler les points sensibles et mettre en place le schéma fiscal adapté — la plupart des dispositifs supposent une antériorité." },
+      { q: "Qu'est-ce que le pacte Dutreil ?", a: "Un dispositif de transmission familiale permettant, sous conditions strictes d'engagement de conservation des titres et de poursuite de l'activité, un abattement de 75 % sur la valeur transmise pour le calcul des droits de mutation. L'économie est considérable, mais le formalisme est exigeant et le non-respect d'un engagement entraîne la remise en cause rétroactive." },
+    ],
+    liens: [CONSEIL, EC, RDV],
+  },
+  {
+    famille: "situation",
+    slug: "reprendre-une-entreprise",
+    h1: "Reprendre une entreprise",
+    title: "Reprendre une entreprise : audit d'acquisition, financement | Trevys",
+    description:
+      "Accompagnement à la reprise d'entreprise : audit d'acquisition (due diligence), analyse de la cible, montage de financement, holding de reprise et effet de levier.",
+    chapeau:
+      "Reprendre une entreprise, c'est acheter à la fois un potentiel et des risques — et les seconds sont rarement mis en avant dans le dossier de présentation. Notre rôle : vérifier ce qu'on vous vend, chiffrer ce que ça vaut vraiment, et construire un montage qui tienne après la reprise, pas seulement le jour de la signature.",
+    lieu: "Paris et Île-de-France",
+    atouts: [
+      { titre: "Audit d'acquisition", texte: "Analyse des comptes des trois derniers exercices, qualité du chiffre d'affaires et récurrence, engagements hors bilan, passif social, litiges, dépendance client ou fournisseur. Ce que l'audit révèle sert aussi à renégocier le prix." },
+      { titre: "Montage et financement", texte: "Holding de reprise et effet de levier, capacité de remboursement au regard des flux réels, dossier bancaire, garanties. Un montage qui étrangle la trésorerie de la cible est un échec programmé." },
+      { titre: "Les cent premiers jours", texte: "Prise en main du pilotage, tableau de bord, sécurisation des équipes clés et des contrats. Nous restons présents après la signature — c'est là que tout se joue." },
+    ],
+    faq: [
+      { q: "Qu'est-ce qu'un audit d'acquisition ?", a: "Une vérification indépendante de la situation réelle de la cible : comptable et financière, fiscale, sociale et juridique. L'objectif n'est pas seulement de détecter des anomalies, mais de savoir ce que vous achetez vraiment — et d'objectiver la négociation du prix et de la garantie d'actif et de passif." },
+      { q: "Qu'est-ce qu'une garantie d'actif et de passif ?", a: "Une clause par laquelle le cédant s'engage à vous indemniser si un passif né avant la cession apparaît après (redressement fiscal, litige prud'homal, dette non comptabilisée). Sa rédaction — plafond, franchise, durée, garantie bancaire adossée — est aussi importante que son existence." },
+      { q: "Peut-on reprendre sans apport personnel ?", a: "C'est très rare. Les banques attendent généralement un apport de l'ordre de 20 à 30 % du prix, complété le cas échéant par des prêts d'honneur ou une intervention de Bpifrance. Le crédit-vendeur, quand le cédant l'accepte, réduit d'autant le besoin de financement bancaire et constitue un signal de confiance apprécié." },
+      { q: "Faut-il créer une holding de reprise ?", a: "Dans la majorité des cas d'acquisition de titres, oui. La holding porte l'emprunt et le rembourse avec les dividendes remontés de la cible, sous le régime mère-fille qui limite fortement la double imposition. Le schéma doit être calibré sur la capacité de distribution réelle de la cible — c'est précisément ce que nous modélisons." },
+    ],
+    liens: [CONSEIL, EC, RDV],
   },
 ];
 

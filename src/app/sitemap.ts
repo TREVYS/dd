@@ -19,6 +19,7 @@ const ROUTES = [
   "/references",
   "/blog",
   "/newsletter",
+  "/simulateurs/remuneration-dirigeant",
   "/contact",
   "/rendez-vous",
   // Pages volontairement en « noindex » (mentions légales, désinscription,
