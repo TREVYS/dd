@@ -91,7 +91,7 @@ export default function Page() {
         <div className="wrap">
           <div className="shead">
             <span className="eyebrow">Notre histoire</span>
-            <h2>Huit années de <em>développement</em> continu</h2>
+            <h2>Un développement <em>continu</em> depuis 2018</h2>
             <p>
               Depuis 2018, le cabinet s&apos;est construit par étapes, autour d&apos;une
               même ligne directrice : mettre le chiffre au service de la décision.
