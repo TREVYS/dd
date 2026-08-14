@@ -46,7 +46,7 @@
 .mkt .eyebrow::before{content:"";width:24px;height:2px;background:var(--grad);border-radius:2px}
 .mkt .shead{max-width:680px;margin:0 auto 3rem;text-align:center}
 .mkt .shead h2{font-size:clamp(1.9rem,3.9vw,2.9rem);margin:1.1rem 0 1rem;text-wrap:balance}
-.mkt .shead p{font-size:1.08rem;color:var(--ink2);max-width:600px;margin-left:auto;margin-right:auto;line-height:1.7}
+.mkt .shead p{font-size:1.05rem;color:var(--ink2);max-width:620px;margin-left:auto;margin-right:auto;line-height:1.7;text-wrap:pretty;text-wrap:balance}
 
 /* buttons */
 .mkt .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-size:.9rem;font-weight:600;border-radius:100px;transition:all .25s cubic-bezier(.2,.7,.2,1);cursor:pointer;padding:.9rem 1.8rem;border:1px solid transparent}
@@ -1036,10 +1036,14 @@ html,body{overflow-x:hidden}
 /* Confort de lecture sur grand écran : corps de texte légèrement agrandi.
    Les blocs à largeur limitée restent centrés dans la page. */
 @media(min-width:1100px){
-  .mkt .shead p{font-size:1.14rem}
+  .mkt .shead p{font-size:1.1rem}
   .mkt-genese p{font-size:1.14rem;line-height:1.85}
   .mkt-phead p{font-size:1.18rem;max-width:640px}
   .mkt-loc-card p{font-size:1rem;line-height:1.75}
   .mkt-faq-item p{font-size:1rem;line-height:1.8}
   .mkt-faq-item summary{font-size:1.05rem}
 }
+
+/* Grille 2 colonnes avec nombre impair d'éléments : la dernière carte
+   s'étend sur toute la largeur au lieu de rester orpheline à gauche. */
+.mkt-svc-grid > *:last-child:nth-child(odd){grid-column:1 / -1}

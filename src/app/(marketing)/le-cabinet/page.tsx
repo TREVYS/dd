@@ -99,7 +99,7 @@ export default function Page() {
               s&apos;engage activement dans la vie de la profession :
             </p>
           </div>
-          <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: ".9rem", maxWidth: "760px" }}>
+          <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: ".9rem", maxWidth: "620px", margin: "0 auto" }}>
             {CRED.map((c) => (
               <li key={c} style={{ display: "flex", gap: ".8rem", color: "var(--ink2)" }}>
                 <span style={{ color: "var(--violet)", fontWeight: 800 }}>✓</span>
@@ -107,7 +107,7 @@ export default function Page() {
               </li>
             ))}
           </ul>
-          <div style={{ marginTop: "2.2rem" }}>
+          <div style={{ marginTop: "2.2rem", display: "flex", justifyContent: "center" }}>
             <OecLogo className="mkt-oec" />
           </div>
         </div>
