@@ -3,6 +3,7 @@ import "./marketing.css";
 import { Nav } from "./_components/nav";
 import { Footer } from "./_components/footer";
 import { AnalyticsBeacon } from "./_components/analytics-beacon";
+import { CookieConsent } from "./_components/cookie-consent";
 import { WhatsappFab } from "./_components/whatsapp";
 import { menuPages } from "@/lib/content-admin";
 import { SITE_URL } from "@/lib/site";
@@ -161,17 +162,8 @@ export default function MarketingLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
-      {GA_ID && (
-        <>
-          {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-          <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
-            }}
-          />
-        </>
-      )}
+      {/* Google Analytics : chargé uniquement après consentement (bandeau cookies). */}
+      <CookieConsent gaId={GA_ID} />
       <Nav extraLinks={extraLinks} />
       {children}
       <Footer />
