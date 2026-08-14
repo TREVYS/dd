@@ -62,6 +62,7 @@ export function Footer() {
             <Link href="/contact">Contact</Link>
             <Link href="/espace-client">Espace client</Link>
             <Link href="/mentions-legales">Mentions légales</Link>
+            <Link href="/politique-de-confidentialite">Politique de confidentialité</Link>
           </div>
         </div>
         {/* Accès discret aux pages de proximité : référencées par les moteurs,
