@@ -23,10 +23,44 @@ const VALUES = [
   { t: "Transmission", d: "Nous partageons nos connaissances pour aider nos clients à mieux comprendre leurs enjeux et à décider." },
 ];
 
-const GENESE = [
-  "Tout commence en 2018. Après plusieurs années passées au sein de cabinets et de directions financières, John Lévy fait un constat simple : les dirigeants n'ont pas seulement besoin d'un cabinet qui produit des comptes, mais d'un partenaire qui les éclaire dans leurs décisions.",
-  "Trevys naît de cette conviction. Le cabinet se construit autour de deux métiers indissociables — l'expertise comptable et le conseil — avec l'ambition d'accompagner les entreprises au-delà de la conformité : dans leurs transformations, leur pilotage et leur croissance.",
-  "Au fil des années, le cabinet s'entoure d'un écosystème de sociétés et d'experts complémentaires, et fait le pari de la technologie — data, automatisation, intelligence artificielle — pour augmenter la valeur délivrée à ses clients, sans jamais perdre de vue l'essentiel : la relation humaine et la confiance.",
+// L'histoire du cabinet, racontée comme une trajectoire.
+const HISTOIRE = [
+  {
+    annee: "2018",
+    titre: "Une conviction devient un cabinet",
+    texte: "Après des années passées en cabinets et en directions financières, John Lévy fait un constat têtu : les dirigeants ne manquent pas de comptes, ils manquent d'éclairage. Trevys naît rue Le Nôtre, avec une promesse simple — le chiffre juste, mis au service de la décision.",
+  },
+  {
+    annee: "2020",
+    titre: "Deux métiers, une seule maison",
+    texte: "Le conseil rejoint l'expertise comptable, non pas à côté mais avec elle : les consultants travaillent sur les chiffres réels, les comptables comprennent la stratégie. Cette articulation, rare dans la profession, devient la signature du cabinet.",
+  },
+  {
+    annee: "2023",
+    titre: "Un écosystème s'assemble",
+    texte: "Autour du cabinet se constitue un cercle de sociétés et d'experts complémentaires — data, droit social, audit, édition logicielle. Une réponse complète, sans jamais diluer la responsabilité : un interlocuteur, une exigence.",
+  },
+  {
+    annee: "2026",
+    titre: "Le pari de la technologie, tenu",
+    texte: "Automatisation, intelligence artificielle, facturation électronique : le cabinet met la technologie au travail — pour rendre du temps aux équipes et de la clarté aux clients. Référent sur la réforme, il aide la profession elle-même à franchir le cap.",
+  },
+];
+
+// Le manifeste : ce qui fait la manière Trevys.
+const PILIERS = [
+  {
+    titre: "La passion de l'exigence",
+    texte: "L'exigence n'est pas une posture, c'est une habitude : relire ce qui semble acquis, vérifier ce que tout le monde tient pour vrai, refuser l'à-peu-près même quand personne ne le verrait. Un dossier Trevys doit pouvoir être ouvert par n'importe qui, n'importe quand, sans rougir.",
+  },
+  {
+    titre: "Le goût de la précision",
+    texte: "Un chiffre n'est pas presque juste : il est juste, ou il ne sert à rien. La précision est ce qui transforme une comptabilité en outil de décision — des marges que l'on peut comparer, une trésorerie que l'on peut projeter, un résultat que l'on peut expliquer ligne à ligne.",
+  },
+  {
+    titre: "Le sens du service",
+    texte: "Répondre. Vite, clairement, et à la question posée. Derrière chaque demande, il y a un dirigeant qui doit trancher : notre travail est de lui rendre la décision plus facile — pas de lui renvoyer la complexité avec un vocabulaire en plus.",
+  },
 ];
 
 const CRED = [
@@ -56,18 +90,50 @@ export default function Page() {
       <section className="sec">
         <div className="wrap">
           <div className="shead">
-            <span className="eyebrow">Notre genèse</span>
-            <h2>L&apos;histoire d&apos;un cabinet <em>augmenté</em></h2>
+            <span className="eyebrow">Notre histoire</span>
+            <h2>Une trajectoire, pas un <em>hasard</em></h2>
+            <p>
+              Trevys ne s&apos;est pas construit en un jour : chaque étape a ajouté
+              une brique à la même ambition — mettre le chiffre au service de la décision.
+            </p>
           </div>
-          <div className="mkt-genese">
-            {GENESE.map((p, i) => (
-              <p key={i}>{p}</p>
+          <ol className="mkt-histoire">
+            {HISTOIRE.map((h) => (
+              <li key={h.annee}>
+                <span className="year">{h.annee}</span>
+                <div className="body">
+                  <h3>{h.titre}</h3>
+                  <p>{h.texte}</p>
+                </div>
+              </li>
             ))}
-            <div className="mkt-genese-stats">
-              <div><b>2018</b><span>Création du cabinet</span></div>
-              <div><b>2 métiers</b><span>Expertise comptable &amp; conseil</span></div>
-              <div><b>1 écosystème</b><span>De sociétés &amp; d&apos;experts</span></div>
-            </div>
+          </ol>
+          <div className="mkt-genese-stats" style={{ maxWidth: 860, margin: "2.4rem auto 0" }}>
+            <div><b>2018</b><span>Création du cabinet, Paris 16ᵉ</span></div>
+            <div><b>2 métiers</b><span>Expertise comptable &amp; conseil, indissociables</span></div>
+            <div><b>1 écosystème</b><span>De sociétés &amp; d&apos;experts complémentaires</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Notre manière</span>
+            <h2>Ce qui nous fait <em>lever le matin</em></h2>
+            <p>
+              Trois exigences, cultivées comme un artisanat — elles valent
+              mieux qu&apos;un long discours commercial.
+            </p>
+          </div>
+          <div className="mkt-loc-grid">
+            {PILIERS.map((pl, i) => (
+              <div key={pl.titre} className="mkt-loc-card">
+                <span className="num">{String(i + 1).padStart(2, "0")}</span>
+                <h3>{pl.titre}</h3>
+                <p>{pl.texte}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -78,9 +144,10 @@ export default function Page() {
             <span className="eyebrow">Nos valeurs</span>
             <h2>Les valeurs qui nous <em>animent</em></h2>
           </div>
-          <div className="mkt-svc-grid">
-            {VALUES.map((v) => (
-              <div className="mkt-svc" key={v.t}>
+          <div className="mkt-grid5">
+            {VALUES.map((v, i) => (
+              <div className="mkt-loc-card" key={v.t}>
+                <span className="num">{String(i + 1).padStart(2, "0")}</span>
                 <h3>{v.t}</h3>
                 <p>{v.d}</p>
               </div>
@@ -137,6 +204,21 @@ export default function Page() {
               </span>
             </figcaption>
           </figure>
+        </div>
+      </section>
+
+      <section className="sec">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Le service, concrètement</span>
+            <h2>Des engagements que l&apos;on peut <em>vérifier</em></h2>
+          </div>
+          <div className="mkt-loc-stats" style={{ maxWidth: 1000, gridTemplateColumns: "repeat(4,1fr)" }}>
+            <div><b>24 h</b><span>pour une première réponse, les jours ouvrés</span></div>
+            <div><b>3 mois</b><span>maximum entre clôture et présentation des comptes</span></div>
+            <div><b>1 visage</b><span>un interlocuteur dédié, le même dans la durée</span></div>
+            <div><b>9 h – 19 h</b><span>joignables du lundi au vendredi, sur place ou en visio</span></div>
+          </div>
         </div>
       </section>
 

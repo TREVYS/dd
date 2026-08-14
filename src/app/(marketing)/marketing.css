@@ -1086,9 +1086,6 @@ html,body{overflow-x:hidden}
   .mkt-faq-item summary{font-size:1.05rem}
 }
 
-/* Grille 2 colonnes avec nombre impair d'éléments : la dernière carte
-   s'étend sur toute la largeur au lieu de rester orpheline à gauche. */
-.mkt-svc-grid > *:last-child:nth-child(odd){grid-column:1 / -1}
 
 /* Grille écosystème (3 colonnes) : la carte isolée en fin de grille se place
    au centre plutôt que de rester seule à gauche. */
@@ -1100,3 +1097,33 @@ html,body{overflow-x:hidden}
 @media(min-width:1100px){
   html{font-size:17px}
 }
+
+/* Frise chronologique (Le cabinet) */
+.mkt-histoire{list-style:none;margin:0 auto;padding:0;max-width:780px;position:relative}
+.mkt-histoire::before{content:"";position:absolute;left:44px;top:14px;bottom:14px;width:2px;
+  background:linear-gradient(180deg,var(--violet),var(--line));opacity:.45}
+.mkt-histoire li{position:relative;display:flex;gap:1.6rem;padding:0 0 2.2rem}
+.mkt-histoire li:last-child{padding-bottom:0}
+.mkt-histoire .year{position:relative;z-index:1;flex:0 0 88px;height:44px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#F5811F,#C2410C);color:#fff;font-weight:800;font-size:.95rem;
+  border-radius:100px;box-shadow:0 10px 20px -10px rgba(226,106,15,.7)}
+.mkt-histoire .body{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.3rem 1.5rem;box-shadow:var(--glass-sh);flex:1}
+.mkt-histoire h3{font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:.5rem}
+.mkt-histoire .body p{font-size:.95rem;color:var(--ink2);line-height:1.75;margin:0}
+@media(max-width:640px){
+  .mkt-histoire::before{content:none}
+  .mkt-histoire li{flex-direction:column;gap:.8rem}
+  .mkt-histoire .year{flex:none;width:88px}
+}
+/* Tuiles d'engagements en rangée de 4 : repli en 2 puis 1 colonne */
+@media(max-width:1000px){.mkt-loc-stats[style*="repeat(4"]{grid-template-columns:1fr 1fr !important}}
+@media(max-width:560px){.mkt-loc-stats[style*="repeat(4"]{grid-template-columns:1fr !important}}
+
+/* Grille de 5 cartes : 3 + 2 centrées (valeurs du cabinet) */
+.mkt-grid5{display:grid;grid-template-columns:repeat(6,1fr);gap:1.4rem}
+.mkt-grid5>*{grid-column:span 2}
+.mkt-grid5>*:nth-child(4){grid-column:2 / 4}
+.mkt-grid5>*:nth-child(5){grid-column:4 / 6}
+@media(max-width:1000px){.mkt-grid5{grid-template-columns:1fr 1fr}.mkt-grid5>*{grid-column:auto !important}}
+@media(max-width:600px){.mkt-grid5{grid-template-columns:1fr}}
