@@ -43,7 +43,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Comptabilité augmentée", texte: "Collecte automatisée des pièces, contrôles assistés par l'intelligence artificielle, tableaux de bord à jour : vous passez moins de temps sur la saisie, plus sur les décisions." },
       { titre: "Fiscalité et conseil", texte: "Choix de structure, rémunération du dirigeant, optimisation de la TVA, préparation d'une cession : nous traitons le sujet avant qu'il ne devienne urgent." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Rencontre au cabinet", texte: "Rue Le Nôtre ou en visioconférence : votre activité, vos attentes, vos échéances. Trente minutes suffisent pour cadrer." },
+      { titre: "Lettre de mission", texte: "Périmètre précis et honoraires forfaitaires, posés par écrit. Vous savez ce qui est inclus avant de signer." },
+      { titre: "Mise en place", texte: "Espace client, collecte automatisée des pièces, reprise des historiques si vous changez de cabinet. Opérationnel en quelques jours." },
+      { titre: "Rythme de croisière", texte: "Comptes tenus à jour, échéances anticipées, points réguliers avec votre interlocuteur dédié — le même dans la durée." },
+    ],
+    chiffres: [
+      { valeur: "Paris 16ᵉ", legende: "cabinet au 1 rue Le Nôtre, près du Trocadéro" },
+      { valeur: "1 interlocuteur", legende: "dédié, qui connaît votre dossier" },
+      { valeur: "9 h – 19 h", legende: "du lundi au vendredi, sur rendez-vous" },
+    ],
+        faq: [
       { q: "Où se situe votre cabinet dans le 16ᵉ ?", a: "Au 1 rue Le Nôtre, 75116 Paris, à proximité du Trocadéro et des stations Passy et Trocadéro. Nous recevons sur rendez-vous, du lundi au vendredi de 9 h à 19 h." },
       { q: "Accompagnez-vous les petites structures du quartier ?", a: "Oui : professions libérales, sociétés de conseil, commerces et holdings patrimoniales. Notre offre s'adapte à la taille de la structure — l'exigence reste la même." },
       { q: "Peut-on travailler à distance ?", a: "Entièrement. Vos pièces circulent par votre espace client sécurisé, les échanges se font en visioconférence, et vous gardez le même interlocuteur. La proximité géographique est un plus, pas une contrainte." },
@@ -65,7 +76,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Le conseil en plus", texte: "Prévisionnel, structuration de groupe, arbitrage rémunération/dividendes, accompagnement de levée de fonds ou de cession. Nos consultants travaillent avec l'équipe comptable, pas à côté." },
       { titre: "Des outils qui font gagner du temps", texte: "Portail client, collecte automatisée, contrôles assistés par IA. Vos chiffres sont disponibles quand vous en avez besoin, pas trois mois après la clôture." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Diagnostic de départ", texte: "Votre structure, vos flux, vos outils actuels : nous identifions ce qui fonctionne et ce qui vous coûte du temps ou de l'argent." },
+      { titre: "Proposition sur mesure", texte: "Lettre de mission au forfait, calibrée sur votre volume réel — tenue, révision, paie, conseil : vous choisissez le périmètre." },
+      { titre: "Bascule sans rupture", texte: "Reprise du dossier, connexion de vos outils, formation de vos équipes aux nouveaux circuits. Vous ne perdez ni données, ni temps." },
+      { titre: "Pilotage continu", texte: "Tableaux de bord à jour, situations intermédiaires, alertes en amont des échéances : vos chiffres servent vos décisions." },
+    ],
+    chiffres: [
+      { valeur: "2 métiers", legende: "expertise comptable et conseil, sous le même toit" },
+      { valeur: "3 mois", legende: "maximum entre clôture et présentation des comptes" },
+      { valeur: "100 %", legende: "dématérialisé : espace client et collecte automatisée" },
+    ],
+        faq: [
       { q: "Quels types d'entreprises accompagnez-vous à Paris ?", a: "Principalement des PME, des sociétés de services et de conseil, des start-up et des professions libérales, de la création à la transmission. Nous intervenons aussi sur des groupes avec holding et filiales." },
       { q: "Comment se passe le changement de cabinet ?", a: "Nous nous chargeons de la reprise du dossier auprès de votre confrère (lettre de courtoisie comprise), de la récupération des balances et des historiques. Le changement se fait sans rupture, à n'importe quel moment de l'exercice." },
       { q: "Vos honoraires sont-ils forfaitaires ?", a: "Oui, sur la base d'une lettre de mission claire : vous savez ce qui est inclus et ce qui ne l'est pas. Pas de facturation à la surprise en fin d'année." },
@@ -87,7 +109,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "SEL, SCM, SISA", texte: "Choix de la structure, rédaction du prévisionnel, arbitrage entre rémunération et dividendes, entrée ou sortie d'un associé : nous accompagnons les moments qui structurent une carrière." },
       { titre: "Une charge mentale en moins", texte: "Échéances déclaratives suivies, alertes en amont, réponses claires. Vous soignez, nous tenons le calendrier." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Reprise de votre dossier", texte: "Historique 2035, immobilisations, contrats de collaboration ou de remplacement : nous récupérons tout auprès de votre AGA et de votre ancien cabinet." },
+      { titre: "Organisation des flux", texte: "Télétransmission des recettes, rétrocessions, frais mixtes : des circuits simples, adaptés à un agenda de soignant." },
+      { titre: "Déclarations sécurisées", texte: "2035, TVA le cas échéant, déclarations sociales des indépendants : chaque échéance anticipée et validée avec vous." },
+      { titre: "Arbitrages de carrière", texte: "Passage en SEL, association, investissement au cabinet, retraite : les décisions structurantes, chiffrées avant d'être prises." },
+    ],
+    chiffres: [
+      { valeur: "2035", legende: "la déclaration BNC maîtrisée dans ses subtilités santé" },
+      { valeur: "SEL / SCM", legende: "structures d'exercice chiffrées avant de trancher" },
+      { valeur: "0 jargon", legende: "des réponses claires, adaptées à votre temps disponible" },
+    ],
+        faq: [
       { q: "Faut-il passer en SEL ?", a: "Cela dépend du niveau de bénéfice, de vos besoins de trésorerie personnelle et de vos projets (association, investissement, transmission). Le passage en société permet de piloter la rémunération et d'atténuer la pression fiscale, mais crée des obligations nouvelles. Nous chiffrons les deux scénarios avant de trancher." },
       { q: "Gérez-vous les remplaçants et les rétrocessions ?", a: "Oui, y compris le traitement des rétrocessions d'honoraires, les contrats de remplacement et leur incidence sur la 2035 comme sur les cotisations." },
       { q: "Êtes-vous adhérent d'une association agréée ?", a: "Nous travaillons avec les principales AGA et nous nous chargeons des obligations liées à votre adhésion. Nous vous dirons aussi, chiffres à l'appui, si elle reste pertinente dans votre situation." },
@@ -109,7 +142,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "CIR, JEI, subventions", texte: "Éligibilité, sécurisation du dossier, suivi des dépenses de recherche : les dispositifs d'aide sont puissants à condition d'être documentés correctement dès le départ." },
       { titre: "Reporting mensuel", texte: "Runway, burn, marge brute, cohortes : un tableau de bord lisible tous les mois, pas un bilan découvert un an plus tard." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Structuration", texte: "Forme sociale, pacte d'associés, BSPCE, régimes fiscaux de faveur : les fondations posées proprement dès le départ." },
+      { titre: "Comptabilité en rythme", texte: "Outils connectés, clôtures mensuelles légères, catégorisation analytique : vos chiffres suivent votre vitesse." },
+      { titre: "Reporting investisseurs", texte: "Burn, runway, ARR, marge : le tableau de bord mensuel que votre board attend, produit sans mobiliser vos fondateurs." },
+      { titre: "Levée et au-delà", texte: "Business plan financier, data room, CIR/JEI sécurisés : nous préparons les documents que les fonds examinent vraiment." },
+    ],
+    chiffres: [
+      { valeur: "CIR / JEI", legende: "dispositifs sécurisés, documentés pour le contrôle" },
+      { valeur: "1 mois", legende: "de rythme de reporting pour piloter le burn" },
+      { valeur: "Série A", legende: "des comptes prêts pour la due diligence des fonds" },
+    ],
+        faq: [
       { q: "À partir de quand faut-il un expert-comptable ?", a: "Dès la création, idéalement avant. Les choix faits au démarrage (forme sociale, répartition du capital, régime fiscal, statut du dirigeant) sont coûteux à corriger ensuite." },
       { q: "Savez-vous produire un reporting pour investisseurs ?", a: "Oui : reporting mensuel ou trimestriel avec les indicateurs attendus (burn rate, runway, ARR/MRR, marge brute), au format exploitable par votre board." },
       { q: "Accompagnez-vous les demandes de CIR ?", a: "Oui, du test d'éligibilité au montage du dossier et au suivi des justificatifs, en lien avec vos équipes techniques. Un CIR mal documenté est un risque en cas de contrôle." },
@@ -131,7 +175,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Marketplaces et encaissements", texte: "Amazon, Shopify, eBay, Stripe, PayPal : chaque plateforme a sa logique de commissions, de retenues et de versements différés. Nous rapprochons les versements réels du chiffre d'affaires réel, pour que votre marge soit juste." },
       { titre: "Stocks et marge par produit", texte: "Valorisation des stocks, coût de revient complet (achat, transport, douane, commissions, logistique), marge par référence. Vendre plus ne sert à rien si l'on ignore ce qui rapporte vraiment." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Cartographie des flux", texte: "Canaux de vente, processeurs de paiement, pays de livraison, stocks : nous posons l'architecture réelle de votre activité." },
+      { titre: "Connexion des plateformes", texte: "Amazon, Shopify, Stripe, PayPal : intégration automatisée des exports, rapprochement des versements avec le chiffre d'affaires réel." },
+      { titre: "TVA et OSS en place", texte: "Ventilation par pays et par taux, inscription au guichet unique, déclarations trimestrielles : le poste à risque, verrouillé." },
+      { titre: "Marge sous contrôle", texte: "Coût de revient complet par référence, suivi des commissions et de la logistique : vous savez ce qui rapporte vraiment." },
+    ],
+    chiffres: [
+      { valeur: "10 000 €", legende: "le seuil de ventes UE qui déclenche la TVA du pays d'arrivée" },
+      { valeur: "1 guichet", legende: "l'OSS évite de s'immatriculer dans chaque pays" },
+      { valeur: "100 %", legende: "des transactions rapprochées automatiquement" },
+    ],
+        faq: [
       { q: "Comment fonctionne la TVA sur les ventes à l'étranger ?", a: "Au-delà de 10 000 € de ventes à distance annuelles vers l'Union européenne (tous pays confondus), la TVA devient due dans le pays de l'acheteur, à son taux. Le guichet unique OSS permet de tout déclarer en France plutôt que de s'immatriculer dans chaque pays : c'est la solution à privilégier dans la quasi-totalité des cas, à condition de ventiler correctement ses ventes par pays dès le départ." },
       { q: "Comment traitez-vous les volumes de transactions ?", a: "Par intégration automatisée des exports de vos plateformes et de vos processeurs de paiement, avec des contrôles de cohérence. Nous ne saisissons pas des milliers de lignes à la main : nous rapprochons des flux et nous investiguons les écarts. C'est ce qui rend l'e-commerce traitable à un coût raisonnable." },
       { q: "Faut-il un stock valorisé même en dropshipping ?", a: "En dropshipping pur, vous ne détenez pas de stock : la question ne se pose pas de la même façon, mais celle du fait générateur et du traitement des importations, oui. Dès qu'il y a détention de marchandises (y compris en entrepôt logistique tiers, type FBA), un inventaire valorisé à la clôture est obligatoire." },
@@ -153,7 +208,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Travaux en cours et revenus récurrents", texte: "Reconnaissance du chiffre d'affaires sur les projets au forfait, factures à établir, produits constatés d'avance sur les abonnements SaaS. Un poste souvent mal traité, qui fausse le résultat d'un exercice sur l'autre." },
       { titre: "CIR, CII et statut JEI", texte: "Éligibilité des travaux de développement, valorisation des temps passés, constitution d'un dossier défendable en cas de contrôle. Un crédit d'impôt mal documenté est une créance fragile." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Mise à plat analytique", texte: "Missions, clients, consultants : nous structurons l'axe analytique qui permettra de suivre la marge réelle de chaque affaire." },
+      { titre: "Connexion des temps", texte: "Votre outil de gestion des temps alimente la comptabilité : TJM, taux d'occupation et inter-contrat deviennent des indicateurs vivants." },
+      { titre: "Clôtures fiabilisées", texte: "Travaux en cours sur les forfaits, factures à établir, produits constatés d'avance SaaS : un résultat juste, exercice après exercice." },
+      { titre: "Crédits d'impôt sécurisés", texte: "Qualification CIR/CII des travaux, valorisation des temps, dossier défendable : le crédit d'impôt sans l'épée de Damoclès." },
+    ],
+    chiffres: [
+      { valeur: "TJM × TACE", legende: "les deux indicateurs qui font la rentabilité d'une ESN" },
+      { valeur: "1 tableau", legende: "de bord mensuel : marge par mission et par client" },
+      { valeur: "CIR / CII", legende: "qualifiés avant d'être chiffrés — jamais l'inverse" },
+    ],
+        faq: [
       { q: "Comment suivre la rentabilité de chaque mission ?", a: "En rapprochant, mission par mission, le chiffre d'affaires facturé, le coût chargé du consultant affecté et les éventuels frais et sous-traitance. Cela suppose une comptabilité analytique légère mais rigoureuse, alimentée par vos outils de gestion des temps. Nous la mettons en place et la restituons dans un tableau de bord mensuel." },
       { q: "Le développement logiciel ouvre-t-il droit au CIR ?", a: "Pas automatiquement. Le développement d'une fonctionnalité, même complexe, ne suffit pas : il faut démontrer une incertitude technique et une démarche de résolution qui dépasse l'état de l'art. Le CII (crédit d'impôt innovation) est souvent plus adapté aux prototypes et nouveaux produits. Nous qualifions les travaux avant de chiffrer, pas l'inverse." },
       { q: "Comment traiter la sous-traitance et le portage ?", a: "Chaque contrat a ses incidences : TVA, responsabilité, requalification possible, et surtout impact sur la trésorerie puisque vous payez souvent le sous-traitant avant d'être payé par le client final. Nous sécurisons le traitement comptable et intégrons ce décalage dans le prévisionnel de trésorerie." },
@@ -175,7 +241,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Travaux en cours et acomptes", texte: "Prestations engagées non facturées, factures à établir, produits constatés d'avance : le rattachement correct des produits à l'exercice change le résultat, l'impôt et l'image donnée à vos partenaires financiers." },
       { titre: "Rentabilité par mission et par client", texte: "Temps passé contre honoraires facturés, marge par client, détection des dossiers qui coûtent plus qu'ils ne rapportent. Dans une société de services, c'est souvent 20 % des clients qui absorbent 80 % des dépassements." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Revue des contrats", texte: "Modes de facturation, acomptes, conditions de paiement : ce que disent vos contrats détermine votre TVA et votre trésorerie." },
+      { titre: "TVA calée sur vos flux", texte: "Encaissements ou option pour les débits : nous chiffrons les deux régimes sur vos délais de paiement réels avant de choisir." },
+      { titre: "Clôtures sans surprise", texte: "Prestations en cours, factures à établir, produits constatés d'avance : chaque exercice reflète l'activité réellement réalisée." },
+      { titre: "Marge par client", texte: "Temps passés contre honoraires facturés : les dossiers qui coûtent plus qu'ils ne rapportent, identifiés et renégociés." },
+    ],
+    chiffres: [
+      { valeur: "Encaissement", legende: "le fait générateur de la TVA sur les services" },
+      { valeur: "30 %", legende: "d'acompte : la pratique qui protège votre trésorerie" },
+      { valeur: "20/80", legende: "souvent 20 % des clients concentrent 80 % des dépassements" },
+    ],
+        faq: [
       { q: "Quand la TVA est-elle exigible sur une prestation de services ?", a: "À l'encaissement du prix (ou de l'acompte), et non à l'émission de la facture — sauf option pour les débits, qui rend la TVA exigible à la facturation. L'option peut simplifier le suivi mais avance la sortie de trésorerie : le bon choix dépend de vos délais de paiement réels. Nous chiffrons les deux avant d'opter." },
       { q: "Comment traiter une prestation commencée mais non terminée à la clôture ?", a: "Elle doit être rattachée à l'exercice au cours duquel elle a été réalisée, via les travaux en cours ou les factures à établir, selon l'avancement et les termes du contrat. C'est le point le plus fréquemment redressé dans les sociétés de services, et celui qui fausse le plus les comparaisons d'un exercice à l'autre." },
       { q: "Faut-il facturer des acomptes ?", a: "Oui, dans la quasi-totalité des cas. L'acompte sécurise l'engagement du client et allège votre besoin en fonds de roulement — le poste qui met le plus souvent en difficulté les sociétés de services en croissance. Nous vous aidons à calibrer le pourcentage et l'échéancier selon votre cycle de production." },
@@ -197,7 +274,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Trésorerie et financement", texte: "Prévisionnel de trésorerie glissant, négociation bancaire, recherche de financement, gestion du BFR. Les tensions se voient venir plusieurs mois à l'avance." },
       { titre: "Opérations structurantes", texte: "Croissance externe, levée de fonds, cession, restructuration : nous préparons les dossiers et tenons la barre pendant l'opération." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Diagnostic financier", texte: "Trésorerie, marges, endettement, outils de pilotage existants : un état des lieux franc en deux à trois semaines." },
+      { titre: "Feuille de route", texte: "Priorités chiffrées, indicateurs à mettre en place, cadence d'intervention : vous savez ce que la mission va changer, et quand." },
+      { titre: "Pilotage mensuel", texte: "Tableau de bord, prévisionnel de trésorerie glissant, préparation des échéances bancaires : la fonction finance tourne, sans embauche." },
+      { titre: "Temps forts", texte: "Levée, acquisition, renégociation bancaire : la présence monte en puissance quand l'opération l'exige, puis redescend." },
+    ],
+    chiffres: [
+      { valeur: "2-6 jours", legende: "par mois, selon la taille et l'actualité" },
+      { valeur: "13 semaines", legende: "l'horizon type du prévisionnel de trésorerie glissant" },
+      { valeur: "2 M€", legende: "le chiffre d'affaires à partir duquel la fonction devient clé" },
+    ],
+        faq: [
       { q: "Combien de temps par mois ?", a: "Le plus souvent 2 à 6 jours par mois selon la taille et l'actualité de l'entreprise, avec une montée en charge ponctuelle lors d'une opération (levée, cession, refinancement)." },
       { q: "Quelle différence avec un expert-comptable ?", a: "L'expert-comptable produit et certifie l'information financière. Le DAF externalisé l'utilise pour piloter : budgets, trésorerie, marges, financement, relations bancaires. Chez nous, les deux travaillent ensemble — c'est précisément l'intérêt." },
       { q: "À partir de quelle taille est-ce pertinent ?", a: "En général à partir de 2 M€ de chiffre d'affaires, ou plus tôt en cas de forte croissance, de multi-sites ou d'opération en préparation." },
@@ -219,7 +307,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Choix de Plateforme Agréée", texte: "Cahier des charges, consultation du marché, grille de comparaison objective. Le choix vous appartient : nous n'avons aucun accord commercial avec un éditeur." },
       { titre: "Conduite du changement", texte: "Formation des équipes comptables et commerciales, procédures cibles, tests, documentation. Une réforme réussie se voit dans les usages, pas dans un rapport." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Diagnostic des flux", texte: "Cartographie de vos factures clients et fournisseurs, cas particuliers, qualité des référentiels : l'écart réel avec les exigences 2026." },
+      { titre: "Choix de la plateforme", texte: "Cahier des charges, consultation du marché, grille de comparaison objective : la Plateforme Agréée adaptée à vos flux, pas à un catalogue." },
+      { titre: "Mise en conformité", texte: "Assainissement des référentiels, procédures cibles, interfaçage avec votre SI, piste d'audit fiable documentée." },
+      { titre: "Tests et bascule", texte: "Jeux d'essai, formation des équipes comptables et commerciales, accompagnement au démarrage : la réforme dans les usages, pas sur le papier." },
+    ],
+    chiffres: [
+      { valeur: "Sept. 2026", legende: "toutes les entreprises reçoivent des factures électroniques" },
+      { valeur: "10-18 mois", legende: "la durée d'un projet mené sereinement" },
+      { valeur: "0 lien", legende: "commercial avec les éditeurs : un conseil indépendant" },
+    ],
+        faq: [
       { q: "Quand faut-il être prêt ?", a: "Toutes les entreprises assujetties à la TVA doivent pouvoir recevoir des factures électroniques au 1ᵉʳ septembre 2026. L'obligation d'émettre s'applique par vagues selon la taille, jusqu'en septembre 2027. Un projet sérieux demande 10 à 18 mois : le temps utile se compte à rebours." },
       { q: "Vendez-vous une plateforme ?", a: "Non, et c'est volontaire. Notre valeur tient à notre indépendance : nous vous aidons à choisir la plateforme adaptée à vos flux et à votre système d'information, sans intérêt à orienter la décision." },
       { q: "Que se passe-t-il si nous ne sommes pas prêts ?", a: "L'obligation reste, même si une doctrine de démarrage tolérante a été annoncée pour les entreprises de bonne foi qui documentent leurs difficultés. Au-delà des sanctions, le vrai risque est opérationnel : des factures rejetées, ce sont des encaissements retardés." },
@@ -241,7 +340,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Contrôle interne", texte: "Séparation des tâches, circuits de validation, sécurisation des paiements, piste d'audit fiable. Prévenir la fraude et l'erreur sans paralyser l'activité." },
       { titre: "Plan d'action priorisé", texte: "Des recommandations chiffrées, hiérarchisées par effort et par impact — et si vous le souhaitez, notre accompagnement dans la mise en œuvre." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Cadrage", texte: "Périmètre, interlocuteurs, documents : une semaine pour poser la mission et planifier les entretiens sans perturber l'activité." },
+      { titre: "Immersion terrain", texte: "Entretiens, observation des flux réels, mesure des délais et des reprises : l'organisation telle qu'elle fonctionne vraiment." },
+      { titre: "Analyse et chiffrage", texte: "Dysfonctionnements hiérarchisés par impact, comparaison aux bonnes pratiques, estimation des gains atteignables." },
+      { titre: "Restitution et plan d'action", texte: "Présentation à la direction, feuille de route priorisée par effort et par impact — et notre appui à la mise en œuvre si vous le souhaitez." },
+    ],
+    chiffres: [
+      { valeur: "3-6 semaines", legende: "la durée type d'un audit de PME" },
+      { valeur: "20-200", legende: "salariés : la taille où l'audit rapporte le plus" },
+      { valeur: "1 plan", legende: "d'action priorisé, présenté — pas un rapport posé sur un coin de bureau" },
+    ],
+        faq: [
       { q: "Combien de temps dure un audit ?", a: "En général 3 à 6 semaines pour une PME, selon le périmètre et le nombre de sites. Nous privilégions un format court avec des restitutions intermédiaires plutôt qu'un rapport découvert à la fin." },
       { q: "Est-ce réservé aux grandes structures ?", a: "Non. Les PME de 20 à 200 personnes en tirent souvent le plus de valeur : ce sont elles qui subissent le plus les processus hérités de leurs débuts." },
       { q: "Que contient la restitution ?", a: "Une cartographie des processus, les dysfonctionnements constatés avec leur impact estimé, et un plan d'action priorisé. Le tout présenté à la direction, pas seulement transmis par e-mail." },
