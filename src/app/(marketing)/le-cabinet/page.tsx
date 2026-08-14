@@ -64,10 +64,10 @@ const PILIERS = [
 ];
 
 const CRED = [
-  "Élu au Conseil régional de l'Ordre des experts-comptables Paris Île-de-France.",
-  "Référent sur les sujets de facturation électronique et de transformation numérique.",
-  "Intervenant régulier auprès d'organisations professionnelles et de directions financières.",
-  "Enseignant en Master CCA, engagé dans l'évolution de la profession.",
+  { t: "Élu de la profession", d: "Membre élu du Conseil régional de l'Ordre des experts-comptables Paris Île-de-France." },
+  { t: "Référent facturation électronique", d: "Sur la réforme et la transformation numérique des cabinets et des entreprises." },
+  { t: "Intervenant régulier", d: "Auprès d'organisations professionnelles et de directions financières." },
+  { t: "Enseignant en Master CCA", d: "Engagé dans la formation des futurs professionnels du chiffre." },
 ];
 // Ces engagements sont portés par le fondateur du cabinet.
 
@@ -158,24 +158,25 @@ export default function Page() {
 
       <section className="sec band">
         <div className="wrap">
-          <div className="shead">
-            <span className="eyebrow">Une expertise reconnue</span>
-            <h2>Une légitimité au service de la <em>profession</em></h2>
-            <p>
-              Notre fondateur, <strong>John Lévy</strong>, expert-comptable,
-              s&apos;engage activement dans la vie de la profession :
-            </p>
-          </div>
-          <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: ".9rem", maxWidth: "620px", margin: "0 auto" }}>
-            {CRED.map((c) => (
-              <li key={c} style={{ display: "flex", gap: ".8rem", color: "var(--ink2)" }}>
-                <span style={{ color: "var(--violet)", fontWeight: 800 }}>✓</span>
-                <span>{c}</span>
-              </li>
-            ))}
-          </ul>
-          <div style={{ marginTop: "2.2rem", display: "flex", justifyContent: "center" }}>
-            <OecLogo className="mkt-oec" />
+          <div className="mkt-cred">
+            <div className="mkt-cred-intro">
+              <span className="eyebrow">Une expertise reconnue</span>
+              <h2>Une légitimité au service de la <em>profession</em></h2>
+              <p>
+                Notre fondateur, <strong>John Lévy</strong>, expert-comptable,
+                s&apos;engage activement dans la vie de la profession.
+              </p>
+              <OecLogo className="mkt-oec" />
+            </div>
+            <div className="mkt-cred-grid">
+              {CRED.map((c) => (
+                <div key={c.t} className="mkt-cred-card">
+                  <span className="ck" aria-hidden="true">✓</span>
+                  <h3>{c.t}</h3>
+                  <p>{c.d}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

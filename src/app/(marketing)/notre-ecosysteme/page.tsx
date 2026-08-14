@@ -47,9 +47,7 @@ export default function Page() {
           <div className="mkt-svc-grid">
             {GROUP.map((p) => (
               <a className="mkt-svc mkt-svc-link" href={p.u} target="_blank" rel="noopener noreferrer" key={p.t}>
-                <div className="ico">
-                  <svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 100 8 4 4 0 000-8zM4 22a8 8 0 0116 0" /></svg>
-                </div>
+                <span className="mkt-eco-mono" aria-hidden="true">{p.t.replace(/[^A-Za-z]/g, "").slice(0, 2)}</span>
                 <h3>{p.t}</h3>
                 <p>{p.d}</p>
                 <span className="mkt-svc-visit">Visiter le site ↗</span>
@@ -68,9 +66,7 @@ export default function Page() {
           <div className="mkt-svc-grid">
             {PARTNERS.map((p) => (
               <a className="mkt-svc mkt-svc-link" href={p.u} target="_blank" rel="noopener noreferrer" key={p.t}>
-                <div className="ico">
-                  <svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 10-8 0M4 22a8 8 0 0116 0" /></svg>
-                </div>
+                <span className="mkt-eco-mono" aria-hidden="true">{p.t.replace(/[^A-Za-z]/g, "").slice(0, 2)}</span>
                 <h3>{p.t}</h3>
                 <p>{p.d}</p>
                 <span className="mkt-svc-visit">Visiter le site ↗</span>

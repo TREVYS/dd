@@ -1136,3 +1136,27 @@ html,body{overflow-x:hidden}
 .mkt-grid5>*:nth-child(5){grid-column:4 / 6}
 @media(max-width:1000px){.mkt-grid5{grid-template-columns:1fr 1fr}.mkt-grid5>*{grid-column:auto !important}}
 @media(max-width:600px){.mkt-grid5{grid-template-columns:1fr}}
+
+/* Légitimité (Le cabinet) : intro + grille 2×2 compacte */
+.mkt-cred{display:grid;grid-template-columns:.9fr 1.1fr;gap:2.6rem;align-items:center;max-width:1080px;margin:0 auto}
+.mkt-cred-intro h2{font-size:clamp(1.7rem,3vw,2.3rem);margin:1rem 0 .9rem;text-wrap:balance}
+.mkt-cred-intro p{color:var(--ink2);line-height:1.7;margin-bottom:1.6rem}
+.mkt-cred-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.mkt-cred-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:1.15rem 1.2rem 1.1rem;box-shadow:var(--glass-sh)}
+.mkt-cred-card .ck{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;
+  background:linear-gradient(135deg,#F5811F,#C2410C);color:#fff;font-weight:800;font-size:.85rem;
+  margin-bottom:.7rem;box-shadow:0 8px 16px -8px rgba(226,106,15,.7)}
+.mkt-cred-card h3{font-size:.95rem;font-weight:800;color:var(--ink);margin-bottom:.35rem}
+.mkt-cred-card p{font-size:.84rem;color:var(--ink2);line-height:1.55;margin:0}
+@media(max-width:900px){
+  .mkt-cred{grid-template-columns:1fr;gap:1.8rem;text-align:center}
+  .mkt-cred-intro .mkt-oec{margin-inline:auto}
+  .mkt-cred-grid{text-align:left}
+}
+@media(max-width:560px){.mkt-cred-grid{grid-template-columns:1fr}}
+
+/* Écosystème : monogramme de société (remplace les icônes génériques) */
+.mkt-eco-mono{display:grid;place-items:center;width:52px;height:52px;border-radius:15px;
+  background:linear-gradient(135deg,#F5811F,#C2410C);color:#fff;font-weight:800;font-size:1.05rem;
+  text-transform:uppercase;margin-bottom:1rem;box-shadow:0 10px 20px -10px rgba(226,106,15,.7)}
