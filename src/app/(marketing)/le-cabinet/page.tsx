@@ -27,23 +27,23 @@ const VALUES = [
 const HISTOIRE = [
   {
     annee: "2018",
-    titre: "Une conviction devient un cabinet",
-    texte: "Après des années passées en cabinets et en directions financières, John Lévy fait un constat têtu : les dirigeants ne manquent pas de comptes, ils manquent d'éclairage. Trevys naît rue Le Nôtre, avec une promesse simple — le chiffre juste, mis au service de la décision.",
+    titre: "Création du cabinet",
+    texte: "John Lévy, expert-comptable, fonde Trevys à Paris après un parcours en cabinets et en directions financières. Le positionnement est clair dès l'origine : produire une information financière irréprochable, et la mettre au service des décisions du dirigeant.",
   },
   {
     annee: "2020",
-    titre: "Deux métiers, une seule maison",
-    texte: "Le conseil rejoint l'expertise comptable, non pas à côté mais avec elle : les consultants travaillent sur les chiffres réels, les comptables comprennent la stratégie. Cette articulation, rare dans la profession, devient la signature du cabinet.",
+    titre: "Structuration de l'offre de conseil",
+    texte: "Le cabinet développe son second métier : le conseil en organisation et en systèmes d'information Finance. Les deux activités travaillent ensemble, sur les mêmes données — une articulation qui distingue Trevys des cabinets traditionnels.",
   },
   {
     annee: "2023",
-    titre: "Un écosystème s'assemble",
-    texte: "Autour du cabinet se constitue un cercle de sociétés et d'experts complémentaires — data, droit social, audit, édition logicielle. Une réponse complète, sans jamais diluer la responsabilité : un interlocuteur, une exigence.",
+    titre: "Constitution de l'écosystème",
+    texte: "Trevys fédère autour de lui des sociétés et des experts complémentaires : data et pilotage prédictif, commissariat aux comptes, droit social, édition logicielle. Le client bénéficie d'une réponse complète, avec un interlocuteur unique et une responsabilité claire.",
   },
   {
     annee: "2026",
-    titre: "Le pari de la technologie, tenu",
-    texte: "Automatisation, intelligence artificielle, facturation électronique : le cabinet met la technologie au travail — pour rendre du temps aux équipes et de la clarté aux clients. Référent sur la réforme, il aide la profession elle-même à franchir le cap.",
+    titre: "Technologie et facturation électronique",
+    texte: "Le cabinet industrialise l'usage de l'automatisation et de l'intelligence artificielle dans ses missions, et devient un acteur reconnu de la réforme de la facturation électronique — auprès de ses clients comme de la profession, où son fondateur intervient en référent.",
   },
 ];
 
@@ -91,10 +91,10 @@ export default function Page() {
         <div className="wrap">
           <div className="shead">
             <span className="eyebrow">Notre histoire</span>
-            <h2>Une trajectoire, pas un <em>hasard</em></h2>
+            <h2>Huit années de <em>développement</em> continu</h2>
             <p>
-              Trevys ne s&apos;est pas construit en un jour : chaque étape a ajouté
-              une brique à la même ambition — mettre le chiffre au service de la décision.
+              Depuis 2018, le cabinet s&apos;est construit par étapes, autour d&apos;une
+              même ligne directrice : mettre le chiffre au service de la décision.
             </p>
           </div>
           <ol className="mkt-histoire">
