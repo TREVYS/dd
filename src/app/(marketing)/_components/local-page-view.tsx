@@ -11,9 +11,9 @@ const FAMILLE_LABEL: Record<LocalPage["famille"], { nom: string; path: string }>
   situation: { nom: "Votre situation", path: "/contact" },
 };
 
-// Gabarit des pages « métier + localisation ». Contenu propre à chaque page
-// (défini dans src/lib/local-pages.ts) : pas de texte dupliqué d'une page à
-// l'autre, ce que Google sanctionnerait.
+// Gabarit des pages « métier + localisation » et « situation ». Contenu propre
+// à chaque page (src/lib/local-pages.ts) ; habillage aux codes du site :
+// tuiles numérotées, parcours par étapes, chiffres clés, bandeau orange.
 export function LocalPageView({ page }: { page: LocalPage }) {
   const parent = FAMILLE_LABEL[page.famille];
   const path = localPagePath(page);
@@ -49,25 +49,47 @@ export function LocalPageView({ page }: { page: LocalPage }) {
         }}
       />
 
-      <section className="sec">
-        <div className="wrap" style={{ maxWidth: 820 }}>
-          <p className="eyebrow">{parent.nom} · {page.lieu}</p>
-          <h1 style={{ fontSize: "2.1rem", lineHeight: 1.2, margin: ".6rem 0 1.2rem" }}>{page.h1}</h1>
-          <p style={{ color: "var(--ink2)", lineHeight: 1.8, fontSize: "1.02rem" }}>{page.chapeau}</p>
-
-          <div style={{ display: "flex", gap: ".8rem", flexWrap: "wrap", margin: "2rem 0 0" }}>
+      {/* En-tête */}
+      <header className="mkt-phead">
+        <div className="mkt-phead-in">
+          <span className="eyebrow">{parent.nom} · {page.lieu}</span>
+          <h1>{page.h1}</h1>
+          <p>{page.chapeau}</p>
+          <div style={{ display: "flex", gap: ".8rem", flexWrap: "wrap", marginTop: "1.8rem" }}>
             <Link className="btn btn-gold" href="/rendez-vous">Prendre rendez-vous</Link>
             <Link className="btn btn-ghost" href="/contact">Nous écrire</Link>
           </div>
         </div>
-      </section>
+      </header>
 
-      <section className="sec" style={{ background: "var(--bg-alt, #faf7f2)" }}>
-        <div className="wrap" style={{ maxWidth: 980 }}>
+      {/* Chiffres clés */}
+      {page.chiffres && page.chiffres.length > 0 && (
+        <section className="sec" style={{ paddingTop: 0, paddingBottom: "1.5rem" }}>
+          <div className="wrap">
+            <div className="mkt-loc-stats">
+              {page.chiffres.map((c) => (
+                <div key={c.legende}>
+                  <b>{c.valeur}</b>
+                  <span>{c.legende}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Atouts : tuiles numérotées, dans le thème du site */}
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Ce que nous apportons</span>
+            <h2>Notre <em>engagement</em></h2>
+          </div>
           <div className="mkt-loc-grid">
-            {page.atouts.map((a) => (
+            {page.atouts.map((a, i) => (
               <div key={a.titre} className="mkt-loc-card">
-                <h2>{a.titre}</h2>
+                <span className="num">{String(i + 1).padStart(2, "0")}</span>
+                <h3>{a.titre}</h3>
                 <p>{a.texte}</p>
               </div>
             ))}
@@ -75,25 +97,74 @@ export function LocalPageView({ page }: { page: LocalPage }) {
         </div>
       </section>
 
+      {/* Parcours : les étapes, reliées visuellement */}
+      {page.etapes && page.etapes.length > 0 && (
+        <section className="sec">
+          <div className="wrap">
+            <div className="shead">
+              <span className="eyebrow">Comment ça se passe</span>
+              <h2>Un parcours <em>balisé</em></h2>
+            </div>
+            <ol className="mkt-steps">
+              {page.etapes.map((e, i) => (
+                <li key={e.titre}>
+                  <span className="dot">{i + 1}</span>
+                  <h3>{e.titre}</h3>
+                  <p>{e.texte}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
+
       <FaqSection
         items={page.faq}
         path={path}
         intro={<h2>Vos questions, <em>nos réponses</em></h2>}
       />
 
-      <section className="sec">
-        <div className="wrap" style={{ maxWidth: 820 }}>
-          <p className="eyebrow">Pour aller plus loin</p>
-          <div style={{ display: "flex", gap: ".7rem", flexWrap: "wrap", marginTop: "1rem" }}>
+      {/* Maillage interne */}
+      <section className="sec" style={{ paddingTop: 0 }}>
+        <div className="wrap" style={{ textAlign: "center" }}>
+          <span className="eyebrow">Pour aller plus loin</span>
+          <div style={{ display: "flex", gap: ".7rem", flexWrap: "wrap", justifyContent: "center", marginTop: "1.1rem" }}>
             {page.liens.map((l) => (
               <Link key={l.href} className="btn btn-ghost btn-sm" href={l.href}>{l.label}</Link>
             ))}
           </div>
-          <p style={{ color: "var(--ink3)", fontSize: ".88rem", lineHeight: 1.7, marginTop: "2rem" }}>
-            T.A. Trevys Advisory — 1 rue Le Nôtre, 75116 Paris. Cabinet inscrit à l&apos;Ordre des
-            Experts-Comptables de Paris Île-de-France. Rendez-vous sur place ou en visioconférence,
-            du lundi au vendredi de 9 h à 19 h.
+        </div>
+      </section>
+
+      {/* Bandeau orange, signature du site */}
+      <section className="mkt-cta">
+        <div className="mkt-cta-in">
+          <h2>Parlons de votre situation.</h2>
+          <p>
+            Un premier échange de trente minutes suffit à y voir clair — sans engagement,
+            sur place rue Le Nôtre ou en visioconférence.
           </p>
+          <Link className="btn btn-gold" href="/rendez-vous">Prendre rendez-vous</Link>
+        </div>
+      </section>
+
+      {/* Informations pratiques, en tuiles */}
+      <section className="sec" style={{ paddingTop: "1.5rem", paddingBottom: "3rem" }}>
+        <div className="wrap">
+          <div className="mkt-loc-infos">
+            <div>
+              <b>1 rue Le Nôtre, Paris 16ᵉ</b>
+              <span>À deux pas du Trocadéro — sur place ou en visioconférence</span>
+            </div>
+            <div>
+              <b>Ordre des Experts-Comptables</b>
+              <span>Cabinet inscrit — Paris Île-de-France</span>
+            </div>
+            <div>
+              <b>Du lundi au vendredi</b>
+              <span>De 9 h à 19 h, sur rendez-vous</span>
+            </div>
+          </div>
         </div>
       </section>
     </>

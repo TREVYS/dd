@@ -104,7 +104,7 @@ export default function Page() {
             <span className="eyebrow">Nos interventions</span>
             <h2>Là où nous créons de la <em>valeur</em></h2>
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: ".55rem" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: ".55rem", justifyContent: "center", maxWidth: 860, margin: "0 auto" }}>
             {TAGS.map((t) => (
               <span
                 key={t}

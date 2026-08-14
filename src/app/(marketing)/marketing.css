@@ -969,11 +969,53 @@ html,body{overflow-x:hidden}
   background:#fff;color:#241a12;font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 @media(max-width:600px){.mkt-vid-close{top:-8px;right:2px}}
 
-/* Pages « métier + localisation » */
-.mkt-loc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem}
-.mkt-loc-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.6rem 1.7rem}
-.mkt-loc-card h2{font-size:1.05rem;font-weight:800;margin-bottom:.6rem;color:var(--ink)}
+/* Pages « métier + localisation » et « situation » */
+.mkt-loc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.4rem}
+.mkt-loc-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:1.8rem 1.7rem 1.7rem;box-shadow:var(--glass-sh);transition:transform .2s,box-shadow .2s}
+.mkt-loc-card:hover{transform:translateY(-3px)}
+.mkt-loc-card .num{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;
+  background:linear-gradient(135deg,#F5811F,#C2410C);color:#fff;font-weight:800;font-size:1rem;
+  margin-bottom:1.1rem;box-shadow:0 10px 20px -10px rgba(226,106,15,.7)}
+.mkt-loc-card h3{font-size:1.05rem;font-weight:800;margin-bottom:.55rem;color:var(--ink)}
 .mkt-loc-card p{color:var(--ink2);line-height:1.7;font-size:.94rem;margin:0}
+
+/* Chiffres clés (sous l'en-tête) */
+.mkt-loc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;max-width:900px;margin:0 auto}
+.mkt-loc-stats>div{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.3rem 1.4rem;text-align:center;box-shadow:var(--glass-sh)}
+.mkt-loc-stats b{display:block;font-size:1.7rem;font-weight:800;color:var(--violet);line-height:1.2}
+.mkt-loc-stats span{display:block;font-size:.84rem;color:var(--ink2);margin-top:.35rem;line-height:1.5}
+@media(max-width:760px){.mkt-loc-stats{grid-template-columns:1fr}}
+
+/* Parcours par étapes : pastilles reliées par un fil */
+.mkt-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
+  counter-reset:step}
+.mkt-steps li{position:relative;padding-top:.4rem}
+.mkt-steps .dot{position:relative;z-index:1;display:grid;place-items:center;width:52px;height:52px;
+  border-radius:50%;background:linear-gradient(135deg,#F5811F,#C2410C);color:#fff;font-weight:800;
+  font-size:1.15rem;margin-bottom:1.1rem;box-shadow:0 12px 22px -10px rgba(226,106,15,.7)}
+.mkt-steps li::before{content:"";position:absolute;top:calc(.4rem + 26px);left:60px;right:-1.5rem;height:2px;
+  background:linear-gradient(90deg,var(--violet),var(--line));opacity:.5}
+.mkt-steps li:last-child::before{content:none}
+.mkt-steps h3{font-size:1rem;font-weight:800;color:var(--ink);margin-bottom:.5rem}
+.mkt-steps p{font-size:.9rem;color:var(--ink2);line-height:1.65;margin:0}
+@media(max-width:1000px){
+  .mkt-steps{grid-template-columns:1fr 1fr}
+  .mkt-steps li:nth-child(even)::before{content:none}
+}
+@media(max-width:600px){
+  .mkt-steps{grid-template-columns:1fr}
+  .mkt-steps li::before{content:none}
+}
+
+/* Informations pratiques (adresse, Ordre, horaires) */
+.mkt-loc-infos{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;max-width:1000px;margin:0 auto}
+.mkt-loc-infos>div{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:1.25rem 1.4rem;text-align:center}
+.mkt-loc-infos b{display:block;font-size:.98rem;font-weight:800;color:var(--ink)}
+.mkt-loc-infos span{display:block;font-size:.83rem;color:var(--ink3);margin-top:.3rem;line-height:1.5}
+@media(max-width:760px){.mkt-loc-infos{grid-template-columns:1fr}}
 /* Bandeau discret des pages de proximité, en pied de page */
 .mkt-foot-local{border-top:1px solid var(--line);margin-top:2.4rem;padding-top:1.4rem}
 .mkt-foot-local h5{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);
@@ -1047,3 +1089,14 @@ html,body{overflow-x:hidden}
 /* Grille 2 colonnes avec nombre impair d'éléments : la dernière carte
    s'étend sur toute la largeur au lieu de rester orpheline à gauche. */
 .mkt-svc-grid > *:last-child:nth-child(odd){grid-column:1 / -1}
+
+/* Grille écosystème (3 colonnes) : la carte isolée en fin de grille se place
+   au centre plutôt que de rester seule à gauche. */
+.mkt-eco-grid > *:last-child:nth-child(3n+1){grid-column:2}
+@media(max-width:860px){.mkt-eco-grid > *:last-child:nth-child(3n+1){grid-column:auto}}
+
+/* Confort de lecture PC : base typographique relevée d'un cran au-delà de
+   1100 px — tout le site (rem) s'agrandit proportionnellement. */
+@media(min-width:1100px){
+  html{font-size:17px}
+}

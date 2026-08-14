@@ -204,9 +204,11 @@ export default function HomePage() {
               </a>
             ))}
           </div>
-          <Link className="btn btn-ghost" href="/notre-ecosysteme">
-            Découvrir l&apos;écosystème <ArrowRight />
-          </Link>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "1.6rem" }}>
+            <Link className="btn btn-ghost" href="/notre-ecosysteme">
+              Découvrir l&apos;écosystème <ArrowRight />
+            </Link>
+          </div>
         </div>
       </section>
 

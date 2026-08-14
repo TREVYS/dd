@@ -14,6 +14,8 @@ export type LocalPage = {
   chapeau: string; // paragraphe d'introduction
   lieu: string; // zone couverte, pour les données structurées
   atouts: { titre: string; texte: string }[];
+  etapes?: { titre: string; texte: string }[]; // parcours type, en 4 temps
+  chiffres?: { valeur: string; legende: string }[]; // repères clés
   faq: LocalFaq[];
   liens: { label: string; href: string }[]; // maillage interne
 };
@@ -263,7 +265,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "À n'importe quel moment", texte: "Aucune obligation d'attendre la clôture. Nous reprenons en cours d'exercice à partir de la dernière balance, avec un point de contrôle sur les à-nouveaux et les postes en suspens." },
       { titre: "Un état des lieux offert", texte: "Avant tout engagement, nous examinons vos derniers comptes et vous disons franchement ce qui va, ce qui ne va pas, et ce que nous ferions différemment. Sans obligation de suite." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Premier échange", texte: "Trente minutes, sans engagement : votre situation, vos attentes, ce qui ne fonctionne plus. Nous vous disons franchement si nous sommes le bon cabinet pour vous." },
+      { titre: "Lettre de mission", texte: "Périmètre, honoraires forfaitaires, interlocuteurs : tout est écrit avant de commencer. Vous savez exactement ce qui est inclus." },
+      { titre: "Reprise du dossier", texte: "Lettre de courtoisie à votre confrère, récupération des balances, historiques et déclarations. Vous n'intervenez pas." },
+      { titre: "État des lieux", texte: "Revue de vos derniers comptes, points de vigilance, plan d'action. La relation démarre sur une base saine et documentée." },
+    ],
+    chiffres: [
+      { valeur: "0", legende: "démarche à votre charge" },
+      { valeur: "≈ 15 jours", legende: "pour une reprise complète du dossier" },
+      { valeur: "12 mois/12", legende: "le changement est possible toute l'année" },
+    ],
+        faq: [
       { q: "Faut-il prévenir soi-même son expert-comptable actuel ?", a: "Vous devez lui notifier la fin de la mission selon les termes de votre lettre de mission (souvent un préavis de trois mois, parfois moins). Mais le contact professionnel — la lettre de courtoisie et la demande de transmission du dossier — relève du nouveau cabinet. C'est une obligation déontologique entre confrères, prévue par le code de déontologie des experts-comptables." },
       { q: "L'ancien cabinet peut-il refuser de transmettre le dossier ?", a: "Il doit transmettre les documents qui vous appartiennent : pièces comptables, balances, grands livres, déclarations déposées. Il peut en revanche exercer un droit de rétention sur ses propres dossiers de travail en cas d'honoraires impayés. En pratique, régler le solde dû lève l'essentiel des blocages — et nous savons gérer les cas de tension." },
       { q: "Quel est le meilleur moment pour changer ?", a: "Juste après le dépôt des comptes annuels, c'est le plus confortable : le dossier est à jour et la reprise est nette. Mais si la relation ne fonctionne plus, ou si vous découvrez des erreurs, il n'y a aucune raison d'attendre douze mois de plus. Une reprise en cours d'exercice est parfaitement gérable." },
@@ -286,7 +299,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Capital, pacte et associés", texte: "Montant du capital, apports en nature, répartition entre associés, clauses de sortie : ce qui se règle facilement au départ devient inextricable après le premier désaccord." },
       { titre: "Les premières échéances", texte: "Régime de TVA, option à l'impôt sur les sociétés, exercice de référence, déclarations de démarrage : nous posons le calendrier de vos douze premiers mois pour qu'aucune échéance ne vous surprenne." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Cadrage du projet", texte: "Forme sociale, statut du dirigeant, régime fiscal, prévisionnel : les arbitrages structurants, chiffrés sur votre situation réelle." },
+      { titre: "Statuts et formalités", texte: "Rédaction des statuts, dépôt du capital, annonce légale, dossier d'immatriculation au guichet unique : nous orchestrons l'ensemble." },
+      { titre: "Options fiscales et sociales", texte: "Régime de TVA, option IS, affiliation du dirigeant : les choix des premières semaines, posés en connaissance de cause." },
+      { titre: "Douze premiers mois", texte: "Calendrier des échéances, premiers tableaux de bord, point trimestriel : vous démarrez piloté, pas livré à vous-même." },
+    ],
+    chiffres: [
+      { valeur: "1 €", legende: "de capital minimum — mais rarement une bonne idée" },
+      { valeur: "≈ 1 semaine", legende: "pour immatriculer, dossier complet" },
+      { valeur: "2 métiers", legende: "expertise comptable + conseil dès le départ" },
+    ],
+        faq: [
       { q: "SAS ou SARL : que choisir ?", a: "En simplifiant : la SAS offre une grande souplesse statutaire et une meilleure protection sociale au dirigeant, au prix de charges nettement plus élevées ; la SARL coûte moins cher en cotisations mais encadre davantage le fonctionnement, et les dividendes du gérant majoritaire sont soumis à cotisations au-delà de 10 % du capital. Si vous vous versez une rémunération significative, l'écart de charges pèse lourd ; si vous privilégiez la protection sociale et l'entrée d'investisseurs, la SAS s'impose souvent." },
       { q: "Quel capital social prévoir ?", a: "Légalement, 1 € suffit en SAS comme en SARL. En pratique, un capital trop faible nuit à votre crédibilité bancaire et, en SARL, réduit le seuil de 10 % en dessous duquel les dividendes échappent aux cotisations. Un capital cohérent avec les besoins de démarrage — souvent quelques milliers d'euros — est un meilleur signal." },
       { q: "Faut-il un expert-comptable dès la création ?", a: "Idéalement avant : les décisions structurantes se prennent au moment de la rédaction des statuts, pas après. Un accompagnement au démarrage coûte une fraction de ce que coûte une transformation de société ou une régularisation fiscale deux ans plus tard." },
@@ -309,7 +333,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Audit préparatoire", texte: "Nous passons votre dossier au crible avant que l'acquéreur ne le fasse : social, fiscal, juridique, contrats. Une mauvaise surprise découverte pendant les négociations coûte toujours plus cher qu'un point réglé en amont." },
       { titre: "Fiscalité de la cession", texte: "Plus-value professionnelle ou de cession de titres, abattements applicables, apport-cession, transmission familiale et pacte Dutreil : le choix du schéma se décide avant la vente, jamais après la signature." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Diagnostic et valorisation", texte: "Fourchette de valeur par plusieurs méthodes, retraitements, identification de ce qui décote — et du calendrier fiscal adapté." },
+      { titre: "Préparation", texte: "Deux à trois exercices de comptes lisibles, réduction de la dépendance au dirigeant, mise en place du schéma fiscal (apport-cession, Dutreil…)." },
+      { titre: "Négociation", texte: "Dossier de présentation, data room, échanges avec les acquéreurs, garantie d'actif et de passif : nous tenons la barre à vos côtés." },
+      { titre: "Signature et après", texte: "Closing, accompagnement de la transition, réemploi du produit de cession : la vente n'est pas la fin de l'histoire patrimoniale." },
+    ],
+    chiffres: [
+      { valeur: "2-3 ans", legende: "d'anticipation pour vendre dans de bonnes conditions" },
+      { valeur: "75 %", legende: "d'abattement possible en transmission familiale (pacte Dutreil)" },
+      { valeur: "31,4 %", legende: "PFU par défaut sur la plus-value de cession" },
+    ],
+        faq: [
       { q: "Combien vaut mon entreprise ?", a: "Il n'existe pas un prix mais une fourchette, obtenue en croisant plusieurs méthodes : multiple de l'excédent brut d'exploitation retraité, actualisation des flux de trésorerie prévisionnels, valeur patrimoniale, et comparables du secteur. Le retraitement du résultat — rémunération du dirigeant, charges non récurrentes, loyers intra-groupe — pèse souvent plus que le choix de la méthode." },
       { q: "Comment est imposée la plus-value de cession ?", a: "Pour une cession de titres par une personne physique, la plus-value relève par défaut du prélèvement forfaitaire unique de 31,4 % (12,8 % d'impôt et 18,6 % de prélèvements sociaux). Des dispositifs spécifiques peuvent modifier fortement la note : départ à la retraite du dirigeant, apport-cession avec report d'imposition, ou transmission familiale sous pacte Dutreil. Chacun impose des conditions strictes à respecter avant l'opération." },
       { q: "Quand faut-il commencer à préparer ?", a: "Deux à trois ans avant la cession envisagée. C'est le temps nécessaire pour produire deux ou trois exercices de comptes propres et cohérents, réduire votre indispensabilité opérationnelle, régler les points sensibles et mettre en place le schéma fiscal adapté — la plupart des dispositifs supposent une antériorité." },
@@ -332,7 +367,18 @@ export const LOCAL_PAGES: LocalPage[] = [
       { titre: "Montage et financement", texte: "Holding de reprise et effet de levier, capacité de remboursement au regard des flux réels, dossier bancaire, garanties. Un montage qui étrangle la trésorerie de la cible est un échec programmé." },
       { titre: "Les cent premiers jours", texte: "Prise en main du pilotage, tableau de bord, sécurisation des équipes clés et des contrats. Nous restons présents après la signature — c'est là que tout se joue." },
     ],
-    faq: [
+    etapes: [
+      { titre: "Ciblage et lettre d'intention", texte: "Analyse du dossier de présentation, premiers signaux d'alerte, lettre d'intention qui protège vos intérêts sans fermer la discussion." },
+      { titre: "Audit d'acquisition", texte: "Comptable, fiscal, social, juridique : ce que vous achetez vraiment. Les constats servent la négociation du prix et des garanties." },
+      { titre: "Financement et montage", texte: "Holding de reprise, dossier bancaire, calibrage de la dette sur les flux réels de la cible — un montage qui tient après la signature." },
+      { titre: "Closing et 100 jours", texte: "Signature, prise en main du pilotage, sécurisation des équipes et des contrats clés. Nous restons présents quand tout se joue." },
+    ],
+    chiffres: [
+      { valeur: "20-30 %", legende: "d'apport personnel généralement attendu par les banques" },
+      { valeur: "3 exercices", legende: "de comptes audités avant de s'engager" },
+      { valeur: "100 jours", legende: "la période qui décide de la réussite de la reprise" },
+    ],
+        faq: [
       { q: "Qu'est-ce qu'un audit d'acquisition ?", a: "Une vérification indépendante de la situation réelle de la cible : comptable et financière, fiscale, sociale et juridique. L'objectif n'est pas seulement de détecter des anomalies, mais de savoir ce que vous achetez vraiment — et d'objectiver la négociation du prix et de la garantie d'actif et de passif." },
       { q: "Qu'est-ce qu'une garantie d'actif et de passif ?", a: "Une clause par laquelle le cédant s'engage à vous indemniser si un passif né avant la cession apparaît après (redressement fiscal, litige prud'homal, dette non comptabilisée). Sa rédaction — plafond, franchise, durée, garantie bancaire adossée — est aussi importante que son existence." },
       { q: "Peut-on reprendre sans apport personnel ?", a: "C'est très rare. Les banques attendent généralement un apport de l'ordre de 20 à 30 % du prix, complété le cas échéant par des prêts d'honneur ou une intervention de Bpifrance. Le crédit-vendeur, quand le cédant l'accepte, réduit d'autant le besoin de financement bancaire et constitue un signal de confiance apprécié." },
