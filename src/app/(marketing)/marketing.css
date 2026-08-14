@@ -145,11 +145,20 @@
 @media(max-width:600px){.mkt-fq{padding:2rem 1.5rem}.mkt-fq blockquote{font-size:1.05rem}}
 
 /* Écosystème (accueil) : grille des sociétés du groupe */
-.mkt-eco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0 2.2rem}
-.mkt-eco-item{display:flex;flex-direction:column;gap:.25rem;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.3rem;transition:border-color .2s,transform .2s}
-.mkt-eco-item:hover{border-color:var(--violet);transform:translateY(-3px)}
-.mkt-eco-item .t{font-weight:800;color:var(--ink);font-size:1.02rem}
-.mkt-eco-item .d{font-size:.82rem;color:var(--ink2)}
+.mkt-eco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin:2rem 0 2.2rem}
+.mkt-eco-item{display:flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--line);
+  border-radius:18px;padding:1.15rem 1.25rem;text-decoration:none;box-shadow:var(--glass-sh);
+  transition:transform .2s,border-color .2s}
+.mkt-eco-item:hover{transform:translateY(-3px);border-color:var(--violet)}
+.mkt-eco-item .mono{flex:0 0 auto;width:52px;height:52px;display:grid;place-items:center;border-radius:15px;
+  background:linear-gradient(135deg,#F5811F,#C2410C);color:#fff;font-weight:800;font-size:1.05rem;
+  text-transform:uppercase;box-shadow:0 10px 20px -10px rgba(226,106,15,.7)}
+.mkt-eco-item .tx{display:flex;flex-direction:column;gap:.15rem;min-width:0}
+.mkt-eco-item .t{font-weight:800;color:var(--ink);font-size:.98rem}
+.mkt-eco-item .d{font-size:.84rem;color:var(--ink3);line-height:1.45}
+.mkt-eco-item .go{margin-left:auto;color:var(--violet);font-weight:800;opacity:0;transform:translateX(-4px);
+  transition:opacity .2s,transform .2s}
+.mkt-eco-item:hover .go{opacity:1;transform:none}
 @media(max-width:860px){.mkt-eco-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.mkt-eco-grid{grid-template-columns:1fr}}
 

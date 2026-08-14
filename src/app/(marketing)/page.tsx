@@ -199,8 +199,12 @@ export default function HomePage() {
               { t: "NewTech", d: "Automatisation & LLM", u: "https://www.newtech.institute/" },
             ].map((e) => (
               <a className="mkt-eco-item" href={e.u} target="_blank" rel="noopener noreferrer" key={e.t}>
-                <span className="t">{e.t}</span>
-                <span className="d">{e.d}</span>
+                <span className="mono" aria-hidden="true">{e.t.replace(/[^A-Za-z]/g, "").slice(0, 2)}</span>
+                <span className="tx">
+                  <span className="t">{e.t}</span>
+                  <span className="d">{e.d}</span>
+                </span>
+                <span className="go" aria-hidden="true">→</span>
               </a>
             ))}
           </div>
