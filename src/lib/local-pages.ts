@@ -373,13 +373,13 @@ export const LOCAL_PAGES: LocalPage[] = [
     atouts: [
       { titre: "Nous faisons les démarches", texte: "Nous adressons la lettre de courtoisie à votre confrère, récupérons les balances, historiques, déclarations et dossiers de travail. Vous n'avez rien à négocier ni à réclamer vous-même." },
       { titre: "À n'importe quel moment", texte: "Aucune obligation d'attendre la clôture. Nous reprenons en cours d'exercice à partir de la dernière balance, avec un point de contrôle sur les à-nouveaux et les postes en suspens." },
-      { titre: "Un état des lieux offert", texte: "Avant tout engagement, nous examinons vos derniers comptes et vous disons franchement ce qui va, ce qui ne va pas, et ce que nous ferions différemment. Sans obligation de suite." },
+      { titre: "Une analyse de vos besoins offerte", texte: "Avant tout engagement, nous prenons le temps de comprendre votre activité, vos attentes et vos priorités — et nous construisons une proposition adaptée à votre situation. Sans obligation de suite." },
     ],
     etapes: [
       { titre: "Premier échange", texte: "Trente minutes, sans engagement : votre situation, vos attentes, ce qui ne fonctionne plus. Nous vous disons franchement si nous sommes le bon cabinet pour vous." },
       { titre: "Lettre de mission", texte: "Périmètre, honoraires forfaitaires, interlocuteurs : tout est écrit avant de commencer. Vous savez exactement ce qui est inclus." },
       { titre: "Reprise du dossier", texte: "Lettre de courtoisie à votre confrère, récupération des balances, historiques et déclarations. Vous n'intervenez pas." },
-      { titre: "État des lieux", texte: "Revue de vos derniers comptes, points de vigilance, plan d'action. La relation démarre sur une base saine et documentée." },
+      { titre: "Cadrage de la mission", texte: "Prise de connaissance de votre dossier, calage des priorités et du calendrier avec vous. La relation démarre sur une base claire et documentée." },
     ],
     chiffres: [
       { valeur: "0", legende: "démarche à votre charge" },
@@ -389,8 +389,8 @@ export const LOCAL_PAGES: LocalPage[] = [
         faq: [
       { q: "Faut-il prévenir soi-même son expert-comptable actuel ?", a: "Vous devez lui notifier la fin de la mission selon les termes de votre lettre de mission (souvent un préavis de trois mois, parfois moins). Mais le contact professionnel — la lettre de courtoisie et la demande de transmission du dossier — relève du nouveau cabinet. C'est une obligation déontologique entre confrères, prévue par le code de déontologie des experts-comptables." },
       { q: "L'ancien cabinet peut-il refuser de transmettre le dossier ?", a: "Il doit transmettre les documents qui vous appartiennent : pièces comptables, balances, grands livres, déclarations déposées. Il peut en revanche exercer un droit de rétention sur ses propres dossiers de travail en cas d'honoraires impayés. En pratique, régler le solde dû lève l'essentiel des blocages — et nous savons gérer les cas de tension." },
-      { q: "Quel est le meilleur moment pour changer ?", a: "Juste après le dépôt des comptes annuels, c'est le plus confortable : le dossier est à jour et la reprise est nette. Mais si la relation ne fonctionne plus, ou si vous découvrez des erreurs, il n'y a aucune raison d'attendre douze mois de plus. Une reprise en cours d'exercice est parfaitement gérable." },
-      { q: "Le changement coûte-t-il quelque chose ?", a: "Chez nous, la reprise du dossier et l'état des lieux initial ne sont pas facturés : ils font partie de l'entrée en relation. Vous ne payez que la mission qui commence, aux conditions fixées dans la lettre de mission." },
+      { q: "Quel est le meilleur moment pour changer ?", a: "Juste après le dépôt des comptes annuels, c'est le plus confortable : le dossier est à jour et la reprise est nette. Mais si la relation ne répond plus à vos attentes ou que vos besoins ont évolué, il n'y a aucune raison d'attendre douze mois de plus. Une reprise en cours d'exercice est parfaitement gérable." },
+      { q: "Le changement coûte-t-il quelque chose ?", a: "Chez nous, la reprise du dossier et l'analyse initiale de vos besoins ne sont pas facturées : ils font partie de l'entrée en relation. Vous ne payez que la mission qui commence, aux conditions fixées dans la lettre de mission." },
     ],
     liens: [EC, { label: "Nous écrire", href: "/contact" }, RDV],
   },
