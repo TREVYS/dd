@@ -85,7 +85,7 @@ export function Footer() {
 
         <div className="mkt-foot-bot">
           <p>
-            © {new Date().getFullYear()} · Trevys Advisory · EURL · 1 rue
+            © {new Date().getFullYear()}&nbsp;· Trevys Advisory · EURL · 1 rue
             Le Nôtre, 75116 Paris · SIREN 839&nbsp;267&nbsp;804 · RCS Paris
           </p>
           <div className="mkt-foot-social">
