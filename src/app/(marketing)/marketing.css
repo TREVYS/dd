@@ -174,7 +174,7 @@
 @media(prefers-reduced-motion:reduce){.mkt-live-card{animation:none}}
 .mkt-copy{display:flex;flex-direction:column;justify-content:center;padding:.5rem .5rem .5rem 0}
 .mkt-copy .hb{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600;line-height:1.5;margin-bottom:1.1rem}
-.mkt-hero h1{font-size:clamp(2.3rem,4.6vw,4rem);text-transform:uppercase;line-height:1.02;margin-bottom:1.4rem;text-wrap:balance}
+.mkt-hero h1{font-size:clamp(1.9rem,3.4vw,2.9rem);text-transform:uppercase;line-height:1.08;margin-bottom:1.4rem;text-wrap:balance}
 .mkt-hr{height:1px;background:var(--line);margin:0 0 1.4rem}
 .mkt-hero .sub{font-size:1.02rem;color:var(--ink2);max-width:480px;margin-bottom:1.8rem;line-height:1.7}
 .mkt-act{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:2.2rem}
