@@ -64,7 +64,7 @@ Français impeccable.
 Le site www.trevys.fr est ta maison : tu en connais chaque page, chaque article, chaque vidéo et chaque média (voir la connaissance du site ci-dessous). Appuie-toi dessus pour faire des liens internes pertinents, éviter les doublons avec les articles existants, illustrer avec les médias disponibles et rester cohérent avec les pages du site.
 
 Tes moyens d'action (outils) :
-- rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement.
+- rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement. JAMAIS de tableaux Markdown dans les articles (ils s'affichent mal sur le site) : préfère des listes à puces ou des paragraphes courts.
 - rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications. TON des posts : humain, chaleureux, une pointe d'humour — jamais corporate ni « robot IA » — et termine toujours par une question ouverte qui invite l'audience à réagir en commentaires. Pour Instagram, fournis TOUJOURS visuel_titre (titre court affiché en grand sur le visuel généré à partir des maquettes du Studio) et si utile visuel_sous_titre.
 - rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
 - rediger_offre : quand on te demande une offre d'emploi, RÉDIGE-LA entièrement (ton premium du cabinet : on recrute des consultants, pas des producteurs de comptes) puis appelle cet outil. L'offre part en brouillon dans Recrutement.
@@ -120,7 +120,7 @@ const TOOLS = [
         category: { type: "string", description: "Thème : Fiscalité, Comptabilité, Facturation électronique, Innovation…" },
         excerpt: { type: "string", description: "Résumé en 1-2 phrases" },
         image: { type: "string", description: "URL de l'image de couverture, choisie dans la médiathèque (/uploads/…) selon le THÈME via le nom du fichier : ia, facturation-electronique, fiscalite, transformation, innovation, actualite. En cas de doute : /uploads/5-1.png. Jamais une photo de personne." },
-        body: { type: "string", description: "Contenu complet en Markdown (## sous-titres, listes, gras)" },
+        body: { type: "string", description: "Contenu complet en Markdown (## sous-titres, listes, gras). Jamais de tableaux Markdown : listes à puces ou paragraphes à la place." },
       },
       required: ["title", "excerpt", "body"],
     },
@@ -412,7 +412,7 @@ const TOOLS = [
         category: { type: "string", description: "Nouveau thème (optionnel)" },
         excerpt: { type: "string", description: "Nouveau résumé (optionnel)" },
         image: { type: "string", description: "Nouvelle image de couverture : URL de la médiathèque (/uploads/…), à choisir via lister_medias (optionnel)" },
-        body: { type: "string", description: "Nouveau contenu COMPLET en Markdown — remplace tout l'ancien corps (optionnel)" },
+        body: { type: "string", description: "Nouveau contenu COMPLET en Markdown — remplace tout l'ancien corps (optionnel). Jamais de tableaux Markdown : listes à puces ou paragraphes à la place." },
       },
       required: ["slug"],
     },
@@ -1059,7 +1059,7 @@ export async function draftArticle(
     system:
       `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n` +
       `Tu rédiges un article complet pour le blog du cabinet. Réponds EXACTEMENT dans ce format, sans rien d'autre :\n` +
-      `TITRE: <titre>\nTHEME: <thème court, ex. Facturation électronique>\nRESUME: <1-2 phrases>\nIMAGE: <l'URL de la médiathèque la plus pertinente pour illustrer l'article, choisie dans la liste ci-dessous, ou "aucune">\nCORPS:\n<contenu Markdown structuré avec ## sous-titres, listes, gras — 600 à 900 mots>\n\n` +
+      `TITRE: <titre>\nTHEME: <thème court, ex. Facturation électronique>\nRESUME: <1-2 phrases>\nIMAGE: <l'URL de la médiathèque la plus pertinente pour illustrer l'article, choisie dans la liste ci-dessous, ou "aucune">\nCORPS:\n<contenu Markdown structuré avec ## sous-titres, listes, gras — 600 à 900 mots — jamais de tableaux Markdown : listes à puces ou paragraphes à la place>\n\n` +
       (mediaUrls.length
         ? `IMAGES DISPONIBLES DANS LA MÉDIATHÈQUE :\n${mediaUrls.join("\n")}\n\n` +
           `RÈGLE DE CHOIX DE LA COUVERTURE : les visuels sont nommés par thème — choisis celui dont le NOM correspond au sujet de l'article : ` +
