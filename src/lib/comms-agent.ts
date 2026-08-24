@@ -71,6 +71,8 @@ Tes moyens d'action (outils) :
 - planifier_publication : ajoute une échéance à la zone de brouillons/propositions (article, post LinkedIn, newsletter…).
 - lister_calendrier : consulte le calendrier existant.
 - lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
+- modifier_article : modifie un article publié directement en ligne (titre, thème, résumé, image de couverture, contenu) — l'URL ne change pas. Lis d'abord l'article avec lire_article quand tu retouches le contenu ; pour changer la couverture, choisis une image via lister_medias. UNIQUEMENT sur instruction explicite de John (la modification est immédiatement visible sur le site).
+- lister_medias : liste les fichiers de la médiathèque (/uploads/…) pour choisir une image de couverture ou illustrer un contenu.
 - creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
 - definir_photo / retirer_photo : change la photo d'un associé ou d'un consultant du site à partir d'une image de la médiathèque (à faire uniquement sur demande explicite).
 - lister_candidatures / refuser_candidature / inviter_entretien : gère le recrutement. RÈGLE ABSOLUE : refuser ou inviter envoie un e-mail réel au candidat — uniquement sur instruction explicite et non ambiguë de John (sinon, liste et demande confirmation).
@@ -396,6 +398,29 @@ const TOOLS = [
       },
       required: ["slug"],
     },
+  },
+  {
+    name: "modifier_article",
+    description:
+      "Modifie un article DÉJÀ PUBLIÉ, directement en ligne : titre, thème, résumé, image de couverture et/ou contenu. Ne transmets que les champs à changer (les autres restent tels quels). Lis d'abord l'article (lire_article) avant de retoucher son contenu. La modification est immédiate sur le site : uniquement sur instruction explicite de John.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        slug: { type: "string", description: "Slug de l'article à modifier (fin de l'URL /blog/<slug>)" },
+        title: { type: "string", description: "Nouveau titre (optionnel — le slug/URL ne change pas)" },
+        category: { type: "string", description: "Nouveau thème (optionnel)" },
+        excerpt: { type: "string", description: "Nouveau résumé (optionnel)" },
+        image: { type: "string", description: "Nouvelle image de couverture : URL de la médiathèque (/uploads/…), à choisir via lister_medias (optionnel)" },
+        body: { type: "string", description: "Nouveau contenu COMPLET en Markdown — remplace tout l'ancien corps (optionnel)" },
+      },
+      required: ["slug"],
+    },
+  },
+  {
+    name: "lister_medias",
+    description:
+      "Liste les fichiers de la médiathèque du site (/uploads/…), pour choisir une image de couverture ou illustrer un contenu.",
+    input_schema: { type: "object" as const, properties: {} },
   },
 ];
 
@@ -813,6 +838,35 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     const post = getPost(String(input.slug ?? ""));
     if (!post) return "Article introuvable — vérifie le slug dans la liste des articles publiés.";
     return `TITRE : ${post.meta.title}\nTHÈME : ${post.meta.category}\nDATE : ${post.meta.date}\nRÉSUMÉ : ${post.meta.excerpt ?? ""}\n\n${post.content.slice(0, 24_000)}`;
+  }
+  if (name === "modifier_article") {
+    const slug = String(input.slug ?? "").trim();
+    const { getRawArticle, saveArticle } = await import("@/lib/content-admin");
+    const a = getRawArticle(slug);
+    if (!a) return `Article introuvable pour le slug « ${slug} » — vérifie dans la liste des articles publiés.`;
+    const changed: string[] = [];
+    if (typeof input.title === "string" && input.title.trim()) { a.title = input.title.trim(); changed.push("titre"); }
+    if (typeof input.category === "string" && input.category.trim()) { a.category = input.category.trim(); changed.push("thème"); }
+    if (typeof input.excerpt === "string" && input.excerpt.trim()) { a.excerpt = input.excerpt.trim(); changed.push("résumé"); }
+    if (typeof input.body === "string" && input.body.trim()) { a.body = input.body.trim(); changed.push("contenu"); }
+    if (typeof input.image === "string" && input.image.trim()) {
+      const url = input.image.trim();
+      if (!listUploads().some((m) => m.url === url)) {
+        return `Image introuvable dans la médiathèque : ${url}. Choisis parmi : ${listUploads().slice(0, 30).map((m) => m.url).join(", ")}`;
+      }
+      a.image = url;
+      changed.push("image de couverture");
+    }
+    if (changed.length === 0) return "Aucun champ à modifier n'a été fourni — précise ce qu'il faut changer (titre, thème, résumé, image, contenu).";
+    // Le slug est conservé : l'URL de l'article ne change pas.
+    saveArticle({ ...a, slug }, slug);
+    actions.push(`Article modifié (${changed.join(", ")}) : « ${a.title} »`);
+    return `Article « ${a.title} » mis à jour en ligne (${changed.join(", ")}) — visible sur /blog/${slug}.`;
+  }
+  if (name === "lister_medias") {
+    const media = listUploads();
+    if (media.length === 0) return "La médiathèque est vide.";
+    return `Médiathèque (${media.length} fichiers) :\n${media.map((m) => `- ${m.url}`).join("\n")}`;
   }
   return "Outil inconnu.";
 }
