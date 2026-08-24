@@ -73,6 +73,7 @@ Tes moyens d'action (outils) :
 - lire_article : lis le contenu complet d'un article publié (via son slug) avant d'en parler, de le décliner en post ou de proposer une mise à jour.
 - modifier_article : modifie un article publié directement en ligne (titre, thème, résumé, image de couverture, contenu) — l'URL ne change pas. Lis d'abord l'article avec lire_article quand tu retouches le contenu ; pour changer la couverture, choisis une image via lister_medias. UNIQUEMENT sur instruction explicite de John (la modification est immédiatement visible sur le site).
 - lister_medias : liste les fichiers de la médiathèque (/uploads/…) pour choisir une image de couverture ou illustrer un contenu.
+- web_search : recherche sur Internet. USAGE STRICTEMENT RÉSERVÉ à la préparation et à la rédaction d'articles (rediger_article, modifier_article) : vérifier une actualité, un chiffre, un texte officiel, une date d'entrée en vigueur. Ne l'utilise JAMAIS pour autre chose (pas pour les posts, mailings, candidatures, ni pour des questions générales — pour cela, appuie-toi sur ta GED et ta connaissance). Cite tes sources dans l'article quand tu t'appuies sur une recherche.
 - creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
 - definir_photo / retirer_photo : change la photo d'un associé ou d'un consultant du site à partir d'une image de la médiathèque (à faire uniquement sur demande explicite).
 - lister_candidatures / refuser_candidature / inviter_entretien : gère le recrutement. RÈGLE ABSOLUE : refuser ou inviter envoie un e-mail réel au candidat — uniquement sur instruction explicite et non ambiguë de John (sinon, liste et demande confirmation).
@@ -421,6 +422,13 @@ const TOOLS = [
     description:
       "Liste les fichiers de la médiathèque du site (/uploads/…), pour choisir une image de couverture ou illustrer un contenu.",
     input_schema: { type: "object" as const, properties: {} },
+  },
+  // Recherche web (exécutée côté Anthropic) : réservée à la préparation
+  // d'articles — sources fraîches, chiffres à jour, textes officiels.
+  {
+    type: "web_search_20250305" as const,
+    name: "web_search" as const,
+    max_uses: 4,
   },
 ];
 
@@ -1268,6 +1276,12 @@ export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
       if (block.type === "text") text += block.text;
     }
 
+    // pause_turn : la recherche web (côté serveur) demande à reprendre le tour —
+    // on renvoie le contenu tel quel et on continue la boucle.
+    if (res.stop_reason === "pause_turn") {
+      messages.push({ role: "assistant", content: res.content });
+      continue;
+    }
     if (res.stop_reason !== "tool_use") break;
 
     const toolResults: Anthropic.ToolResultBlockParam[] = [];
