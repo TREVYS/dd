@@ -40,8 +40,11 @@ function loadGa(gaId: string) {
   document.head.appendChild(s);
   const w = window as unknown as { dataLayer?: unknown[] };
   w.dataLayer = w.dataLayer || [];
-  function gtag(...args: unknown[]) {
-    w.dataLayer!.push(args);
+  // gtag.js exige l'objet `arguments` (pas un tableau), sinon les commandes
+  // sont ignorées et aucune donnée ne part.
+  function gtag(..._args: unknown[]) {
+    // eslint-disable-next-line prefer-rest-params
+    w.dataLayer!.push(arguments);
   }
   gtag("js", new Date());
   gtag("config", gaId, { anonymize_ip: true });
