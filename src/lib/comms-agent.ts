@@ -85,6 +85,7 @@ Tes moyens d'action (outils) :
   1. propose des articles (via la connaissance du site), et compose le brouillon avec composer_mailing_articles ;
   2. demande la cible avec les chiffres de lister_contacts (« tous » les abonnés ou seulement les « actifs » — ont ouvert un e-mail dans les 90 derniers jours) ;
   3. ATTENDS LE GO EXPLICITE de John (« envoie », « c'est parti », « go ») — puis appelle envoyer_mailing. RÈGLE ABSOLUE : jamais d'envoi sans ce go clair et sans avoir annoncé la cible et le nombre de destinataires. L'envoi est cadencé (anti-spam) : il part en arrière-plan et John reçoit une confirmation Telegram à la fin. GARDE-FOU : si un mailing est parti il y a moins de 15 jours, l'outil refusera — préviens John (dernier envoi, il y a combien de jours) et n'insiste que s'il confirme explicitement (alors confirmer_envoi_rapproche=true).
+- composer_mailing_profils : mailing « staffing » pour les clients GRANDS COMPTES — présente des collaborateurs/consultants disponibles (prénom, spécificité, description, disponibilité, lien vers le CV) avec un bouton de prise de rendez-vous. Workflow : 1. John te donne les profils (les CV sont des PDF importés dans la médiathèque — retrouve-les avec lister_medias) ; 2. compose le brouillon ; 3. cible recommandée à l'envoi : filtre_profil « Grand compte » (les clients grands comptes sont flagués avec ce profil dans la base contacts). Mêmes règles que tout mailing : GO explicite de John avant envoyer_mailing, cible et nombre annoncés.
 - inviter_contacts : John te donne une liste d'e-mails (dans le chat ou sur Telegram) → tu envoies à chacun l'invitation opt-in du cabinet (boutons Oui / Non merci). Les déjà-abonnés, les refus passés et les déjà-invités sont écartés automatiquement. UNIQUEMENT sur instruction explicite — annonce le nombre d'invitations avant si la demande est ambiguë.
 - supprimer_article / depublier_article : supprime définitivement un article publié du site, ou le dépublie (retour en brouillon). UNIQUEMENT sur instruction explicite de John — jamais de ta propre initiative. Pour plusieurs articles, appelle l'outil pour chacun.
 - supprimer_brouillon_article / supprimer_post / supprimer_newsletter_brouillon : supprime un brouillon d'article, un post en attente, ou un mailing en brouillon (les mailings déjà envoyés restent : c'est l'historique).
@@ -304,6 +305,34 @@ const TOOLS = [
         objet: { type: "string", description: "Objet de l'e-mail (optionnel — proposé automatiquement sinon)" },
       },
       required: ["slugs"],
+    },
+  },
+  {
+    name: "composer_mailing_profils",
+    description:
+      "Compose un brouillon de mailing « profils disponibles » destiné aux clients grands comptes : présente un ou plusieurs collaborateurs/consultants disponibles (prénom, spécificité, lien vers le CV de la médiathèque) avec un bouton de prise de rendez-vous. Renvoie l'id du brouillon. N'ENVOIE RIEN.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        profils: {
+          type: "array",
+          description: "Les collaborateurs à présenter",
+          items: {
+            type: "object",
+            properties: {
+              prenom: { type: "string", description: "Prénom du collaborateur" },
+              specificite: { type: "string", description: "Sa spécificité / expertise en une ligne (ex. « Consolidation & reporting IFRS », « Direction financière de transition »)" },
+              description: { type: "string", description: "2-3 phrases sur son parcours et ce qu'il peut apporter (optionnel)" },
+              cv: { type: "string", description: "URL du CV dans la médiathèque (/uploads/…, PDF de préférence) — vérifie avec lister_medias (optionnel)" },
+              disponibilite: { type: "string", description: "Disponibilité (ex. « dès maintenant », « à partir de mars », « 3 jours/semaine ») (optionnel)" },
+            },
+            required: ["prenom", "specificite"],
+          },
+        },
+        intro: { type: "string", description: "Phrase d'introduction personnalisée (optionnel — une intro sobre est proposée sinon)" },
+        objet: { type: "string", description: "Objet de l'e-mail (optionnel — proposé automatiquement sinon)" },
+      },
+      required: ["profils"],
     },
   },
   {
@@ -676,6 +705,52 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     const camp = addCampaignStore(subject, body);
     actions.push(`Brouillon de mailing composé : « ${camp.subject} » (${posts.length} article${posts.length > 1 ? "s" : ""})`);
     return `Mailing composé en brouillon (id ${camp.id}) : « ${camp.subject} », avec ${posts.length} article(s) : ${posts.map((p) => `« ${p.meta.title} »`).join(", ")}. Demande maintenant la cible (tous / actifs) puis attends le GO avant d'envoyer.`;
+  }
+  if (name === "composer_mailing_profils") {
+    type ProfilInput = { prenom?: unknown; specificite?: unknown; description?: unknown; cv?: unknown; disponibilite?: unknown };
+    const raw = Array.isArray(input.profils) ? (input.profils as ProfilInput[]) : [];
+    const profils = raw
+      .map((p) => ({
+        prenom: String(p.prenom ?? "").trim(),
+        specificite: String(p.specificite ?? "").trim(),
+        description: String(p.description ?? "").trim(),
+        cv: String(p.cv ?? "").trim(),
+        disponibilite: String(p.disponibilite ?? "").trim(),
+      }))
+      .filter((p) => p.prenom && p.specificite);
+    if (profils.length === 0) return "Aucun profil exploitable — il faut au moins un prénom et une spécificité par collaborateur.";
+    // Les CV doivent exister dans la médiathèque (lien mort interdit dans un
+    // mailing grand compte).
+    const media = listUploads().map((m) => m.url);
+    for (const p of profils) {
+      if (p.cv && p.cv.startsWith("/uploads/") && !media.includes(p.cv)) {
+        return `CV introuvable dans la médiathèque : ${p.cv}. Vérifie avec lister_medias (John doit peut-être encore l'importer dans /admin/medias).`;
+      }
+    }
+    const { SITE_URL } = await import("@/lib/site");
+    const intro = String(input.intro ?? "").trim() ||
+      (profils.length === 1
+        ? "Bonjour,\n\nNous avons actuellement un profil disponible qui pourrait renforcer vos équipes :"
+        : "Bonjour,\n\nNous avons actuellement plusieurs profils disponibles qui pourraient renforcer vos équipes :");
+    const cvAbs = (u: string) => (u.startsWith("/") ? `${SITE_URL}${u}` : u);
+    const blocs = profils.map((p) => {
+      const lignes = [`## ${p.prenom} — ${p.specificite}`];
+      if (p.description) lignes.push(p.description);
+      if (p.disponibilite) lignes.push(`**Disponibilité :** ${p.disponibilite}`);
+      if (p.cv) lignes.push(`[Consulter le CV →](${cvAbs(p.cv)})`);
+      return lignes.join("\n\n");
+    });
+    const body =
+      `${intro}\n\n` +
+      blocs.join("\n\n---\n\n") +
+      `\n\nPour échanger sur vos besoins et rencontrer ${profils.length === 1 ? "ce profil" : "ces profils"}, réservez directement un créneau :\n\n[Planifier un échange](${SITE_URL}/rendez-vous)\n\nBien cordialement,\n\nJohn Lévy\nTrevys Advisory`;
+    let subject = String(input.objet ?? "").trim();
+    if (!subject) subject = profils.length === 1
+      ? `${profils[0].prenom} — ${profils[0].specificite} : profil disponible`
+      : `${profils.length} profils disponibles pour renforcer vos équipes`;
+    const camp = addCampaignStore(subject, body);
+    actions.push(`Brouillon de mailing profils composé : « ${camp.subject} » (${profils.length} profil${profils.length > 1 ? "s" : ""})`);
+    return `Mailing « profils disponibles » composé en brouillon (id ${camp.id}) : « ${camp.subject} », avec ${profils.map((p) => p.prenom).join(", ")}. Relecture possible dans le module Newsletter. Cible recommandée : filtre_profil « Grand compte » (clients flagués dans la base contacts). Attends le GO explicite de John avant d'envoyer.`;
   }
   if (name === "lister_contacts") {
     const { contactActivity } = await import("@/lib/newsletter-stats");

@@ -16,7 +16,7 @@ export type Subscriber = {
 };
 
 // Profils suggérés (axe 2) — la saisie libre reste possible.
-export const PROFILS = ["DAF", "BNC", "BNC santé", "Dirigeant", "Expert-comptable", "Autre"];
+export const PROFILS = ["DAF", "BNC", "BNC santé", "Dirigeant", "Expert-comptable", "Grand compte", "Autre"];
 
 type Store = { subscribers: Subscriber[] };
 
