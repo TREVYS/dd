@@ -1254,6 +1254,35 @@ const FUN_SUBJECTS = [
 ];
 
 // Propose un objet d'e-mail accrocheur pour une newsletter.
+// Rédige un premier jet de mailing à partir d'un brief (appel modèle unique).
+// Sans clé API, lève une erreur claire.
+export async function draftMailingBody(brief: string): Promise<string> {
+  const apiKey = getSetting("anthropicApiKey");
+  if (!apiKey) {
+    throw new Error("Alfred n'est pas configuré (clé API manquante — voir Réglages).");
+  }
+  const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+  const client = new AnthropicSDK({ apiKey });
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 3000,
+    system:
+      `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n---\n\n` +
+      `Tu rédiges un e-mail (mailing) pour le cabinet à partir du brief de John. Format : salutation, paragraphes courts, ` +
+      `## sous-titres si utile, listes à puces (jamais de tableaux), signature « L'équipe Trevys » ou « John Lévy » selon le ton. ` +
+      `Un lien seul sur sa ligne devient un bouton. Réponds UNIQUEMENT avec le contenu Markdown complet de l'e-mail ` +
+      `(aucun commentaire, aucun objet, aucune balise de code).${feedbackBlock()}`,
+    messages: [{ role: "user", content: `Brief du mailing :\n${brief.slice(0, 4000)}` }],
+  });
+  const text = res.content
+    .filter((b) => b.type === "text")
+    .map((b) => (b as { text: string }).text)
+    .join("")
+    .trim();
+  if (!text) throw new Error("Alfred n'a rien produit — réessayez.");
+  return text;
+}
+
 export async function suggestSubject(body: string): Promise<string> {
   const apiKey = getSetting("anthropicApiKey");
   const fallback = FUN_SUBJECTS[Math.floor(Math.random() * FUN_SUBJECTS.length)];

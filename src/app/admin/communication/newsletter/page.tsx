@@ -301,17 +301,33 @@ export default async function NewsletterAdmin({
           </div>
 
           <div className="adm-card">
-            <h2>Préparer un mailing libre</h2>
+            <h2>Créer un mailing libre — votre texte, ou un premier jet d&apos;Alfred</h2>
             <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 .8rem" }}>
-              Pour un message qui ne part pas d&apos;articles (vœux, invitation, annonce du cabinet).
+              Pour un message qui ne part pas d&apos;articles (vœux, invitation, annonce, profils disponibles…).
+              Écrivez votre texte, ou briefez Alfred qui rédige le premier jet. Vous arrivez ensuite sur la page
+              d&apos;édition : relecture avec l&apos;aide d&apos;Alfred, aperçu, <b>choix de la liste de diffusion</b> et envoi.
             </p>
+            {sp.error === "alfred" && (
+              <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+                Alfred n&apos;a pas pu rédiger le premier jet (voir sa configuration dans les Réglages). Vous pouvez
+                créer le mailing avec votre propre texte.
+              </div>
+            )}
             <form action={createCampaignAction} className="adm-form">
               <div className="adm-field">
-                <label>Objet de l&apos;e-mail</label>
-                <input name="subject" required placeholder="Ex. Facturation électronique : ce qui change en 2026" />
+                <label>Objet de l&apos;e-mail <small>(optionnel — proposé par Alfred sinon)</small></label>
+                <input name="subject" placeholder="Ex. Facturation électronique : ce qui change en 2026" />
+              </div>
+              <div className="adm-field">
+                <label>Votre texte <small>(optionnel — Markdown : ## sous-titres, listes, liens)</small></label>
+                <textarea name="body" style={{ minHeight: 120 }} placeholder={"Bonjour,\n\nVotre message…"} />
+              </div>
+              <div className="adm-field">
+                <label>Ou confiez la rédaction à Alfred <small>(votre brief en une ou deux phrases — utilisé si le texte ci-dessus est vide)</small></label>
+                <textarea name="brief" style={{ minHeight: 70 }} placeholder={"Ex. Annonce nos nouveaux locaux rue Le Nôtre, ton chaleureux, invite à passer nous voir."} />
               </div>
               <div className="adm-actions">
-                <button className="adm-btn" type="submit">Créer et rédiger</button>
+                <PendingButton pendingLabel="Création du mailing…">Créer et rédiger</PendingButton>
               </div>
             </form>
           </div>

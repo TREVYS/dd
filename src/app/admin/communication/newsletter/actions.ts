@@ -134,10 +134,27 @@ export async function createArticlesCampaignAction(formData: FormData) {
 
 export async function createCampaignAction(formData: FormData) {
   await guard();
-  const c = addCampaign(
-    (formData.get("subject") as string) || "",
-    (formData.get("body") as string) || "",
-  );
+  let subject = ((formData.get("subject") as string) || "").trim();
+  let body = ((formData.get("body") as string) || "").trim();
+  const brief = ((formData.get("brief") as string) || "").trim();
+
+  // Brief fourni sans texte : Alfred rédige le premier jet (relu et modifiable
+  // sur la page d'édition avant tout envoi).
+  if (!body && brief) {
+    try {
+      const { draftMailingBody } = await import("@/lib/comms-agent");
+      body = await draftMailingBody(brief);
+    } catch (e) {
+      console.error("[newsletter] brouillon Alfred:", e);
+      redirect("/admin/communication/newsletter?vue=preparation&error=alfred");
+    }
+  }
+  if (!subject && body) {
+    const { suggestSubject } = await import("@/lib/comms-agent");
+    subject = await suggestSubject(body);
+  }
+
+  const c = addCampaign(subject || "Sans objet", body);
   revalidatePath("/admin/communication/newsletter");
   redirect(`/admin/communication/newsletter/${c.id}`);
 }
