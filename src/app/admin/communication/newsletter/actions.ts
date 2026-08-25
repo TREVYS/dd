@@ -12,6 +12,7 @@ import {
   markdownToEmailHtml,
   wrapEmail,
   unsubscribeUrl,
+  resolveTargetRecipients,
 } from "@/lib/newsletter-campaigns";
 import { sendCampaign, sendPersonalized, mailerConfigured, senderAddress } from "@/lib/mailer";
 
@@ -215,25 +216,7 @@ export async function sendCampaignAction(formData: FormData) {
     redirect(`/admin/communication/newsletter/${id}?error=notconfig`);
   }
 
-  const set = new Set<string>();
-  if (formData.get("includeSubscribers")) {
-    // Moteur de sélection : axe client (tous/clients/non-clients), axe profil,
-    // et recherche libre (e-mail, nom, profil).
-    const fClient = (formData.get("fClient") as string) || "tous";
-    const fProfil = ((formData.get("fProfil") as string) || "").trim().toLowerCase();
-    const fq = ((formData.get("fq") as string) || "").trim().toLowerCase();
-    listSubscribers()
-      .filter((s) => {
-        if (fClient === "oui" && s.client !== true) return false;
-        if (fClient === "non" && s.client === true) return false;
-        if (fProfil && (s.profil ?? "").toLowerCase() !== fProfil) return false;
-        if (fq && !`${s.email} ${s.name ?? ""} ${s.profil ?? ""}`.toLowerCase().includes(fq)) return false;
-        return true;
-      })
-      .forEach((s) => set.add(s.email.toLowerCase()));
-  }
-  parseEmails((formData.get("recipients") as string) || "").forEach((e) => set.add(e));
-  const recipients = [...set];
+  const recipients = resolveTargetRecipients(targetFromForm(formData), listSubscribers());
 
   if (recipients.length === 0) {
     redirect(`/admin/communication/newsletter/${id}?error=empty`);
@@ -282,14 +265,30 @@ export async function sendOptinInvitesAction(formData: FormData) {
   redirect(`/admin/communication/newsletter?optin=sent&n=${sent}&skipped=${all.length - targets.length}`);
 }
 
+// Reconstruit le ciblage depuis le formulaire d'envoi/programmation.
+function targetFromForm(formData: FormData) {
+  return {
+    includeSubscribers: !!formData.get("includeSubscribers"),
+    fClient: (formData.get("fClient") as string) || "tous",
+    fProfil: ((formData.get("fProfil") as string) || "").trim(),
+    fq: ((formData.get("fq") as string) || "").trim(),
+    exclude: parseEmails((formData.get("exclude") as string) || ""),
+    extra: parseEmails((formData.get("recipients") as string) || ""),
+  };
+}
+
 // Programme (ou annule la programmation de) l'envoi d'un mailing en brouillon.
-// À la date choisie, le planificateur l'envoie à tous les abonnés.
+// Le ciblage choisi à l'écran est mémorisé : à la date venue, le planificateur
+// envoie aux MÊMES destinataires (recalculés sur la base à jour).
 export async function scheduleCampaignAction(formData: FormData) {
   await guard();
   const id = formData.get("id") as string;
   const sendAt = ((formData.get("sendAt") as string) || "").trim();
   if (!id) return;
-  updateCampaign(id, { sendAt: sendAt || undefined });
+  updateCampaign(id, {
+    sendAt: sendAt || undefined,
+    target: sendAt ? targetFromForm(formData) : undefined,
+  });
   revalidatePath(`/admin/communication/newsletter/${id}`);
   revalidatePath("/admin/communication/mailings");
   redirect(`/admin/communication/newsletter/${id}?planned=${sendAt ? "1" : "0"}`);

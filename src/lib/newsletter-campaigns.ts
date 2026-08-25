@@ -8,6 +8,18 @@ const FILE = path.join(process.cwd(), "data", "newsletter-campaigns.json");
 
 export type CampaignStatus = "brouillon" | "envoye";
 
+// Ciblage d'un mailing : filtres sur les inscrits, exclusions individuelles
+// et adresses ajoutées à la main. Mémorisé à la programmation pour que
+// l'envoi différé parte aux MÊMES destinataires que ceux choisis à l'écran.
+export type CampaignTarget = {
+  includeSubscribers: boolean;
+  fClient: string; // tous | oui | non
+  fProfil: string;
+  fq: string;
+  exclude: string[]; // e-mails écartés un à un
+  extra: string[]; // adresses ajoutées à la main
+};
+
 export type Campaign = {
   id: string;
   subject: string;
@@ -17,7 +29,30 @@ export type Campaign = {
   sentAt?: string;
   sentCount?: number;
   sendAt?: string; // AAAA-MM-JJ — envoi programmé (traité par le planificateur)
+  target?: CampaignTarget; // ciblage mémorisé (envoi programmé)
 };
+
+// Applique un ciblage à la base d'inscrits → liste finale d'adresses (uniques,
+// minuscules). Sans ciblage mémorisé : tous les abonnés (comportement historique).
+export function resolveTargetRecipients(target: CampaignTarget | undefined, subscribers: { email: string; name?: string; client?: boolean; profil?: string }[]): string[] {
+  if (!target) return [...new Set(subscribers.map((s) => s.email.toLowerCase()))];
+  const excl = new Set(target.exclude.map((e) => e.toLowerCase()));
+  const set = new Set<string>();
+  if (target.includeSubscribers) {
+    const fProfil = target.fProfil.trim().toLowerCase();
+    const fq = target.fq.trim().toLowerCase();
+    for (const s of subscribers) {
+      if (target.fClient === "oui" && s.client !== true) continue;
+      if (target.fClient === "non" && s.client === true) continue;
+      if (fProfil && (s.profil ?? "").toLowerCase() !== fProfil) continue;
+      if (fq && !`${s.email} ${s.name ?? ""} ${s.profil ?? ""}`.toLowerCase().includes(fq)) continue;
+      set.add(s.email.toLowerCase());
+    }
+  }
+  for (const e of target.extra) set.add(e.toLowerCase());
+  for (const e of excl) set.delete(e);
+  return [...set];
+}
 
 function readAll(): Campaign[] {
   try {

@@ -8,8 +8,7 @@ import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { MarkdownEditor } from "../../../markdown-editor";
 import { SubjectField } from "../subject-field";
 import { ConfirmSubmit } from "../../../confirm-submit";
-import { TargetPicker } from "../target-picker";
-import { RecipientsField } from "../recipients-field";
+import { SendTargeting } from "../send-targeting";
 import { saveCampaignAction, deleteCampaignAction, sendTestAction, sendCampaignAction, scheduleCampaignAction } from "../actions";
 import { campaignReport } from "@/lib/newsletter-stats";
 
@@ -28,7 +27,6 @@ export default async function CampaignEditor({
   if (!c) notFound();
 
   const subscribers = listSubscribers();
-  const count = subscribers.length;
   const mailOn = mailerConfigured();
   const preview = wrapEmail(markdownToEmailHtml(c.body || "_(Votre message apparaîtra ici.)_"), unsubscribeUrl("exemple@trevys.fr"));
   // Garde-fou anti-sur-sollicitation : dernier envoi < 15 jours → pop-up.
@@ -61,7 +59,7 @@ export default async function CampaignEditor({
       </div>
 
       {sp.saved && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Modifications enregistrées.</div>}
-      {sp.planned === "1" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Envoi programmé — il partira automatiquement à la date choisie (tous les abonnés), avec confirmation Telegram.</div>}
+      {sp.planned === "1" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Envoi programmé — il partira automatiquement à la date choisie, aux destinataires ciblés, avec confirmation Telegram.</div>}
       {sp.planned === "0" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0e2cf", background: "#fdf8f0" }}>Programmation annulée — le mailing reste en brouillon.</div>}
       {sp.tested && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>E-mail de test envoyé.</div>}
       {sp.sent && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Mailing envoyé à {sp.sent} inscrit(s).</div>}
@@ -157,27 +155,7 @@ export default async function CampaignEditor({
         </div>
       </div>
 
-      {/* Programmation */}
-      {!sent && (
-        <div className="adm-card" style={{ marginTop: "1.2rem" }}>
-          <h2>Programmer l&apos;envoi</h2>
-          <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: ".2rem 0 1rem" }}>
-            Choisissez une date : le mailing partira automatiquement ce jour-là à <b>tous les abonnés</b>
-            (avec suivi des ouvertures/clics et confirmation Telegram).
-            {c.sendAt && <> Actuellement programmé pour le <b>{c.sendAt}</b>.</>}
-          </p>
-          <form action={scheduleCampaignAction} style={{ display: "flex", gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
-            <input type="hidden" name="id" value={c.id} />
-            <input type="date" name="sendAt" defaultValue={c.sendAt ?? ""} min={parisToday()} />
-            <button className="adm-btn ghost sm" type="submit">Programmer</button>
-            {c.sendAt && (
-              <button className="adm-btn danger sm" type="submit" name="sendAt" value="">Annuler la programmation</button>
-            )}
-          </form>
-        </div>
-      )}
-
-      {/* Envoi */}
+      {/* Envoi : test, ciblage, envoi immédiat ou programmé */}
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>
         <h2>Envoyer</h2>
 
@@ -199,27 +177,40 @@ export default async function CampaignEditor({
           <button className="adm-btn ghost" type="submit" disabled={!mailOn}>Envoyer un test</button>
         </form>
 
-        {/* Envoi réel : inscrits et/ou liste collée */}
+        <h3 style={{ margin: "0 0 .6rem", fontSize: ".95rem" }}>1. Choisissez vos destinataires</h3>
+        {/* Un seul formulaire : le ciblage sert à l'envoi immédiat ET à la
+            programmation (le bouton « Programmer » le mémorise avec la date). */}
         <form action={sendCampaignAction}>
           <input type="hidden" name="id" value={c.id} />
-          <label className="adm-diff-net" style={{ marginBottom: ".4rem" }}>
-            <input type="checkbox" name="includeSubscribers" defaultChecked={count > 0} disabled={count === 0} />
-            <b>Inclure les {count} inscrit(s) à la newsletter</b>
-          </label>
-          {count > 0 && (
-            <TargetPicker
-              contacts={subscribers.map((s) => ({ email: s.email, name: s.name, client: s.client, profil: s.profil }))}
-              profils={PROFILS}
-            />
+          <SendTargeting
+            contacts={subscribers.map((s) => ({ email: s.email, name: s.name, client: s.client, profil: s.profil }))}
+            profils={PROFILS}
+          />
+
+          <h3 style={{ margin: "1.1rem 0 .6rem", fontSize: ".95rem" }}>2. Envoyez — maintenant, ou à une date choisie</h3>
+          {c.sendAt && (
+            <div className="adm-note" style={{ margin: "0 0 .8rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+              Envoi programmé pour le <b>{c.sendAt}</b>{c.target ? " avec le ciblage mémorisé à la programmation" : " (tous les abonnés)"} — confirmation Telegram le jour venu.
+            </div>
           )}
-          <RecipientsField subscribers={subscribers.map((s) => s.email)} />
-          <div className="adm-actions">
+          <div className="adm-actions" style={{ gap: ".6rem", alignItems: "center", flexWrap: "wrap" }}>
             {mailOn
-              ? <ConfirmSubmit message={guardMsg}>Envoyer le mailing</ConfirmSubmit>
-              : <button className="adm-btn" type="submit" disabled>Envoyer le mailing</button>}
+              ? <ConfirmSubmit message={guardMsg}>Envoyer maintenant</ConfirmSubmit>
+              : <button className="adm-btn" type="submit" disabled>Envoyer maintenant</button>}
+            <span className="muted" style={{ fontSize: ".85rem" }}>ou</span>
+            <input type="date" name="sendAt" defaultValue={c.sendAt ?? ""} min={parisToday()} />
+            <button className="adm-btn ghost sm" type="submit" formAction={scheduleCampaignAction}>
+              {c.sendAt ? "Reprogrammer avec ce ciblage" : "Programmer avec ce ciblage"}
+            </button>
+            {c.sendAt && (
+              <button className="adm-btn danger sm" type="submit" formAction={scheduleCampaignAction} name="sendAt" value="">
+                Annuler la programmation
+              </button>
+            )}
           </div>
           <p className="muted" style={{ marginTop: ".6rem", color: "var(--ink3)", fontSize: ".82rem" }}>
             Les destinataires sont mis en copie cachée (Cci) : ils ne se voient pas entre eux.
+            Un envoi programmé part à la date choisie aux destinataires ciblés ci-dessus, avec confirmation Telegram.
           </p>
         </form>
 

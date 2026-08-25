@@ -127,9 +127,12 @@ export async function runScheduledPublications(): Promise<void> {
           continue;
         }
         const { listSubscribers } = await import("@/lib/newsletter");
-        const recipients = [...new Set(listSubscribers().map((x) => x.email.toLowerCase()))];
+        const { resolveTargetRecipients } = await import("@/lib/newsletter-campaigns");
+        // Ciblage mémorisé à la programmation (filtres, exclusions, ajouts) ;
+        // sans ciblage : tous les abonnés.
+        const recipients = resolveTargetRecipients(camp.target, listSubscribers());
         if (recipients.length === 0) {
-          await sendTelegram(`⚠️ Mailing programmé « ${camp.subject} » non envoyé : aucun abonné.`, { plain: true }).catch(() => {});
+          await sendTelegram(`⚠️ Mailing programmé « ${camp.subject} » non envoyé : aucun destinataire dans le ciblage.`, { plain: true }).catch(() => {});
           continue;
         }
         const { openPixelUrl, trackLinks } = await import("@/lib/newsletter-stats");
