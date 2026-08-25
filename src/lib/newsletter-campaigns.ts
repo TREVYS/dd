@@ -134,9 +134,11 @@ function inline(s: string): string {
 function emailButton(rawHref: string, label: string): string {
   const href = esc(abs(rawHref));
   return (
+    // Rembourrage porté par la cellule UNIQUEMENT (le porter aussi sur le
+    // lien fait un double cadre dans Outlook).
     `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"><tr>` +
-    `<td bgcolor="#E26A0F" style="background-color:#E26A0F;border-radius:100px;mso-padding-alt:12px 28px;">` +
-    `<a href="${href}" style="display:inline-block;padding:12px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;background-color:#E26A0F;text-decoration:none;border-radius:100px;border:1px solid #C2410C;">${label}&nbsp;&rarr;</a>` +
+    `<td bgcolor="#E26A0F" style="background-color:#E26A0F;border-radius:100px;padding:12px 28px;">` +
+    `<a href="${href}" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">${label}&nbsp;&rarr;</a>` +
     `</td></tr></table>`
   );
 }
@@ -235,6 +237,14 @@ export function markdownToEmailHtml(md: string): string {
         // Ligne composée d'un seul lien → bouton d'action (fiable Outlook).
         out.push(emailButton(m[2], esc(m[1].replace(/\s*→\s*$/, ""))));
       }
+    } else if (/^>\s?/.test(line)) {
+      // Citation / encadré : lignes « > … » → bloc mis en avant.
+      flushList();
+      out.push(
+        `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 16px;"><tr>` +
+        `<td style="background-color:#fdf6ec;border-left:4px solid #F5811F;border-radius:0 8px 8px 0;padding:12px 16px;font-family:Arial,Helvetica,sans-serif;line-height:1.6;">${inline(line.replace(/^>\s?/, ""))}</td>` +
+        `</tr></table>`,
+      );
     } else if (/^---+$/.test(line.trim())) {
       flushList();
       out.push(`<hr style="border:none;border-top:1px solid #f0e4d3;margin:26px 0;clear:both;" />`);
