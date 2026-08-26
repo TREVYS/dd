@@ -49,11 +49,27 @@ export async function bulkArticlesAction(formData: FormData) {
   await requireUser();
   const slugs = formData.getAll("slugs").map(String).filter(Boolean);
   const op = String(formData.get("op") ?? "");
-  if (slugs.length === 0 || !["delete", "unpublish"].includes(op)) {
+  if (slugs.length === 0 || !["delete", "unpublish", "category", "image"].includes(op)) {
     redirect("/admin/articles");
   }
 
-  if (op === "unpublish") {
+  // Modifications groupées : thème ou image de couverture, sans toucher au reste.
+  if (op === "category" || op === "image") {
+    const value = String(formData.get(op === "category" ? "newCategory" : "newImage") ?? "").trim();
+    if (!value) redirect("/admin/articles");
+    if (op === "image") {
+      const { listUploads } = await import("@/lib/media");
+      if (!listUploads().some((m) => m.url === value)) redirect("/admin/articles");
+    }
+    const { getRawArticle, saveArticle } = await import("@/lib/content-admin");
+    for (const slug of slugs) {
+      const a = getRawArticle(slug);
+      if (!a) continue;
+      if (op === "category") a.category = value;
+      else a.image = value;
+      saveArticle({ ...a, slug }, slug);
+    }
+  } else if (op === "unpublish") {
     const { getRawArticle } = await import("@/lib/content-admin");
     const { addItem } = await import("@/lib/editorial");
     for (const slug of slugs) {

@@ -14,10 +14,17 @@ export type ArticleRow = {
 };
 
 // Liste des articles : recherche par mots-clés, sélection multiple et actions
-// groupées (dépublier → retour en brouillon, ou supprimer).
-export function ArticlesTable({ posts }: { posts: ArticleRow[] }) {
+// groupées (changer le thème ou la couverture, dépublier, supprimer).
+export function ArticlesTable({ posts, images = [] }: { posts: ArticleRow[]; images?: string[] }) {
   const [q, setQ] = useState("");
   const [sel, setSel] = useState<Set<string>>(new Set());
+  const [newCategory, setNewCategory] = useState("");
+  const [newImage, setNewImage] = useState("");
+
+  const categories = useMemo(
+    () => [...new Set(posts.map((p) => p.category).filter(Boolean))].sort(),
+    [posts],
+  );
 
   const terms = useMemo(
     () => q.toLowerCase().split(/\s+/).map((t) => t.trim()).filter(Boolean),
@@ -66,6 +73,51 @@ export function ArticlesTable({ posts }: { posts: ArticleRow[] }) {
           style={{ marginBottom: ".9rem", display: "flex", alignItems: "center", gap: ".7rem", flexWrap: "wrap" }}
         >
           <b>{sel.size} article{sel.size > 1 ? "s" : ""} sélectionné{sel.size > 1 ? "s" : ""}</b>
+
+          {/* Changer le thème (saisie libre avec suggestions) */}
+          <span style={{ display: "inline-flex", gap: ".35rem", alignItems: "center" }}>
+            <input
+              name="newCategory"
+              list="bulk-categories"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              placeholder="Nouveau thème…"
+              style={{ maxWidth: 180 }}
+              aria-label="Nouveau thème"
+            />
+            <datalist id="bulk-categories">
+              {categories.map((c) => <option key={c} value={c} />)}
+            </datalist>
+            <button className="adm-btn ghost sm" type="submit" name="op" value="category" disabled={!newCategory.trim()}>
+              Changer le thème
+            </button>
+          </span>
+
+          {/* Changer l'image de couverture (médiathèque) */}
+          {images.length > 0 && (
+            <span style={{ display: "inline-flex", gap: ".35rem", alignItems: "center" }}>
+              <select
+                name="newImage"
+                value={newImage}
+                onChange={(e) => setNewImage(e.target.value)}
+                style={{ maxWidth: 220 }}
+                aria-label="Nouvelle image de couverture"
+              >
+                <option value="">Nouvelle couverture…</option>
+                {images.map((u) => (
+                  <option key={u} value={u}>{u.replace(/^\/uploads\//, "")}</option>
+                ))}
+              </select>
+              {newImage && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="adm-thumb" src={newImage} alt="Aperçu de la couverture choisie" />
+              )}
+              <button className="adm-btn ghost sm" type="submit" name="op" value="image" disabled={!newImage}>
+                Changer la couverture
+              </button>
+            </span>
+          )}
+
           <button className="adm-btn ghost sm" type="submit" name="op" value="unpublish">
             Dépublier (→ brouillons)
           </button>

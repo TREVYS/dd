@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllPosts, formatDateFr } from "@/lib/blog";
+import { listUploads } from "@/lib/media";
 import { ArticlesTable, type ArticleRow } from "./articles-table";
 
 export const dynamic = "force-dynamic";
@@ -40,8 +41,23 @@ export default async function AdminArticles({
           <Link href="/admin/communication/calendrier" className="adm-link">Brouillons</Link>.
         </div>
       )}
+      {sp.bulk === "category" && (
+        <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+          Thème modifié sur {sp.n} article{Number(sp.n) > 1 ? "s" : ""}.
+        </div>
+      )}
+      {sp.bulk === "image" && (
+        <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+          Image de couverture modifiée sur {sp.n} article{Number(sp.n) > 1 ? "s" : ""}.
+        </div>
+      )}
 
-      <ArticlesTable posts={posts} />
+      <ArticlesTable
+        posts={posts}
+        images={listUploads()
+          .filter((m) => /\.(png|jpe?g|webp|gif|svg)$/i.test(m.url))
+          .map((m) => m.url)}
+      />
     </>
   );
 }
