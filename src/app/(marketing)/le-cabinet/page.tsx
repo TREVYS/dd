@@ -48,7 +48,7 @@ const HISTOIRE = [
   {
     annee: "2027",
     titre: "Cap sur l'IA et la gestion de projet IA",
-    texte: "Trevys fait de l'intelligence artificielle un métier à part entière : accompagnement des dirigeants dans leurs projets IA, du cadrage au déploiement — choix des cas d'usage, gouvernance des données, conduite du changement. Le cabinet applique à l'IA ce qu'il pratique depuis l'origine : une approche de gestion de projet rigoureuse, au service de résultats mesurables.",
+    texte: "Trevys met l'intelligence artificielle au service de la fonction finance : automatisation de la production comptable, contrôle de gestion augmenté, fiabilisation des clôtures et aide à la décision. Le cabinet accompagne les directions financières dans leurs projets IA de bout en bout — choix des cas d'usage, qualité des données comptables, organisation de la fonction finance et conduite du changement — avec la rigueur de gestion de projet qu'il pratique depuis l'origine.",
   },
 ];
 
