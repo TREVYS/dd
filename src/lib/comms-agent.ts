@@ -28,11 +28,17 @@ export type AgentResult = { reply: string; actions: string[] };
 // transformation.png, fiscalite.png…). On associe le sujet/thème de l'article
 // au bon fichier ; « actualite » sert de repli générique.
 const COVER_RULES: { file: string; words: string[] }[] = [
-  { file: "ia", words: ["ia", "intelligence artificielle", "agent", "automatisation", "llm", "copilot"] },
   { file: "facturation-electronique", words: ["facturation", "rfe", "réforme", "reforme", "e-invoicing", "pdp", "facture électronique", "facture electronique", "2026", "2027"] },
+  { file: "ia", words: ["ia", "intelligence artificielle", "agent", "automatisation", "llm", "copilot"] },
+  { file: "norme", words: ["norme", "ifrs", "ias", "anc", "règlement comptable", "reglement comptable"] },
   { file: "fiscalite", words: ["fiscal", "impôt", "impot", "tva", "taxe", "liasse", "déclaration", "declaration", "loi de finances"] },
+  { file: "sociale", words: ["social", "rh", "salarié", "salarie", "paie", "urssaf", "retraite", "recrutement", "embauche"] },
+  { file: "comptabilite", words: ["comptabilité", "comptabilite", "comptable", "bilan", "clôture", "cloture", "comptes annuels", "révision", "revision"] },
+  { file: "client", words: ["client", "témoignage", "temoignage", "référence", "reference", "cas client"] },
+  { file: "ecosysteme", words: ["écosystème", "ecosysteme", "partenaire", "partenariat"] },
   { file: "transformation", words: ["transformation", "process", "processus", "pilotage", "erp", "si finance", "digitalisation", "organisation"] },
   { file: "innovation", words: ["innovation", "technologie", "outil", "futur", "tendance"] },
+  { file: "actu", words: ["actualité", "actualite", "actu", "défaillance", "defaillance", "conjoncture", "économie", "economie", "marché", "marche"] },
   { file: "actualite", words: ["actualité", "actualite", "défaillance", "defaillance", "conjoncture", "économie", "economie", "marché", "marche"] },
 ];
 
@@ -50,7 +56,7 @@ export function pickCoverFor(topic: string): string | undefined {
     }
   }
   // Aucun thème reconnu : visuel générique demandé par John.
-  return find("5-1") ?? find("actualite") ?? undefined;
+  return find("5-1") ?? find("actu") ?? find("actualite") ?? undefined;
 }
 
 const OPERATING = `Tu es le super-assistant personnel de John Lévy — polyvalent, fiable, direct. Ta mission première : piloter la communication du cabinet (calendrier éditorial, articles, posts réseaux, newsletters). Mais tu es bien plus large que ça :

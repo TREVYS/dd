@@ -15,6 +15,15 @@ async function requireUser() {
 export async function saveArticleAction(formData: FormData) {
   await requireUser();
   const originalSlug = (formData.get("originalSlug") as string) || undefined;
+  // Pas d'image choisie → suggestion automatique par thème (noms des médias :
+  // fiscalite, norme, sociale, comptabilite, actu…).
+  let image = ((formData.get("image") as string) ?? "").trim();
+  if (!image) {
+    const { pickCoverFor } = await import("@/lib/comms-agent");
+    image = pickCoverFor(
+      `${formData.get("title") ?? ""} ${formData.get("category") ?? ""} ${formData.get("excerpt") ?? ""}`,
+    ) ?? "";
+  }
   const slug = saveArticle(
     {
       slug: (formData.get("slug") as string) || undefined,
@@ -24,7 +33,7 @@ export async function saveArticleAction(formData: FormData) {
       metier: (formData.get("metier") as string) ?? "",
       excerpt: (formData.get("excerpt") as string) ?? "",
       author: (formData.get("author") as string) ?? "",
-      image: (formData.get("image") as string) ?? "",
+      image,
       body: (formData.get("body") as string) ?? "",
     },
     originalSlug,
