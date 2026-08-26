@@ -28,12 +28,12 @@ const HISTOIRE = [
   {
     annee: "2018",
     titre: "Création du cabinet",
-    texte: "John Lévy, expert-comptable, fonde Trevys à Paris après un parcours en cabinets et en directions financières. Le positionnement est clair dès l'origine : produire une information financière irréprochable, et la mettre au service des décisions du dirigeant.",
+    texte: "John Lévy fonde Trevys à Paris avec un positionnement initial centré sur le conseil en organisation, en finance et en systèmes d'information. Dès le départ, l'ambition est d'accompagner les dirigeants au-delà des seuls chiffres, en leur apportant une lecture opérationnelle et stratégique de leur activité.",
   },
   {
     annee: "2020",
-    titre: "Structuration de l'offre de conseil",
-    texte: "Le cabinet développe son second métier : le conseil en organisation et en systèmes d'information Finance. Les deux activités travaillent ensemble, sur les mêmes données — une articulation qui distingue Trevys des cabinets traditionnels.",
+    titre: "Structuration de l'expertise comptable",
+    texte: "Dans un second temps, Trevys structure son activité d'expertise comptable autour du diplôme et du titre d'expert-comptable. Un choix naturel pour renforcer la crédibilité du cabinet, sécuriser ses interventions et offrir aux clients un cadre de confiance supplémentaire. Cette structuration permet à Trevys de réunir aujourd'hui deux expertises complémentaires : le conseil et l'expertise comptable.",
   },
   {
     annee: "2023",
@@ -44,6 +44,11 @@ const HISTOIRE = [
     annee: "2026",
     titre: "Technologie et facturation électronique",
     texte: "Le cabinet industrialise l'usage de l'automatisation et de l'intelligence artificielle dans ses missions, et devient un acteur reconnu de la réforme de la facturation électronique — auprès de ses clients comme de la profession, où son fondateur intervient en référent.",
+  },
+  {
+    annee: "2027",
+    titre: "Cap sur l'IA et la gestion de projet IA",
+    texte: "Trevys fait de l'intelligence artificielle un métier à part entière : accompagnement des dirigeants dans leurs projets IA, du cadrage au déploiement — choix des cas d'usage, gouvernance des données, conduite du changement. Le cabinet applique à l'IA ce qu'il pratique depuis l'origine : une approche de gestion de projet rigoureuse, au service de résultats mesurables.",
   },
 ];
 
