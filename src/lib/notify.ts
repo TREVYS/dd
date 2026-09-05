@@ -64,6 +64,23 @@ export async function sendTelegramPhoto(image: string, caption?: string): Promis
   }
 }
 
+// Indicateur « en train d'écrire… » (visible ~5 s côté Telegram — à
+// rafraîchir pendant un long travail).
+export async function sendTelegramTyping(): Promise<void> {
+  const token = getSetting("telegramBotToken");
+  const chatId = getSetting("telegramChatId");
+  if (!token || !chatId) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendChatAction`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, action: "typing" }),
+    });
+  } catch {
+    /* sans gravité */
+  }
+}
+
 export async function sendTelegram(text: string, opts?: { plain?: boolean }): Promise<boolean> {
   const token = getSetting("telegramBotToken");
   const chatId = getSetting("telegramChatId");

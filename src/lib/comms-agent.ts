@@ -1373,11 +1373,18 @@ export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
   const actions: string[] = [];
   let text = "";
 
+  // Consignes + connaissance du site : calculées UNE fois par message, et
+  // mises en cache côté API (les tours suivants de la boucle d'outils ne
+  // relisent pas tout → réponses plus rapides, coût réduit).
+  const system = [
+    { type: "text" as const, text: buildSystem(), cache_control: { type: "ephemeral" as const } },
+  ];
+
   for (let step = 0; step < 6; step++) {
     const res = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 4000,
-      system: buildSystem(),
+      system,
       tools: TOOLS,
       messages,
     });

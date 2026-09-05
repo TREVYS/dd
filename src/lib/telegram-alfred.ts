@@ -170,6 +170,11 @@ export async function handleTelegramMessage(update: {
 
   // Historique + appel de l'agent (mêmes outils que le cockpit).
   const turns = [...read().turns, { role: "user" as const, content: effectiveText }].slice(-MAX_TURNS);
+  // « En train d'écrire… » pendant tout le travail d'Alfred (l'indicateur
+  // Telegram expire après ~5 s : on le rafraîchit).
+  const { sendTelegramTyping } = await import("@/lib/notify");
+  sendTelegramTyping().catch(() => {});
+  const typing = setInterval(() => sendTelegramTyping().catch(() => {}), 4500);
   try {
     const { runCommsAgent } = await import("@/lib/comms-agent");
     const { reply, actions } = await runCommsAgent(turns);
@@ -186,5 +191,7 @@ export async function handleTelegramMessage(update: {
   } catch (e) {
     console.error("[telegram-alfred] échec:", e);
     await sendTelegram("⚠️ Je n'ai pas pu traiter ce message (voir la configuration d'Alfred dans les Réglages).");
+  } finally {
+    clearInterval(typing);
   }
 }
