@@ -13,11 +13,11 @@ const SITE = SITE_URL;
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: {
-    default: "Trevys — Expertise comptable & conseil à Paris",
+    default: "Trevys — Cabinet d'expertise comptable & conseil à Paris",
     template: "%s — Trevys",
   },
   description:
-    "Cabinet d'expertise comptable & de conseil à Paris : expertise comptable, audit, contrôle de gestion, consulting, facturation électronique et intelligence artificielle au service des dirigeants.",
+    "Cabinet d'expertise comptable et de conseil à Paris : comptabilité, audit, facturation électronique et IA au service des dirigeants.",
   applicationName: "Trevys Advisory",
   authors: [{ name: "Trevys Advisory", url: SITE }],
   creator: "Trevys Advisory",
@@ -37,7 +37,8 @@ export const metadata: Metadata = {
     "Trevys",
   ],
   formatDetection: { telephone: true, email: true, address: true },
-  alternates: { canonical: "/" },
+  // hreflang : site monolingue français — on le déclare explicitement.
+  alternates: { canonical: "/", languages: { "fr-FR": "/", "x-default": "/" } },
   openGraph: {
     type: "website",
     locale: "fr_FR",
