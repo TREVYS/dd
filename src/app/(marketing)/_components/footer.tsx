@@ -99,6 +99,26 @@ export function Footer() {
                 <path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.3c0-1.27-.02-2.9-1.77-2.9-1.77 0-2.04 1.38-2.04 2.8V21h-4z" />
               </svg>
             </a>
+            <a
+              href="https://www.youtube.com/@Trevys-advisory"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Trevys sur YouTube"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.8zM9.6 15.5v-7l6.2 3.5-6.2 3.5z" />
+              </svg>
+            </a>
+            <a
+              href="https://x.com/JohnLevy0"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Trevys sur X"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L1.1 2h6.4l4.4 5.9L18.9 2zm-1.1 18.1h1.7L6.6 3.8H4.8l13 16.3z" />
+              </svg>
+            </a>
           </div>
         </div>
       </div>

@@ -99,7 +99,9 @@ const JSON_LD = {
       ],
       sameAs: [
         "https://www.linkedin.com/company/trevys-advisory/",
-        "https://www.youtube.com/watch?v=1-l-g7ElQq8",
+        "https://www.linkedin.com/in/levyjohn/",
+        "https://x.com/JohnLevy0",
+        "https://www.youtube.com/@Trevys-advisory",
       ],
       address: {
         "@type": "PostalAddress",
