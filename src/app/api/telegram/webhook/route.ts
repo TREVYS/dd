@@ -17,7 +17,13 @@ export async function POST(req: Request) {
 
   try {
     const update = await req.json();
-    await handleTelegramMessage(update);
+    // Accusé de réception IMMÉDIAT : le travail d'Alfred (modèle + outils)
+    // peut dépasser la minute, or Telegram relivre le message si le webhook
+    // ne répond pas vite — le traitement continue donc en arrière-plan et
+    // la réponse part via sendMessage quand elle est prête.
+    handleTelegramMessage(update).catch((e) =>
+      console.error("[telegram-webhook] traitement en arrière-plan:", e),
+    );
   } catch (e) {
     console.error("[telegram-webhook] erreur:", e);
   }
