@@ -79,16 +79,16 @@ export default function HomePage() {
             <div className="hb">
               L&apos;expertise du chiffre,
               <br />
-              la vitesse de la technologie.
+              la puissance de la technologie.
             </div>
             <h1>
-              Maîtrisez votre <em>comptabilité</em> avec Trevys
+              Pilotez votre <em>entreprise</em> avec Trevys
             </h1>
             <div className="mkt-hr" />
             <p className="sub">
-              Des finances pilotées en temps réel, augmentées par l&apos;intelligence
-              artificielle. Trevys rend votre gestion simple, rapide et
-              parfaitement lisible.
+              Une gestion claire, fluide et réactive pour suivre vos finances
+              en temps réel. Trevys vous aide à piloter, anticiper et décider
+              avec plus de sérénité.
             </p>
             <div className="mkt-act">
               <Link className="btn btn-gold" href="/rendez-vous">
