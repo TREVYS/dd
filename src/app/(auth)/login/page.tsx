@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { LogoFull } from "@/components/logo";
 
@@ -53,9 +54,12 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Mot de passe
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium">Mot de passe</label>
+              <Link href="/login/mot-de-passe-oublie" className="text-xs text-gray-400 hover:text-brand">
+                Mot de passe oublié ?
+              </Link>
+            </div>
             <input
               type="password"
               required
