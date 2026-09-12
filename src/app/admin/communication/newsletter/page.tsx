@@ -3,7 +3,7 @@ import { PendingButton } from "../../pending-button";
 import { listSubscribers, unreadCount, listUnsubscribed, PROFILS } from "@/lib/newsletter";
 import { listVideos } from "@/lib/videos";
 import { telegramConfigured } from "@/lib/notify";
-import { listCampaigns } from "@/lib/newsletter-campaigns";
+import { listCampaigns, articleSendHistory } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { getAllPosts, getPost, formatDateFr } from "@/lib/blog";
 import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction, sendOptinInvitesAction, importContactsAction, updateSubscriberAction } from "./actions";
@@ -53,6 +53,7 @@ export default async function NewsletterAdmin({
   // Articles publiés (sélecteur de diffusion) + vidéos du site.
   const videos = listVideos();
   const { articleMetier } = await import("@/lib/metier");
+  const mailHistory = articleSendHistory();
   const pickPosts: PickPost[] = getAllPosts().map((p) => {
     const content = getPost(p.slug)?.content ?? "";
     return {
@@ -62,6 +63,7 @@ export default async function NewsletterAdmin({
       metier: articleMetier(p),
       dateLabel: formatDateFr(p.date),
       search: `${p.title} ${p.excerpt} ${content}`.toLowerCase(),
+      mailSent: mailHistory[p.slug],
     };
   });
 

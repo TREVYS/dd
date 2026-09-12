@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllPosts, formatDateFr } from "@/lib/blog";
 import { listUploads } from "@/lib/media";
+import { articleSendHistory } from "@/lib/newsletter-campaigns";
 import { ArticlesTable, type ArticleRow } from "./articles-table";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,7 @@ export default async function AdminArticles({
   searchParams: Promise<{ bulk?: string; n?: string }>;
 }) {
   const sp = await searchParams;
+  const mailHistory = articleSendHistory();
   const posts: ArticleRow[] = getAllPosts().map((p) => ({
     slug: p.slug,
     title: p.title,
@@ -18,6 +20,7 @@ export default async function AdminArticles({
     dateLabel: formatDateFr(p.date),
     image: p.image,
     search: `${p.title} ${p.category} ${p.excerpt ?? ""} ${p.slug}`.toLowerCase(),
+    mailSent: mailHistory[p.slug],
   }));
 
   return (

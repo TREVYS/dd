@@ -9,6 +9,7 @@ export type PickPost = {
   metier: string; // "Consulting" | "Expertise comptable"
   dateLabel: string;
   search: string; // titre + résumé + contenu, en minuscules
+  mailSent?: { count: number; lastSentAt: string };
 };
 
 const METIERS = ["Consulting", "Expertise comptable", "Transverse"] as const;
@@ -88,6 +89,15 @@ export function ArticlePicker({ posts }: { posts: PickPost[] }) {
               <span className="m">
                 <span className="adm-tag ck-tag-metier" data-metier={p.metier}>{p.metier}</span>{" "}
                 <span className="adm-tag">{p.category}</span> {p.dateLabel}
+                {p.mailSent && (
+                  <span
+                    className="adm-tag"
+                    style={{ background: "#eaf6ee", color: "#2E9E6B", borderColor: "#bfe3c9", marginLeft: ".35rem" }}
+                    title={`Déjà envoyé ${p.mailSent.count} fois — dernier envoi le ${new Date(p.mailSent.lastSentAt).toLocaleDateString("fr-FR")}`}
+                  >
+                    ✓ déjà envoyé
+                  </span>
+                )}
               </span>
             </span>
           </label>

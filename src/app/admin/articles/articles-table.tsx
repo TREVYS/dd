@@ -11,7 +11,25 @@ export type ArticleRow = {
   dateLabel: string;
   image?: string;
   search: string; // titre + thème + résumé, en minuscules
+  mailSent?: { count: number; lastSentAt: string; subjects: string[] };
 };
+
+function MailBadge({ info }: { info?: ArticleRow["mailSent"] }) {
+  if (!info) {
+    return <span className="adm-tag" style={{ opacity: 0.55 }}>Pas encore envoyé</span>;
+  }
+  const date = new Date(info.lastSentAt).toLocaleDateString("fr-FR");
+  const title = `Envoyé ${info.count} fois — dernier envoi le ${date}\n${info.subjects.slice(-3).map((s) => `« ${s} »`).join("\n")}`;
+  return (
+    <span
+      className="adm-tag"
+      style={{ background: "#eaf6ee", color: "#2E9E6B", borderColor: "#bfe3c9" }}
+      title={title}
+    >
+      ✓ Envoyé{info.count > 1 ? ` ×${info.count}` : ""} · {date}
+    </span>
+  );
+}
 
 // Liste des articles : recherche par mots-clés, sélection multiple et actions
 // groupées (changer le thème ou la couverture, dépublier, supprimer).
@@ -151,6 +169,7 @@ export function ArticlesTable({ posts, images = [] }: { posts: ArticleRow[]; ima
               <th>Titre</th>
               <th>Thème</th>
               <th>Date</th>
+              <th>Mailing</th>
               <th style={{ textAlign: "right", paddingRight: "1.1rem" }}></th>
             </tr>
           </thead>
@@ -177,6 +196,7 @@ export function ArticlesTable({ posts, images = [] }: { posts: ArticleRow[]; ima
                 </td>
                 <td><span className="adm-tag">{p.category}</span></td>
                 <td className="muted">{p.dateLabel}</td>
+                <td><MailBadge info={p.mailSent} /></td>
                 <td style={{ textAlign: "right", paddingRight: "1.1rem" }}>
                   <Link className="adm-btn ghost sm" href={`/admin/articles/${p.slug}`}>Modifier</Link>
                 </td>
@@ -184,7 +204,7 @@ export function ArticlesTable({ posts, images = [] }: { posts: ArticleRow[]; ima
             ))}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={6} className="muted" style={{ padding: "1.4rem" }}>
+                <td colSpan={7} className="muted" style={{ padding: "1.4rem" }}>
                   {posts.length === 0 ? "Aucun article." : `Aucun article ne correspond à « ${q} ».`}
                 </td>
               </tr>

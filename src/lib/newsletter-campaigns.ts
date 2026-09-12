@@ -69,6 +69,31 @@ function writeAll(items: Campaign[]) {
   fs.writeFileSync(FILE, JSON.stringify(items, null, 2), "utf8");
 }
 
+export type ArticleSendInfo = { count: number; lastSentAt: string; subjects: string[] };
+
+// Historique d'envoi par article : détecte les liens /blog/<slug> dans le
+// corps des mailings ENVOYÉS (composer_mailing_articles et le composeur par
+// articles du cockpit y placent tous ce lien). Permet d'afficher une pastille
+// « déjà envoyé » sur les articles, dans le back-office comme à la
+// préparation d'un mailing.
+export function articleSendHistory(): Record<string, ArticleSendInfo> {
+  const history: Record<string, ArticleSendInfo> = {};
+  const sent = readAll()
+    .filter((c) => c.status === "envoye" && c.sentAt)
+    .sort((a, b) => a.sentAt!.localeCompare(b.sentAt!));
+  for (const c of sent) {
+    const slugs = new Set([...c.body.matchAll(/\/blog\/([a-z0-9-]+)/gi)].map((m) => m[1]));
+    for (const slug of slugs) {
+      const info = history[slug] ?? { count: 0, lastSentAt: c.sentAt!, subjects: [] };
+      info.count += 1;
+      info.lastSentAt = c.sentAt!;
+      info.subjects.push(c.subject);
+      history[slug] = info;
+    }
+  }
+  return history;
+}
+
 export function listCampaigns(): Campaign[] {
   return readAll().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
