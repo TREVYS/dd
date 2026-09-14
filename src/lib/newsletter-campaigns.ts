@@ -276,13 +276,15 @@ export function markdownToEmailHtml(md: string): string {
       const tags = [...line.matchAll(/\[\[([^\]]+)\]\]/g)].map((t) => emailTag(t[1].trim()));
       out.push(`<div style="margin:24px 0 -12px;clear:both;">${tags.join("")}</div>`);
     } else if ((m = line.match(/^!\[([^\]]*)\|(droite|gauche|right|left)\]\(([^)\s]+)\)\s*$/i))) {
-      // Image flottante : ![alt|droite](url) ou ![alt|gauche](url) — petite
-      // vignette autour de laquelle le texte s'enroule (couvertures d'articles).
+      // Vignette d'article : ![alt|droite](url) ou ![alt|gauche](url).
+      // Volontairement PAS en image flottante (align+float) : Outlook (moteur
+      // Word) enroule mal le texte autour, d'où un rendu qui « bave ». La
+      // vignette est affichée en bloc, au-dessus du texte — rendu identique
+      // et propre partout.
       flushList();
-      const right = /droite|right/i.test(m[2]);
       out.push(
-        `<img src="${esc(abs(m[3]))}" alt="${esc(m[1])}" width="150" align="${right ? "right" : "left"}" ` +
-        `style="width:150px;height:auto;border-radius:8px;border:1px solid #eadfcd;margin:${right ? "4px 0 10px 16px" : "4px 16px 10px 0"};" />`,
+        `<img src="${esc(abs(m[3]))}" alt="${esc(m[1])}" width="220" ` +
+        `style="display:block;width:220px;max-width:55%;height:auto;border-radius:10px;border:1px solid #eadfcd;margin:4px 0 14px;" />`,
       );
     } else if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
       // Image pleine largeur (depuis la médiathèque ou une URL).

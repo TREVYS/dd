@@ -95,8 +95,7 @@ export async function createArticlesCampaignAction(formData: FormData) {
 
   // Articles regroupés en blocs métier : Consulting / Expertise comptable /
   // Transverse (seuls les blocs non vides apparaissent). La couverture de
-  // chaque article apparaît en petite vignette, alternée droite / gauche.
-  let n = 0;
+  // chaque article apparaît en vignette, au-dessus du texte.
   const blocks = METIERS.map((m) => {
     const inBlock = posts.filter((p) => articleMetier(p.meta) === m);
     if (inBlock.length === 0) return "";
@@ -104,8 +103,7 @@ export async function createArticlesCampaignAction(formData: FormData) {
       `[[${m}]]\n` +
       inBlock
         .map((p) => {
-          const side = n++ % 2 === 0 ? "droite" : "gauche";
-          const cover = p.meta.image ? `![${p.meta.title}|${side}](${p.meta.image})\n\n` : "";
+          const cover = p.meta.image ? `![${p.meta.title}|droite](${p.meta.image})\n\n` : "";
           return `### ${p.meta.title}\n\n${cover}${p.meta.excerpt ?? ""}\n\n[Lire l'article →](${SITE_URL}/blog/${p.meta.slug})`;
         })
         .join("\n\n")

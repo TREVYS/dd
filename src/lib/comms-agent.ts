@@ -222,7 +222,7 @@ const TOOLS = [
       type: "object" as const,
       properties: {
         subject: { type: "string", description: "Objet de l'e-mail — court, accrocheur, chaleureux" },
-        body: { type: "string", description: "Contenu complet en Markdown. Un lien seul sur sa ligne devient un bouton ; un lien YouTube seul sur sa ligne devient une carte vidéo (miniature + bouton Regarder) — utilise les vidéos du site listées dans la connaissance du site quand c'est pertinent. Regroupe les articles en blocs métier : une ligne [[Consulting]], [[Expertise comptable]] ou [[Transverse]] seule devient une petite pastille de section — place-la avant les articles du bloc (titres en ###). Vignette de couverture : ![titre|droite](url-image) ou ![titre|gauche](url-image) sous le titre — alterne droite/gauche d'un article à l'autre." },
+        body: { type: "string", description: "Contenu complet en Markdown. Un lien seul sur sa ligne devient un bouton ; un lien YouTube seul sur sa ligne devient une carte vidéo (miniature + bouton Regarder) — utilise les vidéos du site listées dans la connaissance du site quand c'est pertinent. Regroupe les articles en blocs métier : une ligne [[Consulting]], [[Expertise comptable]] ou [[Transverse]] seule devient une petite pastille de section — place-la avant les articles du bloc (titres en ###). Vignette de couverture : ![titre|droite](url-image) juste sous le titre — s'affiche en bloc, au-dessus du texte (jamais de texte qui l'entoure, pour un rendu propre dans Outlook)." },
       },
       required: ["subject", "body"],
     },
