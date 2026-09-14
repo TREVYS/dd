@@ -46,6 +46,7 @@ export default async function CampaignEditor({
     notconfig: "Envoi impossible : la connexion Microsoft 365 n'est pas configurée (voir Réglages).",
     send: "L'envoi a échoué. Vérifiez la configuration Microsoft 365 et réessayez.",
     empty: "Aucun inscrit à qui envoyer pour l'instant.",
+    inflight: "Un envoi de ce mailing est déjà en cours — patientez qu'il se termine avant de relancer.",
   };
 
   return (

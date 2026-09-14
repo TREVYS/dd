@@ -14,7 +14,7 @@ import { addJob as addJobStore, listApplications, type JobApplication } from "@/
 import { readAnalytics, lastDays } from "@/lib/analytics";
 import { listMessages } from "@/lib/contact-messages";
 import { listSubscribers } from "@/lib/newsletter";
-import { listCampaigns } from "@/lib/newsletter-campaigns";
+import { listCampaigns, claimSend, releaseSend, isSending } from "@/lib/newsletter-campaigns";
 import { setPeoplePhoto, removePeoplePhoto, listPeoplePhotos } from "@/lib/people-photos";
 import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
@@ -467,9 +467,6 @@ const TOOLS = [
   },
 ];
 
-// Envois de mailing en cours (verrou anti double-lancement).
-const SENDING = new Set<string>();
-
 function findApplication(query: string): JobApplication | undefined {
   const q = query.trim().toLowerCase();
   const apps = listApplications();
@@ -781,7 +778,7 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     const drafts = lc2().filter((x) => x.status === "brouillon");
     const camp = (getCampaign(q)?.status === "brouillon" ? getCampaign(q) : undefined) ?? drafts.find((x) => x.subject.toLowerCase().includes(q));
     if (!camp) return `Mailing en brouillon introuvable pour « ${q} ». Brouillons : ${drafts.map((x) => `« ${x.subject} »`).join(", ") || "aucun"}.`;
-    if (SENDING.has(camp.id)) return "Cet envoi est déjà en cours — patience, la confirmation Telegram arrive.";
+    if (isSending(camp.id)) return "Cet envoi est déjà en cours — patience, la confirmation Telegram arrive.";
 
     // Garde-fou anti-sur-sollicitation : dernier envoi < 15 jours → il faut
     // une confirmation humaine explicite avant de repartir vers la communauté.
@@ -816,7 +813,8 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     if (recipients.length === 0) return `Aucun destinataire dans le segment « ${cible} » — envoi annulé.`;
 
     // Envoi en arrière-plan (cadencé anti-spam) ; confirmation Telegram à la fin.
-    SENDING.add(camp.id);
+    // Verrou partagé avec le bouton du cockpit et l'envoi programmé.
+    if (!claimSend(camp.id)) return "Cet envoi est déjà en cours — patience, la confirmation Telegram arrive.";
     const bodyHtml = markdownToEmailHtml(camp.body);
     (async () => {
       try {
@@ -832,7 +830,7 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
         const { sendTelegram } = await import("@/lib/notify");
         await sendTelegram(`⚠️ L'envoi du mailing « ${camp.subject} » a rencontré un problème — vérifiez le cockpit.`, { plain: true }).catch(() => {});
       } finally {
-        SENDING.delete(camp.id);
+        releaseSend(camp.id);
       }
     })();
     actions.push(`Envoi du mailing « ${camp.subject} » lancé (${recipients.length} destinataires, cible ${cible})`);

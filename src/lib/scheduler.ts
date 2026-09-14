@@ -135,6 +135,14 @@ export async function runScheduledPublications(): Promise<void> {
           await sendTelegram(`⚠️ Mailing programmé « ${camp.subject} » non envoyé : aucun destinataire dans le ciblage.`, { plain: true }).catch(() => {});
           continue;
         }
+        // Verrou anti double-envoi, partagé avec le bouton manuel du cockpit
+        // et Alfred : évite qu'un clic « Envoyer maintenant » au même moment
+        // que le déclenchement programmé n'expédie le mailing deux fois.
+        const { claimSend, releaseSend } = await import("@/lib/newsletter-campaigns");
+        if (!claimSend(camp.id)) {
+          await sendTelegram(`⚠️ Mailing programmé « ${camp.subject} » non envoyé : un envoi était déjà en cours pour ce mailing.`, { plain: true }).catch(() => {});
+          continue;
+        }
         const { openPixelUrl, trackLinks } = await import("@/lib/newsletter-stats");
         const bodyHtml = markdownToEmailHtml(camp.body);
         try {
@@ -147,6 +155,8 @@ export async function runScheduledPublications(): Promise<void> {
         } catch (e) {
           await sendTelegram(`⚠️ Échec de l'envoi du mailing programmé « ${camp.subject} » — il reste en brouillon (reprogrammez-le).`, { plain: true }).catch(() => {});
           console.error("[scheduler] mailing:", e);
+        } finally {
+          releaseSend(camp.id);
         }
       }
     } catch (e) {

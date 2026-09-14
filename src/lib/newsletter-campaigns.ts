@@ -94,6 +94,29 @@ export function articleSendHistory(): Record<string, ArticleSendInfo> {
   return history;
 }
 
+// Verrou anti double-envoi : un mailing peut être déclenché depuis trois
+// endroits (bouton du cockpit, envoi programmé, Alfred) — sans ce verrou
+// partagé, un double clic ou un chevauchement pouvait envoyer deux fois le
+// même mailing à toute la liste.
+const sending = new Set<string>();
+
+export function isSending(id: string): boolean {
+  return sending.has(id);
+}
+
+// Réserve l'envoi de cette campagne. Renvoie false si un envoi est déjà en
+// cours pour cet id (à appeler AVANT toute expédition ; toujours libérer
+// avec releaseSend, y compris en cas d'erreur).
+export function claimSend(id: string): boolean {
+  if (sending.has(id)) return false;
+  sending.add(id);
+  return true;
+}
+
+export function releaseSend(id: string): void {
+  sending.delete(id);
+}
+
 export function listCampaigns(): Campaign[] {
   return readAll().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }

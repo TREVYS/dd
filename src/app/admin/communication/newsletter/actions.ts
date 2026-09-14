@@ -13,6 +13,8 @@ import {
   wrapEmail,
   unsubscribeUrl,
   resolveTargetRecipients,
+  claimSend,
+  releaseSend,
 } from "@/lib/newsletter-campaigns";
 import { sendCampaign, sendPersonalized, mailerConfigured, senderAddress } from "@/lib/mailer";
 
@@ -220,6 +222,12 @@ export async function sendCampaignAction(formData: FormData) {
     redirect(`/admin/communication/newsletter/${id}?error=empty`);
   }
 
+  // Verrou anti double-envoi (double clic, ou envoi programmé qui se
+  // déclenche au même moment) : un seul envoi à la fois pour ce mailing.
+  if (!claimSend(id)) {
+    redirect(`/admin/communication/newsletter/${id}?error=inflight`);
+  }
+
   let count = 0;
   try {
     // Un e-mail par destinataire : lien de désinscription individuel,
@@ -233,6 +241,8 @@ export async function sendCampaignAction(formData: FormData) {
     if (count === 0) redirect(`/admin/communication/newsletter/${id}?error=send`);
   } catch {
     redirect(`/admin/communication/newsletter/${id}?error=send`);
+  } finally {
+    releaseSend(id);
   }
   updateCampaign(id, { status: "envoye", sentAt: new Date().toISOString(), sentCount: count });
   revalidatePath("/admin/communication/newsletter");
