@@ -167,6 +167,60 @@ export function simuler(e: SimulationEntree): SimulationResultat {
   };
 }
 
+// --- Dividendes : PFU (flat tax) ou option pour le barème progressif -------
+// Sur option globale et irrévocable (tous les revenus mobiliers du foyer de
+// l'année), les dividendes bénéficient d'un abattement de 40 % avant d'être
+// ajoutés au revenu imposable — mais les prélèvements sociaux restent dus sur
+// 100 % du dividende brut, au même taux que sous le PFU. Le calcul de l'IR au
+// barème se fait par différence (avec/sans le dividende), pour tenir compte
+// du taux MARGINAL réel du foyer, pas d'un taux moyen.
+
+export type PfuBaremeEntree = {
+  dividendeBrut: number;
+  autresRevenusImposables: number; // revenus nets imposables du foyer, hors ce dividende
+  parts: number;
+};
+
+export type PfuBaremeResultat = {
+  pfu: { impot: number; prelevementsSociaux: number; total: number; net: number };
+  bareme: {
+    assietteImposable: number; // après abattement de 40 %
+    irMarginal: number;
+    prelevementsSociaux: number; // sur 100 % du brut
+    total: number;
+    net: number;
+  };
+  optionRecommandee: "pfu" | "bareme";
+  ecart: number; // net barème − net PFU (positif = le barème est plus favorable)
+};
+
+export function simulerDividendesPfuBareme(e: PfuBaremeEntree): PfuBaremeResultat {
+  const dividende = Math.max(0, e.dividendeBrut);
+  const autres = Math.max(0, e.autresRevenusImposables);
+  const parts = Math.max(1, e.parts || 1);
+
+  const pfuImpot = Math.round(dividende * PFU_IR);
+  const pfuPS = Math.round(dividende * PFU_PS);
+  const pfuTotal = pfuImpot + pfuPS;
+
+  const assietteImposable = Math.round(dividende * (1 - ABATTEMENT_DIVIDENDES));
+  const irSansDividende = impotRevenu(autres, parts);
+  const irAvecDividende = impotRevenu(autres + assietteImposable, parts);
+  const irMarginal = Math.max(0, irAvecDividende - irSansDividende);
+  const baremePS = Math.round(dividende * PFU_PS);
+  const baremeTotal = irMarginal + baremePS;
+
+  const pfuNet = dividende - pfuTotal;
+  const baremeNet = dividende - baremeTotal;
+
+  return {
+    pfu: { impot: pfuImpot, prelevementsSociaux: pfuPS, total: pfuTotal, net: pfuNet },
+    bareme: { assietteImposable, irMarginal, prelevementsSociaux: baremePS, total: baremeTotal, net: baremeNet },
+    optionRecommandee: baremeNet > pfuNet ? "bareme" : "pfu",
+    ecart: baremeNet - pfuNet,
+  };
+}
+
 // Recherche de la répartition qui maximise le net en poche (pas à pas de 5 %).
 export function meilleureRepartition(e: Omit<SimulationEntree, "partRemuneration">): {
   part: number;

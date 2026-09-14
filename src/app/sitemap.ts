@@ -20,6 +20,7 @@ const ROUTES = [
   "/blog",
   "/newsletter",
   "/simulateurs/remuneration-dirigeant",
+  "/simulateurs/dividendes-pfu-bareme",
   "/contact",
   "/rendez-vous",
   // Pages volontairement en « noindex » (mentions légales, désinscription,

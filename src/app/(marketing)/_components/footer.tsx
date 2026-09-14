@@ -80,6 +80,7 @@ export function Footer() {
               <Link key={localPagePath(p)} href={localPagePath(p)}>{p.h1}</Link>
             ))}
             <Link href="/simulateurs/remuneration-dirigeant">Simulateur : rémunération ou dividendes</Link>
+            <Link href="/simulateurs/dividendes-pfu-bareme">Simulateur : PFU ou barème sur vos dividendes</Link>
           </div>
         </div>
 
