@@ -652,9 +652,12 @@
 .mkt-nav.s .mkt-drop-trigger{color:var(--ink);font-weight:600}
 .mkt-caret{width:9px;height:9px;transition:transform .25s;opacity:.7}
 .mkt-has-drop:hover .mkt-caret,.mkt-has-drop.open .mkt-caret{transform:rotate(180deg)}
-.mkt-drop{display:none;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);min-width:280px;
-  background:var(--card);border:1px solid var(--line);border-radius:18px;padding:.5rem;box-shadow:var(--glass-sh);z-index:60}
-.mkt-has-drop:hover .mkt-drop,.mkt-has-drop.open .mkt-drop{display:flex;flex-direction:column;gap:2px}
+.mkt-drop{display:flex;flex-direction:column;gap:2px;position:absolute;top:calc(100% + 10px);left:50%;
+  min-width:280px;max-width:min(320px,calc(100vw - 2rem));width:max-content;
+  background:var(--card);border:1px solid var(--line);border-radius:18px;padding:.5rem;box-shadow:var(--glass-sh);z-index:60;
+  opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%) translateY(-6px);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s}
+.mkt-has-drop:hover .mkt-drop,.mkt-has-drop.open .mkt-drop{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
 .mkt-drop a{display:flex;flex-direction:column;gap:.1rem;padding:.6rem .85rem;border-radius:12px;white-space:nowrap}
 .mkt-drop a:hover,.mkt-drop a.cur{background:rgba(245,129,31,.08)}
 .mkt-drop a .dt{font-size:.88rem;font-weight:600;color:var(--ink)}
