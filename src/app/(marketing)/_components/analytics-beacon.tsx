@@ -3,6 +3,16 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
+// Conversion Google Ads (clic « Prendre rendez-vous ») : n'est envoyée que si
+// gtag est déjà chargé, c'est-à-dire si le visiteur a accepté les cookies.
+const GADS_CONVERSION = process.env.NEXT_PUBLIC_GADS_CONVERSION_SEND_TO;
+
+function trackAdsConversion() {
+  if (!GADS_CONVERSION) return;
+  const w = window as unknown as { gtag?: (...args: unknown[]) => void };
+  w.gtag?.("event", "conversion", { send_to: GADS_CONVERSION });
+}
+
 function send(payload: object) {
   try {
     const body = JSON.stringify(payload);
@@ -42,7 +52,10 @@ export function AnalyticsBeacon() {
       const explicit = el.getAttribute("data-track");
       if (explicit) return send({ type: "event", name: explicit });
       const href = el.getAttribute("href") ?? "";
-      if (href.includes("/rendez-vous")) send({ type: "event", name: "clic_rendez_vous" });
+      if (href.includes("/rendez-vous")) {
+        send({ type: "event", name: "clic_rendez_vous" });
+        trackAdsConversion();
+      }
       else if (href.includes("forms.cloud.microsoft")) send({ type: "event", name: "clic_guide_rfe" });
     };
     document.addEventListener("click", onClick, { capture: true });

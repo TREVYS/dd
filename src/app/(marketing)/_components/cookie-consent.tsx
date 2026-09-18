@@ -31,12 +31,15 @@ function saveChoice(choice: Stored["choice"]) {
   } catch {}
 }
 
-function loadGa(gaId: string) {
-  if (document.getElementById("ga-gtag")) return;
+function loadGtag(gaId?: string, adsId?: string) {
+  // Un seul chargement du script gtag.js suffit ; on y attache ensuite
+  // autant de configurations (GA4, Google Ads…) que nécessaire.
+  const loaderId = gaId ?? adsId;
+  if (!loaderId || document.getElementById("ga-gtag")) return;
   const s = document.createElement("script");
   s.id = "ga-gtag";
   s.async = true;
-  s.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+  s.src = `https://www.googletagmanager.com/gtag/js?id=${loaderId}`;
   document.head.appendChild(s);
   const w = window as unknown as { dataLayer?: unknown[] };
   w.dataLayer = w.dataLayer || [];
@@ -47,26 +50,29 @@ function loadGa(gaId: string) {
     w.dataLayer!.push(arguments);
   }
   gtag("js", new Date());
-  gtag("config", gaId, { anonymize_ip: true });
+  if (gaId) gtag("config", gaId, { anonymize_ip: true });
+  // Google Ads : pas de config supplémentaire nécessaire ici — l'événement
+  // de conversion (clic « Prendre rendez-vous ») est envoyé par analytics-beacon.
+  if (adsId) gtag("config", adsId);
 }
 
-export function CookieConsent({ gaId }: { gaId?: string }) {
+export function CookieConsent({ gaId, adsId }: { gaId?: string; adsId?: string }) {
   // null = pas encore lu (SSR), "pending" = pas de choix mémorisé → bandeau.
   const [state, setState] = useState<"pending" | "granted" | "denied" | null>(null);
 
   useEffect(() => {
     const choice = readChoice();
     setState(choice ?? "pending");
-    if (choice === "granted" && gaId) loadGa(gaId);
-  }, [gaId]);
+    if (choice === "granted") loadGtag(gaId, adsId);
+  }, [gaId, adsId]);
 
-  // Sans identifiant GA, seuls des cookies techniques existent : pas de bandeau.
-  if (!gaId || state !== "pending") return null;
+  // Sans identifiant GA ni Ads, seuls des cookies techniques existent : pas de bandeau.
+  if ((!gaId && !adsId) || state !== "pending") return null;
 
   const decide = (choice: Stored["choice"]) => {
     saveChoice(choice);
     setState(choice);
-    if (choice === "granted") loadGa(gaId);
+    if (choice === "granted") loadGtag(gaId, adsId);
   };
 
   return (

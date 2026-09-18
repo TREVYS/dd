@@ -65,6 +65,7 @@ export const metadata: Metadata = {
 };
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID;
 
 const JSON_LD = {
   "@context": "https://schema.org",
@@ -166,7 +167,7 @@ export default function MarketingLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
       {/* Google Analytics : chargé uniquement après consentement (bandeau cookies). */}
-      <CookieConsent gaId={GA_ID} />
+      <CookieConsent gaId={GA_ID} adsId={GADS_ID} />
       <Nav extraLinks={extraLinks} />
       {children}
       <Footer />
