@@ -644,10 +644,10 @@
 }
 
 /* menu déroulant "Expertises" */
-.mkt-links .mkt-has-drop{position:relative}
+.mkt-links .mkt-has-drop{position:relative;flex-shrink:0}
 .mkt-drop-trigger{display:inline-flex;align-items:center;gap:.35rem;padding:.55rem 1rem;font-size:.86rem;
   font-weight:500;color:var(--ink2);border-radius:100px;cursor:pointer;background:none;border:none;font-family:inherit;
-  transition:color .2s,background .2s}
+  white-space:nowrap;flex-shrink:0;transition:color .2s,background .2s}
 .mkt-drop-trigger:hover,.mkt-drop-trigger.cur{color:var(--ink);background:rgba(245,129,31,.08)}
 .mkt-nav.s .mkt-drop-trigger{color:var(--ink);font-weight:600}
 .mkt-caret{width:9px;height:9px;transition:transform .25s;opacity:.7}
