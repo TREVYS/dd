@@ -9,6 +9,12 @@ import { getPeoplePhoto } from "@/lib/people-photos";
 export const dynamic = "force-dynamic";
 import { CONSULTANTS } from "@/lib/consultants";
 
+const ArrowRight = () => (
+  <svg viewBox="0 0 24 24">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+);
+
 export const metadata: Metadata = {
   title: "Consulting",
   description:
@@ -17,10 +23,10 @@ export const metadata: Metadata = {
 };
 
 const SVCS = [
-  { n: "01", t: "Systèmes d'information Finance", d: "Cadrage, refonte et pilotage des SI Finance, du besoin métier au déploiement." },
-  { n: "02", t: "Projets ERP & AMOA", d: "Assistance à maîtrise d'ouvrage et gestion de projet sur vos programmes ERP structurants." },
-  { n: "03", t: "Transformation digitale", d: "Digitalisation des processus et conduite du changement pour embarquer les équipes." },
-  { n: "04", t: "Facturation électronique", d: "Accompagnement de bout en bout de la réforme, pour les DAF et les grands groupes." },
+  { n: "01", t: "Systèmes d'information Finance", d: "Cadrage, refonte et pilotage des SI Finance, du besoin métier au déploiement.", href: "/consulting/expertises/si-finance" },
+  { n: "02", t: "Projets ERP & AMOA", d: "Assistance à maîtrise d'ouvrage et gestion de projet sur vos programmes ERP structurants.", href: "/consulting/expertises/erp-amoa" },
+  { n: "03", t: "Transformation digitale", d: "Digitalisation des processus et conduite du changement pour embarquer les équipes.", href: "/consulting/expertises/transformation-digitale" },
+  { n: "04", t: "Facturation électronique", d: "Accompagnement de bout en bout de la réforme, pour les DAF et les grands groupes.", href: "/facturation-electronique" },
 ];
 
 const TAGS = [
@@ -85,14 +91,17 @@ export default function Page() {
         <div className="wrap">
           <div className="mkt-svc-grid">
             {SVCS.map((s) => (
-              <div className="mkt-svc" key={s.n}>
+              <Link className="mkt-svc" href={s.href} key={s.n}>
                 <span className="num">{s.n}</span>
                 <div className="ico">
                   <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2" /></svg>
                 </div>
                 <h3>{s.t}</h3>
                 <p>{s.d}</p>
-              </div>
+                <span className="more">
+                  En savoir plus <ArrowRight />
+                </span>
+              </Link>
             ))}
           </div>
         </div>
