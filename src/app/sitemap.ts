@@ -10,6 +10,7 @@ const BASE = SITE_URL;
 const ROUTES = [
   "",
   "/expertise-comptable",
+  "/nos-offres",
   "/consulting",
   "/intelligence-artificielle",
   "/facturation-electronique",

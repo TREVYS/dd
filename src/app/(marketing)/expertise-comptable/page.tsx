@@ -159,6 +159,7 @@ export default function Page() {
           <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
             <Link className="btn btn-gold" href="/rendez-vous">Rencontrer un expert-comptable</Link>
             <Link className="btn btn-ghost" href="/contact">Demander un devis</Link>
+            <Link className="btn btn-gold" href="/nos-offres">Voir nos offres</Link>
           </div>
         </div>
       </header>
