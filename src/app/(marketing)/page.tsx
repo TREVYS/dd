@@ -94,8 +94,8 @@ export default function HomePage() {
               <Link className="btn btn-gold" href="/rendez-vous">
                 Prendre rendez-vous <ArrowRight />
               </Link>
-              <Link className="btn btn-ghost" href="/le-cabinet">
-                Nos expertises
+              <Link className="btn btn-ghost" href="/nos-offres">
+                Nos offres
               </Link>
             </div>
             <div className="mkt-hstats">
@@ -170,6 +170,55 @@ export default function HomePage() {
                 Explorer <ArrowRight />
               </span>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* NOS OFFRES : trois niveaux d'accompagnement, sans montant affiché */}
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Nos offres</span>
+            <h2>
+              Trois niveaux d&apos;accompagnement, <em>une même exigence</em>
+            </h2>
+            <p>
+              La différence entre les offres n&apos;est pas le nombre de
+              rendez-vous : c&apos;est ce que vous faites de vos chiffres. Chaque
+              formule s&apos;adapte à la taille de votre structure.
+            </p>
+          </div>
+          <div className="mkt-offers">
+            <Link href="/nos-offres" className="mkt-offer">
+              <span className="offer-ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </span>
+              <span className="eyebrow">Produire</span>
+              <h3>TREVYS Essentiel</h3>
+              <p>Vos obligations comptables et fiscales, tenues, contrôlées et déposées dans les délais.</p>
+              <p className="quote">« Je veux déléguer ma comptabilité et être tranquille. »</p>
+            </Link>
+            <Link href="/nos-offres" className="mkt-offer">
+              <span className="offer-ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 19h16M7 15v-3M12 15V9M17 15v-6" /></svg>
+              </span>
+              <span className="eyebrow">Comprendre</span>
+              <h3>TREVYS Pilotage</h3>
+              <p>Vos chiffres deviennent lisibles : indicateurs, points de gestion, échéances anticipées.</p>
+              <p className="quote">« Je veux comprendre mes chiffres, pas seulement les connaître. »</p>
+            </Link>
+            <Link href="/nos-offres" className="mkt-offer featured">
+              <span className="offer-ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
+              </span>
+              <span className="eyebrow">Décider</span>
+              <h3>TREVYS Direction</h3>
+              <p>Budget, trésorerie, arbitrages : une direction financière externalisée à vos côtés.</p>
+              <p className="quote">« Je veux quelqu&apos;un à mes côtés pour piloter mon entreprise. »</p>
+            </Link>
+          </div>
+          <div style={{ textAlign: "center", marginTop: "2rem" }}>
+            <Link className="btn btn-gold" href="/nos-offres">Découvrir nos offres</Link>
           </div>
         </div>
       </section>

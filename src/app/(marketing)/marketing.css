@@ -1179,14 +1179,21 @@ html,body{overflow-x:hidden}
 /* Nos offres (page expertise comptable) : trois niveaux d'accompagnement,
    sans montant affiché — la 3e formule (Direction) est mise en avant. */
 .mkt-offers{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:.4rem}
-.mkt-offer{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+.mkt-offer{position:relative;display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  text-decoration:none;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;
   padding:2rem 1.7rem;overflow:hidden}
+.mkt-offer:hover{transform:translateY(-6px);box-shadow:0 26px 50px -26px rgba(26,21,16,.28);border-color:transparent}
 .mkt-offer::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:#F5811F}
+.mkt-offer .offer-ic{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;
+  border-radius:14px;background:linear-gradient(135deg,#FBB040,#E26A0F);margin-bottom:1.1rem;
+  box-shadow:0 10px 22px -10px rgba(226,106,15,.6)}
+.mkt-offer .offer-ic svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .mkt-offer .eyebrow{display:block;margin-bottom:.6rem}
 .mkt-offer h3{font-size:1.28rem;font-weight:800;margin-bottom:.7rem;color:var(--ink)}
 .mkt-offer p{color:var(--ink2);line-height:1.7;font-size:.95rem}
 .mkt-offer .quote{margin-top:1.3rem;font-style:italic;font-weight:600;color:#C2410C;font-size:.9rem}
 .mkt-offer.featured{background:var(--ink);border-color:var(--ink)}
+.mkt-offer.featured:hover{box-shadow:0 26px 50px -22px rgba(0,0,0,.55)}
 .mkt-offer.featured h3{color:#fff}
 .mkt-offer.featured p:not(.quote){color:rgba(255,255,255,.75)}
 .mkt-offer.featured .quote{color:#FBB040}
