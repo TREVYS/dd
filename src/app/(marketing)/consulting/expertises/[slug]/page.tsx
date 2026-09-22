@@ -47,7 +47,7 @@ export default async function ExpertisePage({
           <nav className="mkt-artcrumb" aria-label="Fil d'Ariane" style={{ marginBottom: "1rem" }}>
             <Link href="/consulting">← Consulting</Link>
           </nav>
-          <span className="eyebrow">Consulting · {e.n}</span>
+          <span className="eyebrow">Consulting</span>
           <h1>{e.t}</h1>
           <p>{e.chapeau}</p>
           <div style={{ display: "flex", gap: ".8rem", flexWrap: "wrap", marginTop: "1.8rem" }}>
@@ -57,26 +57,22 @@ export default async function ExpertisePage({
         </div>
       </header>
 
-      {e.chiffres.length > 0 && (
-        <section className="sec" style={{ paddingTop: 0, paddingBottom: "1.5rem" }}>
-          <div className="wrap">
-            <div className="mkt-loc-stats">
-              {e.chiffres.map((c) => (
-                <div key={c.legende}>
-                  <b>{c.valeur}</b>
-                  <span>{c.legende}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       <section className="sec">
         <div className="wrap" style={{ maxWidth: 820 }}>
-          <p style={{ fontSize: "1.1rem", color: "var(--ink)", fontWeight: 500, lineHeight: 1.75 }}>
-            {e.intro}
-          </p>
+          {e.intro.map((p, i) => (
+            <p
+              key={i}
+              style={{
+                fontSize: i === 0 ? "1.1rem" : "1.02rem",
+                fontWeight: i === 0 ? 500 : 400,
+                color: i === 0 ? "var(--ink)" : "var(--ink2)",
+                lineHeight: 1.8,
+                marginBottom: i < e.intro.length - 1 ? "1.2rem" : 0,
+              }}
+            >
+              {p}
+            </p>
+          ))}
         </div>
       </section>
 
@@ -86,20 +82,25 @@ export default async function ExpertisePage({
             <span className="eyebrow">Une équipe pluridisciplinaire</span>
             <h2>Des experts <em>hybrides</em>, depuis toujours</h2>
           </div>
-          <p style={{ color: "var(--ink2)", lineHeight: 1.8, fontSize: "1.02rem" }}>{e.equipe}</p>
-          <p style={{ color: "var(--ink2)", lineHeight: 1.8, fontSize: "1.02rem", marginTop: "1.1rem" }}>
-            C&apos;est l&apos;ADN du cabinet : dès sa création, Trevys a assumé cette
-            agilité entre le chiffre et la technologie, sans jamais sacrifier l&apos;un
-            pour l&apos;autre. Nous n&apos;avons pas ajouté le conseil en systèmes
-            d&apos;information à une activité comptable existante — nous aimons
-            faire ça depuis toujours, et c&apos;est précisément cette double culture
-            qui distingue Trevys d&apos;un cabinet comptable classique comme d&apos;un
-            cabinet de conseil généraliste.
-          </p>
+          {e.equipe.map((p, i) => (
+            <p key={i} style={{ color: "var(--ink2)", lineHeight: 1.8, fontSize: "1.02rem", marginBottom: i < e.equipe.length - 1 ? "1.1rem" : 0 }}>
+              {p}
+            </p>
+          ))}
         </div>
       </section>
 
       <section className="sec">
+        <div className="wrap" style={{ maxWidth: 820 }}>
+          <div className="shead" style={{ textAlign: "left", margin: "0 0 1.2rem" }}>
+            <span className="eyebrow">Notre agilité au quotidien</span>
+            <h2>{e.agilite.titre}</h2>
+          </div>
+          <p style={{ color: "var(--ink2)", lineHeight: 1.8, fontSize: "1.02rem" }}>{e.agilite.texte}</p>
+        </div>
+      </section>
+
+      <section className="sec band">
         <div className="wrap">
           <div className="shead">
             <span className="eyebrow">Notre méthodologie</span>
@@ -120,7 +121,7 @@ export default async function ExpertisePage({
       <section className="mkt-cta">
         <div className="mkt-cta-in">
           <h2>Un projet {e.t.toLowerCase()} ?</h2>
-          <p>Un premier échange de trente minutes suffit à cadrer vos enjeux et à identifier la bonne méthode.</p>
+          <p>Parlons de vos enjeux : nous vous aidons à cadrer le bon périmètre et la bonne méthode.</p>
           <Link className="btn btn-gold" href="/rendez-vous">Prendre rendez-vous</Link>
         </div>
       </section>
