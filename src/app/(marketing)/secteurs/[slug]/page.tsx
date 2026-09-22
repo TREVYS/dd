@@ -110,10 +110,14 @@ export default async function SectorPage({
           </ul>
 
           {s.clients && s.clients.length > 0 && (
-            <p className="mkt-sector-refs">
-              <strong>Ils nous font confiance dans ce secteur :</strong>{" "}
-              {s.clients.join(" · ")}
-            </p>
+            <div className="mkt-sector-trust">
+              <span className="eyebrow">Ils nous font confiance dans ce secteur</span>
+              <div className="mkt-sector-trust-list">
+                {s.clients.map((c) => (
+                  <span key={c} className="mkt-sector-trust-chip">{c}</span>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </section>

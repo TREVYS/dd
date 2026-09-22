@@ -936,7 +936,14 @@ html,body{overflow-x:hidden}
 .mkt-sector-missions li{display:flex;gap:.8rem;align-items:flex-start;background:#fff;border:1px solid var(--line);
   border-radius:12px;padding:.85rem 1.1rem;color:var(--ink2);font-weight:600}
 .mkt-sector-missions .ck{color:var(--violet);font-weight:800}
-.mkt-sector-refs{max-width:760px;margin:1.6rem auto 0;color:var(--ink3);font-size:.92rem;line-height:1.7}
+/* Encart « Ils nous font confiance » : mis en valeur, pas une ligne perdue
+   en bas de section — cadre distinct, logos/noms en pastilles. */
+.mkt-sector-trust{max-width:760px;margin:2.2rem auto 0;padding:1.6rem 1.8rem;background:var(--card);
+  border:1px solid var(--line);border-radius:20px;text-align:center}
+.mkt-sector-trust .eyebrow{display:block;margin-bottom:1.1rem}
+.mkt-sector-trust-list{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
+.mkt-sector-trust-chip{padding:.6rem 1.3rem;border-radius:100px;background:linear-gradient(100deg,#FFF3E4,#FFE8CC);
+  border:1px solid #F5D9BE;color:var(--ink);font-weight:700;font-size:.92rem}
 .mkt-sector-others{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
 .mkt-sector-chip{padding:.55rem 1.1rem;border-radius:100px;border:1px solid rgba(245,129,31,.35);background:#FFF7F0;
   font-weight:700;font-size:.9rem;color:#5a4330;text-decoration:none;transition:background .15s,color .15s}
