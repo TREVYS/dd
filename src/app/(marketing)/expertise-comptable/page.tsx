@@ -80,6 +80,31 @@ const POLES = [
 ];
 
 
+// Trois niveaux d'accompagnement — philosophie des offres, sans montant :
+// la différence n'est pas le nombre de rendez-vous, c'est ce que le
+// dirigeant fait de ses chiffres.
+const OFFRES = [
+  {
+    eyebrow: "Produire",
+    t: "TREVYS Essentiel",
+    d: "Vos obligations comptables et fiscales sont tenues, contrôlées et déposées dans les délais.",
+    quote: "« Je veux déléguer ma comptabilité et être tranquille. »",
+  },
+  {
+    eyebrow: "Comprendre",
+    t: "TREVYS Pilotage",
+    d: "Vos chiffres deviennent lisibles : indicateurs, points de gestion, échéances anticipées.",
+    quote: "« Je veux comprendre mes chiffres, pas seulement les connaître. »",
+  },
+  {
+    eyebrow: "Décider",
+    t: "TREVYS Direction",
+    d: "Budget, trésorerie, arbitrages : une direction financière externalisée à vos côtés.",
+    quote: "« Je veux quelqu'un à mes côtés pour piloter mon entreprise. »",
+    featured: true,
+  },
+];
+
 // Questions fréquentes : capte les recherches formulées en question et
 // alimente les extraits enrichis (FAQPage) de Google.
 const FAQ = [
@@ -252,6 +277,39 @@ export default function Page() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Nos offres : philosophie des trois niveaux d'accompagnement, sans montant */}
+      <section className="sec">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Nos offres</span>
+            <h2>Trois niveaux d&apos;accompagnement, <em>une même exigence</em></h2>
+            <p>
+              La différence entre les offres n&apos;est pas le nombre de
+              rendez-vous : c&apos;est ce que vous faites de vos chiffres. Chaque
+              formule s&apos;adapte à la taille de votre structure et à
+              l&apos;étendue de vos besoins — de l&apos;entrepreneur individuel au
+              groupe multi-sociétés.
+            </p>
+          </div>
+          <div className="mkt-offers">
+            {OFFRES.map((o) => (
+              <div className={`mkt-offer${o.featured ? " featured" : ""}`} key={o.t}>
+                <span className="eyebrow">{o.eyebrow}</span>
+                <h3>{o.t}</h3>
+                <p>{o.d}</p>
+                <p className="quote">{o.quote}</p>
+              </div>
+            ))}
+          </div>
+          <p className="muted" style={{ textAlign: "center", marginTop: "1.6rem", color: "var(--ink3)", fontSize: ".92rem" }}>
+            Quelle que soit la formule, le principe reste le même : une équipe
+            dédiée, un interlocuteur unique, des honoraires forfaitaires connus
+            à l&apos;avance. Nous établissons le bon niveau ensemble, lors d&apos;un
+            premier échange.
+          </p>
         </div>
       </section>
 
