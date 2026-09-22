@@ -54,7 +54,7 @@
 .mkt .btn-gold{background:var(--ink);color:#fff}
 .mkt .btn-gold:hover{background:var(--grad);transform:translateY(-2px);box-shadow:0 14px 34px -10px rgba(245,129,31,.6)}
 .mkt .btn-ghost{background:var(--glass-bg);border-color:var(--glass-brd);color:var(--ink);backdrop-filter:blur(14px)}
-.mkt .btn-ghost:hover{border-color:var(--violet);color:var(--violet)}
+.mkt .btn-ghost:hover{border-color:var(--violet);color:var(--violet);transform:translateY(-2px);box-shadow:0 14px 34px -14px rgba(245,129,31,.35)}
 /* Bouton secondaire du hero : contour orange bien lisible */
 .mkt-act .btn-ghost{background:#fff;border-color:var(--violet);color:var(--violet);backdrop-filter:none}
 .mkt-act .btn-ghost:hover{background:var(--violet);color:#fff}
