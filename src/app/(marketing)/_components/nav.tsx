@@ -159,9 +159,14 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         </ul>
 
         <div className="mkt-ncta">
-          <Link className="btn btn-sm btn-ghost" href="/espace-client">
+          <a
+            className="btn btn-sm btn-ghost"
+            href="https://trevys.licornne.com/espace/connexion/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Espace client
-          </Link>
+          </a>
           <Link className="btn btn-sm btn-gold mkt-ncta-rdv" href="/rendez-vous">
             Prendre rendez-vous
           </Link>

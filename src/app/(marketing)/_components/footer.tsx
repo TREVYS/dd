@@ -60,7 +60,7 @@ export function Footer() {
             <h5>Ressources</h5>
             <Link href="/blog">Ressources</Link>
             <Link href="/contact">Contact</Link>
-            <Link href="/espace-client">Espace client</Link>
+            <a href="https://trevys.licornne.com/espace/connexion/" target="_blank" rel="noopener noreferrer">Espace client</a>
             <Link href="/mentions-legales">Mentions légales</Link>
             <Link href="/politique-de-confidentialite">Politique de confidentialité</Link>
           </div>
