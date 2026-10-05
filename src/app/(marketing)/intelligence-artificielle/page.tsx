@@ -63,19 +63,19 @@ const CASES = [
   {
     t: "Licornne",
     role: "Cahier des charges & assistance à l'éditeur",
-    d: "Trevys a participé à la rédaction du cahier des charges et accompagné l'éditeur dans la conception de Licornne, plateforme dédiée aux cabinets d'expertise comptable.",
+    d: "Licornne est un hub dédié aux cabinets d'expertise comptable. Trevys a participé à la rédaction du cahier des charges et accompagné l'éditeur dans sa conception.",
     url: "https://www.licornne.com/",
   },
   {
     t: "BankAI",
     role: "Cahier des charges & assistance à l'éditeur — volet RH",
-    d: "Même rôle d'accompagnement auprès de l'éditeur, sur le volet ressources humaines de BankAI, solution IA dédiée au secteur bancaire.",
+    d: "BankAI est un outil IA dédié aux ressources humaines des banques. Trevys a accompagné l'éditeur sur ce volet, de la rédaction du cahier des charges à sa conception.",
     url: "https://bankai.sonam-ai.com/",
   },
   {
     t: "Alfred",
     role: "Conception & développement interne",
-    d: "Un agent IA marketing et communication développé par Trevys pour ses propres besoins : pilotage du site, des articles, des réseaux sociaux et de la newsletter du cabinet.",
+    d: "Alfred est l'agent IA marketing & communication que Trevys a conçu et développé pour ses propres besoins : pilotage du site, des articles, des réseaux sociaux et de la newsletter du cabinet.",
     url: undefined,
   },
 ];
