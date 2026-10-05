@@ -55,7 +55,7 @@ export const LOCAL_PAGES: LocalPage[] = [
       { valeur: "9 h – 19 h", legende: "du lundi au vendredi, sur rendez-vous" },
     ],
         faq: [
-      { q: "Où se situe votre cabinet dans le 16ᵉ ?", a: "Au 1 rue Le Nôtre, 75116 Paris, à proximité du Trocadéro et des stations Passy et Trocadéro. Nous recevons sur rendez-vous, du lundi au vendredi de 9 h à 19 h." },
+      { q: "Où se situe votre cabinet dans le 16ᵉ ?", a: "Au 1 rue Le Nôtre, 75016 Paris, à proximité du Trocadéro et des stations Passy et Trocadéro. Nous recevons sur rendez-vous, du lundi au vendredi de 9 h à 19 h." },
       { q: "Accompagnez-vous les petites structures du quartier ?", a: "Oui : professions libérales, sociétés de conseil, commerces et holdings patrimoniales. Notre offre s'adapte à la taille de la structure — l'exigence reste la même." },
       { q: "Peut-on travailler à distance ?", a: "Entièrement. Vos pièces circulent par votre espace client sécurisé, les échanges se font en visioconférence, et vous gardez le même interlocuteur. La proximité géographique est un plus, pas une contrainte." },
     ],

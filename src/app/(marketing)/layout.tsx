@@ -107,7 +107,7 @@ const JSON_LD = {
       address: {
         "@type": "PostalAddress",
         streetAddress: "1 rue Le Nôtre",
-        postalCode: "75116",
+        postalCode: "75016",
         addressLocality: "Paris",
         addressRegion: "Île-de-France",
         addressCountry: "FR",
@@ -119,7 +119,7 @@ const JSON_LD = {
         latitude: 48.8617,
         longitude: 2.2855,
       },
-      hasMap: "https://www.google.com/maps/search/?api=1&query=1+rue+Le+N%C3%B4tre+75116+Paris",
+      hasMap: "https://www.google.com/maps/search/?api=1&query=1+rue+Le+N%C3%B4tre+75016+Paris",
       founder: {
         "@type": "Person",
         name: "John Lévy",
@@ -142,6 +142,14 @@ const JSON_LD = {
         "Juridique et fiscal",
         "Intelligence artificielle",
       ],
+      // Reflète la note affichée sur la fiche Google Business Profile du
+      // cabinet ("Expert Comptable | TREVYS") — à remettre à jour si elle
+      // évolue sensiblement, pour rester cohérent avec ce que Google montre.
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "5.0",
+        reviewCount: "20",
+      },
     },
     {
       "@type": "WebSite",
