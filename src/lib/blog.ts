@@ -8,6 +8,7 @@ export type PostMeta = {
   slug: string;
   title: string;
   date: string; // ISO yyyy-mm-dd
+  updated?: string; // ISO yyyy-mm-dd — à renseigner uniquement si l'article a été révisé
   category: string;
   metier?: string; // Consulting / Expertise comptable / Transverse (vide = auto)
   excerpt: string;
@@ -31,6 +32,7 @@ export function getAllPosts(): PostMeta[] {
         slug,
         title: String(data.title ?? slug),
         date: String(data.date ?? ""),
+        updated: data.updated ? String(data.updated) : undefined,
         category: String(data.category ?? "Article"),
         metier: data.metier ? String(data.metier) : undefined,
         excerpt: String(data.excerpt ?? ""),
@@ -55,6 +57,7 @@ export function getPost(slug: string): { meta: PostMeta; content: string } | nul
       slug,
       title: String(data.title ?? slug),
       date: String(data.date ?? ""),
+      updated: data.updated ? String(data.updated) : undefined,
       category: String(data.category ?? "Article"),
       metier: data.metier ? String(data.metier) : undefined,
       excerpt: String(data.excerpt ?? ""),

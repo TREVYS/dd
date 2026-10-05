@@ -71,7 +71,7 @@ export default async function Page({
         headline: post.meta.title,
         description: post.meta.excerpt,
         datePublished: post.meta.date,
-        dateModified: post.meta.date,
+        dateModified: post.meta.updated ?? post.meta.date,
         image: post.meta.image ? [post.meta.image] : undefined,
         articleSection: post.meta.category,
         inLanguage: "fr-FR",
@@ -110,6 +110,12 @@ export default async function Page({
           <h1>{post.meta.title}</h1>
           <div className="mkt-artmeta">
             <span>{formatDateFr(post.meta.date)}</span>
+            {post.meta.updated && post.meta.updated !== post.meta.date && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>Mis à jour le {formatDateFr(post.meta.updated)}</span>
+              </>
+            )}
             <span aria-hidden="true">·</span>
             <span>{post.meta.author ?? "Trevys"}</span>
             <span aria-hidden="true">·</span>

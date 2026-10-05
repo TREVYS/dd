@@ -33,8 +33,25 @@ export default async function ConsultantPage({
   const c = getConsultant(slug);
   if (!c) notFound();
 
+  // Fiche Person pour Google (apparition dans les résultats liés au cabinet).
+  const personLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: c.firstName,
+    jobTitle: c.role,
+    description: c.intro,
+    worksFor: { "@id": "https://www.trevys.fr/#organization" },
+    url: `https://www.trevys.fr/consulting/${c.slug}`,
+    sameAs: c.linkedin ? [c.linkedin] : undefined,
+    knowsAbout: c.expertises,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
+      />
       <BreadcrumbJsonLd
         items={[
           { name: "Accueil", path: "/" },
