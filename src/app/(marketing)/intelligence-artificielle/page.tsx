@@ -57,6 +57,29 @@ const USECASES = [
   { t: "Analyse des compétences & mobilité interne", d: "Outil d'analyse des compétences au service des mobilités internes d'un grand groupe bancaire." },
 ];
 
+// Cas concrets, nommés : projets sur lesquels Trevys est intervenu en tant
+// que référent métier, aux côtés d'éditeurs ou pour ses propres besoins.
+const CASES = [
+  {
+    t: "Licornne",
+    role: "Cahier des charges & assistance à l'éditeur",
+    d: "Trevys a participé à la rédaction du cahier des charges et accompagné l'éditeur dans la conception de Licornne, plateforme dédiée aux cabinets d'expertise comptable.",
+    url: "https://www.licornne.com/",
+  },
+  {
+    t: "BankAI",
+    role: "Cahier des charges & assistance à l'éditeur — volet RH",
+    d: "Même rôle d'accompagnement auprès de l'éditeur, sur le volet ressources humaines de BankAI, solution IA dédiée au secteur bancaire.",
+    url: "https://bankai.sonam-ai.com/",
+  },
+  {
+    t: "Alfred",
+    role: "Conception & développement interne",
+    d: "Un agent IA marketing et communication développé par Trevys pour ses propres besoins : pilotage du site, des articles, des réseaux sociaux et de la newsletter du cabinet.",
+    url: undefined,
+  },
+];
+
 export default function Page() {
   return (
     <>
@@ -226,6 +249,39 @@ export default function Page() {
                 </div>
                 <h3 style={{ fontSize: "1.15rem" }}>{u.t}</h3>
                 <p>{u.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Cas concrets nommés */}
+      <section className="sec">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Cas concrets</span>
+            <h2>Des projets <em>que nous pouvons citer</em></h2>
+            <p>
+              Au-delà des missions confidentielles, voici des projets sur lesquels
+              notre rôle de référent métier est public.
+            </p>
+          </div>
+          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))" }}>
+            {CASES.map((c) => (
+              <div className="mkt-svc" key={c.t}>
+                <span className="eyebrow" style={{ marginBottom: ".4rem", display: "block" }}>{c.role}</span>
+                <h3 style={{ fontSize: "1.2rem" }}>{c.t}</h3>
+                <p>{c.d}</p>
+                {c.url && (
+                  <a
+                    href={c.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: "inline-block", marginTop: ".6rem", fontWeight: 700, color: "var(--violet)" }}
+                  >
+                    Découvrir {c.t} →
+                  </a>
+                )}
               </div>
             ))}
           </div>
