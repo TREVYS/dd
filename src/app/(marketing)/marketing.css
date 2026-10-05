@@ -490,9 +490,16 @@
 .mkt-artshare button:hover{border-color:var(--violet);color:var(--violet)}
 .mkt-artshare svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;flex:0 0 auto}
 .mkt-artshare button:first-child svg{fill:currentColor;stroke:none}
+.mkt-art-loc{margin-top:2.4rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:1.4rem 1.6rem}
+.mkt-art-loc-txt p{margin:.4rem 0 0;font-size:.9rem;line-height:1.5;color:var(--ink2)}
+.mkt-art-loc .btn{flex:0 0 auto;white-space:nowrap}
 @media(max-width:960px){
   .mkt-artview{grid-template-columns:1fr;gap:2.2rem}
   .mkt-artside-in{position:static}
+}
+@media(max-width:600px){
+  .mkt-art-loc{flex-direction:column;align-items:stretch;text-align:center;padding:1.3rem 1.4rem}
+  .mkt-art-loc .btn{width:100%}
 }
 
 /* ===== Page Facturation électronique ===== */

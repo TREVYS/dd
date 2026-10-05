@@ -134,7 +134,21 @@ export default async function Page({
             <article className="mkt-article">
               <MDXRemote source={post.content} components={mdxComponents} />
             </article>
-            <div style={{ marginTop: "3rem" }}>
+
+            <div className="mkt-art-loc">
+              <div className="mkt-art-loc-txt">
+                <span className="mkt-artsum-lbl">Trevys Advisory</span>
+                <p>
+                  Cabinet d&apos;expertise comptable &amp; de conseil à Paris 16ᵉ,
+                  près du Trocadéro et de la station Passy.
+                </p>
+              </div>
+              <Link className="btn btn-gold" href="/rendez-vous">
+                Prendre rendez-vous
+              </Link>
+            </div>
+
+            <div style={{ marginTop: "2rem" }}>
               <Link className="btn btn-ghost" href="/blog">
                 ← Tous les articles
               </Link>
