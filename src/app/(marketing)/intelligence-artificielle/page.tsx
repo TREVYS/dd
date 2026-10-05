@@ -63,19 +63,19 @@ const CASES = [
   {
     t: "Licornne",
     role: "Cahier des charges & assistance à l'éditeur",
-    d: "Licornne est un hub dédié aux cabinets d'expertise comptable. Trevys a participé à la rédaction du cahier des charges et accompagné l'éditeur dans sa conception.",
+    d: "Licornne est un hub dédié aux cabinets d'expertise comptable : il centralise les outils, les ressources et l'espace client dont un cabinet a besoin au quotidien. Trevys est intervenu en amont auprès de l'éditeur, pour traduire les besoins concrets du métier en un cahier des charges exploitable, puis a assisté la conception de la plateforme afin qu'elle reste fidèle aux usages réels d'un cabinet d'expertise comptable.",
     url: "https://www.licornne.com/",
   },
   {
     t: "BankAI",
     role: "Cahier des charges & assistance à l'éditeur — volet RH",
-    d: "BankAI est un outil IA dédié aux ressources humaines des banques. Trevys a accompagné l'éditeur sur ce volet, de la rédaction du cahier des charges à sa conception.",
+    d: "BankAI est un outil d'intelligence artificielle dédié aux ressources humaines des établissements bancaires : il accompagne les équipes RH dans leurs processus (recrutement, mobilité, gestion des compétences). Trevys a apporté son expertise métier à l'éditeur sur ce volet RH, de la rédaction du cahier des charges jusqu'à l'assistance à la conception, pour garantir une solution ancrée dans les réalités du secteur bancaire.",
     url: "https://bankai.sonam-ai.com/",
   },
   {
     t: "Alfred",
     role: "Conception & développement interne",
-    d: "Alfred est l'agent IA marketing & communication que Trevys a conçu et développé pour ses propres besoins : pilotage du site, des articles, des réseaux sociaux et de la newsletter du cabinet.",
+    d: "Alfred est l'agent IA marketing & communication que Trevys a conçu et développé en interne, pour ses propres besoins. Il pilote au quotidien le site, la rédaction des articles, les publications sur les réseaux sociaux et les newsletters du cabinet — une illustration concrète de notre expertise IA, appliquée d'abord à nous-mêmes.",
     url: undefined,
   },
 ];
