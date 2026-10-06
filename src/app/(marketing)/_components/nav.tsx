@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
+import { LangToggle } from "./lang-toggle";
 
 // Nos deux cœurs de métier.
 const METIERS = [
@@ -159,6 +160,7 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         </ul>
 
         <div className="mkt-ncta">
+          <LangToggle />
           <a
             className="btn btn-sm btn-ghost"
             href="https://trevys.licornne.com/espace/connexion/"
@@ -247,6 +249,7 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
         </div>
 
         <div className="mkt-mcta-row">
+          <LangToggle />
           <a className="btn btn-lg btn-gold mkt-mobile-guide" href="https://forms.cloud.microsoft/e/mr63uL9LsU" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>
             Guide RFE
           </a>
