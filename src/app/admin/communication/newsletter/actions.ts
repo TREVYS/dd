@@ -146,7 +146,7 @@ export async function createProspectInviteCampaignAction() {
     `Je me permets de vous écrire directement : je suis **John Lévy**, fondateur de Trevys Advisory, cabinet d'expertise comptable et de conseil à Paris.\n\n` +
     `Plutôt qu'une prise de contact classique, je préfère commencer autrement : je vous propose de rejoindre notre newsletter. Quelques e-mails par trimestre, pas plus — nos décryptages sur la fiscalité, la réforme de la facturation électronique et l'intelligence artificielle appliquée à la finance. De quoi apprendre à se connaître, sans engagement.\n\n` +
     `[Rejoindre la newsletter](${SITE_URL}/newsletter)\n\n` +
-    `*(Ligne à personnaliser avant l'envoi, selon le contact) :* j'en profite pour vous glisser un mot : au vu de votre activité, je pense que nous pourrions échanger utilement sur [sujet à préciser — transformation digitale, structuration financière, passage à la facturation électronique…].\n\n` +
+    `J'en profite pour vous glisser un mot : au vu de votre activité, je pense que nous pourrions échanger utilement sur vos attentes.\n\n` +
     `Si l'un de ces sujets vous parle, je serais ravi d'en discuter autour d'un café ou d'un appel rapide — sans pression commerciale, juste pour voir si on peut s'être utile mutuellement.\n\n` +
     `Bien à vous,\n\n` +
     `**John Lévy**\n` +

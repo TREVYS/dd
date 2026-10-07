@@ -278,8 +278,8 @@ export default async function NewsletterAdmin({
             <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 1rem" }}>
               Un mailing de prise de contact tout prêt, pour des personnes qui ne vous connaissent pas encore :
               on leur propose de rejoindre la newsletter, avec une ouverture pour parler affaires. Vous arrivez
-              ensuite sur la page d&apos;édition pour personnaliser la ligne d&apos;ouverture, relire, coller leurs
-              adresses dans « Adresses supplémentaires » (sans cocher vos inscrits) et envoyer.
+              ensuite sur la page d&apos;édition pour relire, coller leurs adresses dans « Adresses supplémentaires »
+              (sans cocher vos inscrits) et envoyer.
             </p>
             <form action={createProspectInviteCampaignAction}>
               <PendingButton pendingLabel="Préparation…">Préparer un mailing de prospection</PendingButton>
