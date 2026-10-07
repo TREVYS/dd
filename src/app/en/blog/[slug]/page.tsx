@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPostEn, getAllPostsEn } from "@/lib/blog-en";
 import { SITE_URL } from "@/lib/site";
+import { ArticleLangLink } from "../../../(marketing)/blog/[slug]/article-lang";
 
 export function generateStaticParams() {
   return getAllPostsEn().map((p) => ({ slug: p.slug }));
@@ -65,7 +66,7 @@ export default async function EnArticlePage({
           <h1>{post.meta.title}</h1>
           <p style={{ marginTop: ".6rem", color: "var(--ink3)", fontSize: ".85rem" }}>
             Also available in{" "}
-            <Link href={`/blog/${slug}`} style={{ color: "var(--violet)", fontWeight: 700 }}>French</Link>.
+            <ArticleLangLink href={`/blog/${slug}`} lang={null}>French</ArticleLangLink>.
           </p>
         </div>
       </header>

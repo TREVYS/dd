@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPost, getPostSlugs, getAllPosts, extractHeadings, formatDateFr } from "@/lib/blog";
 import { hasTranslation } from "@/lib/blog-en";
+import { ArticleLangRedirect, ArticleLangLink } from "./article-lang";
 import { SITE_URL } from "@/lib/site";
 import { TableOfContents, ShareButtons } from "./article-tools";
 import { ArticleVideo } from "../../_components/article-video";
@@ -113,11 +114,12 @@ export default async function Page({
           <span className="eyebrow">{post.meta.category}</span>
           <h1>{post.meta.title}</h1>
           {hasTranslation(slug) && (
-            <p style={{ marginTop: ".5rem" }}>
-              <Link href={`/en/blog/${slug}`} style={{ color: "var(--violet)", fontWeight: 700, fontSize: ".85rem" }}>
-                Read in English →
-              </Link>
-            </p>
+            <>
+              <ArticleLangRedirect slug={slug} hasEn />
+              <p style={{ marginTop: ".5rem" }}>
+                <ArticleLangLink href={`/en/blog/${slug}`} lang="en">Read in English →</ArticleLangLink>
+              </p>
+            </>
           )}
           <div className="mkt-artmeta">
             <span>{formatDateFr(post.meta.date)}</span>

@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { getLangPref, setLangPref } from "@/lib/lang-pref";
 
 // Bouton de traduction à la volée (anglais / français), pour le confort des
 // visiteurs étrangers. S'appuie sur le widget Google Website Translator,
 // piloté en coulisses : pas de bandeau Google visible, juste notre bouton.
 // NB : traduction automatique, pas une vraie page /en optimisée SEO —
-// ça reste un chantier à part si on veut du contenu anglais indexable.
+// les articles traduits par Alfred (vraies pages /en/blog/<slug>) prennent
+// le relais automatiquement quand ils existent (voir ArticleLangRedirect).
 declare global {
   interface Window {
     googleTranslateElementInit?: () => void;
@@ -14,18 +16,9 @@ declare global {
   }
 }
 
-const COOKIE = "googtrans";
-
 function setLang(lang: "en" | null) {
-  const value = lang ? `/fr/${lang}` : "";
-  document.cookie = `${COOKIE}=${value};path=/`;
-  document.cookie = `${COOKIE}=${value};path=/;domain=.${window.location.hostname}`;
+  setLangPref(lang);
   window.location.reload();
-}
-
-function currentLang(): "en" | null {
-  const m = document.cookie.match(/googtrans=\/fr\/(en)/);
-  return m ? "en" : null;
 }
 
 export function LangToggle() {
@@ -33,7 +26,7 @@ export function LangToggle() {
   const loaded = useRef(false);
 
   useEffect(() => {
-    setLangState(currentLang());
+    setLangState(getLangPref());
     if (loaded.current) return;
     loaded.current = true;
 
