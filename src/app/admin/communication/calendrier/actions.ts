@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { addItem, getItem, removeItem, updateItem, type ItemType } from "@/lib/editorial";
-import { saveArticle } from "@/lib/content-admin";
+import { saveArticle, saveArticleTranslation } from "@/lib/content-admin";
 
 async function guard() {
   const session = await auth();
@@ -40,6 +40,9 @@ export async function updateDraftAction(formData: FormData) {
     excerpt: (formData.get("excerpt") as string) || undefined,
     image: (formData.get("image") as string) || undefined,
     body: (formData.get("body") as string) || undefined,
+    titleEn: (formData.get("titleEn") as string) || undefined,
+    excerptEn: (formData.get("excerptEn") as string) || undefined,
+    bodyEn: (formData.get("bodyEn") as string) || undefined,
   });
   revalidatePath("/admin/communication/calendrier");
   redirect("/admin/communication/calendrier?saved=1");
@@ -50,14 +53,25 @@ export async function publishDraftAction(formData: FormData) {
   await guard();
   const item = getItem(formData.get("id") as string);
   if (!item || item.type !== "article" || !item.body) return;
+  const date = parisToday();
   const slug = saveArticle({
     title: item.title,
-    date: parisToday(),
+    date,
     category: item.category || "Article",
     excerpt: item.excerpt || "",
     image: item.image || "",
     body: item.body,
   });
+  // Traduction anglaise relue par John : publiée en même temps, sur /en/blog/<slug>.
+  if (item.bodyEn?.trim()) {
+    saveArticleTranslation(slug, {
+      title: item.titleEn?.trim() || item.title,
+      excerpt: item.excerptEn?.trim() || item.excerpt || "",
+      body: item.bodyEn,
+      date,
+      image: item.image || "",
+    });
+  }
   // Publié → l'article vit désormais dans « Articles » : il sort des brouillons.
   removeItem(item.id);
   revalidatePath("/blog");

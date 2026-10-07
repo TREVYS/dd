@@ -5,6 +5,7 @@ import matter from "gray-matter";
 import { slugify } from "@/lib/blog";
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
+const BLOG_DIR_EN = path.join(process.cwd(), "content", "blog-en");
 
 export type ArticleInput = {
   slug?: string;
@@ -66,10 +67,36 @@ export function saveArticle(input: ArticleInput, originalSlug?: string): string 
   return slug;
 }
 
+// Enregistre/écrase la traduction anglaise d'un article déjà publié (même
+// slug, servie sur /en/blog/<slug>). Appelée au moment de la publication
+// quand une traduction a été rédigée par Alfred et validée dans le brouillon.
+export function saveArticleTranslation(
+  slug: string,
+  input: { title: string; excerpt: string; body: string; date: string; image?: string },
+): void {
+  if (!fs.existsSync(BLOG_DIR_EN)) fs.mkdirSync(BLOG_DIR_EN, { recursive: true });
+  const frontmatter: Record<string, string> = {
+    title: input.title.trim(),
+    date: input.date,
+    excerpt: input.excerpt.trim(),
+  };
+  if (input.image?.trim()) frontmatter.image = input.image.trim();
+  const file = matter.stringify(`\n${input.body.trim()}\n`, frontmatter);
+  fs.writeFileSync(path.join(BLOG_DIR_EN, `${slug}.mdx`), file, "utf8");
+}
+
+export function deleteArticleTranslation(slug: string): boolean {
+  const full = path.join(BLOG_DIR_EN, `${slug}.mdx`);
+  if (!fs.existsSync(full)) return false;
+  fs.unlinkSync(full);
+  return true;
+}
+
 export function deleteArticle(slug: string): boolean {
   const full = path.join(BLOG_DIR, `${slug}.mdx`);
   if (!fs.existsSync(full)) return false;
   fs.unlinkSync(full);
+  deleteArticleTranslation(slug);
   return true;
 }
 

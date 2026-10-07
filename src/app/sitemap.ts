@@ -4,6 +4,7 @@ import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
 import { SITE_URL } from "@/lib/site";
 import { LOCAL_PAGES, localPagePath } from "@/lib/local-pages";
+import { getAllPostsEn } from "@/lib/blog-en";
 
 const BASE = SITE_URL;
 
@@ -67,5 +68,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...peopleEntries, ...localEntries, ...blogEntries];
+  // Section anglaise : page d'accueil, index des articles traduits, et
+  // chaque article dont la traduction a été publiée.
+  const enEntries: MetadataRoute.Sitemap = [
+    { url: `${BASE}/en`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 },
+    { url: `${BASE}/en/blog`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 },
+    ...getAllPostsEn().map((post) => ({
+      url: `${BASE}/en/blog/${post.slug}`,
+      lastModified: post.date ? new Date(post.date) : now,
+      changeFrequency: "yearly" as const,
+      priority: 0.5,
+    })),
+  ];
+
+  return [...staticEntries, ...peopleEntries, ...localEntries, ...blogEntries, ...enEntries];
 }

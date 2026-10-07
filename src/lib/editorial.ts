@@ -21,6 +21,11 @@ export type EditorialItem = {
   body?: string; // contenu Markdown (brouillon d'article rédigé par l'IA)
   slug?: string; // renseigné une fois publié sur le site
   createdAt: string;
+  // Traduction anglaise proposée par Alfred lors de la rédaction (optionnelle,
+  // relisable/éditable avant publication — publiée en même temps que le FR).
+  titleEn?: string;
+  excerptEn?: string;
+  bodyEn?: string;
 };
 
 function readAll(): EditorialItem[] {

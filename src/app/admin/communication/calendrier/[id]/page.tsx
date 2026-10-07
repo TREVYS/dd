@@ -71,6 +71,24 @@ export default async function EditDraft({ params }: { params: Promise<{ id: stri
           <MarkdownEditor name="body" defaultValue={item.body ?? ""} placeholder={"## Introduction\n\nVotre texte…"} />
         </div>
 
+        {(item.bodyEn || item.titleEn) && (
+          <div className="adm-card" style={{ marginTop: "1.2rem" }}>
+            <h2>Version anglaise <small className="muted">— rédigée par Alfred, à relire</small></h2>
+            <div className="adm-field" style={{ marginTop: ".8rem" }}>
+              <label>Title</label>
+              <input name="titleEn" defaultValue={item.titleEn ?? ""} placeholder="English title" />
+            </div>
+            <div className="adm-field">
+              <label>Excerpt</label>
+              <textarea name="excerptEn" style={{ minHeight: 90 }} defaultValue={item.excerptEn ?? ""} placeholder="One or two sentences." />
+            </div>
+            <div className="adm-field">
+              <label>Content</label>
+              <MarkdownEditor name="bodyEn" defaultValue={item.bodyEn ?? ""} placeholder={"## Introduction\n\nYour text…"} />
+            </div>
+          </div>
+        )}
+
         <div className="adm-actions">
           <button className="adm-btn" type="submit">Enregistrer le brouillon</button>
           <Link className="adm-btn ghost" href="/admin/communication/calendrier">Annuler</Link>

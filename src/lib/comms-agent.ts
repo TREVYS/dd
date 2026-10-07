@@ -1,6 +1,6 @@
 import { parisToday } from "@/lib/dates";
 import type Anthropic from "@anthropic-ai/sdk";
-import { addItem, listItems } from "@/lib/editorial";
+import { addItem, listItems, getItem, updateItem } from "@/lib/editorial";
 import { addPost } from "@/lib/social-posts";
 import { alfredSystemBlock, readAlfred, GED_THEMES } from "@/lib/alfred-config";
 import { getStudio } from "@/lib/ig-studio";
@@ -70,7 +70,8 @@ Français impeccable.
 Le site www.trevys.fr est ta maison : tu en connais chaque page, chaque article, chaque vidéo et chaque média (voir la connaissance du site ci-dessous). Appuie-toi dessus pour faire des liens internes pertinents, éviter les doublons avec les articles existants, illustrer avec les médias disponibles et rester cohérent avec les pages du site.
 
 Tes moyens d'action (outils) :
-- rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement. JAMAIS de tableaux Markdown dans les articles (ils s'affichent mal sur le site) : préfère des listes à puces ou des paragraphes courts.
+- rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement. JAMAIS de tableaux Markdown dans les articles (ils s'affichent mal sur le site) : préfère des listes à puces ou des paragraphes courts. Juste après, propose SYSTÉMATIQUEMENT à John une traduction anglaise de cet article (Trevys vise aussi une clientèle étrangère). S'il accepte (ou s'il l'a demandé d'emblée), traduis toi-même le titre, le résumé et le contenu en anglais — une vraie traduction/adaptation professionnelle, pas mot à mot — puis appelle traduire_article avec l'id du brouillon. La traduction est relue par John et publiée automatiquement en même temps que le français sur /en/blog/.
+- traduire_article : voir ci-dessus — rattache une traduction anglaise à un brouillon d'article existant (créé par rediger_article dans la même conversation, ou choisi dans la liste des brouillons si John te donne son id).
 - rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications. TON des posts : humain, chaleureux, une pointe d'humour — jamais corporate ni « robot IA » — et termine toujours par une question ouverte qui invite l'audience à réagir en commentaires. Pour Instagram, fournis TOUJOURS visuel_titre (titre court affiché en grand sur le visuel généré à partir des maquettes du Studio) et si utile visuel_sous_titre.
 - rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
 - rediger_offre : quand on te demande une offre d'emploi, RÉDIGE-LA entièrement (ton premium du cabinet : on recrute des consultants, pas des producteurs de comptes) puis appelle cet outil. L'offre part en brouillon dans Recrutement.
@@ -130,6 +131,21 @@ const TOOLS = [
         body: { type: "string", description: "Contenu complet en Markdown (## sous-titres, listes, gras). Jamais de tableaux Markdown : listes à puces ou paragraphes à la place." },
       },
       required: ["title", "excerpt", "body"],
+    },
+  },
+  {
+    name: "traduire_article",
+    description:
+      "Enregistre la traduction anglaise d'un brouillon d'article déjà créé (via rediger_article), pour relecture par John. Publiée en même temps que le français, sur /en/blog/<slug>.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        id: { type: "string", description: "L'id du brouillon reçu en retour de rediger_article." },
+        titleEn: { type: "string", description: "Titre en anglais." },
+        excerptEn: { type: "string", description: "Résumé en anglais, 1-2 phrases." },
+        bodyEn: { type: "string", description: "Contenu complet en anglais, Markdown (## sous-titres, listes, gras). Pas de tableaux." },
+      },
+      required: ["id", "titleEn", "excerptEn", "bodyEn"],
     },
   },
   {
@@ -492,6 +508,18 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     });
     actions.push(`Brouillon d'article créé : « ${it.title} »`);
     return `Brouillon enregistré (id ${it.id}). À relire dans les Brouillons d'articles avant publication.`;
+  }
+  if (name === "traduire_article") {
+    const id = String(input.id ?? "");
+    const item = getItem(id);
+    if (!item) return "Brouillon introuvable (id invalide) — vérifie l'id reçu par rediger_article.";
+    updateItem(id, {
+      titleEn: String(input.titleEn ?? ""),
+      excerptEn: String(input.excerptEn ?? ""),
+      bodyEn: String(input.bodyEn ?? ""),
+    });
+    actions.push(`Traduction anglaise ajoutée au brouillon « ${item.title} »`);
+    return "Traduction enregistrée dans le brouillon, à relire avant publication (publiée en même temps que le français).";
   }
   if (name === "planifier_publication") {
     // Une simple idée/échéance d'article va dans « Brouillons d'articles ».

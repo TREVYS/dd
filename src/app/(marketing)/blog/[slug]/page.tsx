@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPost, getPostSlugs, getAllPosts, extractHeadings, formatDateFr } from "@/lib/blog";
+import { hasTranslation } from "@/lib/blog-en";
 import { SITE_URL } from "@/lib/site";
 import { TableOfContents, ShareButtons } from "./article-tools";
 import { ArticleVideo } from "../../_components/article-video";
@@ -27,7 +28,10 @@ export async function generateMetadata({
   return {
     title: post.meta.title,
     description: post.meta.excerpt,
-    alternates: { canonical: `/blog/${slug}` },
+    alternates: {
+      canonical: `/blog/${slug}`,
+      languages: hasTranslation(slug) ? { en: `${SITE_URL}/en/blog/${slug}` } : undefined,
+    },
     // NB : pas de `images` ici — l'étiquette de partage est générée par
     // opengraph-image.tsx (logo + mascottes), identique pour tous les réseaux.
     openGraph: {
@@ -108,6 +112,13 @@ export default async function Page({
           </nav>
           <span className="eyebrow">{post.meta.category}</span>
           <h1>{post.meta.title}</h1>
+          {hasTranslation(slug) && (
+            <p style={{ marginTop: ".5rem" }}>
+              <Link href={`/en/blog/${slug}`} style={{ color: "var(--violet)", fontWeight: 700, fontSize: ".85rem" }}>
+                Read in English →
+              </Link>
+            </p>
+          )}
           <div className="mkt-artmeta">
             <span>{formatDateFr(post.meta.date)}</span>
             {post.meta.updated && post.meta.updated !== post.meta.date && (
