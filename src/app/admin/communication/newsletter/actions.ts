@@ -133,6 +133,28 @@ export async function createArticlesCampaignAction(formData: FormData) {
   redirect(`/admin/communication/newsletter/${c.id}`);
 }
 
+// Mailing de prise de contact « à froid » : invite un prospect à rejoindre la
+// newsletter tout en ouvrant la porte à un échange commercial. Pré-rempli,
+// à personnaliser (ligne d'ouverture signalée) puis à envoyer via le
+// ciblage habituel (coller les adresses, sans cocher les inscrits).
+export async function createProspectInviteCampaignAction() {
+  await guard();
+  const { SITE_URL } = await import("@/lib/site");
+  const subject = "Faisons connaissance — rejoignez les analyses de Trevys";
+  const body =
+    `Bonjour,\n\n` +
+    `Je me permets de vous écrire directement : je suis **John Lévy**, fondateur de Trevys Advisory, cabinet d'expertise comptable et de conseil à Paris.\n\n` +
+    `Plutôt qu'une prise de contact classique, je préfère commencer autrement : je vous propose de rejoindre notre newsletter. Quelques e-mails par trimestre, pas plus — nos décryptages sur la fiscalité, la réforme de la facturation électronique et l'intelligence artificielle appliquée à la finance. De quoi apprendre à se connaître, sans engagement.\n\n` +
+    `[Rejoindre la newsletter](${SITE_URL}/newsletter)\n\n` +
+    `*(Ligne à personnaliser avant l'envoi, selon le contact) :* j'en profite pour vous glisser un mot : au vu de votre activité, je pense que nous pourrions échanger utilement sur [sujet à préciser — transformation digitale, structuration financière, passage à la facturation électronique…].\n\n` +
+    `Si l'un de ces sujets vous parle, je serais ravi d'en discuter autour d'un café ou d'un appel rapide — sans pression commerciale, juste pour voir si on peut s'être utile mutuellement.\n\n` +
+    `Bien à vous,\n\n` +
+    `**John Lévy**\n` +
+    `Fondateur, Trevys Advisory`;
+  const c = addCampaign(subject, body);
+  redirect(`/admin/communication/newsletter/${c.id}`);
+}
+
 export async function createCampaignAction(formData: FormData) {
   await guard();
   let subject = ((formData.get("subject") as string) || "").trim();

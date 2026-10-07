@@ -6,7 +6,7 @@ import { telegramConfigured } from "@/lib/notify";
 import { listCampaigns, articleSendHistory } from "@/lib/newsletter-campaigns";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
 import { getAllPosts, getPost, formatDateFr } from "@/lib/blog";
-import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, deleteSubscriberAction, sendOptinInvitesAction, importContactsAction, updateSubscriberAction } from "./actions";
+import { markNewsletterReadAction, createCampaignAction, createArticlesCampaignAction, createProspectInviteCampaignAction, deleteSubscriberAction, sendOptinInvitesAction, importContactsAction, updateSubscriberAction } from "./actions";
 import { campaignOpens, contactActivity } from "@/lib/newsletter-stats";
 import { optinStats } from "@/lib/newsletter-optin";
 import { ArticlePicker, type PickPost } from "./article-picker";
@@ -272,6 +272,19 @@ export default async function NewsletterAdmin({
               </p>
             </div>
           )}
+
+          <div className="adm-card">
+            <h2>Inviter des prospects à rejoindre la newsletter</h2>
+            <p className="muted" style={{ fontSize: ".86rem", margin: "0 0 1rem" }}>
+              Un mailing de prise de contact tout prêt, pour des personnes qui ne vous connaissent pas encore :
+              on leur propose de rejoindre la newsletter, avec une ouverture pour parler affaires. Vous arrivez
+              ensuite sur la page d&apos;édition pour personnaliser la ligne d&apos;ouverture, relire, coller leurs
+              adresses dans « Adresses supplémentaires » (sans cocher vos inscrits) et envoyer.
+            </p>
+            <form action={createProspectInviteCampaignAction}>
+              <PendingButton pendingLabel="Préparation…">Préparer un mailing de prospection</PendingButton>
+            </form>
+          </div>
 
           <div className="adm-card">
             <h2>Composer à partir d&apos;articles</h2>
