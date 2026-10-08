@@ -1440,3 +1440,48 @@ export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
 
   return { reply: text.trim() || "C'est fait.", actions };
 }
+
+// Traduction d'un article (titre, résumé, contenu) en anglais — utilisée par
+// le bouton « Traduire avec Alfred » des brouillons et des articles publiés.
+export async function translateArticleToEnglish(input: {
+  title: string;
+  excerpt: string;
+  body: string;
+}): Promise<{ titleEn: string; excerptEn: string; bodyEn: string }> {
+  const apiKey = getSetting("anthropicApiKey");
+  if (!apiKey) {
+    throw new Error("Alfred n'est pas configuré (clé API manquante — voir Réglages).");
+  }
+  const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+  const client = new AnthropicSDK({ apiKey });
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 4000,
+    system:
+      "Tu traduis un article de blog français vers l'anglais pour un cabinet d'expertise comptable et de conseil (Trevys Advisory, Paris). " +
+      "Une vraie traduction professionnelle et naturelle, pas mot à mot — adapte les tournures pour un lecteur anglophone. " +
+      "Garde la structure Markdown (## sous-titres, listes, gras) à l'identique. Jamais de tableaux Markdown. " +
+      "Réponds UNIQUEMENT avec un objet JSON valide, sans commentaire ni balise de code, au format exact : " +
+      '{"titleEn": "...", "excerptEn": "...", "bodyEn": "..."}',
+    messages: [
+      {
+        role: "user",
+        content: `Titre :\n${input.title}\n\nRésumé :\n${input.excerpt}\n\nContenu :\n${input.body}`,
+      },
+    ],
+  });
+  const text = res.content
+    .filter((b) => b.type === "text")
+    .map((b) => (b as { text: string }).text)
+    .join("")
+    .trim();
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error("Alfred n'a pas renvoyé de traduction exploitable — réessayez.");
+  const parsed = JSON.parse(match[0]);
+  if (!parsed.titleEn || !parsed.bodyEn) throw new Error("Traduction incomplète — réessayez.");
+  return {
+    titleEn: String(parsed.titleEn),
+    excerptEn: String(parsed.excerptEn ?? ""),
+    bodyEn: String(parsed.bodyEn),
+  };
+}

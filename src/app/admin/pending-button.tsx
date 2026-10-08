@@ -8,14 +8,16 @@ export function PendingButton({
   children,
   pendingLabel = "Un instant…",
   className = "adm-btn",
+  disabled = false,
 }: {
   children: React.ReactNode;
   pendingLabel?: string;
   className?: string;
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
   return (
-    <button className={className} type="submit" disabled={pending} aria-busy={pending}>
+    <button className={className} type="submit" disabled={pending || disabled} aria-busy={pending}>
       {pending && <span className="adm-spin" aria-hidden="true" />}
       {pending ? pendingLabel : children}
     </button>

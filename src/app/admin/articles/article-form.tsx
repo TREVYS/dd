@@ -1,14 +1,22 @@
 import { parisToday } from "@/lib/dates";
 import Link from "next/link";
-import { saveArticleAction } from "../actions";
+import { saveArticleAction, translateArticleAction, saveArticleTranslationAction } from "../actions";
 import { MarkdownEditor } from "../markdown-editor";
 import { ImageField } from "../image-field";
 import { ArticleDiffusion } from "./article-diffusion";
+import { PendingButton } from "../pending-button";
 import type { ArticleInput } from "@/lib/content-admin";
 import { getAllPosts } from "@/lib/blog";
 import { METIERS, metierOf } from "@/lib/metier";
-
-export function ArticleForm({ article }: { article?: ArticleInput }) {
+export function ArticleForm({
+  article,
+  translation,
+  translateError,
+}: {
+  article?: ArticleInput;
+  translation?: { title: string; excerpt: string; body: string } | null;
+  translateError?: boolean;
+}) {
   const isEdit = !!article?.slug;
   // Catégories déjà utilisées (les plus fréquentes d'abord) : suggérées
   // pendant la saisie, sans empêcher d'en créer une nouvelle.
@@ -93,6 +101,45 @@ export function ArticleForm({ article }: { article?: ArticleInput }) {
         <Link className="adm-btn ghost" href="/admin/articles">Annuler</Link>
       </div>
     </form>
+
+    {isEdit && (
+      <div className="adm-card" style={{ marginTop: "1.2rem" }}>
+        <h2>Version anglaise <small className="muted">— publiée sur /en/blog/{article!.slug}</small></h2>
+        {translateError && (
+          <div className="adm-note" style={{ margin: ".8rem 0", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
+            Alfred n&apos;a pas pu traduire cet article (voir sa configuration dans les Réglages). Réessayez dans un instant.
+          </div>
+        )}
+        {translation ? (
+          <form action={saveArticleTranslationAction} style={{ marginTop: ".8rem" }}>
+            <input type="hidden" name="slug" value={article!.slug} />
+            <div className="adm-field">
+              <label>Title</label>
+              <input name="titleEn" defaultValue={translation.title} placeholder="English title" />
+            </div>
+            <div className="adm-field">
+              <label>Excerpt</label>
+              <textarea name="excerptEn" style={{ minHeight: 90 }} defaultValue={translation.excerpt} placeholder="One or two sentences." />
+            </div>
+            <div className="adm-field">
+              <label>Content</label>
+              <MarkdownEditor name="bodyEn" defaultValue={translation.body} placeholder={"## Introduction\n\nYour text…"} />
+            </div>
+            <div className="adm-actions">
+              <button className="adm-btn" type="submit">Enregistrer la version anglaise</button>
+            </div>
+          </form>
+        ) : (
+          <p className="muted" style={{ margin: ".8rem 0 0" }}>Pas encore de traduction publiée.</p>
+        )}
+        <form action={translateArticleAction} style={{ marginTop: ".8rem" }}>
+          <input type="hidden" name="slug" value={article!.slug} />
+          <PendingButton pendingLabel="Alfred traduit…" className="adm-btn ghost">
+            {translation ? "Retraduire en anglais avec Alfred" : "Traduire en anglais avec Alfred"}
+          </PendingButton>
+        </form>
+      </div>
+    )}
 
     {isEdit && (
       <ArticleDiffusion

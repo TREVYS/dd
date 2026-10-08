@@ -48,6 +48,29 @@ export async function updateDraftAction(formData: FormData) {
   redirect("/admin/communication/calendrier?saved=1");
 }
 
+// Traduit un brouillon en anglais avec Alfred (titre, résumé, contenu),
+// pour relecture avant publication.
+export async function translateDraftAction(formData: FormData) {
+  await guard();
+  const id = formData.get("id") as string;
+  const item = getItem(id);
+  if (!item || !item.body) return;
+  const { translateArticleToEnglish } = await import("@/lib/comms-agent");
+  try {
+    const { titleEn, excerptEn, bodyEn } = await translateArticleToEnglish({
+      title: item.title,
+      excerpt: item.excerpt || "",
+      body: item.body,
+    });
+    updateItem(id, { titleEn, excerptEn, bodyEn });
+  } catch (e) {
+    console.error("[calendrier] traduction brouillon:", e);
+    redirect(`/admin/communication/calendrier/${id}?error=translate`);
+  }
+  revalidatePath(`/admin/communication/calendrier/${id}`);
+  redirect(`/admin/communication/calendrier/${id}?translated=1`);
+}
+
 // Publie un brouillon d'article rédigé par l'IA vers le site (crée le MDX).
 export async function publishDraftAction(formData: FormData) {
   await guard();

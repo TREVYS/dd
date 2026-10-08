@@ -4,7 +4,7 @@ import { parisToday } from "@/lib/dates";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { saveArticle, deleteArticle } from "@/lib/content-admin";
+import { saveArticle, deleteArticle, saveArticleTranslation, getRawArticle } from "@/lib/content-admin";
 import { saveLegalDoc } from "@/lib/legal";
 
 async function requireUser() {
@@ -133,4 +133,54 @@ export async function alfredFeedbackAction(formData: FormData) {
     revalidatePath(back.split("?")[0]);
     redirect(back);
   }
+}
+
+// Traduit un article déjà publié en anglais avec Alfred, et publie
+// directement la traduction sur /en/blog/<slug> (relecture possible après
+// coup via « Enregistrer la version anglaise »).
+export async function translateArticleAction(formData: FormData) {
+  await requireUser();
+  const slug = String(formData.get("slug") ?? "");
+  const article = slug ? getRawArticle(slug) : null;
+  if (!article) return;
+  try {
+    const { translateArticleToEnglish } = await import("@/lib/comms-agent");
+    const { titleEn, excerptEn, bodyEn } = await translateArticleToEnglish({
+      title: article.title,
+      excerpt: article.excerpt,
+      body: article.body,
+    });
+    saveArticleTranslation(slug, {
+      title: titleEn,
+      excerpt: excerptEn,
+      body: bodyEn,
+      date: article.date,
+      image: article.image,
+    });
+  } catch (e) {
+    console.error("[articles] traduction:", e);
+    redirect(`/admin/articles/${slug}?error=translate`);
+  }
+  revalidatePath(`/admin/articles/${slug}`);
+  revalidatePath(`/en/blog/${slug}`);
+  redirect(`/admin/articles/${slug}?translated=1`);
+}
+
+// Enregistre une modification manuelle de la traduction anglaise (après
+// relecture), sans repasser par Alfred.
+export async function saveArticleTranslationAction(formData: FormData) {
+  await requireUser();
+  const slug = String(formData.get("slug") ?? "");
+  const article = slug ? getRawArticle(slug) : null;
+  if (!article) return;
+  saveArticleTranslation(slug, {
+    title: String(formData.get("titleEn") ?? "") || article.title,
+    excerpt: String(formData.get("excerptEn") ?? ""),
+    body: String(formData.get("bodyEn") ?? ""),
+    date: article.date,
+    image: article.image,
+  });
+  revalidatePath(`/admin/articles/${slug}`);
+  revalidatePath(`/en/blog/${slug}`);
+  redirect(`/admin/articles/${slug}?translated=1`);
 }
