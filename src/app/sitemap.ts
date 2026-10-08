@@ -69,14 +69,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // Section anglaise : page d'accueil et index des articles traduits.
-  const enEntries: MetadataRoute.Sitemap = [
-    { url: `${BASE}/en`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.8 },
-    { url: `${BASE}/en/blog`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 },
-  ].concat(
+  const enBase: MetadataRoute.Sitemap = [
+    { url: `${BASE}/en`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/en/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
+  ];
+  const enEntries: MetadataRoute.Sitemap = enBase.concat(
     getAllPostsEn().map((post) => ({
       url: `${BASE}/en/blog/${post.slug}`,
       lastModified: post.date ? new Date(post.date) : now,
-      changeFrequency: "yearly" as const,
+      changeFrequency: "yearly",
       priority: 0.5,
     })),
   );
