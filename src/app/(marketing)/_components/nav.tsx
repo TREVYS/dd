@@ -254,8 +254,8 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
             Guide RFE
           </a>
         </div>
-        <a className="mkt-mobile-mail" href="mailto:contact@trevys-advisory.fr">
-          contact@trevys-advisory.fr
+        <a className="mkt-mobile-mail" href="mailto:contact@trevys.fr">
+          contact@trevys.fr
         </a>
       </div>
     </>

@@ -55,7 +55,7 @@ export default function Page() {
               <p style={{ textAlign: "center", color: "var(--ink3)" }}>
                 Aucune offre ouverte pour l&apos;instant — mais une candidature
                 spontanée pertinente trouve toujours preneur :{" "}
-                <a href="mailto:contact@trevys-advisory.fr">contact@trevys-advisory.fr</a>.
+                <a href="mailto:contact@trevys.fr">contact@trevys.fr</a>.
               </p>
             )}
           </div>
@@ -91,7 +91,7 @@ export default function Page() {
         <div className="mkt-cta-in">
           <h2>Pas d&apos;offre à votre mesure ?</h2>
           <p>Les bons profils n&apos;attendent pas la bonne annonce. Écrivez-nous.</p>
-          <a className="btn btn-gold" href="mailto:contact@trevys-advisory.fr?subject=Candidature%20spontanée">
+          <a className="btn btn-gold" href="mailto:contact@trevys.fr?subject=Candidature%20spontanée">
             Candidature spontanée
           </a>
         </div>

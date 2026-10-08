@@ -45,7 +45,7 @@ export default async function Page({
             <h1 style={{ fontSize: "1.7rem", marginBottom: "1rem" }}>Lien invalide</h1>
             <p style={{ color: "var(--ink2)", lineHeight: 1.7 }}>
               Ce lien de désinscription est incomplet ou expiré. Écrivez-nous à{" "}
-              <a href="mailto:contact@trevys-advisory.fr">contact@trevys-advisory.fr</a> et nous
+              <a href="mailto:contact@trevys.fr">contact@trevys.fr</a> et nous
               vous retirerons de la liste immédiatement.
             </p>
           </>

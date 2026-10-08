@@ -86,7 +86,7 @@ const JSON_LD = {
       image: `${SITE}/opengraph-image-pwu6ef`,
       slogan: "L'expertise du chiffre, la vitesse de la technologie.",
       foundingDate: "2018",
-      email: "contact@trevys-advisory.fr",
+      email: "contact@trevys.fr",
       telephone: "+33768050465",
       priceRange: "€€€",
       areaServed: "FR",

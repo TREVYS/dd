@@ -1213,3 +1213,23 @@ html,body{overflow-x:hidden}
 .mkt-offer.featured p:not(.quote){color:rgba(255,255,255,.75)}
 .mkt-offer.featured .quote{color:#FBB040}
 @media(max-width:900px){.mkt-offers{grid-template-columns:1fr}}
+
+/* En-tête / pied de la section anglaise (/en) — header dédié, plus simple
+   que la nav principale, mais responsive dès le départ (le logo complet et
+   le menu ne doivent jamais déborder sur mobile). */
+.mkt-en-head{border-bottom:1px solid var(--line);padding:1.1rem 0}
+.mkt-en-head .nlogo{display:inline-flex;align-items:center;color:var(--ink);text-decoration:none}
+.mkt-en-head-in{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.mkt-en-nav{display:flex;align-items:center;gap:1.1rem;font-size:.9rem;flex-wrap:wrap}
+.mkt-en-nav a{color:var(--ink2);text-decoration:none;white-space:nowrap}
+.mkt-en-nav a:hover{color:var(--ink)}
+.mkt-en-fr{color:var(--ink3)!important;font-size:.85rem}
+.mkt-en-foot{border-top:1px solid var(--line);padding:1.6rem 0;margin-top:3rem;font-size:.82rem;color:var(--ink3);text-align:center}
+@media(max-width:600px){
+  .mkt-en-head-in{gap:.7rem}
+  .mkt-en-nav{gap:.7rem;width:100%;justify-content:flex-start}
+  .mkt-en-nav a:not(.btn){font-size:.85rem}
+  .mkt-en-head .nlogo img.mkt-logo-badge{display:block}
+  .mkt-en-head .nlogo .mkt-logo-full-img{display:none}
+  .mkt-en-head .nlogo .mkt-logo-word.cm{display:none}
+}

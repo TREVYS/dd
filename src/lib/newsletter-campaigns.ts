@@ -390,7 +390,7 @@ export function wrapEmail(bodyHtml: string, unsubUrl?: string, footerNote?: stri
         <tr><td align="center" style="padding:10px 10px 20px;${font}font-size:10px;color:#a89b86;line-height:1.8;text-align:center;">
           <b style="color:#8a7d67;font-size:11px;">T.A. Trevys Advisory</b><br>
           1 rue Le Nôtre, 75016 Paris<br>
-          <a href="mailto:contact@trevys-advisory.fr" style="color:#a89b86;text-decoration:none;">contact@trevys-advisory.fr</a><br>
+          <a href="mailto:contact@trevys.fr" style="color:#a89b86;text-decoration:none;">contact@trevys.fr</a><br>
           ${footerNote ?? "Vous recevez cet e-mail car vous êtes inscrit à nos analyses."}<br>
           ${unsubUrl
             ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:8px auto 0;"><tr><td align="center" style="border:1px solid #d8cbb4;border-radius:100px;">` +

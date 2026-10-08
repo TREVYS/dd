@@ -24,13 +24,13 @@ const CFG_GROUPS = [
     { k: "brevoListId", label: "ID de liste", ph: "ex. 3", secret: false },
   ] },
   { title: "E-mailing Microsoft 365 (Office 365)", fields: [
-    { k: "msSender", label: "Adresse d'envoi", ph: "contact@trevys-advisory.fr", secret: false },
+    { k: "msSender", label: "Adresse d'envoi", ph: "contact@trevys.fr", secret: false },
     { k: "msTenantId", label: "Tenant ID (Directory)", ph: "xxxxxxxx-xxxx-…", secret: false },
     { k: "msClientId", label: "Client ID (Application)", ph: "xxxxxxxx-xxxx-…", secret: false },
     { k: "msClientSecret", label: "Client Secret", ph: "", secret: true },
   ] },
   { title: "Recrutement", fields: [
-    { k: "recruitEmail", label: "E-mail de réception des candidatures", ph: "contact@trevys-advisory.fr", secret: false },
+    { k: "recruitEmail", label: "E-mail de réception des candidatures", ph: "contact@trevys.fr", secret: false },
   ] },
   { title: "Prise de rendez-vous (Calendly)", fields: [
     { k: "calendlyUrl", label: "URL Calendly", ph: "https://calendly.com/…", secret: false },
@@ -321,7 +321,7 @@ echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
       </div>
 
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>
-        <h2>E-mailing depuis Microsoft 365 (contact@trevys-advisory.fr)</h2>
+        <h2>E-mailing depuis Microsoft 365 (contact@trevys.fr)</h2>
         <div
           style={{
             display: "flex", alignItems: "center", gap: ".7rem", margin: ".2rem 0 1rem",
@@ -337,7 +337,7 @@ echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
             ["msTenantId", "Tenant ID"],
             ["msClientId", "Client ID"],
             ["msClientSecret", "Client Secret"],
-            ["msSender", "Adresse d'envoi (optionnelle — contact@trevys-advisory.fr par défaut)"],
+            ["msSender", "Adresse d'envoi (optionnelle — contact@trevys.fr par défaut)"],
           ] as const).map(([k, label]) => {
             const ok = !!status[k]?.set;
             return (
@@ -368,7 +368,7 @@ echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
         </ol>
         <p className="muted" style={{ color: "var(--ink3)", fontSize: ".8rem", marginTop: ".8rem" }}>
           Astuce sécurité : pour limiter l&apos;envoi à la seule boîte du cabinet, un administrateur peut ajouter
-          une <i>Application Access Policy</i> Exchange restreignant l&apos;app à <code>contact@trevys-advisory.fr</code>.
+          une <i>Application Access Policy</i> Exchange restreignant l&apos;app à <code>contact@trevys.fr</code>.
         </p>
       </div>
 

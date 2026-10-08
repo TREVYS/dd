@@ -3,7 +3,7 @@ import { getSetting } from "@/lib/settings";
 // Envoi d'e-mails via Microsoft 365 (Office 365) avec Microsoft Graph.
 // Authentification « client credentials » (application Entra ID / Azure AD)
 // avec la permission applicative Mail.Send. Les mails partent de l'adresse
-// du cabinet (contact@trevys-advisory.fr) sans mot de passe SMTP.
+// du cabinet (contact@trevys.fr) sans mot de passe SMTP.
 
 export function mailerConfigured(): boolean {
   // L'adresse d'envoi a une valeur par défaut (senderAddress) : seuls le
@@ -16,7 +16,7 @@ export function mailerConfigured(): boolean {
 }
 
 export function senderAddress(): string {
-  return getSetting("msSender") || "contact@trevys-advisory.fr";
+  return getSetting("msSender") || "contact@trevys.fr";
 }
 
 let cachedToken: { value: string; exp: number } | null = null;

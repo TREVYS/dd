@@ -28,7 +28,7 @@ const PAGES = `- / — Accueil : « L'expertise du chiffre, la vitesse de la tec
 - /blog — Ressources : articles + vidéos (fenêtre de lecture).
 - /rendez-vous — Prise de rendez-vous (Calendly).
 - /espace-client — Accès espace client.
-- /contact — Contact. Adresse : 1 rue Le Nôtre, 75016 Paris. E-mail : contact@trevys-advisory.fr.`;
+- /contact — Contact. Adresse : 1 rue Le Nôtre, 75016 Paris. E-mail : contact@trevys.fr.`;
 
 function cap(s: string, n: number): string {
   return s.length > n ? s.slice(0, n - 1) + "…" : s;

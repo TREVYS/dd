@@ -23,7 +23,7 @@ export default function EnHome() {
           </p>
           <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
             <Link className="btn btn-gold" href="/rendez-vous">Book a meeting</Link>
-            <a className="btn btn-ghost" href="mailto:contact@trevys-advisory.fr">Email us</a>
+            <a className="btn btn-ghost" href="mailto:contact@trevys.fr">Email us</a>
           </div>
         </div>
       </header>
@@ -55,7 +55,7 @@ export default function EnHome() {
             <p>
               One conversation is usually enough to see where Trevys can
               help. Write to us at{" "}
-              <a href="mailto:contact@trevys-advisory.fr" style={{ color: "var(--violet)", fontWeight: 700 }}>contact@trevys-advisory.fr</a>,
+              <a href="mailto:contact@trevys.fr" style={{ color: "var(--violet)", fontWeight: 700 }}>contact@trevys.fr</a>,
               call <a href="tel:+33768050465" style={{ color: "var(--violet)", fontWeight: 700 }}>+33 7 68 05 04 65</a>, or book a meeting directly below.
             </p>
           </div>
