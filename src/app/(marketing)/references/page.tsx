@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Références",
   description:
     "Trevys accompagne de grands acteurs de la finance et des entreprises de tous secteurs : banque, jeux vidéo, services, santé, association, industrie, immobilier.",
-  alternates: { canonical: "/references", languages: { en: "https://www.trevys.fr/en/references" } },
+  alternates: { canonical: "/references" },
 };
 
 // name + domaine officiel (pour récupérer le vrai logo). Sans domaine, on

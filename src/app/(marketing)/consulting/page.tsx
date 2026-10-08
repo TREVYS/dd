@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: "Consulting",
   description:
     "Conseil en transformation, systèmes d'information Finance, ERP, AMOA et facturation électronique : Trevys accompagne PME, ETI et grands groupes.",
-  alternates: { canonical: "/consulting", languages: { en: "https://www.trevys.fr/en/consulting" } },
+  alternates: { canonical: "/consulting" },
 };
 
 const SVCS = [

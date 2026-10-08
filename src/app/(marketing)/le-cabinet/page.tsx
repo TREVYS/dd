@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "Le cabinet",
   description:
     "Fondé en 2018 par John Lévy, Trevys est un cabinet d'expertise comptable et de conseil qui accompagne les dirigeants au-delà de la conformité : mission, valeurs, équipe.",
-  alternates: { canonical: "/le-cabinet", languages: { en: "https://www.trevys.fr/en/about" } },
+  alternates: { canonical: "/le-cabinet" },
 };
 
 const VALUES = [

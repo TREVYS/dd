@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Audit organisationnel",
   description:
     "Audit organisationnel : processus, contrôle interne, gouvernance et audit de la Piste d'Audit Fiable (PAF) — un sujet clé de la réforme de la facturation électronique souvent négligé. Diagnostic indépendant pour fiabiliser votre organisation et sécuriser votre conformité.",
-  alternates: { canonical: "/audit-organisationnel", languages: { en: "https://www.trevys.fr/en/organizational-audit" } },
+  alternates: { canonical: "/audit-organisationnel" },
 };
 
 const DOMAINS = [

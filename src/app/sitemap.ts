@@ -68,26 +68,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  // Section anglaise : page d'accueil, index des articles traduits, et
-  // chaque article dont la traduction a été publiée.
+  // Section anglaise : page d'accueil et index des articles traduits.
   const enEntries: MetadataRoute.Sitemap = [
-    "/en",
-    "/en/accounting-expertise",
-    "/en/consulting",
-    "/en/ai",
-    "/en/e-invoicing",
-    "/en/organizational-audit",
-    "/en/about",
-    "/en/ecosystem",
-    "/en/references",
-    "/en/contact",
-    "/en/blog",
-  ].map((path) => ({
-    url: `${BASE}${path}`,
-    lastModified: now,
-    changeFrequency: (path === "/en/blog" ? "weekly" : "monthly") as const,
-    priority: path === "/en" ? 0.8 : 0.6,
-  })).concat(
+    { url: `${BASE}/en`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${BASE}/en/blog`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.5 },
+  ].concat(
     getAllPostsEn().map((post) => ({
       url: `${BASE}/en/blog/${post.slug}`,
       lastModified: post.date ? new Date(post.date) : now,

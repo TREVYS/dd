@@ -8,9 +8,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/en" },
 };
 
-// Page d'accueil anglaise minimale : le reste du site bilingue se construit
-// pas à pas (voir le chantier de traduction). Objectif ici : donner aux
-// visiteurs étrangers de quoi comprendre l'activité et nous contacter.
 export default function EnHome() {
   return (
     <>
@@ -26,7 +23,7 @@ export default function EnHome() {
           </p>
           <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
             <Link className="btn btn-gold" href="/rendez-vous">Book a meeting</Link>
-            <Link className="btn btn-ghost" href="/en/contact">Contact us</Link>
+            <a className="btn btn-ghost" href="mailto:contact@trevys-advisory.fr">Email us</a>
           </div>
         </div>
       </header>
@@ -50,10 +47,25 @@ export default function EnHome() {
         </div>
       </section>
 
+      <section className="sec band">
+        <div className="wrap">
+          <div className="shead">
+            <span className="eyebrow">Get in touch</span>
+            <h2>Let&apos;s talk about your project.</h2>
+            <p>
+              One conversation is usually enough to see where Trevys can
+              help. Write to us at{" "}
+              <a href="mailto:contact@trevys-advisory.fr" style={{ color: "var(--violet)", fontWeight: 700 }}>contact@trevys-advisory.fr</a>,
+              call <a href="tel:+33768050465" style={{ color: "var(--violet)", fontWeight: 700 }}>+33 7 68 05 04 65</a>, or book a meeting directly below.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="mkt-cta">
         <div className="mkt-cta-in">
-          <h2>Let&apos;s talk about your project.</h2>
-          <p>One conversation is usually enough to see where Trevys can help.</p>
+          <h2>Book a meeting.</h2>
+          <p>Tell us about your company — we&apos;ll get back to you quickly.</p>
           <Link className="btn btn-gold" href="/rendez-vous">Book a meeting</Link>
         </div>
       </section>

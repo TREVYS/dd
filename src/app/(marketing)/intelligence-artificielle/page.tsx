@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Intelligence artificielle",
   description:
     "Du conseil en transformation digitale à l'expertise IA : Trevys accompagne l'intégration de solutions et de briques d'intelligence artificielle avec un regard 360° (sécurité IT, architecture, RAG, stockage des données), sous contrôle humain permanent.",
-  alternates: { canonical: "/intelligence-artificielle", languages: { en: "https://www.trevys.fr/en/ai" } },
+  alternates: { canonical: "/intelligence-artificielle" },
 };
 
 const CARDS = [

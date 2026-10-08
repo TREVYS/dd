@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Contactez Trevys Advisory : +33 7 68 05 04 65 — contact@trevys-advisory.fr — 1 rue Le Nôtre, 75016 Paris.",
-  alternates: { canonical: "/contact", languages: { en: "https://www.trevys.fr/en/contact" } },
+  alternates: { canonical: "/contact" },
 };
 
 const WAYS = [
