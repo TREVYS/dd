@@ -26,7 +26,7 @@ export default function EnHome() {
           </p>
           <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
             <Link className="btn btn-gold" href="/rendez-vous">Book a meeting</Link>
-            <Link className="btn btn-ghost" href="/contact">Contact us</Link>
+            <Link className="btn btn-ghost" href="/en/contact">Contact us</Link>
           </div>
         </div>
       </header>

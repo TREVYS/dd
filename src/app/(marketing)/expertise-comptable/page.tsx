@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Expertise comptable",
   description:
     "Expertise comptable, audit, contrôle de gestion et juridique & fiscal : Trevys accompagne entrepreneurs, TPE et PME à chaque étape de la vie de l'entreprise.",
-  alternates: { canonical: "/expertise-comptable" },
+  alternates: { canonical: "/expertise-comptable", languages: { en: "https://www.trevys.fr/en/accounting-expertise" } },
 };
 
 // Fonctionnement : les engagements de méthode pris sur chaque mission.

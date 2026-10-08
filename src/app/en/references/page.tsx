@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { RefLogo } from "./ref-logo";
+import { RefLogo } from "../../(marketing)/references/ref-logo";
 import { slugify } from "@/lib/blog";
 import { SECTORS } from "@/lib/sectors";
-import { SectorArt } from "../_components/sector-art";
+import { SectorArt } from "../../(marketing)/_components/sector-art";
 
 export const metadata: Metadata = {
-  title: "Références",
+  title: "References",
   description:
-    "Trevys accompagne de grands acteurs de la finance et des entreprises de tous secteurs : banque, jeux vidéo, services, santé, association, industrie, immobilier.",
-  alternates: { canonical: "/references", languages: { en: "https://www.trevys.fr/en/references" } },
+    "Trevys supports major finance players and companies across all industries: banking, gaming, services, healthcare, nonprofits, industry, real estate.",
+  alternates: { canonical: "/en/references", languages: { fr: "https://www.trevys.fr/references" } },
 };
 
-// name + domaine officiel (pour récupérer le vrai logo). Sans domaine, on
-// tente un logo importé (/uploads/refs/<slug>.png), sinon le nom en toutes lettres.
 const CLIENTS: { name: string; domain?: string }[] = [
   { name: "AG2R La Mondiale", domain: "ag2rlamondiale.fr" },
   { name: "EDF", domain: "edf.fr" },
@@ -42,12 +40,12 @@ export default function Page() {
     <>
       <header className="mkt-phead">
         <div className="mkt-phead-in">
-          <span className="eyebrow">Références</span>
-          <h1>La confiance de grands <em>acteurs</em> de la finance</h1>
+          <span className="eyebrow">References</span>
+          <h1>Trusted by major <em>finance players</em></h1>
           <p>
-            Banques, groupes, studios, PME : nos équipes interviennent aux côtés
-            d&apos;organisations exigeantes, en expertise comptable comme en
-            consulting auprès des directions financières.
+            Banks, groups, studios, SMEs: our teams work alongside demanding
+            organisations, in accounting as well as consulting for finance
+            departments.
           </p>
         </div>
       </header>
@@ -55,8 +53,8 @@ export default function Page() {
       <section className="sec">
         <div className="wrap">
           <div className="shead">
-            <span className="eyebrow">Ils nous font confiance</span>
-            <h2>Quelques <em>références</em></h2>
+            <span className="eyebrow">They trust us</span>
+            <h2>Some <em>references</em></h2>
           </div>
           <div className="mkt-refs-grid">
             {CLIENTS.map((c) => {
@@ -78,21 +76,19 @@ export default function Page() {
       <section className="sec band">
         <div className="wrap">
           <div className="shead">
-            <span className="eyebrow">Vos secteurs</span>
-            <h2>Une expertise au service de <em>votre secteur</em></h2>
+            <span className="eyebrow">Your industry</span>
+            <h2>Expertise for <em>your industry</em></h2>
           </div>
           <div className="mkt-sector-grid">
             {SECTORS.map((s) => (
               <div className="mkt-sector-card mkt-consultant" key={s.slug}>
-                <div className="mkt-sector-thumb">
-                  <SectorArt art={s.art} title={s.title} />
-                </div>
+                <div className="mkt-sector-thumb"><SectorArt art={s.art} title={s.title} /></div>
                 <div className="mkt-sector-body">
                   <div className="nm">{s.title}</div>
                   <p>{s.tagline}</p>
                   <div className="mkt-team-foot">
                     <Link className="mkt-consultant-more mkt-stretch" href={`/secteurs/${s.slug}`}>
-                      <span className="mkt-more-txt">En savoir plus </span>→
+                      <span className="mkt-more-txt">Learn more </span>→
                     </Link>
                   </div>
                 </div>
@@ -104,9 +100,9 @@ export default function Page() {
 
       <section className="mkt-cta">
         <div className="mkt-cta-in">
-          <h2>Et si vous étiez la prochaine référence ?</h2>
-          <p>Rejoignez les organisations qui ont fait de leur comptabilité un avantage.</p>
-          <Link className="btn btn-gold" href="/contact">Travailler avec nous</Link>
+          <h2>What if you were our next reference?</h2>
+          <p>Join the organisations that turned their accounting into an advantage.</p>
+          <Link className="btn btn-gold" href="/en/contact">Work with us</Link>
         </div>
       </section>
     </>

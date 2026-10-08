@@ -66,7 +66,7 @@ export default async function EnArticlePage({
           <h1>{post.meta.title}</h1>
           <p style={{ marginTop: ".6rem", color: "var(--ink3)", fontSize: ".85rem" }}>
             Also available in{" "}
-            <ArticleLangLink href={`/blog/${slug}`} lang={null}>French</ArticleLangLink>.
+            <ArticleLangLink href={`/blog/${slug}`}>French</ArticleLangLink>.
           </p>
         </div>
       </header>
