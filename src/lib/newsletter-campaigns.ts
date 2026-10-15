@@ -307,12 +307,12 @@ export function markdownToEmailHtml(md: string): string {
       flushList();
       out.push(
         `<img src="${esc(abs(m[3]))}" alt="${esc(m[1])}" width="220" ` +
-        `style="display:block;width:220px;max-width:55%;height:auto;border-radius:10px;border:1px solid #eadfcd;margin:4px 0 14px;" />`,
+        `style="display:block;width:220px;max-width:55%;height:auto;border-radius:12px;border:1px solid #eadfcd;box-shadow:0 8px 20px -10px rgba(60,40,10,.25);margin:4px 0 14px;" />`,
       );
     } else if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
       // Image pleine largeur (depuis la médiathèque ou une URL).
       flushList();
-      out.push(`<img src="${esc(abs(m[2]))}" alt="${esc(m[1])}" width="532" style="display:block;width:100%;max-width:100%;height:auto;border-radius:10px;margin:0 0 18px;" />`);
+      out.push(`<img src="${esc(abs(m[2]))}" alt="${esc(m[1])}" width="532" style="display:block;width:100%;max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 20px -10px rgba(60,40,10,.25);margin:0 0 18px;" />`);
     } else if ((m = line.match(/^\[([^\]]+)\]\(([^)\s]+)\)\s*$/))) {
       flushList();
       if (youtubeId(m[2])) {
@@ -349,9 +349,30 @@ export function markdownToEmailHtml(md: string): string {
 // Enveloppe l'HTML du corps dans un gabarit e-mail aux couleurs Trevys.
 // Structure en tableaux : c'est la seule mise en page réellement fiable dans
 // tous les clients (Outlook en tête).
-export function wrapEmail(bodyHtml: string, unsubUrl?: string, footerNote?: string): string {
+// Pastille sociale ronde (lettre/glyphe + couleur de marque) : plus "pro"
+// qu'un lien texte, et fiable en e-mail (table + border-radius, se dégrade
+// en carré discret sur les clients qui ignorent le radius — jamais cassé).
+function socialBadge(href: string, label: string, bg: string): string {
+  return (
+    `<a href="${href}" style="text-decoration:none;display:inline-block;margin:0 5px;">` +
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>` +
+    `<td width="34" height="34" align="center" valign="middle" bgcolor="${bg}" style="width:34px;height:34px;border-radius:50%;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#ffffff;">${label}</td>` +
+    `</tr></table></a>`
+  );
+}
+
+export function wrapEmail(
+  bodyHtml: string,
+  unsubUrl?: string,
+  footerNote?: string,
+  heroUrl?: string,
+): string {
   const logo = `${SITE_URL}/uploads/1.png`;
   const font = "font-family:Arial,Helvetica,sans-serif;";
+  const social =
+    socialBadge("https://www.linkedin.com/company/trevys-advisory/", "in", "#0A66C2") +
+    socialBadge("https://x.com/JohnLevy0", "X", "#111111") +
+    socialBadge("https://www.youtube.com/@Trevys-advisory", "&#9654;", "#E23D28");
   return `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trevys</title></head>
 <body style="margin:0;padding:0;background-color:#f2ece2;">
@@ -367,9 +388,11 @@ export function wrapEmail(bodyHtml: string, unsubUrl?: string, footerNote?: stri
           </a>
         </td></tr>
 
+        ${heroUrl ? `<!-- Bannière --><tr><td style="padding:0 0 18px;"><img src="${abs(heroUrl)}" alt="" width="600" style="display:block;width:100%;max-width:600px;height:auto;border-radius:16px;" /></td></tr>` : ""}
+
         <!-- Carte principale -->
         <tr><td>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="border-radius:16px;border:1px solid #eadfcd;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="border-radius:16px;border:1px solid #eadfcd;box-shadow:0 10px 30px -14px rgba(60,40,10,.18);">
             <tr><td bgcolor="#F5811F" height="6" style="height:6px;font-size:0;line-height:0;border-radius:16px 16px 0 0;">&nbsp;</td></tr>
             <tr><td style="padding:32px 34px 26px;${font}font-size:15px;color:#2a241c;line-height:1.65;">
               ${bodyHtml}
@@ -377,11 +400,12 @@ export function wrapEmail(bodyHtml: string, unsubUrl?: string, footerNote?: stri
           </table>
         </td></tr>
 
+        <!-- Réseaux sociaux -->
+        <tr><td align="center" style="padding:26px 8px 4px;">${social}</td></tr>
+
         <!-- Liens rapides -->
-        <tr><td align="center" style="padding:20px 8px 6px;${font}font-size:13px;">
+        <tr><td align="center" style="padding:14px 8px 6px;${font}font-size:13px;">
           <a href="${SITE_URL}" style="color:#E26A0F;font-weight:bold;text-decoration:none;">www.trevys.fr</a>
-          &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-          <a href="https://www.linkedin.com/company/trevys-advisory/" style="color:#E26A0F;font-weight:bold;text-decoration:none;">LinkedIn</a>
           &nbsp;&nbsp;&bull;&nbsp;&nbsp;
           <a href="${SITE_URL}/rendez-vous" style="color:#E26A0F;font-weight:bold;text-decoration:none;">Prendre rendez-vous</a>
         </td></tr>
