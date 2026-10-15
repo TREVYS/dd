@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Notre écosystème",
   description:
     "Le Groupe TREVYS — KLARE STUDIO, WELL&WIZ, URCA, SONAM IA — et ses partenaires PHOENIX, DECA Paris et NewTech, au service de nos clients en France et à l'international.",
-  alternates: { canonical: "/notre-ecosysteme" },
+  alternates: { canonical: "/notre-ecosysteme", languages: { en: "https://www.trevys.fr/en/ecosystem" } },
 };
 
 // Sociétés du Groupe TREVYS

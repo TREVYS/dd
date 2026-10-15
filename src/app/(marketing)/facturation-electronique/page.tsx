@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "Facturation électronique",
   description:
     "Tout savoir sur la réforme de la facturation électronique (2026-2027) : e-invoicing, e-reporting, calendrier, plateformes agréées, Factur-X. Trevys, chef d'orchestre de votre mise en conformité — au-delà de la contrainte, un levier de transformation.",
-  alternates: { canonical: "/facturation-electronique" },
+  alternates: { canonical: "/facturation-electronique", languages: { en: "https://www.trevys.fr/en/e-invoicing" } },
 };
 
 // Notre méthode : la démarche projet en 5 phases (issue de notre parcours RFE).
