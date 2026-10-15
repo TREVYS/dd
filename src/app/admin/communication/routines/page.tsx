@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic";
 
 const TYPE_LABEL: Record<string, string> = {
   article: "Article de blog",
-  linkedin: "Post LinkedIn",
+  linkedin: "Post LinkedIn (sujet libre)",
+  "linkedin-article": "Post LinkedIn — dernier article publié",
   instagram: "Post Instagram",
   newsletter: "Newsletter",
 };
@@ -24,7 +25,8 @@ function RoutineFields({ defaults }: { defaults?: { label?: string; type?: strin
           <label>Ce qu&apos;Alfred produit</label>
           <select name="type" defaultValue={defaults?.type ?? "article"}>
             <option value="article">Article de blog (brouillon)</option>
-            <option value="linkedin">Post LinkedIn (brouillon)</option>
+            <option value="linkedin-article">Post LinkedIn — dernier article publié (brouillon)</option>
+            <option value="linkedin">Post LinkedIn — sujet libre (brouillon)</option>
             <option value="instagram">Post Instagram (brouillon)</option>
             <option value="newsletter">Newsletter (brouillon)</option>
           </select>
@@ -53,8 +55,8 @@ function RoutineFields({ defaults }: { defaults?: { label?: string; type?: strin
         </div>
       </div>
       <div className="adm-field">
-        <label>Consigne pour Alfred <small>— sujet, angle, ton…</small></label>
-        <textarea name="topic" required style={{ minHeight: 80 }} defaultValue={defaults?.topic ?? ""}
+        <label>Consigne pour Alfred <small>— sujet, angle, ton… (inutile pour « dernier article publié », laissez vide)</small></label>
+        <textarea name="topic" style={{ minHeight: 80 }} defaultValue={defaults?.topic ?? ""}
           placeholder="Ex. Un article pédagogique sur la réforme de la facturation électronique : choisir un angle d'actualité, varier les sujets déjà traités sur le blog." />
       </div>
     </>
@@ -124,7 +126,7 @@ export default async function RoutinesPage({
                         fontWeight: 800,
                         color: "#fff",
                         background:
-                          r.type === "linkedin" ? "#0A66C2"
+                          r.type === "linkedin" || r.type === "linkedin-article" ? "#0A66C2"
                           : r.type === "instagram" ? "#B0348C"
                           : r.type === "newsletter" ? "#2E9E6B"
                           : "var(--o2)",

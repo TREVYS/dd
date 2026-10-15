@@ -33,13 +33,14 @@ export async function generateMetadata({
       canonical: `/blog/${slug}`,
       languages: hasTranslation(slug) ? { en: `${SITE_URL}/en/blog/${slug}` } : undefined,
     },
-    // NB : pas de `images` ici — l'étiquette de partage est générée par
-    // opengraph-image.tsx (logo + mascottes), identique pour tous les réseaux.
+    // Image de partage (LinkedIn, etc.) : la couverture de l'article quand
+    // elle existe, sinon le visuel générique (opengraph-image.tsx).
     openGraph: {
       type: "article",
       title: post.meta.title,
       description: post.meta.excerpt,
       url: `/blog/${slug}`,
+      images: post.meta.image ? [{ url: post.meta.image }] : undefined,
     },
   };
 }

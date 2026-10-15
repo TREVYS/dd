@@ -2,9 +2,11 @@ import { parisToday } from "@/lib/dates";
 import { listRoutines, updateRoutine, isDue, inferRoutineType, type Routine } from "@/lib/alfred-routines";
 import { draftArticle, draftSocialPost, draftNewsletter } from "@/lib/comms-agent";
 import { addItem } from "@/lib/editorial";
-import { addPost } from "@/lib/social-posts";
+import { addPost, listPosts } from "@/lib/social-posts";
 import { addCampaign } from "@/lib/newsletter-campaigns";
 import { sendTelegram } from "@/lib/notify";
+import { getAllPosts } from "@/lib/blog";
+import { SITE_URL } from "@/lib/site";
 
 // Exécution des routines d'Alfred. Tout part en BROUILLON : rien n'est publié
 // sans validation humaine.
@@ -30,6 +32,27 @@ export async function runRoutine(r: Routine): Promise<string> {
       body: a.body,
     });
     return `Brouillon d'article créé : « ${a.title} »`;
+  }
+  if (r.type === "linkedin-article") {
+    // Partage du dernier article publié — déterministe (pas de choix laissé
+    // à l'IA) avec contrôle anti-doublon : si ce dernier article a déjà été
+    // partagé sur LinkedIn, on ne crée rien de nouveau.
+    const latest = getAllPosts()[0];
+    if (!latest) return "Aucun article publié — rien à partager.";
+    const already = listPosts().some((p) => p.network === "linkedin" && p.sourceSlug === latest.slug);
+    if (already) return `« ${latest.title} » a déjà été partagé sur LinkedIn — rien de nouveau à publier.`;
+    const url = `${SITE_URL}/blog/${latest.slug}`;
+    const topic = `${latest.title}${latest.excerpt ? ` — ${latest.excerpt}` : ""}\nLIEN DE L'ARTICLE à inclure dans le post : ${url}`;
+    const { content } = await draftSocialPost(topic, "linkedin");
+    addPost({
+      network: "linkedin",
+      content,
+      status: "brouillon",
+      image: latest.image || undefined,
+      liTarget: "page",
+      sourceSlug: latest.slug,
+    });
+    return `Brouillon de post LinkedIn créé pour « ${latest.title} » (image de l'article reprise).`;
   }
   if (r.type === "newsletter") {
     const n = await draftNewsletter(r.topic);

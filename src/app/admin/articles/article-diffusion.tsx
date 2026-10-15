@@ -25,7 +25,7 @@ function SubmitBtn({ disabled }: { disabled: boolean }) {
 
 // Panneau de diffusion : depuis un article, préparer des posts réseaux avec une
 // image de front au choix par réseau. Les brouillons partent dans la file.
-export function ArticleDiffusion({ title, excerpt, url }: { title: string; excerpt: string; url?: string }) {
+export function ArticleDiffusion({ title, excerpt, url, image }: { title: string; excerpt: string; url?: string; image?: string }) {
   const [linkedin, setLinkedin] = useState(true);
   const [instagram, setInstagram] = useState(false);
 
@@ -48,8 +48,8 @@ export function ArticleDiffusion({ title, excerpt, url }: { title: string; excer
         </label>
         {linkedin && (
           <div className="adm-field" style={{ margin: ".4rem 0 1.1rem" }}>
-            <label>Image de front LinkedIn <small>(optionnel)</small></label>
-            <ImageField name="img_linkedin" />
+            <label>Image de front LinkedIn <small>(reprend la couverture de l&apos;article par défaut)</small></label>
+            <ImageField name="img_linkedin" defaultValue={image ?? ""} />
           </div>
         )}
 
@@ -59,8 +59,8 @@ export function ArticleDiffusion({ title, excerpt, url }: { title: string; excer
         </label>
         {instagram && (
           <div className="adm-field" style={{ margin: ".4rem 0 1.1rem" }}>
-            <label>Image de front Instagram <small>(optionnel)</small></label>
-            <ImageField name="img_instagram" />
+            <label>Image de front Instagram <small>(reprend la couverture de l&apos;article par défaut)</small></label>
+            <ImageField name="img_instagram" defaultValue={image ?? ""} />
           </div>
         )}
 

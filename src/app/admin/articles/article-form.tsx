@@ -146,6 +146,7 @@ export function ArticleForm({
         title={article?.title ?? ""}
         excerpt={article?.excerpt ?? ""}
         url={article?.slug ? `https://www.trevys.fr/blog/${article.slug}` : undefined}
+        image={article?.image}
       />
     )}
     </>

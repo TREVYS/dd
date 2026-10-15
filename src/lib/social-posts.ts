@@ -18,6 +18,7 @@ export type SocialPost = {
   scheduledTime?: string; // HH:MM (heure de Paris) — vide = dès le matin
   deliveredVia?: "telegram"; // relais manuel : transmis sur Telegram pour publication à la main
   liTarget?: "profil" | "page"; // LinkedIn : profil personnel ou Page entreprise
+  sourceSlug?: string; // slug de l'article d'origine (routine « partage du dernier article ») — sert au contrôle anti-doublon
   createdAt: string;
   publishedAt?: string;
   lastTry?: string; // AAAA-MM-JJ — dernière tentative de publication auto
@@ -55,6 +56,7 @@ export function addPost(input: {
   scheduledTime?: string;
   image?: string;
   liTarget?: "profil" | "page";
+  sourceSlug?: string;
 }): SocialPost {
   const posts = read();
   const post: SocialPost = {
@@ -66,6 +68,7 @@ export function addPost(input: {
     scheduledDate: input.scheduledDate || undefined,
     scheduledTime: input.scheduledTime || undefined,
     liTarget: input.liTarget,
+    sourceSlug: input.sourceSlug,
     createdAt: new Date().toISOString(),
   };
   posts.push(post);
