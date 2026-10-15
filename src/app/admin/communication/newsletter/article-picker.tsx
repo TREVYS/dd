@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 export type PickPost = {
   slug: string;
@@ -14,12 +14,19 @@ export type PickPost = {
 
 const METIERS = ["Consulting", "Expertise comptable", "Transverse"] as const;
 
-// Sélecteur d'articles à diffuser : recherche par mots-clés (titre + contenu)
-// et filtre par métier (Consulting / Expertise comptable). Les cases restent
-// montées (masquées en CSS) pour ne pas perdre les articles déjà cochés.
+// Sélecteur d'articles à diffuser : recherche par mots-clés, filtre par
+// métier, et liste des articles choisis — réordonnable par glisser-déposer
+// (ou boutons ↑/↓ au clavier/tactile) pour contrôler précisément l'ordre
+// d'apparition dans l'e-mail. L'ordre de cette liste est ce qui part au
+// serveur (name="slugs", répétés dans l'ordre choisi).
 export function ArticlePicker({ posts }: { posts: PickPost[] }) {
   const [q, setQ] = useState("");
   const [metier, setMetier] = useState<string>("");
+  const [selected, setSelected] = useState<string[]>([]);
+  const dragFrom = useRef<number | null>(null);
+  const [dragOver, setDragOver] = useState<number | null>(null);
+
+  const byslug = useMemo(() => new Map(posts.map((p) => [p.slug, p])), [posts]);
 
   const terms = useMemo(
     () => q.toLowerCase().split(/\s+/).map((t) => t.trim()).filter(Boolean),
@@ -29,14 +36,86 @@ export function ArticlePicker({ posts }: { posts: PickPost[] }) {
   function matches(p: PickPost): boolean {
     if (metier && p.metier !== metier) return false;
     if (terms.length === 0) return true;
-    // Tous les mots-clés doivent être présents (titre + contenu).
     return terms.every((t) => p.search.includes(t));
   }
 
   const visibleCount = posts.filter(matches).length;
 
+  function toggle(slug: string, checked: boolean) {
+    setSelected((prev) => {
+      if (checked) return prev.includes(slug) ? prev : [...prev, slug];
+      return prev.filter((s) => s !== slug);
+    });
+  }
+
+  function move(index: number, dir: -1 | 1) {
+    setSelected((prev) => {
+      const next = [...prev];
+      const target = index + dir;
+      if (target < 0 || target >= next.length) return prev;
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  }
+
+  function remove(slug: string) {
+    setSelected((prev) => prev.filter((s) => s !== slug));
+  }
+
+  function onDrop(index: number) {
+    const from = dragFrom.current;
+    dragFrom.current = null;
+    setDragOver(null);
+    if (from === null || from === index) return;
+    setSelected((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(index, 0, moved);
+      return next;
+    });
+  }
+
   return (
     <div>
+      {selected.map((slug) => (
+        <input key={slug} type="hidden" name="slugs" value={slug} />
+      ))}
+
+      {selected.length > 0 && (
+        <div className="ck-artorder">
+          <div className="ck-artorder-h">
+            <b>{selected.length}</b> article{selected.length > 1 ? "s" : ""} sélectionné{selected.length > 1 ? "s" : ""}
+            <span className="muted"> — glissez pour réordonner, c&apos;est l&apos;ordre d&apos;envoi</span>
+          </div>
+          <ol className="ck-artorder-list">
+            {selected.map((slug, i) => {
+              const p = byslug.get(slug);
+              if (!p) return null;
+              return (
+                <li
+                  key={slug}
+                  className={`ck-artorder-item${dragOver === i ? " over" : ""}`}
+                  draggable
+                  onDragStart={() => { dragFrom.current = i; }}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(i); }}
+                  onDragLeave={() => setDragOver((v) => (v === i ? null : v))}
+                  onDrop={(e) => { e.preventDefault(); onDrop(i); }}
+                  onDragEnd={() => { dragFrom.current = null; setDragOver(null); }}
+                >
+                  <span className="ck-artorder-handle" aria-hidden="true">⠿</span>
+                  <span className="ck-artorder-t">{p.title}</span>
+                  <span className="ck-artorder-btns">
+                    <button type="button" className="ck-artorder-btn" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Monter">↑</button>
+                    <button type="button" className="ck-artorder-btn" onClick={() => move(i, 1)} disabled={i === selected.length - 1} aria-label="Descendre">↓</button>
+                    <button type="button" className="ck-artorder-btn rm" onClick={() => remove(slug)} aria-label="Retirer">×</button>
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      )}
+
       <div className="ck-artsearch">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M21 21l-4-4M11 18a7 7 0 100-14 7 7 0 000 14z" />
@@ -83,7 +162,11 @@ export function ArticlePicker({ posts }: { posts: PickPost[] }) {
             className="ck-artpick-item"
             style={matches(p) ? undefined : { display: "none" }}
           >
-            <input type="checkbox" name="slugs" value={p.slug} />
+            <input
+              type="checkbox"
+              checked={selected.includes(p.slug)}
+              onChange={(e) => toggle(p.slug, e.target.checked)}
+            />
             <span className="ck-artpick-body">
               <span className="t">{p.title}</span>
               <span className="m">
