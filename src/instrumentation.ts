@@ -4,6 +4,7 @@
 //  - les routines d'Alfred dues (articles/posts/newsletters récurrents) ;
 //  - les publications programmées (posts réseaux, articles, mailings) ;
 //  - le rapport d'audience hebdomadaire Telegram ;
+//  - le résumé quotidien de la boîte contact@trevys.fr (Telegram) ;
 //  - l'annonce de mise à jour après un déploiement.
 // Les visites du site et du cockpit restent des déclencheurs complémentaires.
 
@@ -30,6 +31,12 @@ async function tick() {
     const { maybeSendWeeklyStatsReport } = await import("@/lib/stats-report");
     await maybeSendWeeklyStatsReport();
   } catch { /* non bloquant */ }
+  try {
+    const { maybeSendDailyMailDigest } = await import("@/lib/mail-digest");
+    await maybeSendDailyMailDigest();
+  } catch (e) {
+    console.error("[heartbeat] résumé des mails:", e);
+  }
 }
 
 export async function register() {

@@ -21,6 +21,10 @@ export function senderAddress(): string {
 
 let cachedToken: { value: string; exp: number } | null = null;
 
+export async function getGraphToken(): Promise<string> {
+  return getToken();
+}
+
 async function getToken(): Promise<string> {
   if (cachedToken && cachedToken.exp > Date.now() + 60_000) return cachedToken.value;
 
