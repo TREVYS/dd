@@ -28,6 +28,7 @@ export type Routine = {
   freq: RoutineFreq;
   weekday?: number; // 0=dimanche … 6=samedi (hebdomadaire)
   monthday?: number; // 1-28 (mensuelle)
+  time?: string; // "HH:MM" (heure de Paris) — défaut 08:00
   topic: string; // consigne donnée à Alfred (sujet, angle, thème)
   enabled: boolean;
   createdAt: string; // ISO
@@ -84,9 +85,10 @@ function dayKey(d: Date): string {
 
 // Prochaine échéance après la dernière exécution (ou la création).
 export function nextDue(r: Routine): Date {
+  const [h, m] = (r.time ?? "08:00").split(":").map(Number);
   const base = new Date(r.lastRun ?? r.createdAt);
   const next = new Date(base);
-  next.setHours(6, 0, 0, 0);
+  next.setHours(Number.isFinite(h) ? h : 8, Number.isFinite(m) ? m : 0, 0, 0);
   if (r.freq === "quotidienne") {
     next.setDate(next.getDate() + 1);
     return next;
@@ -112,18 +114,20 @@ export function nextDue(r: Routine): Date {
   return next;
 }
 
-// Une routine est « due » si l'échéance est aujourd'hui ou dépassée,
-// et qu'elle n'a pas déjà tourné aujourd'hui.
+// Une routine est « due » si l'échéance (jour ET heure) est passée, et
+// qu'elle n'a pas déjà tourné aujourd'hui. Le battement de cœur tournant
+// toutes les 5 minutes, l'heure réglée est respectée à 5 minutes près.
 export function isDue(r: Routine, now = new Date()): boolean {
   if (!r.enabled) return false;
   if (r.lastRun && dayKey(new Date(r.lastRun)) === dayKey(now)) return false;
-  return dayKey(nextDue(r)) <= dayKey(now);
+  return nextDue(r).getTime() <= now.getTime();
 }
 
 export const WEEKDAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 export function describeSchedule(r: Routine): string {
-  if (r.freq === "quotidienne") return "Chaque jour";
-  if (r.freq === "hebdomadaire") return `Chaque ${WEEKDAYS[r.weekday ?? 1].toLowerCase()}`;
-  return `Le ${Math.min(Math.max(r.monthday ?? 1, 1), 28)} de chaque mois`;
+  const time = r.time ?? "08:00";
+  if (r.freq === "quotidienne") return `Chaque jour à ${time}`;
+  if (r.freq === "hebdomadaire") return `Chaque ${WEEKDAYS[r.weekday ?? 1].toLowerCase()} à ${time}`;
+  return `Le ${Math.min(Math.max(r.monthday ?? 1, 1), 28)} de chaque mois à ${time}`;
 }

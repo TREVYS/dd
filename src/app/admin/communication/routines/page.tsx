@@ -13,7 +13,7 @@ const TYPE_LABEL: Record<string, string> = {
   newsletter: "Newsletter",
 };
 
-function RoutineFields({ defaults }: { defaults?: { label?: string; type?: string; freq?: string; weekday?: number; monthday?: number; topic?: string } }) {
+function RoutineFields({ defaults }: { defaults?: { label?: string; type?: string; freq?: string; weekday?: number; monthday?: number; time?: string; topic?: string } }) {
   return (
     <>
       <div className="adm-field">
@@ -53,6 +53,10 @@ function RoutineFields({ defaults }: { defaults?: { label?: string; type?: strin
           <label>Jour du mois <small>(si mensuelle, 1-28)</small></label>
           <input type="number" name="monthday" min={1} max={28} defaultValue={defaults?.monthday ?? 1} />
         </div>
+      </div>
+      <div className="adm-field" style={{ maxWidth: 180 }}>
+        <label>Heure <small>(Paris)</small></label>
+        <input type="time" name="time" defaultValue={defaults?.time ?? "08:00"} />
       </div>
       <div className="adm-field">
         <label>Consigne pour Alfred <small>— sujet, angle, ton… (inutile pour « dernier article publié », laissez vide)</small></label>

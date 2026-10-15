@@ -89,7 +89,11 @@ export async function runDueRoutines(): Promise<void> {
       try {
         const result = await runRoutine(r);
         updateRoutine(r.id, { lastResult: result });
-        sendTelegram(`🤖 Routine « ${r.label} » : ${result}. À valider dans le cockpit.`).catch(() => {});
+        const readyToPublish = r.type === "linkedin-article" && result.startsWith("Brouillon de post LinkedIn créé");
+        const message = readyToPublish
+          ? `🤖 ${result}\n\nRépondez simplement « go » ici pour que je le publie sur votre Page LinkedIn, ou dites-moi ce que vous voulez changer.`
+          : `🤖 Routine « ${r.label} » : ${result}. À valider dans le cockpit.`;
+        sendTelegram(message).catch(() => {});
       } catch (e) {
         updateRoutine(r.id, { lastResult: `Échec : ${(e as Error).message.slice(0, 160)}` });
       }

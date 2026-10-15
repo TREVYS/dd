@@ -24,6 +24,7 @@ export async function addRoutineAction(formData: FormData) {
     freq,
     weekday: freq === "hebdomadaire" ? Number(formData.get("weekday") ?? 1) : undefined,
     monthday: freq === "mensuelle" ? Number(formData.get("monthday") ?? 1) : undefined,
+    time: ((formData.get("time") as string) || "08:00").trim(),
     topic,
     enabled: true,
   });
@@ -44,6 +45,7 @@ export async function updateRoutineAction(formData: FormData) {
     freq,
     weekday: freq === "hebdomadaire" ? Number(formData.get("weekday") ?? 1) : undefined,
     monthday: freq === "mensuelle" ? Number(formData.get("monthday") ?? 1) : undefined,
+    time: ((formData.get("time") as string) || "08:00").trim(),
     topic,
   });
   revalidatePath(PATH);

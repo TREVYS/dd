@@ -73,6 +73,7 @@ Tes moyens d'action (outils) :
 - rediger_article : quand on te demande un article, RÉDIGE-LE toi-même entièrement (titre, résumé, contenu Markdown structuré avec ## sous-titres) puis appelle cet outil. Le brouillon est enregistré pour relecture — il n'est PAS publié automatiquement. JAMAIS de tableaux Markdown dans les articles (ils s'affichent mal sur le site) : préfère des listes à puces ou des paragraphes courts. Juste après, propose SYSTÉMATIQUEMENT à John une traduction anglaise de cet article (Trevys vise aussi une clientèle étrangère). S'il accepte (ou s'il l'a demandé d'emblée), traduis toi-même le titre, le résumé et le contenu en anglais — une vraie traduction/adaptation professionnelle, pas mot à mot — puis appelle traduire_article avec l'id du brouillon. La traduction est relue par John et publiée automatiquement en même temps que le français sur /en/blog/.
 - traduire_article : voir ci-dessus — rattache une traduction anglaise à un brouillon d'article existant (créé par rediger_article dans la même conversation, ou choisi dans la liste des brouillons si John te donne son id).
 - rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications. TON des posts : humain, chaleureux, une pointe d'humour — jamais corporate ni « robot IA » — et termine toujours par une question ouverte qui invite l'audience à réagir en commentaires. Pour Instagram, fournis TOUJOURS visuel_titre (titre court affiché en grand sur le visuel généré à partir des maquettes du Studio) et si utile visuel_sous_titre.
+- publier_post : quand John confirme explicitement qu'il veut publier un brouillon (il répond par exemple « go », « vas-y », « publie-le », notamment après une notification Telegram t'annonçant qu'un post est prêt), appelle cet outil pour le publier réellement sur le réseau. Sans id précisé, publie le brouillon le plus récent. Ne l'appelle JAMAIS de ta propre initiative — uniquement sur confirmation explicite.
 - rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
 - rediger_offre : quand on te demande une offre d'emploi, RÉDIGE-LA entièrement (ton premium du cabinet : on recrute des consultants, pas des producteurs de comptes) puis appelle cet outil. L'offre part en brouillon dans Recrutement.
 - planifier_publication : ajoute une échéance à la zone de brouillons/propositions (article, post LinkedIn, newsletter…).
@@ -179,6 +180,17 @@ const TOOLS = [
         cible_linkedin: { type: "string", enum: ["profil", "page"], description: "LinkedIn uniquement : publier sur le profil personnel de John (défaut) ou sur la Page entreprise Trevys — utilise \"page\" quand John parle de la page entreprise." },
       },
       required: ["network", "content"],
+    },
+  },
+  {
+    name: "publier_post",
+    description:
+      "Publie RÉELLEMENT un brouillon de post réseau social déjà créé (rediger_post ou une routine) sur le vrai compte connecté. UNIQUEMENT quand John le demande explicitement (ex. il répond « go », « vas-y », « publie-le »). Sans id précisé, publie le brouillon le plus récent (le cas le plus fréquent : il répond à une notification Telegram). Si le compte n'est pas connecté, explique-le clairement — le post reste en brouillon.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        id: { type: "string", description: "Id du post à publier (optionnel — par défaut le brouillon le plus récent)." },
+      },
     },
   },
   {
@@ -562,6 +574,21 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     });
     actions.push(`Brouillon de post ${net === "linkedin" ? "LinkedIn" : "Instagram"} créé${image ? " (visuel généré)" : ""}`);
     return `Post enregistré (id ${p.id}) dans la file de publications, en brouillon.${image ? ` Visuel généré : ${image} (modifiable dans le cockpit).` : ""}`;
+  }
+  if (name === "publier_post") {
+    const { listPosts, updatePost } = await import("@/lib/social-posts");
+    const { publishPost } = await import("@/lib/social");
+    const id = String(input.id ?? "").trim();
+    const candidates = listPosts().filter((p) => p.status === "brouillon" || p.status === "planifie");
+    const post = id ? candidates.find((p) => p.id === id) : candidates[0];
+    if (!post) return "Aucun brouillon en attente — rien à publier.";
+    const r = await publishPost(post.network, post.content, post.image, { target: post.liTarget });
+    if (!r.ok) {
+      return `Je n'ai pas pu publier ce post (${r.error ?? "erreur inconnue"}). Il reste en brouillon, à publier à la main depuis « Réseaux sociaux ».`;
+    }
+    updatePost(post.id, { status: "publie", publishedAt: new Date().toISOString() });
+    actions.push(`Post ${post.network === "linkedin" ? "LinkedIn" : "Instagram"} publié`);
+    return `C'est publié sur ${post.network === "linkedin" ? "LinkedIn" : "Instagram"} ✅`;
   }
   if (name === "lister_calendrier") {
     return JSON.stringify(
