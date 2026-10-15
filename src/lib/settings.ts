@@ -22,7 +22,10 @@ export type SettingKey =
   | "msClientSecret"
   | "msSender"
   | "recruitEmail"
-  | "linkedinOrgId";
+  | "linkedinOrgId"
+  | "whatsappToken"
+  | "whatsappPhoneId"
+  | "whatsappVerifyToken";
 
 // Correspondance avec les variables d'environnement (repli).
 const ENV: Record<SettingKey, string> = {
@@ -42,6 +45,9 @@ const ENV: Record<SettingKey, string> = {
   msSender: "MS_SENDER",
   recruitEmail: "RECRUIT_EMAIL",
   linkedinOrgId: "LINKEDIN_ORG_ID",
+  whatsappToken: "WHATSAPP_TOKEN",
+  whatsappPhoneId: "WHATSAPP_PHONE_ID",
+  whatsappVerifyToken: "WHATSAPP_VERIFY_TOKEN",
 };
 
 // Champs sensibles (masqués à l'affichage).
@@ -52,6 +58,8 @@ export const SECRET_KEYS: SettingKey[] = [
   "linkedinClientSecret",
   "instagramClientSecret",
   "msClientSecret",
+  "whatsappToken",
+  "whatsappVerifyToken",
 ];
 
 type Store = Partial<Record<SettingKey, string>>;

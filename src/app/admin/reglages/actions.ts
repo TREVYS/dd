@@ -14,6 +14,7 @@ const KEYS: SettingKey[] = [
   "instagramClientId", "instagramClientSecret",
   "msTenantId", "msClientId", "msClientSecret", "msSender",
   "recruitEmail", "linkedinOrgId",
+  "whatsappToken", "whatsappPhoneId", "whatsappVerifyToken",
 ];
 
 // Enregistre les clés/API saisies dans le cockpit. Les champs laissés vides

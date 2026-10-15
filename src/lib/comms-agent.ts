@@ -74,6 +74,7 @@ Tes moyens d'action (outils) :
 - traduire_article : voir ci-dessus — rattache une traduction anglaise à un brouillon d'article existant (créé par rediger_article dans la même conversation, ou choisi dans la liste des brouillons si John te donne son id).
 - rediger_post : quand on te demande un post LinkedIn ou Instagram, RÉDIGE le texte final (accroche, corps aéré, hashtags) puis appelle cet outil. Le post part en brouillon dans la file de publications. TON des posts : humain, chaleureux, une pointe d'humour — jamais corporate ni « robot IA » — et termine toujours par une question ouverte qui invite l'audience à réagir en commentaires. Pour Instagram, fournis TOUJOURS visuel_titre (titre court affiché en grand sur le visuel généré à partir des maquettes du Studio) et si utile visuel_sous_titre.
 - publier_post : quand John confirme explicitement qu'il veut publier un brouillon (il répond par exemple « go », « vas-y », « publie-le », notamment après une notification Telegram t'annonçant qu'un post est prêt), appelle cet outil pour le publier réellement sur le réseau. Sans id précisé, publie le brouillon le plus récent. Ne l'appelle JAMAIS de ta propre initiative — uniquement sur confirmation explicite.
+- repondre_whatsapp : un client écrit sur le WhatsApp professionnel du cabinet → tu reçois une notification avec le message et un brouillon de réponse déjà rédigé. Quand John confirme (« go », « vas-y », « envoie »), appelle cet outil pour envoyer réellement la réponse. S'il te demande de reformuler avant, fournis le nouveau texte en paramètre. JAMAIS d'envoi sans confirmation explicite de John.
 - rediger_newsletter : quand on te demande une newsletter / un mailing, RÉDIGE-LA entièrement (objet accrocheur et chaleureux + contenu e-mail court avec liens vers les articles du site) puis appelle cet outil. Elle part en brouillon dans le module Newsletter — jamais envoyée sans validation.
 - rediger_offre : quand on te demande une offre d'emploi, RÉDIGE-LA entièrement (ton premium du cabinet : on recrute des consultants, pas des producteurs de comptes) puis appelle cet outil. L'offre part en brouillon dans Recrutement.
 - planifier_publication : ajoute une échéance à la zone de brouillons/propositions (article, post LinkedIn, newsletter…).
@@ -190,6 +191,18 @@ const TOOLS = [
       type: "object" as const,
       properties: {
         id: { type: "string", description: "Id du post à publier (optionnel — par défaut le brouillon le plus récent)." },
+      },
+    },
+  },
+  {
+    name: "repondre_whatsapp",
+    description:
+      "Envoie RÉELLEMENT une réponse à un client sur WhatsApp Business, à partir d'un brouillon déjà proposé (notification Telegram « Nouveau message WhatsApp »). UNIQUEMENT sur confirmation explicite de John (il répond « go », « vas-y », « envoie »…) — jamais de ta propre initiative. Sans id précisé, répond au message en attente le plus récent. Si John demande de modifier le texte avant d'envoyer, fournis le nouveau texte (sinon le brouillon original est envoyé tel quel).",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        id: { type: "string", description: "Id du fil WhatsApp (donné dans la notification Telegram) — optionnel, par défaut le plus récent en attente." },
+        texte: { type: "string", description: "Texte à envoyer si différent du brouillon proposé (optionnel)." },
       },
     },
   },
@@ -589,6 +602,21 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     updatePost(post.id, { status: "publie", publishedAt: new Date().toISOString() });
     actions.push(`Post ${post.network === "linkedin" ? "LinkedIn" : "Instagram"} publié`);
     return `C'est publié sur ${post.network === "linkedin" ? "LinkedIn" : "Instagram"} ✅`;
+  }
+  if (name === "repondre_whatsapp") {
+    const { listThreads, getThread, updateThread } = await import("@/lib/whatsapp-inbox");
+    const { sendWhatsAppMessage } = await import("@/lib/whatsapp-business");
+    const id = String(input.id ?? "").trim();
+    const pending = listThreads().filter((t) => t.status === "en_attente");
+    const thread = id ? getThread(id) : pending[0];
+    if (!thread || thread.status !== "en_attente") return "Aucun message WhatsApp en attente — rien à envoyer.";
+    const texte = String(input.texte ?? "").trim() || thread.draftReply || "";
+    if (!texte) return "Aucun texte à envoyer — précise le message.";
+    const r = await sendWhatsAppMessage(thread.fromPhone, texte);
+    if (!r.ok) return `Je n'ai pas pu envoyer ce message (${r.error ?? "erreur inconnue"}). Rien n'est parti au client.`;
+    updateThread(thread.id, { status: "repondu", draftReply: texte, repliedAt: new Date().toISOString() });
+    actions.push(`Réponse WhatsApp envoyée à ${thread.fromName ?? thread.fromPhone}`);
+    return `C'est envoyé sur WhatsApp à ${thread.fromName ?? thread.fromPhone} ✅`;
   }
   if (name === "lister_calendrier") {
     return JSON.stringify(
@@ -1062,6 +1090,34 @@ export async function draftSocialPost(
     .trim();
 
   return { content: content || topic, generated: true };
+}
+
+// Rédige une proposition de réponse à un message client reçu sur WhatsApp
+// Business. Toujours un BROUILLON : envoyé à John sur Telegram pour
+// validation (« go ») avant tout envoi réel au client.
+export async function draftWhatsAppReply(clientMessage: string, fromName?: string): Promise<string> {
+  const apiKey = getSetting("anthropicApiKey");
+  if (!apiKey) {
+    return `Bonjour${fromName ? ` ${fromName}` : ""}, merci pour votre message — nous revenons vers vous rapidement.`;
+  }
+  try {
+    const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+    const client = new AnthropicSDK({ apiKey });
+    const res = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 500,
+      system:
+        `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n` +
+        "Tu proposes une réponse à un message reçu sur le WhatsApp professionnel du cabinet, de la part d'un client ou prospect. " +
+        "Réponds UNIQUEMENT avec le texte du message à envoyer (pas de commentaire, pas de guillemets) : court (2-5 phrases), chaleureux et professionnel, en français sauf si le message reçu est dans une autre langue. " +
+        "Si la question appelle une expertise précise (fiscalité, chiffrage, situation personnelle) que tu ne peux pas garantir avec certitude, propose un rendez-vous ou dis que John revient vers lui plutôt que d'inventer une réponse technique.",
+      messages: [{ role: "user", content: `Message reçu${fromName ? ` de ${fromName}` : ""} :\n${clientMessage}` }],
+    });
+    const text = res.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("").trim();
+    return text || `Bonjour${fromName ? ` ${fromName}` : ""}, merci pour votre message — nous revenons vers vous rapidement.`;
+  } catch {
+    return `Bonjour${fromName ? ` ${fromName}` : ""}, merci pour votre message — nous revenons vers vous rapidement.`;
+  }
 }
 
 // Assistant de remplissage du planning : Alfred prépare en un appel un

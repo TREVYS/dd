@@ -15,6 +15,11 @@ const CFG_GROUPS = [
   { title: "Alfred — Intelligence artificielle (Anthropic)", fields: [
     { k: "anthropicApiKey", label: "Clé API Anthropic", ph: "sk-ant-…", secret: true },
   ] },
+  { title: "WhatsApp Business (Meta Cloud API)", fields: [
+    { k: "whatsappToken", label: "Jeton d'accès permanent", ph: "EAAG…", secret: true },
+    { k: "whatsappPhoneId", label: "ID du numéro de téléphone", ph: "ex. 109876543210", secret: false },
+    { k: "whatsappVerifyToken", label: "Jeton de vérification du webhook (à votre choix)", ph: "une chaîne secrète au choix", secret: true },
+  ] },
   { title: "Notifications Telegram", fields: [
     { k: "telegramBotToken", label: "Jeton du bot", ph: "123456:ABC…", secret: true },
     { k: "telegramChatId", label: "Chat ID", ph: "votre identifiant", secret: false },
