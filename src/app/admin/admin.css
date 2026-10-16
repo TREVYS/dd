@@ -373,6 +373,26 @@
   .adm-md-tabs{display:none}
 }
 @media(max-width:900px){.ck-mail-grid{grid-template-columns:1fr!important}}
+
+/* Éditeur visuel (WYSIWYG) : aucun symbole Markdown visible, la mise en
+   forme s'affiche directement (gras en gras, titres en grand…). */
+.adm-wys{padding:1.1rem 1.3rem;min-height:300px;display:flex;flex-direction:column;gap:.5rem;counter-reset:wys-oli}
+.adm-wys-block{outline:none;border-radius:8px;padding:.15rem .4rem;margin:0 -.4rem;transition:background .1s}
+.adm-wys-block.on{background:#fff8f2}
+.adm-wys-block[contenteditable]:empty:before{content:attr(data-placeholder);color:#b4a894;pointer-events:none}
+.adm-wys-p{font-size:.95rem;line-height:1.7;color:var(--ink2)}
+.adm-wys-h2{font-size:1.3rem;font-weight:800;color:var(--ink);margin-top:.3rem}
+.adm-wys-h3{font-size:1.08rem;font-weight:800;color:var(--ink)}
+.adm-wys-quote{padding:.7rem 1rem!important;border-left:3px solid var(--o);background:#fff8f2;border-radius:0 8px 8px 0!important;font-style:italic;color:var(--ink2)}
+.adm-wys-li,.adm-wys-oli{font-size:.95rem;line-height:1.6;color:var(--ink2);padding-left:1.4rem!important;position:relative}
+.adm-wys-li:before{content:"•";position:absolute;left:.4rem;color:var(--o);font-weight:800}
+.adm-wys-oli:before{counter-increment:wys-oli;content:counter(wys-oli) ".";position:absolute;left:.2rem;color:var(--o);font-weight:800}
+.adm-wys-block a{color:var(--o);text-decoration:underline}
+.adm-wys-hr-row{display:flex;align-items:center;gap:.6rem;cursor:pointer}
+.adm-wys-hr-row hr{flex:1;border:none;border-top:1px solid var(--line);margin:0}
+.adm-wys-chip{display:flex;align-items:center;gap:.6rem;background:#faf8f5;border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;cursor:pointer;font-size:.85rem;color:var(--ink2)}
+.adm-wys-rm{margin-left:auto;border:none;background:none;color:var(--ink3);font-size:1.1rem;line-height:1;cursor:pointer;padding:0 .3rem;flex:none}
+.adm-wys-rm:hover{color:#c0392b}
 /* Bouton menu + fond, masqués sur desktop */
 .adm-burger{display:none;flex-direction:column;gap:4px;padding:.55rem;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
 .adm-burger span{width:18px;height:2px;background:var(--ink);border-radius:2px}
