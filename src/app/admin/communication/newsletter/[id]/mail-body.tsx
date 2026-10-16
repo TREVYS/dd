@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MarkdownEditor } from "../../../markdown-editor";
 import { parseBody, buildBody, type ArticleBlock } from "./mail-blocks";
 
@@ -45,6 +45,17 @@ export function MailBody({ initialBody }: { initialBody: string }) {
     setBody(buildBody(parsed, orderList));
     setEditorKey((k) => k + 1);
   }
+
+  // L'aperçu à droite écoute les évènements « input » du champ body (frappe
+  // clavier). Réordonner change le texte par programme — sans ça, l'aperçu
+  // resterait figé jusqu'à ce que l'utilisateur tape quelque chose. On
+  // déclenche donc l'événement nous-mêmes juste après le remontage.
+  const skipFirst = useRef(true);
+  useEffect(() => {
+    if (skipFirst.current) { skipFirst.current = false; return; }
+    const ta = document.querySelector<HTMLTextAreaElement>('textarea[name="body"]');
+    ta?.dispatchEvent(new Event("input", { bubbles: true }));
+  }, [editorKey]);
 
   return (
     <>
