@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { getCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl, lastSentInfo, SEND_COOLDOWN_DAYS } from "@/lib/newsletter-campaigns";
 import { PROFILS, listSubscribers } from "@/lib/newsletter";
 import { mailerConfigured, senderAddress } from "@/lib/mailer";
-import { MarkdownEditor } from "../../../markdown-editor";
+import { MailBody } from "./mail-body";
 import { SubjectField } from "../subject-field";
 import { ConfirmSubmit } from "../../../confirm-submit";
 import { SendTargeting } from "../send-targeting";
@@ -139,10 +139,7 @@ export default async function CampaignEditor({
           <form action={saveCampaignAction} className="adm-form">
             <input type="hidden" name="id" value={c.id} />
             <SubjectField defaultValue={c.subject} />
-            <div className="adm-field">
-              <label>Message <small>— barre d&apos;outils pour la mise en forme. Pas besoin de code.</small></label>
-              <MarkdownEditor name="body" defaultValue={c.body} placeholder={"Bonjour,\n\n## Un titre\n\nVotre message…"} />
-            </div>
+            <MailBody initialBody={c.body} />
             <div className="adm-actions">
               <button className="adm-btn" type="submit">Enregistrer</button>
             </div>
