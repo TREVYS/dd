@@ -1,15 +1,18 @@
-import { listVideos } from "@/lib/videos";
-import { addVideoAction, removeVideoAction } from "./actions";
+import { listVideos, getVideosPlacement } from "@/lib/videos";
+import { youtubeSyncConfigured } from "@/lib/youtube-sync";
+import { addVideoAction, removeVideoAction, setPlacementAction, syncYoutubeNowAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminVideos({
   searchParams,
 }: {
-  searchParams: Promise<{ ok?: string; err?: string }>;
+  searchParams: Promise<{ ok?: string; err?: string; n?: string; msg?: string }>;
 }) {
   const sp = await searchParams;
   const videos = listVideos();
+  const placement = getVideosPlacement();
+  const syncOn = youtubeSyncConfigured();
 
   return (
     <>
@@ -20,14 +23,48 @@ export default async function AdminVideos({
         </div>
       </div>
 
-      {sp.ok && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Vidéo ajoutée.</div>}
+      {sp.ok === "1" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Vidéo ajoutée.</div>}
+      {sp.ok === "placement" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Emplacement mis à jour.</div>}
+      {sp.ok === "sync" && (
+        <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>
+          {sp.n === "0" ? "Synchronisation effectuée — aucune nouvelle vidéo." : `Synchronisation effectuée — ${sp.n} nouvelle(s) vidéo(s) ajoutée(s).`}
+        </div>
+      )}
       {sp.err && (
         <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
           {sp.err === "notfound"
             ? "Cette vidéo n&apos;existe pas sur YouTube (identifiant introuvable) — vérifiez le lien : c&apos;est lui qui sert de miniature dans la newsletter."
+            : sp.err === "sync"
+            ? `Synchronisation impossible${sp.msg ? " : " + sp.msg : ""}.`
             : "Lien YouTube non reconnu. Collez une URL comme https://youtu.be/… ou l&apos;identifiant."}
         </div>
       )}
+
+      <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
+        <h2>Emplacement &amp; synchronisation</h2>
+        <form action={setPlacementAction} className="adm-row2" style={{ alignItems: "end", marginTop: ".6rem" }}>
+          <div className="adm-field">
+            <label>Emplacement du bloc vidéo sur la page Ressources</label>
+            <select name="placement" defaultValue={placement}>
+              <option value="top">En haut, avant les articles (par défaut)</option>
+              <option value="bottom">En bas, après les articles</option>
+              <option value="hidden">Masqué (ne pas afficher)</option>
+            </select>
+          </div>
+          <div className="adm-actions" style={{ margin: 0 }}>
+            <button className="adm-btn" type="submit">Enregistrer l&apos;emplacement</button>
+          </div>
+        </form>
+        <hr style={{ margin: "1.1rem 0", border: 0, borderTop: "1px solid var(--line)" }} />
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".86rem", margin: "0 0 .8rem" }}>
+          {syncOn
+            ? "Chaîne YouTube connectée — Alfred ajoute automatiquement les nouvelles vidéos chaque semaine (lien et description, sans téléchargement)."
+            : <>Connectez votre chaîne YouTube dans <a href="/admin/reglages">Réglages</a> pour qu&apos;Alfred ajoute automatiquement vos nouvelles vidéos chaque semaine.</>}
+        </p>
+        <form action={syncYoutubeNowAction}>
+          <button className="adm-btn ghost sm" type="submit" disabled={!syncOn}>Synchroniser maintenant</button>
+        </form>
+      </div>
 
       <div className="adm-card" style={{ marginBottom: "1.2rem" }}>
         <h2>Ajouter une vidéo</h2>
@@ -77,8 +114,11 @@ export default async function AdminVideos({
                   </a>
                 </td>
                 <td>
-                  <div style={{ fontWeight: 700 }}>{v.title}</div>
-                  {v.note && <div className="muted">{v.note}{v.date ? ` · ${v.date}` : ""}</div>}
+                  <div style={{ fontWeight: 700 }}>
+                    {v.title}{" "}
+                    {v.source === "youtube" && <span className="adm-tag" style={{ fontSize: ".68rem" }}>auto YouTube</span>}
+                  </div>
+                  {(v.note || v.date) && <div className="muted">{v.note}{v.note && v.date ? " · " : ""}{v.date}</div>}
                 </td>
                 <td><span className="adm-tag">{v.focus || "—"}</span></td>
                 <td style={{ textAlign: "right", paddingRight: "1.1rem" }}>

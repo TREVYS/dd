@@ -3,8 +3,8 @@ import path from "node:path";
 import crypto from "node:crypto";
 
 // Vidéos (YouTube) mises en avant dans les Ressources et gérées depuis le
-// cockpit. Stockées sur le disque de l'instance : data/videos.json.
-// Tant que le fichier n'existe pas, on sert la liste par défaut ci-dessous.
+// cockpit, ou chargées automatiquement depuis la chaîne YouTube du cabinet.
+// Stockées sur le disque de l'instance : data/videos.json.
 const FILE = path.join(process.cwd(), "data", "videos.json");
 
 export type Video = {
@@ -14,7 +14,15 @@ export type Video = {
   focus: string; // thème : Facturation électronique, IA, Innovation…
   date?: string; // AAAA-MM-JJ
   note?: string; // contexte (ex. « Relai LinkedIn Sage France »)
+  description?: string; // description YouTube (vidéos synchronisées)
+  source?: "manual" | "youtube"; // ajoutée à la main, ou récupérée automatiquement
 };
+
+// Où le bloc vidéo s'affiche dans Ressources, par rapport à la liste
+// d'articles — réglage simple, pas de glisser-déposer nécessaire ici.
+export type VideosPlacement = "top" | "bottom" | "hidden";
+
+type Store = { placement: VideosPlacement; items: Video[] };
 
 const DEFAULTS: Video[] = [
   {
@@ -24,6 +32,7 @@ const DEFAULTS: Video[] = [
     focus: "Facturation électronique",
     date: "2026-07-21",
     note: "Relai LinkedIn Sage France",
+    source: "manual",
   },
   {
     id: "seed-ia",
@@ -32,6 +41,7 @@ const DEFAULTS: Video[] = [
     focus: "Intelligence artificielle",
     date: "2026-08-04",
     note: "Relai LinkedIn Sage France",
+    source: "manual",
   },
   {
     id: "seed-innovation",
@@ -40,6 +50,7 @@ const DEFAULTS: Video[] = [
     focus: "Innovation",
     date: "2026-08-18",
     note: "Relai LinkedIn Sage France",
+    source: "manual",
   },
 ];
 
@@ -51,33 +62,53 @@ export function parseYouTubeId(input: string): string | null {
   return m ? m[1] : null;
 }
 
-export function listVideos(): Video[] {
+function read(): Store {
   try {
-    if (!fs.existsSync(FILE)) return DEFAULTS;
+    if (!fs.existsSync(FILE)) return { placement: "top", items: DEFAULTS };
     const data = JSON.parse(fs.readFileSync(FILE, "utf8"));
-    return Array.isArray(data) ? data : DEFAULTS;
+    // Compatibilité : l'ancien format stockait un simple tableau.
+    if (Array.isArray(data)) return { placement: "top", items: data };
+    return { placement: data.placement ?? "top", items: Array.isArray(data.items) ? data.items : DEFAULTS };
   } catch {
-    return DEFAULTS;
+    return { placement: "top", items: DEFAULTS };
   }
 }
 
-function write(videos: Video[]) {
+function write(store: Store) {
   const dir = path.dirname(FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(FILE, JSON.stringify(videos, null, 2), "utf8");
+  fs.writeFileSync(FILE, JSON.stringify(store, null, 2), "utf8");
+}
+
+export function listVideos(): Video[] {
+  return read().items;
+}
+
+export function getVideosPlacement(): VideosPlacement {
+  return read().placement;
+}
+
+export function setVideosPlacement(placement: VideosPlacement) {
+  write({ ...read(), placement });
 }
 
 export function addVideo(input: Omit<Video, "id">): Video {
-  const videos = listVideos();
+  const store = read();
   const v: Video = { ...input, id: crypto.randomBytes(5).toString("hex") };
-  write([...videos, v]);
+  write({ ...store, items: [...store.items, v] });
   return v;
 }
 
 export function updateVideo(id: string, patch: Partial<Video>) {
-  write(listVideos().map((v) => (v.id === id ? { ...v, ...patch } : v)));
+  const store = read();
+  write({ ...store, items: store.items.map((v) => (v.id === id ? { ...v, ...patch } : v)) });
 }
 
 export function removeVideo(id: string) {
-  write(listVideos().filter((v) => v.id !== id));
+  const store = read();
+  write({ ...store, items: store.items.filter((v) => v.id !== id) });
+}
+
+export function hasYoutubeId(youtubeId: string): boolean {
+  return read().items.some((v) => v.youtubeId === youtubeId);
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/blog";
-import { listVideos } from "@/lib/videos";
+import { listVideos, getVideosPlacement } from "@/lib/videos";
 import { BlogList } from "./blog-list";
 import { VideoGallery } from "./video-gallery";
 
@@ -13,9 +13,26 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
+function VideoSection({ videos }: { videos: ReturnType<typeof listVideos> }) {
+  return (
+    <section className="sec" style={{ paddingBottom: 0 }}>
+      <div className="wrap">
+        <div className="shead">
+          <span className="eyebrow">En vidéo</span>
+          <h2>Nos <em>prises de parole</em></h2>
+          <p>Nos experts décryptent la facturation électronique, l&apos;intelligence artificielle et l&apos;innovation.</p>
+        </div>
+        <VideoGallery videos={videos} />
+      </div>
+    </section>
+  );
+}
+
 export default function Page() {
   const posts = getAllPosts();
   const videos = listVideos();
+  const placement = getVideosPlacement();
+  const showVideos = videos.length > 0 && placement !== "hidden";
   return (
     <>
       <header className="mkt-phead">
@@ -48,24 +65,15 @@ export default function Page() {
         </div>
       </header>
 
-      {videos.length > 0 && (
-        <section className="sec" style={{ paddingBottom: 0 }}>
-          <div className="wrap">
-            <div className="shead">
-              <span className="eyebrow">En vidéo</span>
-              <h2>Nos <em>prises de parole</em></h2>
-              <p>Nos experts décryptent la facturation électronique, l&apos;intelligence artificielle et l&apos;innovation.</p>
-            </div>
-            <VideoGallery videos={videos} />
-          </div>
-        </section>
-      )}
+      {showVideos && placement === "top" && <VideoSection videos={videos} />}
 
       <section className="sec">
         <div className="wrap">
           <BlogList posts={posts} />
         </div>
       </section>
+
+      {showVideos && placement === "bottom" && <VideoSection videos={videos} />}
     </>
   );
 }

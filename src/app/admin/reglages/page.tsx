@@ -49,6 +49,10 @@ const CFG_GROUPS = [
     { k: "instagramClientId", label: "Client ID", ph: "", secret: false },
     { k: "instagramClientSecret", label: "Client Secret", ph: "", secret: true },
   ] },
+  { title: "Chaîne YouTube (synchronisation automatique)", fields: [
+    { k: "youtubeChannelHandle", label: "Identifiant de la chaîne (@handle ou URL)", ph: "@Trevysadvisory", secret: false },
+    { k: "youtubeApiKey", label: "Clé API YouTube Data v3", ph: "AIza…", secret: true },
+  ] },
 ] as const;
 
 export default async function AdminReglages({
@@ -375,6 +379,31 @@ echo 'TELEGRAM_CHAT_ID=votre_chat_id' >> ~/.env.trevys`}</pre>
           Astuce sécurité : pour limiter l&apos;envoi à la seule boîte du cabinet, un administrateur peut ajouter
           une <i>Application Access Policy</i> Exchange restreignant l&apos;app à <code>contact@trevys.fr</code>.
         </p>
+      </div>
+
+      <div className="adm-card" style={{ marginTop: "1.2rem" }}>
+        <h2>Chaîne YouTube</h2>
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: ".7rem", margin: ".2rem 0 1rem",
+            fontWeight: 700, color: isSet("youtubeApiKey") && isSet("youtubeChannelHandle") ? "#2E9E6B" : "#C2410C",
+          }}
+        >
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: isSet("youtubeApiKey") && isSet("youtubeChannelHandle") ? "#2E9E6B" : "#E26A0F" }} />
+          {isSet("youtubeApiKey") && isSet("youtubeChannelHandle")
+            ? "Actif — Alfred récupère chaque semaine les nouvelles vidéos de votre chaîne (lien et description, sans téléchargement)."
+            : "Non configuré."}
+        </div>
+        <p className="muted" style={{ color: "var(--ink3)", fontSize: ".88rem", lineHeight: 1.6, margin: "0 0 .6rem" }}>
+          Une fois configuré, Alfred vérifie chaque semaine votre chaîne et ajoute automatiquement les nouvelles
+          vidéos dans Ressources (lien et description uniquement — jamais de téléchargement). Vous gardez la main
+          pour modifier le thème ou retirer une vidéo depuis Ressources → Vidéos, où se règle aussi l&apos;emplacement
+          du bloc vidéo sur la page publique.
+        </p>
+        <ol style={{ margin: 0, paddingLeft: "1.2rem", fontSize: ".88rem", lineHeight: 1.7, color: "var(--ink2)" }}>
+          <li>Sur <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">console.cloud.google.com</a>, créez (ou réutilisez) un projet, activez l&apos;API <b>YouTube Data API v3</b>, puis créez une <b>clé API</b>.</li>
+          <li>Renseignez ci-dessus cette clé et l&apos;identifiant de votre chaîne (ex. <code>@Trevysadvisory</code>).</li>
+        </ol>
       </div>
 
       <div className="adm-card" style={{ marginTop: "1.2rem" }}>

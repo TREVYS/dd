@@ -37,6 +37,12 @@ async function tick() {
   } catch (e) {
     console.error("[heartbeat] résumé des mails:", e);
   }
+  try {
+    const { maybeSyncYoutubeWeekly } = await import("@/lib/youtube-sync");
+    await maybeSyncYoutubeWeekly();
+  } catch (e) {
+    console.error("[heartbeat] synchronisation YouTube:", e);
+  }
 }
 
 export async function register() {

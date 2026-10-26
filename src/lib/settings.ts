@@ -25,7 +25,9 @@ export type SettingKey =
   | "linkedinOrgId"
   | "whatsappToken"
   | "whatsappPhoneId"
-  | "whatsappVerifyToken";
+  | "whatsappVerifyToken"
+  | "youtubeApiKey"
+  | "youtubeChannelHandle";
 
 // Correspondance avec les variables d'environnement (repli).
 const ENV: Record<SettingKey, string> = {
@@ -48,6 +50,8 @@ const ENV: Record<SettingKey, string> = {
   whatsappToken: "WHATSAPP_TOKEN",
   whatsappPhoneId: "WHATSAPP_PHONE_ID",
   whatsappVerifyToken: "WHATSAPP_VERIFY_TOKEN",
+  youtubeApiKey: "YOUTUBE_API_KEY",
+  youtubeChannelHandle: "YOUTUBE_CHANNEL_HANDLE",
 };
 
 // Champs sensibles (masqués à l'affichage).
@@ -60,6 +64,7 @@ export const SECRET_KEYS: SettingKey[] = [
   "msClientSecret",
   "whatsappToken",
   "whatsappVerifyToken",
+  "youtubeApiKey",
 ];
 
 type Store = Partial<Record<SettingKey, string>>;

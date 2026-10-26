@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { addVideo, removeVideo, parseYouTubeId } from "@/lib/videos";
+import { addVideo, removeVideo, parseYouTubeId, setVideosPlacement, type VideosPlacement } from "@/lib/videos";
 
 async function guard() {
   const session = await auth();
@@ -46,4 +46,25 @@ export async function removeVideoAction(formData: FormData) {
   removeVideo(formData.get("id") as string);
   revalidatePath("/admin/videos");
   revalidatePath("/blog");
+}
+
+export async function setPlacementAction(formData: FormData) {
+  await guard();
+  const placement = formData.get("placement") as VideosPlacement;
+  if (placement === "top" || placement === "bottom" || placement === "hidden") {
+    setVideosPlacement(placement);
+  }
+  revalidatePath("/admin/videos");
+  revalidatePath("/blog");
+  redirect("/admin/videos?ok=placement");
+}
+
+export async function syncYoutubeNowAction() {
+  await guard();
+  const { syncYoutubeVideos } = await import("@/lib/youtube-sync");
+  const { added, error } = await syncYoutubeVideos();
+  revalidatePath("/admin/videos");
+  revalidatePath("/blog");
+  if (error) redirect(`/admin/videos?err=sync&msg=${encodeURIComponent(error)}`);
+  redirect(`/admin/videos?ok=sync&n=${added.length}`);
 }

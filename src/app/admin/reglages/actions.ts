@@ -15,6 +15,7 @@ const KEYS: SettingKey[] = [
   "msTenantId", "msClientId", "msClientSecret", "msSender",
   "recruitEmail", "linkedinOrgId",
   "whatsappToken", "whatsappPhoneId", "whatsappVerifyToken",
+  "youtubeApiKey", "youtubeChannelHandle",
 ];
 
 // Enregistre les clés/API saisies dans le cockpit. Les champs laissés vides
