@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { addVideo, removeVideo, parseYouTubeId, setVideosPlacement, type VideosPlacement } from "@/lib/videos";
+import { addVideo, removeVideo, parseYouTubeId, setVideosPlacement, reorderVideos, type VideosPlacement } from "@/lib/videos";
 
 async function guard() {
   const session = await auth();
@@ -57,6 +57,13 @@ export async function setPlacementAction(formData: FormData) {
   revalidatePath("/admin/videos");
   revalidatePath("/blog");
   redirect("/admin/videos?ok=placement");
+}
+
+export async function reorderVideosAction(orderedIds: string[]) {
+  await guard();
+  reorderVideos(orderedIds);
+  revalidatePath("/admin/videos");
+  revalidatePath("/blog");
 }
 
 export async function syncYoutubeNowAction() {

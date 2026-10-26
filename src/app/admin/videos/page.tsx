@@ -1,6 +1,7 @@
 import { listVideos, getVideosPlacement } from "@/lib/videos";
 import { youtubeSyncConfigured } from "@/lib/youtube-sync";
 import { addVideoAction, removeVideoAction, setPlacementAction, syncYoutubeNowAction } from "./actions";
+import { VideoOrder } from "./video-order";
 
 export const dynamic = "force-dynamic";
 
@@ -98,6 +99,8 @@ export default async function AdminVideos({
           </div>
         </form>
       </div>
+
+      <VideoOrder videos={videos.map((v) => ({ id: v.id, title: v.title, focus: v.focus, youtubeId: v.youtubeId }))} />
 
       <div className="adm-card" style={{ padding: 0 }}>
         <table className="adm-table">

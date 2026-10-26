@@ -112,3 +112,14 @@ export function removeVideo(id: string) {
 export function hasYoutubeId(youtubeId: string): boolean {
   return read().items.some((v) => v.youtubeId === youtubeId);
 }
+
+// Réordonne les vidéos selon la liste d'ids fournie (ordre d'affichage sur
+// le site). Les vidéos absentes de la liste (ex. ajoutées entre-temps)
+// sont conservées à la fin, dans leur ordre actuel.
+export function reorderVideos(orderedIds: string[]) {
+  const store = read();
+  const byId = new Map(store.items.map((v) => [v.id, v]));
+  const ordered = orderedIds.map((id) => byId.get(id)).filter((v): v is Video => !!v);
+  const rest = store.items.filter((v) => !orderedIds.includes(v.id));
+  write({ ...store, items: [...ordered, ...rest] });
+}
