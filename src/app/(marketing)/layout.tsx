@@ -102,7 +102,7 @@ const JSON_LD = {
         "https://www.linkedin.com/company/trevys-advisory/",
         "https://www.linkedin.com/in/levyjohn/",
         "https://x.com/JohnLevy0",
-        "https://www.youtube.com/@Trevys-advisory",
+        "https://www.youtube.com/@Trevysadvisory",
       ],
       address: {
         "@type": "PostalAddress",

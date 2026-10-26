@@ -372,7 +372,7 @@ export function wrapEmail(
   const social =
     socialBadge("https://www.linkedin.com/company/trevys-advisory/", "in", "#0A66C2") +
     socialBadge("https://x.com/JohnLevy0", "X", "#111111") +
-    socialBadge("https://www.youtube.com/@Trevys-advisory", "&#9654;", "#E23D28");
+    socialBadge("https://www.youtube.com/@Trevysadvisory", "&#9654;", "#E23D28");
   return `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trevys</title></head>
 <body style="margin:0;padding:0;background-color:#f2ece2;">

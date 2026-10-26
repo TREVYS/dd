@@ -101,7 +101,7 @@ export function Footer() {
               </svg>
             </a>
             <a
-              href="https://www.youtube.com/@Trevys-advisory"
+              href="https://www.youtube.com/@Trevysadvisory"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Trevys sur YouTube"
