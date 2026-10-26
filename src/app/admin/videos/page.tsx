@@ -1,6 +1,6 @@
 import { listVideos, getVideosPlacement } from "@/lib/videos";
 import { youtubeSyncConfigured } from "@/lib/youtube-sync";
-import { addVideoAction, removeVideoAction, setPlacementAction, syncYoutubeNowAction } from "./actions";
+import { addVideoAction, removeVideoAction, setPlacementAction, syncYoutubeNowAction, updateVideoDescriptionAction } from "./actions";
 import { VideoOrder } from "./video-order";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +31,7 @@ export default async function AdminVideos({
           {sp.n === "0" ? "Synchronisation effectuée — aucune nouvelle vidéo." : `Synchronisation effectuée — ${sp.n} nouvelle(s) vidéo(s) ajoutée(s).`}
         </div>
       )}
+      {sp.ok === "desc" && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>Description enregistrée.</div>}
       {sp.err && (
         <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#f0d5d1", background: "#fdf3f2" }}>
           {sp.err === "notfound"
@@ -94,6 +95,10 @@ export default async function AdminVideos({
               <input name="note" placeholder="Ex. Relai LinkedIn Sage France" />
             </div>
           </div>
+          <div className="adm-field">
+            <label>Description <small>(optionnel — récupérée automatiquement depuis YouTube si la clé API est configurée et ce champ laissé vide)</small></label>
+            <textarea name="description" placeholder="Laissez vide pour reprendre la description YouTube de la vidéo…" style={{ minHeight: 70 }} />
+          </div>
           <div className="adm-actions">
             <button className="adm-btn" type="submit">Ajouter la vidéo</button>
           </div>
@@ -122,6 +127,23 @@ export default async function AdminVideos({
                     {v.source === "youtube" && <span className="adm-tag" style={{ fontSize: ".68rem" }}>auto YouTube</span>}
                   </div>
                   {(v.note || v.date) && <div className="muted">{v.note}{v.note && v.date ? " · " : ""}{v.date}</div>}
+                  <details style={{ marginTop: ".4rem" }}>
+                    <summary style={{ cursor: "pointer", fontSize: ".78rem", color: "var(--ink3)" }}>
+                      {v.description ? "Voir / modifier la description" : "Ajouter une description"}
+                    </summary>
+                    <form action={updateVideoDescriptionAction} style={{ marginTop: ".5rem" }}>
+                      <input type="hidden" name="id" value={v.id} />
+                      <textarea
+                        name="description"
+                        defaultValue={v.description || ""}
+                        placeholder="Description de la vidéo (affichée sur le site)…"
+                        style={{ minHeight: 70, width: "100%", fontSize: ".82rem" }}
+                      />
+                      <div className="adm-actions" style={{ marginTop: ".4rem" }}>
+                        <button className="adm-btn sm" type="submit">Enregistrer</button>
+                      </div>
+                    </form>
+                  </details>
                 </td>
                 <td><span className="adm-tag">{v.focus || "—"}</span></td>
                 <td style={{ textAlign: "right", paddingRight: "1.1rem" }}>

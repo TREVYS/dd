@@ -103,6 +103,11 @@ export function VideoGallery({ videos }: { videos: Video[] }) {
               <div className="mkt-vid-cap">
                 <b>{active.title}</b>
                 {active.note && <span> · {active.note}</span>}
+                {active.description && (
+                  <p style={{ margin: ".5rem 0 0", fontSize: ".86rem", color: "var(--ink3)", whiteSpace: "pre-line" }}>
+                    {active.description}
+                  </p>
+                )}
               </div>
               <div className="mkt-vid-share">
                 <a

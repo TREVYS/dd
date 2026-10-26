@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { addVideo, removeVideo, parseYouTubeId, setVideosPlacement, reorderVideos, type VideosPlacement } from "@/lib/videos";
+import { addVideo, removeVideo, updateVideo, parseYouTubeId, setVideosPlacement, reorderVideos, type VideosPlacement } from "@/lib/videos";
 
 async function guard() {
   const session = await auth();
@@ -29,12 +29,21 @@ export async function addVideoAction(formData: FormData) {
     if ((e as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) throw e;
     // Réseau indisponible : on n'empêche pas l'enregistrement.
   }
+  // Description : reprise si saisie à la main, sinon récupérée automatiquement
+  // depuis YouTube si une clé API est configurée (Réglages).
+  let description = ((formData.get("description") as string) || "").trim();
+  if (!description) {
+    const { fetchVideoDescription } = await import("@/lib/youtube-sync");
+    description = (await fetchVideoDescription(youtubeId)) || "";
+  }
   addVideo({
     youtubeId,
     title: ((formData.get("title") as string) || "Vidéo").trim(),
     focus: ((formData.get("focus") as string) || "").trim(),
     date: ((formData.get("date") as string) || "").trim() || undefined,
     note: ((formData.get("note") as string) || "").trim() || undefined,
+    description: description || undefined,
+    source: "manual",
   });
   revalidatePath("/admin/videos");
   revalidatePath("/blog");
@@ -46,6 +55,16 @@ export async function removeVideoAction(formData: FormData) {
   removeVideo(formData.get("id") as string);
   revalidatePath("/admin/videos");
   revalidatePath("/blog");
+}
+
+export async function updateVideoDescriptionAction(formData: FormData) {
+  await guard();
+  const id = formData.get("id") as string;
+  const description = ((formData.get("description") as string) || "").trim();
+  updateVideo(id, { description: description || undefined });
+  revalidatePath("/admin/videos");
+  revalidatePath("/blog");
+  redirect("/admin/videos?ok=desc");
 }
 
 export async function setPlacementAction(formData: FormData) {

@@ -72,6 +72,25 @@ async function fetchLatestVideos(apiKey: string, playlistId: string, max = 10): 
     .filter((v) => v.youtubeId);
 }
 
+// Récupère la description YouTube d'une vidéo précise (ajout manuel par
+// lien) — nécessite la clé API ; sans clé, l'oEmbed utilisé pour vérifier le
+// lien ne fournit pas de description.
+export async function fetchVideoDescription(youtubeId: string): Promise<string | undefined> {
+  const apiKey = getSetting("youtubeApiKey");
+  if (!apiKey) return undefined;
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${youtubeId}&key=${apiKey}`,
+      { signal: AbortSignal.timeout(6000) },
+    );
+    if (!res.ok) return undefined;
+    const data = (await res.json()) as { items?: { snippet?: { description?: string } }[] };
+    return data.items?.[0]?.snippet?.description || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 // Récupère les dernières vidéos de la chaîne et ajoute celles qui manquent
 // (comparaison par id YouTube). Retourne les titres ajoutés.
 export async function syncYoutubeVideos(): Promise<{ added: string[]; error?: string }> {
