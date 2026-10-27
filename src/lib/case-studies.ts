@@ -83,19 +83,19 @@ export const CASE_STUDIES: CaseStudy[] = [
         context: "filiale de La Banque Postale",
         secteur: "Banque digitale",
         enjeu: [
-          "Ma French Bank, filiale digitale de La Banque Postale, devait faire évoluer ses outils finance internes pour accompagner le développement de son activité. Nous avons mené cette mission d'AMOA en lien constant entre les équipes finance et les équipes techniques.",
+          "Ma French Bank, filiale digitale de La Banque Postale, devait faire évoluer ses outils finance internes pour accompagner le développement de son activité. Le pilotage global du programme était assuré par Sopra Steria ; nous sommes intervenus sur le volet AMOA et recette, aux côtés de la direction financière.",
         ],
         etapes: [
           {
-            titre: "Pilotage du programme",
-            texte: "Coordination entre la direction financière et les équipes IT, avec des consultants capables de discuter traitement comptable d'un côté, spécification technique de l'autre — dans la même réunion.",
+            titre: "AMOA",
+            texte: "Traduction du besoin métier de la direction financière en exigences exploitables par les équipes techniques, et relecture critique des spécifications proposées pour s'assurer qu'elles couvraient réellement les cas comptables du quotidien.",
           },
           {
             titre: "Recette des évolutions",
-            texte: "Construction et pilotage de la recette des évolutions livrées, pour vérifier qu'elles répondaient réellement au besoin exprimé avant mise en production.",
+            texte: "Construction et pilotage de la recette des évolutions livrées, avec les équipes finance, pour vérifier qu'elles répondaient réellement au besoin exprimé avant mise en production.",
           },
         ],
-        resultat: "Des outils finance internes qui ont évolué au rythme de l'activité de Ma French Bank, sans rupture de communication entre la finance et la technique tout au long du programme.",
+        resultat: "Des évolutions des outils finance internes validées par des tests de recette construits avec les équipes qui les utilisent au quotidien, sur un programme piloté par Sopra Steria.",
       },
     ],
   },
