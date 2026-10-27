@@ -16,7 +16,12 @@ const WAYS = [
   { l: "Rendez-vous", v: "En cabinet ou à distance" },
 ];
 
-export default function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ sujet?: string }>;
+}) {
+  const sp = await searchParams;
   return (
     <>
       <header className="mkt-phead">
@@ -66,7 +71,7 @@ export default function Page() {
                 <WhatsappButton context="contact" />
               </div>
             </div>
-            <ContactForm />
+            <ContactForm defaultSubject={sp.sujet === "formation" ? "Formation" : undefined} />
           </div>
         </div>
       </section>

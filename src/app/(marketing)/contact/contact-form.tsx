@@ -18,7 +18,7 @@ const fieldStyle: React.CSSProperties = {
   color: "var(--ink)",
 };
 
-export function ContactForm() {
+export function ContactForm({ defaultSubject }: { defaultSubject?: string } = {}) {
   const [state, action, pending] = useActionState(submitContact, initial);
   const tRef = useRef<HTMLInputElement>(null);
 
@@ -68,10 +68,11 @@ export function ContactForm() {
       </div>
       <label style={{ display: "block", marginBottom: "1.25rem" }}>
         <span style={{ display: "block", fontSize: ".8rem", color: "var(--ink2)", marginBottom: ".45rem", fontWeight: 600 }}>Votre besoin</span>
-        <select name="subject" style={fieldStyle} defaultValue="Expertise comptable">
+        <select name="subject" style={fieldStyle} defaultValue={defaultSubject || "Expertise comptable"}>
           <option>Expertise comptable</option>
           <option>Consulting &amp; transformation</option>
           <option>Facturation électronique</option>
+          <option>Formation</option>
           <option>Autre demande</option>
         </select>
       </label>
