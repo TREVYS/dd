@@ -10,6 +10,7 @@ import { LangToggle } from "./lang-toggle";
 const METIERS = [
   { href: "/expertise-comptable", label: "Expertise comptable", d: "Tenue, révision, bilan augmenté" },
   { href: "/consulting", label: "Consulting", d: "Pilotage, valorisation, stratégie" },
+  { href: "/audit-it", label: "Audit IT", d: "ITGC, PAF, renfort CAC" },
   { href: "/formation", label: "Formation", d: "Académie IA, certifiée Qualiopi" },
 ];
 
@@ -37,6 +38,7 @@ const PRIMARY = [
 const M_METIERS = [
   { href: "/expertise-comptable", label: "Expertise comptable" },
   { href: "/consulting", label: "Conseil" },
+  { href: "/audit-it", label: "Audit IT" },
   { href: "/formation", label: "Formation" },
 ];
 const M_EXPERTISES = [
