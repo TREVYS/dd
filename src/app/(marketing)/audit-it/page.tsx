@@ -148,6 +148,31 @@ export default function Page() {
               <p>Au-delà du constat, un plan d&apos;action hiérarchisé — ce qui doit être corrigé avant la prochaine clôture, et ce qui peut s&apos;inscrire dans une trajectoire plus longue.</p>
             </div>
           </div>
+
+          <div
+            style={{
+              background: "linear-gradient(180deg,#FFF7F0,#FFFFFF)",
+              border: "1px solid #F5D9BE",
+              borderLeft: "4px solid #F5811F",
+              borderRadius: "16px",
+              padding: "1.6rem 1.9rem",
+              maxWidth: "880px",
+              margin: "2.2rem auto 0",
+            }}
+          >
+            <h3 style={{ fontSize: "1.15rem", margin: "0 0 .7rem" }}>
+              Un pilotage à un seul niveau de responsabilité
+            </h3>
+            <p style={{ margin: 0, color: "var(--ink2)", lineHeight: 1.75 }}>
+              Nous savons mobiliser des profils pluridisciplinaires selon le
+              périmètre de la mission. Mais chaque audit IT est dirigé par un
+              associé du cabinet qui cumule lui-même les trois regards
+              nécessaires : <strong>expert-comptable</strong>,{" "}
+              <strong>commissaire aux comptes</strong> et{" "}
+              <strong>data analyste</strong>. Un seul interlocuteur porte la
+              responsabilité de la mission, du cadrage jusqu&apos;au rapport final.
+            </p>
+          </div>
         </div>
       </section>
 
