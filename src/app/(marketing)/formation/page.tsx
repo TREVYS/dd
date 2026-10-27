@@ -67,14 +67,16 @@ export default function Page() {
           <p>
             Nous formons les DAF, les directions financières, les DSI et les
             experts-comptables aux sujets de digitalisation, de réglementation
-            et d&apos;intelligence artificielle. Cette offre est conçue et
-            délivrée par <strong>KLARE STUDIO</strong>, l&apos;organisme de
-            formation de notre groupe, <strong>certifié Qualiopi</strong>.
+            et d&apos;intelligence artificielle — une offre portée par notre
+            groupe, dispensée par un organisme de formation certifié Qualiopi.
           </p>
           <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
             <Link className="btn btn-gold" href="/contact?sujet=formation">Exprimer un besoin de formation</Link>
             <Link className="btn btn-ghost" href="/rendez-vous">Prendre rendez-vous</Link>
           </div>
+          <p style={{ marginTop: "1.2rem", fontSize: ".8rem", color: "var(--ink3)" }}>
+            Formations délivrées par KLARE STUDIO, organisme de notre groupe certifié Qualiopi.
+          </p>
         </div>
       </header>
 
@@ -145,15 +147,15 @@ export default function Page() {
       <section className="sec band">
         <div className="wrap">
           <div className="shead">
-            <span className="eyebrow">KLARE STUDIO</span>
+            <span className="eyebrow">Qualité</span>
             <h2>Un organisme de formation <em>certifié Qualiopi</em></h2>
             <p>
-              Conformément à sa démarche qualité, chaque formation est
-              dispensée dans le respect du processus pédagogique de KLARE
-              STUDIO : positionnement initial, évaluation formative et finale,
-              livrables remis à chaque participant. Les formations sont
-              accessibles aux personnes en situation de handicap — un référent
-              dédié vous accompagne pour toute adaptation nécessaire.
+              Conformément à cette démarche qualité, chaque formation suit un
+              processus pédagogique structuré : positionnement initial,
+              évaluation formative et finale, livrables remis à chaque
+              participant. Les formations sont accessibles aux personnes en
+              situation de handicap — un référent dédié vous accompagne pour
+              toute adaptation nécessaire.
             </p>
           </div>
         </div>
