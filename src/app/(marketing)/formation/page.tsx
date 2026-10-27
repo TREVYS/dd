@@ -11,19 +11,19 @@ export const metadata: Metadata = {
 
 const NIVEAUX = [
   {
-    n: "Niveau 1",
+    n: "01",
     t: "Comprendre & sécuriser",
     d: "Maîtriser les fondamentaux de l'IA, les enjeux pour la profession, le cadre réglementaire et les risques.",
     p: "Associés, managers, collaborateurs",
   },
   {
-    n: "Niveau 2",
+    n: "02",
     t: "Utiliser & déployer",
     d: "Intégrer l'IA générative dans les processus métiers et piloter des projets IA.",
     p: "Managers, collaborateurs, référents IA",
   },
   {
-    n: "Niveau 3",
+    n: "03",
     t: "Transformer le cabinet",
     d: "Faire évoluer les postures vers le conseil augmenté, réorganiser la production et concevoir de nouvelles offres.",
     p: "Associés, managers, collaborateurs",
@@ -111,15 +111,13 @@ export default function Page() {
               parcours regroupant les modules choisis.
             </p>
           </div>
-          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
+          <div className="mkt-fm-levels">
             {NIVEAUX.map((s) => (
-              <div className="mkt-svc" key={s.n}>
-                <span className="num">{s.n}</span>
+              <div className="mkt-fm-level" key={s.n}>
+                <span className="mkt-fm-level-n">{s.n}</span>
                 <h3>{s.t}</h3>
                 <p>{s.d}</p>
-                <p style={{ marginTop: ".6rem", fontSize: ".82rem", color: "var(--ink3)" }}>
-                  <strong>Public :</strong> {s.p}
-                </p>
+                <span className="mkt-fm-level-pub">{s.p}</span>
               </div>
             ))}
           </div>
@@ -132,12 +130,14 @@ export default function Page() {
             <span className="eyebrow">Catalogue</span>
             <h2>Les <em>10 modules</em> de l&apos;académie</h2>
           </div>
-          <div className="mkt-svc-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))" }}>
+          <div className="mkt-fm-modules">
             {MODULES.map((m) => (
-              <div className="mkt-svc" key={m.n}>
-                <span className="num">{m.n}</span>
-                <h3 style={{ fontSize: "1.05rem" }}>{m.t}</h3>
-                <p style={{ fontSize: ".82rem", color: "var(--ink3)" }}>{m.h}</p>
+              <div className="mkt-fm-mod" key={m.n}>
+                <div className="mkt-fm-mod-top">
+                  <span className="mkt-fm-mod-n">{m.n}</span>
+                  <span className="mkt-fm-mod-dur">{m.h}</span>
+                </div>
+                <h3>{m.t}</h3>
               </div>
             ))}
           </div>
