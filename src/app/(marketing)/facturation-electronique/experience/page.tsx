@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCaseStudy } from "@/lib/case-studies";
 import { BreadcrumbJsonLd } from "../../_components/seo-jsonld";
+import { CaseStudyView } from "../../_components/case-study-view";
 
 const cs = getCaseStudy("facturation-electronique")!;
 
@@ -34,22 +35,8 @@ export default function CaseStudyPage() {
       </header>
 
       <section className="sec">
-        <div className="wrap" style={{ maxWidth: 820 }}>
-          {cs.missions.map((m, mi) => (
-            <div key={m.client} style={{ marginBottom: mi < cs.missions.length - 1 ? "3rem" : 0 }}>
-              <div className="shead" style={{ textAlign: "left", margin: "0 0 1.1rem" }}>
-                <h2 style={{ fontSize: "1.4rem" }}>
-                  {m.client}
-                  {m.context && <span style={{ color: "var(--ink3)", fontWeight: 500, fontSize: "1rem" }}> — {m.context}</span>}
-                </h2>
-              </div>
-              {m.text.map((p, i) => (
-                <p key={i} style={{ color: "var(--ink2)", lineHeight: 1.8, fontSize: "1.02rem", marginBottom: i < m.text.length - 1 ? "1.1rem" : 0 }}>
-                  {p}
-                </p>
-              ))}
-            </div>
-          ))}
+        <div className="wrap" style={{ maxWidth: 880 }}>
+          <CaseStudyView cs={cs} />
         </div>
       </section>
 

@@ -1270,3 +1270,49 @@ html,body{overflow-x:hidden}
   .mkt-fm-modules{grid-template-columns:1fr}
   .mkt-fm-level,.mkt-fm-mod{padding:1.5rem 1.3rem}
 }
+
+/* ============================================================
+   Retours d'expérience (cas de missions) — pages non indexées,
+   accessibles via bouton depuis une page d'expertise.
+   ============================================================ */
+.mkt-case{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:2.4rem 2.2rem;overflow:hidden}
+.mkt-case::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:var(--grad)}
+.mkt-case-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.6rem;flex-wrap:wrap}
+.mkt-case-avatar{flex:0 0 auto;width:52px;height:52px;border-radius:14px;background:var(--grad);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.15rem;
+  box-shadow:0 10px 22px -10px rgba(226,106,15,.55)}
+.mkt-case-head-tx{flex:1 1 auto;min-width:0}
+.mkt-case-head-tx h2{font-size:1.3rem;margin-bottom:.3rem}
+.mkt-case-head-tx .ctx{font-size:.85rem;color:var(--ink3);font-weight:500}
+.mkt-case-badge{flex:0 0 auto;font-size:.74rem;font-weight:700;color:var(--magenta);
+  background:rgba(245,129,31,.1);padding:.4rem .85rem;border-radius:100px;white-space:nowrap}
+.mkt-case-lbl{display:block;font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink3);margin:1.8rem 0 .9rem}
+.mkt-case-lbl:first-of-type{margin-top:0}
+.mkt-case p{color:var(--ink2);line-height:1.75;font-size:.98rem;margin-bottom:.9rem}
+.mkt-case p:last-child{margin-bottom:0}
+
+.mkt-case-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem}
+.mkt-case-steps li{position:relative;background:var(--bg1);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.3rem}
+.mkt-case-steps .dot{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:.82rem;margin-bottom:.7rem}
+.mkt-case-steps h4{font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 .4rem}
+.mkt-case-steps p{font-size:.86rem;color:var(--ink2);line-height:1.6;margin:0}
+
+.mkt-case-result{display:flex;align-items:flex-start;gap:.9rem;margin-top:1.8rem;
+  background:linear-gradient(180deg,#FFF7F0,#FFFFFF);border:1px solid #F5D9BE;border-left:4px solid #F5811F;
+  border-radius:16px;padding:1.3rem 1.5rem}
+.mkt-case-result .ic{flex:0 0 auto;width:34px;height:34px;border-radius:10px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center}
+.mkt-case-result .ic svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.mkt-case-result p{margin:0;font-weight:600;color:var(--ink);font-size:.95rem;line-height:1.65}
+
+.mkt-case-list{display:flex;flex-direction:column;gap:2.2rem}
+
+@media(max-width:600px){
+  .mkt-case{padding:1.8rem 1.4rem}
+  .mkt-case-head{gap:.8rem}
+  .mkt-case-avatar{width:44px;height:44px;border-radius:12px;font-size:1rem}
+  .mkt-case-result{flex-direction:column}
+}
