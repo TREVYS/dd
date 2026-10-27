@@ -136,6 +136,7 @@ export default function Page() {
             <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
               <a className="btn btn-gold" href="https://forms.cloud.microsoft/e/mr63uL9LsU" target="_blank" rel="noopener noreferrer">Recevoir le Guide RFE</a>
               <Link className="btn btn-ghost" href="/rendez-vous">Faire le point</Link>
+              <Link className="btn btn-ghost" href="/facturation-electronique/experience">Voir un exemple de mission</Link>
             </div>
           </div>
           <RfeMascot />

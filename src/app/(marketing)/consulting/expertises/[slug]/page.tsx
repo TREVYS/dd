@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CONSULTING_EXPERTISES, getConsultingExpertise } from "@/lib/consulting-expertises";
+import { getCaseStudy } from "@/lib/case-studies";
 import { BreadcrumbJsonLd } from "../../../_components/seo-jsonld";
 
 export function generateStaticParams() {
@@ -31,6 +32,7 @@ export default async function ExpertisePage({
   const { slug } = await params;
   const e = getConsultingExpertise(slug);
   if (!e) notFound();
+  const cs = getCaseStudy(slug);
 
   return (
     <>
@@ -53,6 +55,7 @@ export default async function ExpertisePage({
           <div style={{ display: "flex", gap: ".8rem", flexWrap: "wrap", marginTop: "1.8rem" }}>
             <Link className="btn btn-gold" href="/rendez-vous">Prendre rendez-vous</Link>
             <Link className="btn btn-ghost" href="/contact">Échanger sur un projet</Link>
+            {cs && <Link className="btn btn-ghost" href={`/consulting/expertises/${slug}/experience`}>Voir un exemple de mission</Link>}
           </div>
         </div>
       </header>
