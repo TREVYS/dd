@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
+import { FaqSection } from "../_components/faq-section";
 
 export const metadata: Metadata = {
   title: "Audit opérationnel & IT",
@@ -79,6 +80,14 @@ const APPROACH = [
   { t: "Diagnostic", d: "Entretiens, analyse documentaire et observation du terrain pour comprendre l'existant sans a priori." },
   { t: "Analyse & benchmark", d: "Confrontation aux bonnes pratiques et identification des écarts et des marges de progrès." },
   { t: "Plan de transformation", d: "Recommandations priorisées et feuille de route réaliste, orientée résultats." },
+];
+
+const FAQ = [
+  { q: "Qu'est-ce qu'un audit opérationnel et IT ?", a: "Un diagnostic indépendant de l'organisation (processus, contrôle interne, gouvernance) et des systèmes d'information qui portent l'information financière (accès, paramétrages, interfaces, traçabilité), suivi d'un plan d'action priorisé." },
+  { q: "Intervenez-vous en renfort des commissaires aux comptes ?", a: "Oui. Nous appuyons les équipes d'audit légal sur le volet informatique des missions de certification des comptes, notamment la revue des contrôles généraux informatiques (ITGC) et des droits d'accès." },
+  { q: "Que sont les contrôles généraux informatiques (ITGC) ?", a: "Ce sont les contrôles qui garantissent la fiabilité d'un système d'information : gestion des accès et des habilitations, gestion des changements applicatifs, exploitation et sauvegardes." },
+  { q: "Pourquoi auditer sa Piste d'Audit Fiable avec la facturation électronique ?", a: "La Piste d'Audit Fiable (art. 289 VII du CGI) reste exigée pour tous les flux qui ne sont pas des factures électroniques structurées. L'auditer avant les échéances de la réforme permet de corriger les écarts avant qu'un contrôle fiscal ne les révèle." },
+  { q: "Qui dirige les missions d'audit IT ?", a: "Chaque mission est dirigée par un associé du cabinet à la fois expert-comptable, commissaire aux comptes et data analyste, qui mobilise selon le périmètre des profils pluridisciplinaires." },
 ];
 
 export default function Page() {
@@ -293,6 +302,8 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      <FaqSection items={FAQ} path="/audit-organisationnel" intro={<h2>Vos questions sur <em>l'audit opérationnel &amp; IT</em></h2>} />
 
       <section className="mkt-cta">
         <div className="mkt-cta-in">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "../_components/seo-jsonld";
+import { FaqSection } from "../_components/faq-section";
 
 export const metadata: Metadata = {
   title: "Formation",
@@ -49,6 +50,27 @@ const PUBLICS = [
   { t: "Experts-comptables & cabinets", d: "Digitalisation, réglementation, nouvelles missions de conseil et réorganisation du cabinet à l'ère de l'IA." },
 ];
 
+const FAQ = [
+  { q: "À qui s'adressent les formations IA de Trevys ?", a: "Aux DAF et directions financières, aux DSI, ainsi qu'aux experts-comptables et à leurs équipes (associés, managers, collaborateurs, référents IA)." },
+  { q: "Les formations sont-elles certifiées Qualiopi ?", a: "Oui. Les formations sont délivrées par KLARE STUDIO, organisme de formation du groupe certifié Qualiopi, ce qui permet notamment une prise en charge par les dispositifs de financement de la formation professionnelle." },
+  { q: "Quels sujets sont couverts ?", a: "La digitalisation des fonctions finance, la réglementation (IA Act, RGPD, déontologie et secret professionnel) et l'intelligence artificielle : usages en cabinet, prompt, agents IA, pilotage de projets SI finance et data, nouvelles missions de conseil." },
+  { q: "Comment est organisé le catalogue ?", a: "En 10 modules capitalisables répartis sur 3 niveaux de maturité : comprendre et sécuriser, utiliser et déployer, transformer le cabinet. Chaque module dure 7 ou 14 heures et peut être suivi seul ou dans un parcours." },
+  { q: "Faut-il des prérequis techniques ?", a: "Non, la plupart des modules ne demandent aucun prérequis technique, seulement une connaissance des processus de l'organisation. Le module sur les agents IA suppose de maîtriser les fondamentaux de l'IA." },
+  { q: "Comment lancer un projet de formation ?", a: "Exprimez votre besoin via le formulaire de contact (sujet « Formation ») ou prenez rendez-vous : nous construisons avec vous le parcours adapté à votre équipe." },
+];
+
+const COURSE_LD = {
+  "@context": "https://schema.org",
+  "@graph": MODULES.map((m) => ({
+    "@type": "Course",
+    name: m.t,
+    description: `Module ${m.n} de l'Académie IA des cabinets — ${m.h}.`,
+    inLanguage: "fr-FR",
+    provider: { "@id": "https://www.trevys.fr/#organization" },
+    hasCourseInstance: { "@type": "CourseInstance", courseMode: "Onsite", courseWorkload: m.h === "14 heures" ? "PT14H" : "PT7H" },
+  })),
+};
+
 export default function Page() {
   return (
     <>
@@ -59,6 +81,8 @@ export default function Page() {
         path="/formation"
         serviceType="Formation professionnelle"
       />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(COURSE_LD) }} />
 
       <header className="mkt-phead">
         <div className="mkt-phead-in">
@@ -160,6 +184,8 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      <FaqSection items={FAQ} path="/formation" intro={<h2>Vos questions sur <em>nos formations</em></h2>} />
 
       <section className="mkt-cta">
         <div className="mkt-cta-in">
