@@ -9,6 +9,7 @@ const TYPE_LABEL: Record<string, string> = {
   article: "Article de blog",
   linkedin: "Post LinkedIn (sujet libre)",
   "linkedin-article": "Post LinkedIn — dernier article publié",
+  "gbp-post": "Post Google Business (fiche Maps)",
   instagram: "Post Instagram",
   newsletter: "Newsletter",
 };
@@ -26,6 +27,7 @@ function RoutineFields({ defaults }: { defaults?: { label?: string; type?: strin
           <select name="type" defaultValue={defaults?.type ?? "article"}>
             <option value="article">Article de blog (brouillon)</option>
             <option value="linkedin-article">Post LinkedIn — dernier article publié (brouillon)</option>
+            <option value="gbp-post">Post Google Business — fiche Maps (texte à copier-coller)</option>
             <option value="linkedin">Post LinkedIn — sujet libre (brouillon)</option>
             <option value="instagram">Post Instagram (brouillon)</option>
             <option value="newsletter">Newsletter (brouillon)</option>

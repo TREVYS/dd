@@ -1,6 +1,6 @@
 import { parisToday } from "@/lib/dates";
 import { listRoutines, updateRoutine, isDue, inferRoutineType, type Routine } from "@/lib/alfred-routines";
-import { draftArticle, draftSocialPost, draftNewsletter } from "@/lib/comms-agent";
+import { draftArticle, draftSocialPost, draftNewsletter, draftGbpPost } from "@/lib/comms-agent";
 import { addItem } from "@/lib/editorial";
 import { addPost, listPosts } from "@/lib/social-posts";
 import { addCampaign } from "@/lib/newsletter-campaigns";
@@ -54,6 +54,26 @@ export async function runRoutine(r: Routine): Promise<string> {
     });
     return `Brouillon de post LinkedIn créé pour « ${latest.title} » (image de l'article reprise).`;
   }
+  if (r.type === "gbp-post") {
+    // Post de la fiche Google Business Profile : sur le dernier article publié
+    // (ou la consigne de la routine). Aucune API Google n'est connectée : le
+    // texte est rangé en brouillon dans le planning éditorial et envoyé en
+    // entier sur Telegram, prêt à copier-coller dans la fiche.
+    const latest = getAllPosts()[0];
+    const url = latest ? `${SITE_URL}/blog/${latest.slug}` : `${SITE_URL}/rendez-vous`;
+    const subject = r.topic.trim() || (latest ? `${latest.title}${latest.excerpt ? ` — ${latest.excerpt}` : ""}` : "le cabinet Trevys");
+    const content = await draftGbpPost(`${subject}\nLIEN à inclure : ${url}`);
+    addItem({
+      date: parisToday(),
+      type: "idee",
+      title: `Post Google Business — ${latest && !r.topic.trim() ? latest.title : subject.slice(0, 80)}`,
+      status: "brouillon",
+      excerpt: content.slice(0, 160),
+      image: latest?.image,
+      body: content,
+    });
+    return `Brouillon de post Google Business créé.\n\n${content}`;
+  }
   if (r.type === "newsletter") {
     const n = await draftNewsletter(r.topic);
     addCampaign(n.subject, n.body);
@@ -90,7 +110,9 @@ export async function runDueRoutines(): Promise<void> {
         const result = await runRoutine(r);
         updateRoutine(r.id, { lastResult: result });
         const readyToPublish = r.type === "linkedin-article" && result.startsWith("Brouillon de post LinkedIn créé");
-        const message = readyToPublish
+        const message = r.type === "gbp-post"
+          ? `📍 Routine « ${r.label} » — à copier-coller dans votre fiche Google Business (Ajouter une actualité) :\n\n${result.replace(/^Brouillon de post Google Business créé\.\n\n/, "")}`
+          : readyToPublish
           ? `🤖 ${result}\n\nRépondez simplement « go » ici pour que je le publie sur votre Page LinkedIn, ou dites-moi ce que vous voulez changer.`
           : `🤖 Routine « ${r.label} » : ${result}. À valider dans le cockpit.`;
         sendTelegram(message).catch(() => {});

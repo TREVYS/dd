@@ -276,7 +276,7 @@ const TOOLS = [
       type: "object" as const,
       properties: {
         label: { type: "string", description: "Nom court de la routine, ex. « Article hebdo RFE »" },
-        type: { type: "string", enum: ["article", "linkedin", "instagram", "newsletter"] },
+        type: { type: "string", enum: ["article", "linkedin", "instagram", "newsletter", "linkedin-article", "gbp-post"], description: "linkedin-article = post LinkedIn sur le dernier article publié ; gbp-post = post pour la fiche Google Business Profile (Google Maps), texte à copier-coller" },
         freq: { type: "string", enum: ["quotidienne", "hebdomadaire", "mensuelle"] },
         weekday: { type: "number", description: "Jour de la semaine si hebdomadaire (0=dimanche … 6=samedi)" },
         monthday: { type: "number", description: "Jour du mois (1-28) si mensuelle" },
@@ -1090,6 +1090,28 @@ export async function draftSocialPost(
     .trim();
 
   return { content: content || topic, generated: true };
+}
+
+// Rédige un post Google Business Profile (fiche Google Maps) : texte court,
+// local, sans hashtags, à copier-coller dans la fiche (pas d'API connectée).
+export async function draftGbpPost(topic: string): Promise<string> {
+  const apiKey = getSetting("anthropicApiKey");
+  if (!apiKey) return `${topic}\n\nCabinet Trevys — 1 rue Le Nôtre, Paris 16e. Prenez rendez-vous sur www.trevys.fr.`;
+  const { default: AnthropicSDK } = await import("@anthropic-ai/sdk");
+  const client = new AnthropicSDK({ apiKey });
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 800,
+    system:
+      `${alfredSystemBlock()}\n\nCONNAISSANCE DU SITE :\n${siteKnowledgeBlock()}\n\n` +
+      "Tu rédiges UNIQUEMENT le texte final d'un post pour la fiche Google Business Profile (Google Maps) du cabinet, sans commentaire ni balise. " +
+      "FORMAT : 80 à 150 mots, 2-3 courts paragraphes, AUCUN hashtag, au plus 1 emoji. Ancrage local naturel (cabinet d'expertise comptable et de conseil à Paris 16e) " +
+      "et un mot-clé métier pertinent, sans bourrage. Termine par une invitation claire (lire l'article / prendre rendez-vous) avec le lien fourni seul sur sa ligne. " +
+      "Ton professionnel et chaleureux, pas de style corporate creux." + feedbackBlock(),
+    messages: [{ role: "user", content: `Rédige un post Google Business Profile sur : ${topic}` }],
+  });
+  const content = res.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("").trim();
+  return content || topic;
 }
 
 // Rédige une proposition de réponse à un message client reçu sur WhatsApp

@@ -6,7 +6,7 @@ import crypto from "node:crypto";
 // semaine, en brouillon, pour validation). Stockées dans data/alfred-routines.json.
 const FILE = path.join(process.cwd(), "data", "alfred-routines.json");
 
-export type RoutineType = "article" | "linkedin" | "instagram" | "newsletter" | "linkedin-article";
+export type RoutineType = "article" | "linkedin" | "instagram" | "newsletter" | "linkedin-article" | "gbp-post";
 
 // Corrige un type incohérent : si le nom ou la consigne parlent clairement de
 // LinkedIn/Instagram/newsletter alors que le type est resté « article »

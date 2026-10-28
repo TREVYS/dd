@@ -25,6 +25,7 @@ const RFE = { label: "Facturation électronique", href: "/facturation-electroniq
 const EC = { label: "Notre expertise comptable", href: "/expertise-comptable" };
 const CONSEIL = { label: "Notre offre de conseil", href: "/consulting" };
 const IA = { label: "Intelligence artificielle", href: "/intelligence-artificielle" };
+const FORMATION = { label: "Nos formations", href: "/formation" };
 const AUDIT = { label: "Audit opérationnel & IT", href: "/audit-organisationnel" };
 
 export const LOCAL_PAGES: LocalPage[] = [
@@ -357,6 +358,72 @@ export const LOCAL_PAGES: LocalPage[] = [
       { q: "Que contient la restitution ?", a: "Une cartographie des processus, les dysfonctionnements constatés avec leur impact estimé, et un plan d'action priorisé. Le tout présenté à la direction, pas seulement transmis par e-mail." },
     ],
     liens: [AUDIT, IA, RDV],
+  },
+  {
+    famille: "conseil",
+    slug: "audit-it-paris",
+    h1: "Audit IT à Paris",
+    title: "Audit IT et contrôles généraux informatiques à Paris — Trevys",
+    description:
+      "Audit IT à Paris : contrôles généraux informatiques (ITGC), renfort aux commissaires aux comptes, revue des droits et habilitations, audit de la Piste d'Audit Fiable côté systèmes.",
+    chapeau:
+      "Vos comptes reposent sur vos systèmes : accès, paramétrages, interfaces, traçabilité. Depuis notre cabinet du 16ᵉ arrondissement, nous auditons ces systèmes pour les directions financières parisiennes et intervenons en renfort des commissaires aux comptes — chaque mission dirigée par un associé à la fois expert-comptable, commissaire aux comptes et data analyste.",
+    lieu: "Paris et Île-de-France",
+    atouts: [
+      { titre: "Renfort aux commissaires aux comptes", texte: "Appui sur le volet informatique des missions de certification : revue des contrôles généraux informatiques, tests sur les accès et la séparation des tâches dans les systèmes financiers." },
+      { titre: "Droits, accès et interfaces", texte: "Cartographie des habilitations, cumuls de droits incompatibles, comptes à privilèges, fiabilité des flux entre ERP, outils métier et plateformes de facturation." },
+      { titre: "Piste d'Audit Fiable", texte: "Vérification côté systèmes de l'authenticité, de l'intégrité et de la lisibilité des factures — un enjeu clé à l'approche des échéances de la facturation électronique." },
+    ],
+    etapes: [
+      { titre: "Cadrage", texte: "Périmètre applicatif, interlocuteurs IT et finance, calendrier aligné sur votre clôture ou sur l'intervention de votre commissaire aux comptes." },
+      { titre: "Revue des contrôles", texte: "Accès et habilitations, gestion des changements, exploitation et sauvegardes, interfaces : tests sur pièces et extractions." },
+      { titre: "Analyse des écarts", texte: "Constats factuels, risques classés selon leur impact sur la fiabilité de l'information financière." },
+      { titre: "Rapport et plan d'action", texte: "Ce qui doit être corrigé avant la prochaine clôture, et ce qui s'inscrit dans une trajectoire plus longue." },
+    ],
+    chiffres: [
+      { valeur: "1 associé", legende: "expert-comptable, CAC et data analyste, à la tête de chaque mission" },
+      { valeur: "ITGC", legende: "accès, changements, exploitation : les contrôles qui fondent la fiabilité" },
+      { valeur: "Paris 16ᵉ", legende: "cabinet au 1 rue Le Nôtre, interventions dans toute l'Île-de-France" },
+    ],
+    faq: [
+      { q: "Intervenez-vous en renfort de notre commissaire aux comptes ?", a: "Oui. Nous appuyons les équipes d'audit légal sur le volet informatique de la certification des comptes, en coordination avec elles, notamment sur la revue des contrôles généraux informatiques et des droits d'accès." },
+      { q: "Qu'est-ce que les contrôles généraux informatiques (ITGC) ?", a: "Ce sont les contrôles qui garantissent la fiabilité d'un système d'information : gestion des accès et des habilitations, gestion des changements applicatifs, exploitation et sauvegardes." },
+      { q: "Quand réaliser un audit IT ?", a: "Avant une clôture, avant ou après une migration d'ERP, ou à l'approche des échéances de la facturation électronique pour sécuriser la Piste d'Audit Fiable." },
+    ],
+    liens: [AUDIT, RFE, RDV],
+  },
+  {
+    famille: "conseil",
+    slug: "formation-ia-paris",
+    h1: "Formation IA pour la finance à Paris",
+    title: "Formation IA pour DAF, DSI et experts-comptables à Paris — Trevys",
+    description:
+      "Formations à l'intelligence artificielle pour DAF, directions financières, DSI et cabinets d'expertise comptable à Paris : IA générative, IA Act, RGPD, agents IA. Organisme certifié Qualiopi.",
+    chapeau:
+      "L'Académie IA des cabinets et des directions financières forme vos équipes, à Paris ou dans vos locaux, à un usage de l'IA à la fois utile et sécurisé : comprendre, déployer, puis transformer. Les formations sont délivrées par un organisme du groupe certifié Qualiopi.",
+    lieu: "Paris et Île-de-France",
+    atouts: [
+      { titre: "Pensée pour la finance", texte: "Des cas d'usage tirés du quotidien des directions financières et des cabinets : révision, clôture, reporting, conseil aux dirigeants." },
+      { titre: "Réglementation incluse", texte: "IA Act, RGPD, déontologie et secret professionnel : un module dédié pour sécuriser les usages avant de les déployer." },
+      { titre: "Certifiée Qualiopi", texte: "Positionnement initial, évaluation, livrables remis à chaque participant — et une prise en charge possible par les financements de la formation professionnelle." },
+    ],
+    etapes: [
+      { titre: "Expression du besoin", texte: "Vos équipes, leur niveau, vos objectifs : un échange pour choisir les modules pertinents parmi les 10 du catalogue." },
+      { titre: "Parcours sur mesure", texte: "Modules seuls ou parcours combinés, sur 3 niveaux de maturité, de 7 à 14 heures par module." },
+      { titre: "Sessions", texte: "Ateliers pratiques en groupes de 8 à 12 participants, à Paris ou dans vos locaux." },
+      { titre: "Évaluation et suivi", texte: "Évaluation finale, livrables opérationnels (prompts, chartes, matrices d'usage) et fiche d'expérimentation à 30 jours." },
+    ],
+    chiffres: [
+      { valeur: "10 modules", legende: "répartis sur 3 niveaux de maturité" },
+      { valeur: "8-12", legende: "participants par session, pour un format réellement pratique" },
+      { valeur: "Qualiopi", legende: "organisme de formation du groupe certifié" },
+    ],
+    faq: [
+      { q: "À qui s'adressent ces formations ?", a: "Aux DAF et directions financières, aux DSI, ainsi qu'aux experts-comptables et à leurs équipes — associés, managers, collaborateurs et référents IA." },
+      { q: "Faut-il des connaissances techniques ?", a: "Non pour la plupart des modules : une connaissance des processus de l'organisation suffit. Le module sur les agents IA suppose d'avoir suivi les fondamentaux." },
+      { q: "Les formations ont-elles lieu à Paris ?", a: "Oui, à Paris ou directement dans vos locaux en Île-de-France. Les formats s'adaptent à vos contraintes d'agenda." },
+    ],
+    liens: [FORMATION, { label: "Exprimer un besoin", href: "/contact?sujet=formation" }, RDV],
   },
 
   // --- Pages « situation » : intention forte, prospects déjà décidés --------

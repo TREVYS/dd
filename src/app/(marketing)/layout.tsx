@@ -142,14 +142,6 @@ const JSON_LD = {
         "Juridique et fiscal",
         "Intelligence artificielle",
       ],
-      // Reflète la note affichée sur la fiche Google Business Profile du
-      // cabinet ("Expert Comptable | TREVYS") — à remettre à jour si elle
-      // évolue sensiblement, pour rester cohérent avec ce que Google montre.
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "5.0",
-        reviewCount: "20",
-      },
     },
     {
       "@type": "WebSite",
