@@ -20,7 +20,7 @@ const PAGES = `- / — Accueil : « L'expertise du chiffre, la vitesse de la tec
 - /consulting — Métier 2 : transformation, SI Finance, projets ERP, facturation électronique ; cartes consultants (prénoms seuls).
 - /intelligence-artificielle — Expertise : intégrateur IA 360° (sécurité IT, architecture, RAG, données), pourquoi Trevys s'empare de ces sujets.
 - /facturation-electronique — Expertise phare : chef d'orchestre de la réforme (RFE), calendrier 2026-2027, 4 flux, formats, méthode en 5 phases, FAQ. Guide RFE téléchargeable.
-- /audit-organisationnel — Expertise : processus, contrôle interne, gouvernance, gros pavé Piste d'Audit Fiable (PAF, art. 289 VII CGI).
+- /audit-organisationnel — Expertise « Audit opérationnel & IT » : processus, contrôle interne, gouvernance, audit IT (ITGC, renfort aux CAC, droits & habilitations, interfaces), mission dirigée par un associé expert-comptable, CAC et data analyste, gros pavé Piste d'Audit Fiable (PAF, art. 289 VII CGI).
 - /le-cabinet — Genèse (fondé en 2018 par John Lévy), mission, valeurs, les 4 associés.
 - /le-cabinet/<slug> — Fiches associés (résumé, grands chantiers, apport).
 - /notre-ecosysteme — Groupe TREVYS : KLARE STUDIO (pilotage prédictif), WELL&WIZ (conseil & freelances), URCA (commissariat aux comptes), SONAM IA (ESN consultants IA). Partenaires : PHOENIX (Dakar), DECA Paris (droit social), NewTech (automatisation & LLM).

@@ -48,7 +48,7 @@ export function Footer() {
             <h5>Expertises</h5>
             <Link href="/intelligence-artificielle">Intelligence artificielle</Link>
             <Link href="/facturation-electronique">Facturation électronique</Link>
-            <Link href="/audit-organisationnel">Audit organisationnel</Link>
+            <Link href="/audit-organisationnel">Audit opérationnel &amp; IT</Link>
           </div>
           <div className="col">
             <h5>Le cabinet</h5>

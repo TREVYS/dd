@@ -19,7 +19,6 @@ const ROUTES = [
   "/intelligence-artificielle",
   "/facturation-electronique",
   "/audit-organisationnel",
-  "/audit-it",
   "/formation",
   "/le-cabinet",
   "/notre-ecosysteme",

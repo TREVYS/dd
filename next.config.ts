@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
   // on évite qu'elles soient empaquetées par le bundler (mémoire de build,
   // compatibilité runtime), elles restent lues depuis node_modules.
   serverExternalPackages: ["pdf-parse", "jszip", "sharp"],
+  async redirects() {
+    return [{ source: "/audit-it", destination: "/audit-organisationnel#audit-it", permanent: true }];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

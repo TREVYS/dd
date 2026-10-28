@@ -25,7 +25,7 @@ const RFE = { label: "Facturation électronique", href: "/facturation-electroniq
 const EC = { label: "Notre expertise comptable", href: "/expertise-comptable" };
 const CONSEIL = { label: "Notre offre de conseil", href: "/consulting" };
 const IA = { label: "Intelligence artificielle", href: "/intelligence-artificielle" };
-const AUDIT = { label: "Audit organisationnel", href: "/audit-organisationnel" };
+const AUDIT = { label: "Audit opérationnel & IT", href: "/audit-organisationnel" };
 
 export const LOCAL_PAGES: LocalPage[] = [
   {

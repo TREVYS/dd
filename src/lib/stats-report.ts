@@ -17,7 +17,7 @@ const PAGE_LABELS: Record<string, string> = {
   "/expertise-comptable": "Expertise comptable",
   "/consulting": "Consulting",
   "/intelligence-artificielle": "Intelligence artificielle",
-  "/audit-organisationnel": "Audit organisationnel",
+  "/audit-organisationnel": "Audit opérationnel & IT",
   "/le-cabinet": "Le cabinet",
   "/references": "Références",
   "/contact": "Contact",

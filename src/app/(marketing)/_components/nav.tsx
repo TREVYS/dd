@@ -6,11 +6,10 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 import { LangToggle } from "./lang-toggle";
 
-// Nos deux cœurs de métier.
+// Nos trois métiers.
 const METIERS = [
   { href: "/expertise-comptable", label: "Expertise comptable", d: "Tenue, révision, bilan augmenté" },
   { href: "/consulting", label: "Consulting", d: "Pilotage, valorisation, stratégie" },
-  { href: "/audit-it", label: "Audit IT", d: "ITGC, PAF, renfort CAC" },
   { href: "/formation", label: "Formation", d: "Académie IA, certifiée Qualiopi" },
 ];
 
@@ -18,7 +17,7 @@ const METIERS = [
 const EXPERTISES = [
   { href: "/intelligence-artificielle", label: "Intelligence artificielle", d: "Automatisation & agents métier" },
   { href: "/facturation-electronique", label: "Facturation électronique", d: "Mise en conformité 2026" },
-  { href: "/audit-organisationnel", label: "Audit organisationnel", d: "Processus, contrôle interne, piste d'audit fiable" },
+  { href: "/audit-organisationnel", label: "Audit opérationnel & IT", d: "Processus, ITGC, renfort CAC, piste d'audit fiable" },
 ];
 
 const CABINET = [
@@ -38,13 +37,12 @@ const PRIMARY = [
 const M_METIERS = [
   { href: "/expertise-comptable", label: "Expertise comptable" },
   { href: "/consulting", label: "Conseil" },
-  { href: "/audit-it", label: "Audit IT" },
   { href: "/formation", label: "Formation" },
 ];
 const M_EXPERTISES = [
   { href: "/intelligence-artificielle", label: "Intelligence artificielle" },
   { href: "/facturation-electronique", label: "Facturation électronique" },
-  { href: "/audit-organisationnel", label: "Audit organisationnel" },
+  { href: "/audit-organisationnel", label: "Audit opérationnel & IT" },
 ];
 const M_CABINET = [
   { href: "/le-cabinet", label: "Le cabinet" },
