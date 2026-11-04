@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
   // Librairies Node lourdes chargées à la demande (extraction de documents) :
   // on évite qu'elles soient empaquetées par le bundler (mémoire de build,
   // compatibilité runtime), elles restent lues depuis node_modules.
+  // Sur l'hébergement Gandi, l'étape « Running TypeScript » du build manque
+  // de threads et plante (pthread_create). Le typage est vérifié avant chaque
+  // envoi (tsc --noEmit) : on le saute uniquement pour le build Gandi.
+  typescript: { ignoreBuildErrors: process.env.SKIP_BUILD_TYPECHECK === "1" },
   serverExternalPackages: ["pdf-parse", "jszip", "sharp"],
   async redirects() {
     return [{ source: "/audit-it", destination: "/audit-organisationnel#audit-it", permanent: true }];

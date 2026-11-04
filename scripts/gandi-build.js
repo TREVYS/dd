@@ -18,6 +18,9 @@ const result = spawnSync(process.execPath, [nextBin, "build"], {
     // éviter que le processus soit tué (OOM) en pleine compilation.
     NODE_OPTIONS: `${process.env.NODE_OPTIONS || ""} --max-old-space-size=1536`.trim(),
     NEXT_TELEMETRY_DISABLED: "1",
+    // Saute la vérification TypeScript du build (manque de threads chez Gandi) ;
+    // le typage est contrôlé avant chaque envoi du code.
+    SKIP_BUILD_TYPECHECK: process.env.SKIP_BUILD_TYPECHECK || "1",
   },
 });
 
