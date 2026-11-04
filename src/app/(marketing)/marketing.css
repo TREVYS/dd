@@ -1316,3 +1316,37 @@ html,body{overflow-x:hidden}
   .mkt-case-avatar{width:44px;height:44px;border-radius:12px;font-size:1rem}
   .mkt-case-result{flex-direction:column}
 }
+
+/* Nous rejoindre — bloc réseau de freelances */
+.mkt-fl{display:grid;grid-template-columns:1fr 300px;gap:2rem;align-items:stretch;
+  background:radial-gradient(120% 140% at 0% 0%,#2A2118 0%,#1A1510 60%);color:#fff;
+  border-radius:var(--r);padding:2.8rem;position:relative;overflow:hidden;box-shadow:0 30px 60px -30px rgba(26,21,16,.6)}
+.mkt-fl::before{content:"";position:absolute;width:420px;height:420px;right:-140px;top:-160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,129,31,.45),transparent 65%);pointer-events:none}
+.mkt-fl>*{position:relative}
+.mkt-fl-eyebrow{display:inline-block;font-size:.74rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:#FBB040;background:rgba(251,176,64,.12);border:1px solid rgba(251,176,64,.3);padding:.35rem .8rem;border-radius:100px}
+.mkt-fl h2{font-size:clamp(1.6rem,3.2vw,2.3rem);color:#fff;margin:1rem 0 .9rem}
+.mkt-fl-main>p{color:rgba(255,255,255,.78);line-height:1.75;font-size:1rem;max-width:620px}
+.mkt-fl-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.4rem 0}
+.mkt-fl-chips span{font-size:.8rem;font-weight:700;color:#fff;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);padding:.4rem .85rem;border-radius:100px}
+.mkt-fl-steps{list-style:none;margin:0 0 1.8rem;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.mkt-fl-steps li{display:flex;align-items:center;gap:.7rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;padding:.85rem .95rem;font-size:.86rem;line-height:1.45;color:rgba(255,255,255,.88)}
+.mkt-fl-steps b{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:var(--grad);color:#fff;font-weight:800;font-size:.85rem}
+.mkt-fl-contact{background:#fff;color:var(--ink);border-radius:20px;padding:1.6rem 1.4rem;text-align:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.25rem}
+.mkt-fl-photo{width:110px;height:110px;border-radius:50%;overflow:hidden;margin-bottom:.8rem;
+  box-shadow:0 0 0 4px #fff,0 0 0 6px #F5811F}
+.mkt-fl-photo .mkt-team-photo,.mkt-fl-photo .mkt-team-fallback{width:100%;height:100%;aspect-ratio:1/1;border-radius:0}
+.mkt-fl-contact-k{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.mkt-fl-contact b{font-size:1.15rem}
+.mkt-fl-contact-r{font-size:.84rem;color:var(--magenta);font-weight:700}
+.mkt-fl-contact p{font-size:.86rem;color:var(--ink2);line-height:1.55;margin:.6rem 0 .5rem}
+.mkt-fl-contact-more{font-size:.82rem;font-weight:700;color:var(--violet)}
+@media(max-width:900px){.mkt-fl{grid-template-columns:1fr;padding:2rem 1.5rem}.mkt-fl-steps{grid-template-columns:1fr}}
+@media(max-width:520px){.mkt-fl .btn{width:100%;justify-content:center;text-align:center}}
+.mkt .mkt-fl-btn{background:var(--grad);color:#fff;border:none;box-shadow:0 14px 30px -12px rgba(245,129,31,.7)}
+.mkt .mkt-fl-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
