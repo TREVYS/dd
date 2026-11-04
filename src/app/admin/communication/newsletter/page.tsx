@@ -49,6 +49,12 @@ export default async function NewsletterAdmin({
   };
   const activeCount = subs.filter((x) => isActive(x.email)).length;
   const clientCount = subs.filter((x) => x.client === true).length;
+  // Nouveaux inscrits : inscriptions venues du site sur 30 jours, plus toute
+  // inscription pas encore vue — du plus récent au plus ancien.
+  const thirty = Date.now() - 30 * 24 * 3600 * 1000;
+  const newcomers = subs
+    .filter((x) => !x.read || (x.source !== "import" && new Date(x.date).getTime() > thirty))
+    .sort((x, y) => y.date.localeCompare(x.date));
 
   // Articles publiés (sélecteur de diffusion) + vidéos du site.
   const videos = listVideos();
@@ -95,6 +101,7 @@ export default async function NewsletterAdmin({
         <>
           <div className="adm-grid">
             <div className="adm-kpi"><div className="k">Inscrits</div><div className="v o">{subs.length}</div></div>
+            <div className="adm-kpi"><div className="k">Nouveaux (30 j)</div><div className="v o">{newcomers.length}</div></div>
             <div className="adm-kpi"><div className="k">Clients du cabinet</div><div className="v">{clientCount}</div></div>
             <div className="adm-kpi"><div className="k">Actifs (90 j)</div><div className="v">{activeCount}</div></div>
             <div className="adm-kpi"><div className="k">Désinscrits</div><div className="v">{unsubscribed.length}</div></div>
@@ -109,6 +116,46 @@ export default async function NewsletterAdmin({
                   : "Aucun contact exploitable dans ce fichier — vérifiez qu'il contient une colonne d'adresses e-mail."}
             </div>
           )}
+
+          <div className="adm-card">
+            <h2>
+              Nouveaux inscrits{" "}
+              <span className="muted" style={{ fontWeight: 600, fontSize: ".82rem", color: "var(--ink3)" }}>— 30 derniers jours</span>
+            </h2>
+            {newcomers.length === 0 ? (
+              <p className="muted" style={{ color: "var(--ink3)", fontSize: ".88rem" }}>
+                Aucune nouvelle inscription ces 30 derniers jours.
+              </p>
+            ) : (
+              <div style={{ overflowX: "auto", maxHeight: 420, overflowY: "auto" }}>
+                <table className="adm-table">
+                  <thead>
+                    <tr><th>Date</th><th>Contact</th><th>Inscrit depuis</th></tr>
+                  </thead>
+                  <tbody>
+                    {newcomers.map((s) => (
+                      <tr key={s.email} style={!s.read ? { fontWeight: 700 } : undefined}>
+                        <td style={{ whiteSpace: "nowrap" }}>
+                          {!s.read && <span style={{ color: "#E26A0F", marginRight: ".4rem" }} title="Pas encore vu">●</span>}
+                          {new Date(s.date).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Paris" })}
+                        </td>
+                        <td>
+                          <a className="adm-link" href={`mailto:${s.email}`}>{s.email}</a>
+                          {s.name && <div className="muted">{s.name}</div>}
+                        </td>
+                        <td className="muted">
+                          {s.source === "import" ? "Import de fichier"
+                            : s.source === "invitation" ? "Invitation par e-mail"
+                            : s.source === "Recevez nos analyses" ? "Formulaire du site « Recevez nos analyses »"
+                            : s.source === "site" ? "Site web" : s.source}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
 
           <div className="adm-card">
             <h2>Vos inscrits</h2>
