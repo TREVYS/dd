@@ -7,6 +7,13 @@ import { ApplyForm } from "./apply-form";
 
 export const dynamic = "force-dynamic";
 
+const WHY = [
+  { t: "Des missions qui comptent", d: "Expertise comptable et conseil, au contact direct des dirigeants." },
+  { t: "La technologie en allié", d: "IA et automatisation : moins de ressaisie, plus de conseil." },
+  { t: "Au cœur de la réforme", d: "Facturation électronique : nous participons à sa construction." },
+  { t: "Progression rapide", d: "Équipe à taille humaine, responsabilités qui grandissent vite." },
+];
+
 export async function generateMetadata({
   params,
 }: {
@@ -30,6 +37,7 @@ export default async function JobPage({
   const { slug } = await params;
   const j = getJob(slug);
   if (!j || j.status !== "publie") notFound();
+  const conseil = /conseil|consult/i.test(j.category);
 
   // Compteur de vues (best effort).
   try {
@@ -38,23 +46,49 @@ export default async function JobPage({
 
   return (
     <>
-      <header className="mkt-phead">
-        <div className="mkt-phead-in">
-          <nav className="mkt-artcrumb" aria-label="Fil d'Ariane" style={{ marginBottom: "1rem" }}>
-            <Link href="/nous-rejoindre">← Toutes les offres</Link>
-          </nav>
-          <span className="eyebrow">{j.category}</span>
-          <h1 style={{ textTransform: "none" }}>{j.title}</h1>
-          <p>{j.summary}</p>
-          <div className="mkt-jobd-facts">
-            <span><small>Contrat</small>{j.contract}</span>
-            <span><small>Lieu</small>{j.location}</span>
-            <span><small>Pôle</small>{j.category}</span>
+      <section className="mkt-jobh-sec">
+        <div className="wrap">
+          <div className={`mkt-jobh${conseil ? " is-conseil" : ""}`}>
+            <div className="mkt-jobh-main">
+              <Link className="mkt-jobh-back" href="/nous-rejoindre">← Toutes les offres</Link>
+              <span className="mkt-fl-eyebrow">{j.category} · Nous recrutons</span>
+              <h1>{j.title}</h1>
+              <p>{j.summary}</p>
+              <div className="mkt-jobh-facts">
+                <span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" /></svg>
+                  {j.contract}
+                </span>
+                <span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 1114 0c0 4.8-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                  {j.location}
+                </span>
+                <span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" /></svg>
+                  {j.category}
+                </span>
+              </div>
+              <div className="mkt-jobh-cta">
+                <a className="btn mkt-fl-btn" href="#postuler">Postuler maintenant →</a>
+                <a className="mkt-jobh-ghost" href="#offre">Lire l&apos;offre</a>
+              </div>
+            </div>
+            <aside className="mkt-jobh-why">
+              <span className="mkt-jobh-why-k">Pourquoi Trevys ?</span>
+              <ul>
+                {WHY.map((w) => (
+                  <li key={w.t}>
+                    <b>{w.t}</b>
+                    <span>{w.d}</span>
+                  </li>
+                ))}
+              </ul>
+            </aside>
           </div>
         </div>
-      </header>
+      </section>
 
-      <section className="sec" style={{ paddingTop: "1rem" }}>
+      <section className="sec" id="offre" style={{ paddingTop: "2.5rem", scrollMarginTop: "90px" }}>
         <div className="wrap mkt-jobd">
           <article
             className="mkt-article mkt-jobd-art"
@@ -64,24 +98,23 @@ export default async function JobPage({
             <div className="mkt-jobd-card">
               <span className="mkt-jobd-k">En bref</span>
               <dl>
-                <dt>Poste</dt><dd>{j.title}</dd>
                 <dt>Contrat</dt><dd>{j.contract}</dd>
                 <dt>Lieu</dt><dd>{j.location}</dd>
                 <dt>Pôle</dt><dd>{j.category}</dd>
               </dl>
               <a className="btn mkt-fl-btn mkt-jobd-btn" href="#postuler">Postuler à cette offre</a>
-              <p className="mkt-jobd-note">Réponse rapide — chaque candidature est lue par un associé.</p>
+              <p className="mkt-jobd-note">Chaque candidature est lue par un associé — réponse rapide.</p>
             </div>
           </aside>
         </div>
       </section>
 
-      <section className="sec" id="postuler" style={{ scrollMarginTop: "100px" }}>
-        <div className="wrap" style={{ maxWidth: 820 }}>
+      <section className="sec" id="postuler" style={{ scrollMarginTop: "90px", paddingTop: 0 }}>
+        <div className="wrap">
           <div className="mkt-jobd-apply">
-            <div className="shead">
+            <div className="mkt-jobd-apply-head">
               <span className="mkt-fl-eyebrow">Candidature</span>
-              <h2>Postuler à cette <em>offre</em></h2>
+              <h2>Envie de nous <em>rejoindre</em> ?</h2>
               <p>Quelques informations et votre CV : nous revenons vers vous rapidement.</p>
             </div>
             <ApplyForm jobSlug={j.slug} jobTitle={j.title} />
