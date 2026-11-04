@@ -44,23 +44,37 @@ export default function Page() {
             <span className="eyebrow">Nos offres</span>
             <h2>{jobs.length} poste{jobs.length > 1 ? "s" : ""} ouvert{jobs.length > 1 ? "s" : ""}</h2>
           </div>
-          <div className="mkt-jobs">
-            {jobs.map((j) => (
-              <div className="mkt-job-card mkt-consultant" key={j.id}>
-                <div className="mkt-job-tags">
-                  <span className="mkt-job-tag hot">{j.category}</span>
-                  <span className="mkt-job-tag">{j.contract}</span>
-                  <span className="mkt-job-tag">{j.location}</span>
-                </div>
-                <h3>{j.title}</h3>
-                <p>{j.summary}</p>
-                <div className="mkt-team-foot">
-                  <Link className="mkt-consultant-more mkt-stretch" href={`/nous-rejoindre/${j.slug}`}>
-                    <span className="mkt-more-txt">Voir l&apos;offre </span>→
-                  </Link>
-                </div>
-              </div>
-            ))}
+          <div className="mkt-jobx-list">
+            {jobs.map((j) => {
+              const conseil = /conseil|consult/i.test(j.category);
+              return (
+                <Link className={`mkt-jobx${conseil ? " is-conseil" : ""}`} key={j.id} href={`/nous-rejoindre/${j.slug}`}>
+                  <span className="mkt-jobx-ic" aria-hidden="true">
+                    {conseil ? (
+                      <svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 6-6" /></svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5" /></svg>
+                    )}
+                  </span>
+                  <div className="mkt-jobx-body">
+                    <span className="mkt-jobx-cat">{j.category}</span>
+                    <h3>{j.title}</h3>
+                    <p>{j.summary}</p>
+                    <div className="mkt-jobx-meta">
+                      <span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" /></svg>
+                        {j.contract}
+                      </span>
+                      <span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 1114 0c0 4.8-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                        {j.location}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="mkt-jobx-go">Voir l&apos;offre <b aria-hidden="true">→</b></span>
+                </Link>
+              );
+            })}
             {jobs.length === 0 && (
               <p style={{ textAlign: "center", color: "var(--ink3)" }}>
                 Aucune offre ouverte pour l&apos;instant — mais une candidature
@@ -68,6 +82,13 @@ export default function Page() {
                 <a href="mailto:contact@trevys.fr">contact@trevys.fr</a>.
               </p>
             )}
+            <a className="mkt-jobx-spont" href="mailto:contact@trevys.fr?subject=Candidature%20spontanée">
+              <span>
+                <b>Pas d&apos;offre à votre mesure ?</b>
+                Envoyez-nous une candidature spontanée — les bons profils n&apos;attendent pas la bonne annonce.
+              </span>
+              <span className="mkt-jobx-spont-go">Candidature spontanée →</span>
+            </a>
           </div>
         </div>
       </section>
@@ -142,15 +163,6 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="mkt-cta">
-        <div className="mkt-cta-in">
-          <h2>Pas d&apos;offre à votre mesure ?</h2>
-          <p>Les bons profils n&apos;attendent pas la bonne annonce. Écrivez-nous.</p>
-          <a className="btn btn-gold" href="mailto:contact@trevys.fr?subject=Candidature%20spontanée">
-            Candidature spontanée
-          </a>
-        </div>
-      </section>
     </>
   );
 }

@@ -43,36 +43,49 @@ export default async function JobPage({
           <nav className="mkt-artcrumb" aria-label="Fil d'Ariane" style={{ marginBottom: "1rem" }}>
             <Link href="/nous-rejoindre">← Toutes les offres</Link>
           </nav>
-          <div className="mkt-job-tags" style={{ justifyContent: "center", marginBottom: "1rem" }}>
-            <span className="mkt-job-tag hot">{j.category}</span>
-            <span className="mkt-job-tag">{j.contract}</span>
-            <span className="mkt-job-tag">{j.location}</span>
-          </div>
+          <span className="eyebrow">{j.category}</span>
           <h1 style={{ textTransform: "none" }}>{j.title}</h1>
           <p>{j.summary}</p>
-          <div className="mkt-ai-hero-cta" style={{ marginTop: "1.6rem" }}>
-            <a className="btn btn-gold" href="#postuler">Postuler</a>
+          <div className="mkt-jobd-facts">
+            <span><small>Contrat</small>{j.contract}</span>
+            <span><small>Lieu</small>{j.location}</span>
+            <span><small>Pôle</small>{j.category}</span>
           </div>
         </div>
       </header>
 
-      <section className="sec" style={{ paddingTop: "1.5rem" }}>
-        <div className="wrap" style={{ maxWidth: 820 }}>
+      <section className="sec" style={{ paddingTop: "1rem" }}>
+        <div className="wrap mkt-jobd">
           <article
-            className="mkt-article"
+            className="mkt-article mkt-jobd-art"
             dangerouslySetInnerHTML={{ __html: mdToHtml(j.body) }}
           />
+          <aside className="mkt-jobd-side">
+            <div className="mkt-jobd-card">
+              <span className="mkt-jobd-k">En bref</span>
+              <dl>
+                <dt>Poste</dt><dd>{j.title}</dd>
+                <dt>Contrat</dt><dd>{j.contract}</dd>
+                <dt>Lieu</dt><dd>{j.location}</dd>
+                <dt>Pôle</dt><dd>{j.category}</dd>
+              </dl>
+              <a className="btn mkt-fl-btn mkt-jobd-btn" href="#postuler">Postuler à cette offre</a>
+              <p className="mkt-jobd-note">Réponse rapide — chaque candidature est lue par un associé.</p>
+            </div>
+          </aside>
         </div>
       </section>
 
-      <section className="sec band" id="postuler">
-        <div className="wrap" style={{ maxWidth: 720 }}>
-          <div className="shead">
-            <span className="eyebrow">Candidature</span>
-            <h2>Postuler à cette <em>offre</em></h2>
-            <p>Réponse rapide garantie — chaque candidature est lue par un associé.</p>
+      <section className="sec" id="postuler" style={{ scrollMarginTop: "100px" }}>
+        <div className="wrap" style={{ maxWidth: 820 }}>
+          <div className="mkt-jobd-apply">
+            <div className="shead">
+              <span className="mkt-fl-eyebrow">Candidature</span>
+              <h2>Postuler à cette <em>offre</em></h2>
+              <p>Quelques informations et votre CV : nous revenons vers vous rapidement.</p>
+            </div>
+            <ApplyForm jobSlug={j.slug} jobTitle={j.title} />
           </div>
-          <ApplyForm jobSlug={j.slug} jobTitle={j.title} />
         </div>
       </section>
     </>
