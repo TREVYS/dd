@@ -243,6 +243,7 @@ export function Nav({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
           <Link href="/references" onClick={() => setMobileOpen(false)} className={isCur("/references") ? "cur" : ""}>Références</Link>
           <Link href="/blog" onClick={() => setMobileOpen(false)} className={isCur("/blog") ? "cur" : ""}>Ressources</Link>
           <Link href="/nous-rejoindre" onClick={() => setMobileOpen(false)} className={isCur("/nous-rejoindre") ? "cur" : ""}>Nous rejoindre</Link>
+          <a href="https://trevys.licornne.com/espace/connexion/" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>Espace client</a>
           {extraLinks.map((l) => (
             <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className={isCur(l.href) ? "cur" : ""}>
               {l.label}

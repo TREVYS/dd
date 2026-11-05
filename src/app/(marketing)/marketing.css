@@ -249,12 +249,24 @@
   .mkt-nav .nlogo .mkt-logo-full{display:none}
   .mkt-nav .nlogo .mkt-logo-mark{display:block;height:38px;width:38px;border-radius:10px}
 }
-@media(max-width:1000px){
-  /* Sur mobile : bouton compact « Un rdv ? », le reste passe dans le menu */
+/* Menu ☰ sur tablette : contenu centré dans une colonne lisible */
+@media(min-width:761px){.mkt-mobile.open>*{width:100%;max-width:720px;margin-left:auto;margin-right:auto}}
+/* Menu complet : jamais de bouton sur plusieurs lignes */
+.mkt-ncta .btn{white-space:nowrap}
+/* Écrans moyens (grands iPad en paysage, petits portables) : menu compacté */
+@media(max-width:1440px){
+  .mkt-ncta .mkt-ncta-guide{display:none}
+  .mkt-links a,.mkt-links .mkt-drop-trigger{padding-left:.75rem;padding-right:.75rem}
+  .mkt-ncta{gap:.4rem}
+}
+/* Tablettes (iPad portrait et paysage) et mobiles : menu ☰ et bouton « Un rdv ? » */
+@media(max-width:1280px){
   .mkt-links,.mkt-ncta .btn-ghost,.mkt-ncta .mkt-ncta-rdv,.mkt-ncta .mkt-ncta-guide{display:none}
   .mkt-ncta .mkt-ncta-rdvm{display:inline-flex;white-space:nowrap}
   .mkt-ncta .mkt-ncta-postuler{display:inline-flex;white-space:nowrap}
   .mkt-burger{display:flex}
+}
+@media(max-width:1000px){
   .mkt-hero-in{grid-template-columns:1fr}
   .mkt-visual{min-height:380px;order:2}.mkt-copy{order:1}
 }
