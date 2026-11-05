@@ -34,6 +34,7 @@ export function JobForm({ job }: { job?: Job }) {
               <option>Alternance</option>
               <option>Stage</option>
               <option>Freelance</option>
+              <option>Indépendant</option>
             </select>
           </div>
         </div>
