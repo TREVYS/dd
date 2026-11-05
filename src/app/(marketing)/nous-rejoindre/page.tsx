@@ -21,25 +21,12 @@ export default function Page() {
 
   return (
     <>
-      <header className="mkt-phead">
-        <div className="mkt-phead-in">
-          <span className="eyebrow">Nous rejoindre</span>
-          <h1>Construisez le cabinet de <em>demain</em> avec nous</h1>
-          <p>
-            Expertise comptable, conseil, intelligence artificielle : chez
-            Trevys, votre temps est consacré à ce qui crée réellement de la
-            valeur pour les entreprises — pas à la ressaisie.
-          </p>
-          <div className="mkt-ai-hero-cta" style={{ marginTop: "1.8rem" }}>
-            <a className="btn btn-gold" href="#offres">Voir nos offres</a>
-            <a className="btn btn-ghost" href="#freelances">
-              Freelance : rejoindre notre réseau
-            </a>
-          </div>
-        </div>
-      </header>
+      {/* Titre principal de la page pour les moteurs et lecteurs d'écran (l'en-tête visuel a été retiré). */}
+      <h1 style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>
+        Nous rejoindre — offres d&apos;emploi et réseau de freelances Trevys
+      </h1>
 
-      <section className="sec" id="offres" style={{ scrollMarginTop: "100px" }}>
+      <section className="sec" id="offres" style={{ scrollMarginTop: "100px", paddingTop: "calc(var(--nh) + 3rem)" }}>
         <div className="wrap">
           <JobsBoard
             jobs={jobs.map((j) => ({ id: j.id, slug: j.slug, title: j.title, category: j.category, contract: j.contract, location: j.location, summary: j.summary }))}
