@@ -1,5 +1,6 @@
 "use client";
 
+import { AlfredAvatar } from "../alfred-avatar";
 import { useEffect, useRef, useState } from "react";
 
 type Turn = { role: "user" | "assistant"; content: string; actions?: string[] };
@@ -81,7 +82,7 @@ export function CommsChat() {
       <div className="adm-chat-log" ref={scrollRef}>
         {turns.length === 0 && (
           <div className="adm-chat-empty">
-            <div className="adm-chat-ava">🎩</div>
+            <div className="adm-chat-ava big"><AlfredAvatar /></div>
             <p style={{ fontWeight: 700, margin: ".6rem 0 .2rem" }}>Bonjour John, je suis Alfred</p>
             <p style={{ color: "var(--ink2)", fontSize: ".9rem", maxWidth: 460 }}>
               Votre directeur de communication. Je peux <b>rédiger des articles</b>,
@@ -97,7 +98,7 @@ export function CommsChat() {
         )}
         {turns.map((t, i) => (
           <div key={i} className={`adm-msg ${t.role}`}>
-            {t.role === "assistant" && <div className="adm-msg-ava">A</div>}
+            {t.role === "assistant" && <div className="adm-msg-ava"><AlfredAvatar /></div>}
             <div className="adm-msg-body">
               {t.content.split("\n").map((line, j) => (
                 <p key={j} style={{ margin: line ? "0 0 .5rem" : 0 }}>{line}</p>
@@ -114,8 +115,8 @@ export function CommsChat() {
         ))}
         {busy && (
           <div className="adm-msg assistant">
-            <div className="adm-msg-ava">A</div>
-            <div className="adm-msg-body" style={{ color: "var(--ink3)" }}>Le directeur réfléchit…</div>
+            <div className="adm-msg-ava"><AlfredAvatar /></div>
+            <div className="adm-msg-body adm-msg-typing" aria-label="Alfred réfléchit…"><i /><i /><i /></div>
           </div>
         )}
       </div>
@@ -153,11 +154,14 @@ export function CommsChat() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Demandez un article, un post… ou transmettez un fichier 📎"
+          placeholder="Demandez un article, un post…"
           disabled={busy}
         />
-        <button className="adm-btn" type="submit" disabled={busy || !input.trim()}>
-          Envoyer
+        <button className="adm-btn adm-chat-send" type="submit" disabled={busy || !input.trim()} aria-label="Envoyer">
+          <span className="tx">Envoyer</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
         </button>
       </form>
     </div>

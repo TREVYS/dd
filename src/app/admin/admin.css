@@ -707,3 +707,90 @@
   .nl-draftrow .adm-btn{width:100%;text-align:center}
   .adm-card input[type=file]{max-width:100%}
 }
+
+/* ===== Page Alfred : en-tête, conversation ===== */
+.ck-alf-id{display:flex;align-items:center;gap:.9rem;min-width:0;flex:1 1 360px}
+.adm-h.ck-alf-h{flex-wrap:nowrap}
+.ck-alf-h .adm-actions{flex:0 0 auto}
+.ck-alf-av{width:52px;height:52px;flex:0 0 auto;border-radius:50%;overflow:hidden;
+  background:linear-gradient(135deg,#FBB040,#C2410C);box-shadow:0 10px 22px -10px rgba(226,106,15,.7)}
+.ck-alf-on{display:inline-flex;align-items:center;gap:.35rem;vertical-align:middle;margin-left:.4rem;
+  font-size:.68rem;font-weight:800;color:#2E9E6B;background:#E6F4EC;padding:.2rem .55rem;border-radius:100px}
+.ck-alf-on::before{content:"";width:7px;height:7px;border-radius:50%;background:#2E9E6B}
+.adm-chat-ava.big{width:76px;height:76px;overflow:hidden;box-shadow:0 14px 30px -12px rgba(226,106,15,.7)}
+.adm-msg-ava{overflow:hidden}
+.adm-msg-ava .adm-alfred-svg,.adm-chat-ava .adm-alfred-svg{width:100%;height:100%}
+.adm-msg-typing{display:inline-flex;gap:5px;align-items:center;padding:.95rem 1.1rem}
+.adm-msg-typing i{width:7px;height:7px;border-radius:50%;background:var(--ink3);animation:ck-typing 1.2s infinite ease-in-out}
+.adm-msg-typing i:nth-child(2){animation-delay:.15s}.adm-msg-typing i:nth-child(3){animation-delay:.3s}
+@keyframes ck-typing{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+@media(prefers-reduced-motion:reduce){.adm-msg-typing i{animation:none}}
+.adm-chat-send{display:inline-flex;align-items:center;gap:.45rem}
+
+@media(max-width:820px){
+  /* La page Alfred occupe tout l'écran : conversation qui défile, saisie juste au-dessus de la barre du bas */
+  .adm .adm-main:has(.adm-chat){height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+    padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+  .adm-main:has(.adm-chat) .adm-content{flex:1;min-height:0;display:flex;flex-direction:column}
+  .adm-chat{flex:1;height:auto;min-height:0;border-radius:20px;box-shadow:0 10px 30px -24px rgba(27,23,18,.5)}
+  .ck-alf-h{flex-wrap:nowrap;margin-bottom:.8rem;gap:.6rem}
+  .ck-alf-h p{display:none}
+  .ck-alf-av{width:42px;height:42px}
+  .ck-alf-h .adm-actions{flex-wrap:nowrap;gap:.35rem;margin-left:auto}
+  .ck-alf-h .adm-btn{padding:.45rem .65rem;font-size:.76rem;white-space:nowrap}
+  .adm-chat-log{padding:1rem .85rem;gap:.8rem}
+  .adm-chat-empty{margin:auto 0}
+  .adm-chat-empty p{font-size:.88rem}
+  /* Suggestions : rangée défilante */
+  .adm-chat-sugg{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;max-width:100%;width:100%;
+    padding:.2rem .1rem .5rem;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .adm-chat-sugg::-webkit-scrollbar{display:none}
+  .adm-chat-sugg button{flex:0 0 auto;max-width:78vw;white-space:normal;text-align:left;line-height:1.35;font-size:.8rem}
+  .adm-msg{max-width:92%;gap:.5rem}
+  .adm-msg-ava{width:30px;height:30px}
+  .adm-msg-body{font-size:.9rem;padding:.7rem .85rem}
+  .adm-chat-bar{gap:.45rem;padding:.55rem;align-items:center}
+  .adm-chat-bar input{border-radius:100px;padding:.7rem 1rem;min-width:0}
+  .adm-chat-clip{width:42px;height:42px;border-radius:50%}
+  .adm-chat-send{width:44px;height:44px;padding:0!important;border-radius:50%;justify-content:center;flex:0 0 auto}
+  .adm-chat-send .tx{display:none}
+  .ck-dock-alfred.on .ck-dock-alfred-av{box-shadow:0 0 0 3px var(--o-soft),0 12px 26px -8px rgba(226,106,15,.75)}
+  /* Clavier ouvert : la barre du bas s'efface pour laisser la place à la saisie */
+  .adm:has(.adm-chat-bar input:focus) .ck-dock{opacity:0;pointer-events:none;transform:translateY(20px)}
+  .adm:has(.adm-chat-bar input:focus) .adm-main:has(.adm-chat){padding-bottom:calc(.8rem + env(safe-area-inset-bottom))}
+  .ck-dock{transition:opacity .2s,transform .2s}
+}
+@media(max-width:400px){.ck-alf-h .adm-actions .adm-btn:first-child{display:none}}
+
+/* Une colonne de grille prend par défaut la largeur de son contenu le plus
+   large (tableaux) : sur mobile, toute la page s'élargissait. On autorise la
+   colonne à rétrécir ; les tableaux défilent alors dans leur carte. */
+.adm-main,.adm-content{min-width:0}
+@media(max-width:820px){
+  .adm-h.ck-alf-h{flex-wrap:nowrap;flex-direction:row;align-items:center;margin-top:.2rem}
+  .ck-alf-id{flex:1 1 auto}
+  .ck-alf-h h1{white-space:nowrap}
+  .adm-card:has(> .adm-table),.adm-card:has(> table){-webkit-overflow-scrolling:touch}
+  .adm-table th,.adm-table td{white-space:normal}
+}
+
+/* Mobile : tableaux du cockpit en fiches (intitulés posés par admin-shell) */
+@media(max-width:760px){
+  .adm-card:has(.adm-stack){overflow-x:visible;padding:.75rem!important}
+  .adm-stack{min-width:0!important;display:block;font-size:.88rem}
+  .adm-stack thead{display:none}
+  .adm-stack tbody{display:flex;flex-direction:column;gap:.6rem}
+  .adm-stack tr{display:block;border:1px solid var(--line);border-radius:14px;background:#fff;padding:.75rem .9rem}
+  .adm-stack td{display:grid;grid-template-columns:5.4rem minmax(0,1fr);column-gap:.7rem;row-gap:.2rem;align-items:start;
+    border:none!important;padding:.32rem 0!important;text-align:left!important;white-space:normal!important;
+    width:auto!important;overflow-wrap:anywhere}
+  .adm-stack td > *{grid-column:2;justify-self:start;max-width:100%}
+  .adm-stack td[data-l=""]{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+  .adm-stack td::before{content:attr(data-l);flex:0 0 5.4rem;font-size:.66rem;font-weight:800;padding-top:.15rem;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--ink3)}
+  .adm-stack td[data-l=""]::before{content:none}
+  .adm-stack td > *{min-width:0}
+  .adm-stack td:last-child:not(:first-child){border-top:1px solid var(--line)!important;margin-top:.4rem;padding-top:.6rem!important}
+  .adm-stack .adm-actions,.adm-stack td:last-child form{flex-wrap:wrap;justify-content:flex-start}
+  .adm-stack td:last-child:not([data-l=""]) .adm-actions{grid-column:1 / -1}
+}

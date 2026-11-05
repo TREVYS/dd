@@ -38,6 +38,34 @@ export function AdminShell({
     setOpen(false);
   }, [pathname]);
 
+  // Mobile : chaque cellule de tableau reçoit l'intitulé de sa colonne
+  // (data-l), pour que les lignes s'affichent en fiches lisibles. Rejoué
+  // quand le contenu change (filtres, pagination côté client).
+  useEffect(() => {
+    const root = document.querySelector(".adm-content");
+    if (!root) return;
+    const label = () => {
+      root.querySelectorAll<HTMLTableElement>("table.adm-table").forEach((t) => {
+        if (t.classList.contains("nl-subs") || t.classList.contains("nl-camps")) return;
+        const heads = Array.from(t.querySelectorAll("thead th")).map((th) => (th.textContent || "").trim());
+        if (heads.length === 0) return;
+        t.querySelectorAll("tbody tr").forEach((tr) => {
+          Array.from(tr.children).forEach((td, i) => {
+            if (td.getAttribute("data-l") !== null) return;
+            // Ligne pleine largeur (message « aucun élément ») : pas d'intitulé.
+            const span = (td as HTMLTableCellElement).colSpan || 1;
+            td.setAttribute("data-l", span > 1 ? "" : heads[i] ?? "");
+          });
+        });
+        t.classList.add("adm-stack");
+      });
+    };
+    label();
+    const mo = new MutationObserver(label);
+    mo.observe(root, { childList: true, subtree: true });
+    return () => mo.disconnect();
+  }, [pathname]);
+
   // Bloquer le défilement du fond quand le tiroir est ouvert.
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -100,17 +128,19 @@ export function AdminShell({
         <div className="adm-content">{children}</div>
       </main>
 
-      {/* Masquée sur la conversation avec Alfred : sa barre de saisie occupe le bas de l'écran. */}
-      {pathname !== ALFRED_HREF && (
-        <nav className="ck-dock" aria-label="Navigation rapide">
-          {TABS.slice(0, 2).map((t) => dockLink(t))}
-          <Link href={ALFRED_HREF} className="ck-dock-alfred" aria-label="Parler à Alfred">
-            <span className="ck-dock-alfred-av"><AlfredAvatar /></span>
-            <span className="lb">Alfred</span>
-          </Link>
-          {TABS.slice(2).map((t) => dockLink(t))}
-        </nav>
-      )}
+      <nav className="ck-dock" aria-label="Navigation rapide">
+        {TABS.slice(0, 2).map((t) => dockLink(t))}
+        <Link
+          href={ALFRED_HREF}
+          className={`ck-dock-alfred${pathname === ALFRED_HREF ? " on" : ""}`}
+          aria-label="Parler à Alfred"
+          aria-current={pathname === ALFRED_HREF ? "page" : undefined}
+        >
+          <span className="ck-dock-alfred-av"><AlfredAvatar /></span>
+          <span className="lb">Alfred</span>
+        </Link>
+        {TABS.slice(2).map((t) => dockLink(t))}
+      </nav>
     </div>
   );
 }
