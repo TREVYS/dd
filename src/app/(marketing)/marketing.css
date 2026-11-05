@@ -1500,3 +1500,6 @@ html,body{overflow-x:hidden}
 @media(max-width:700px){.mkt-jobsw button small{display:none}}
 @media(max-width:520px){.mkt-jobsw button small{display:inline}.mkt-jobsw button{white-space:normal;flex-direction:column;gap:.1rem;font-size:.88rem;padding:.6rem .5rem}.mkt-jobsw button b{display:none}}
 @media(prefers-reduced-motion:reduce){.mkt-jobsw-thumb{transition:none}}
+.mkt-jobsw-fl{max-width:1120px;margin:0 auto 1.4rem;animation:mktFlIn .35s ease}
+@keyframes mktFlIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.mkt-jobsw-fl{animation:none}}

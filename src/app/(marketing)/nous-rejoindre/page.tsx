@@ -41,7 +41,50 @@ export default function Page() {
 
       <section className="sec" id="offres" style={{ scrollMarginTop: "100px" }}>
         <div className="wrap">
-          <JobsBoard jobs={jobs.map((j) => ({ id: j.id, slug: j.slug, title: j.title, category: j.category, contract: j.contract, location: j.location, summary: j.summary }))} />
+          <JobsBoard
+            jobs={jobs.map((j) => ({ id: j.id, slug: j.slug, title: j.title, category: j.category, contract: j.contract, location: j.location, summary: j.summary }))}
+            freelance={
+              <div className="mkt-fl">
+                <div className="mkt-fl-main">
+                  <span className="mkt-fl-eyebrow">Freelances &amp; indépendants</span>
+                  <h2>Nous faisons <em>souvent appel</em> à des renforts</h2>
+                  <p>
+                    Nos missions auprès des directions financières demandent régulièrement des
+                    profils experts en appui de nos équipes. Consultant indépendant, expert-comptable
+                    en libéral, spécialiste SI ou data : n&apos;hésitez pas à postuler, même sans
+                    mission ouverte aujourd&apos;hui — les besoins arrivent vite.
+                  </p>
+                  <div className="mkt-fl-chips">
+                    {["Expertise comptable", "SI Finance & ERP", "AMOA & recette", "Facturation électronique", "Audit & contrôle interne", "Data & IA"].map((c) => (
+                      <span key={c}>{c}</span>
+                    ))}
+                  </div>
+                  <ol className="mkt-fl-steps">
+                    <li><b>1</b><span>Vous déposez votre candidature en ligne</span></li>
+                    <li><b>2</b><span>Jeremy Roch vous recontacte pour un échange</span></li>
+                    <li><b>3</b><span>Nous vous proposons les missions qui vous correspondent</span></li>
+                  </ol>
+                  <a className="btn mkt-fl-btn" href="https://app.trevys-advisory.fr/candidature" target="_blank" rel="noopener noreferrer">
+                    Rejoindre notre réseau de freelances →
+                  </a>
+                </div>
+                <aside className="mkt-fl-contact">
+                  {jeremy && (
+                    <>
+                      <div className="mkt-fl-photo">
+                        <TeamPhoto src={getPeoplePhoto(jeremy.slug) || jeremy.photo} initials={jeremy.initials} alt={jeremy.name} />
+                      </div>
+                      <span className="mkt-fl-contact-k">Votre interlocuteur</span>
+                      <b>{jeremy.name}</b>
+                      <span className="mkt-fl-contact-r">{jeremy.role}</span>
+                      <p>Jeremy prend contact avec chaque freelance qui rejoint le réseau.</p>
+                      <Link className="mkt-fl-contact-more" href={`/le-cabinet/${jeremy.slug}`}>Découvrir son profil</Link>
+                    </>
+                  )}
+                </aside>
+              </div>
+            }
+          />
         </div>
       </section>
 
@@ -66,51 +109,6 @@ export default function Page() {
                 <p>{c.d}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Réseau de freelances : mis en avant, contact Jeremy Roch */}
-      <section className="sec" id="freelances" style={{ scrollMarginTop: "100px" }}>
-        <div className="wrap">
-          <div className="mkt-fl">
-            <div className="mkt-fl-main">
-              <span className="mkt-fl-eyebrow">Freelances &amp; indépendants</span>
-              <h2>Nous faisons <em>souvent appel</em> à des renforts</h2>
-              <p>
-                Nos missions auprès des directions financières demandent régulièrement des
-                profils experts en appui de nos équipes. Consultant indépendant, expert-comptable
-                en libéral, spécialiste SI ou data : n&apos;hésitez pas à postuler, même sans
-                mission ouverte aujourd&apos;hui — les besoins arrivent vite.
-              </p>
-              <div className="mkt-fl-chips">
-                {["Expertise comptable", "SI Finance & ERP", "AMOA & recette", "Facturation électronique", "Audit & contrôle interne", "Data & IA"].map((c) => (
-                  <span key={c}>{c}</span>
-                ))}
-              </div>
-              <ol className="mkt-fl-steps">
-                <li><b>1</b><span>Vous déposez votre candidature en ligne</span></li>
-                <li><b>2</b><span>Jeremy Roch vous recontacte pour un échange</span></li>
-                <li><b>3</b><span>Nous vous proposons les missions qui vous correspondent</span></li>
-              </ol>
-              <a className="btn mkt-fl-btn" href="https://app.trevys-advisory.fr/candidature" target="_blank" rel="noopener noreferrer">
-                Rejoindre notre réseau de freelances →
-              </a>
-            </div>
-            <aside className="mkt-fl-contact">
-              {jeremy && (
-                <>
-                  <div className="mkt-fl-photo">
-                    <TeamPhoto src={getPeoplePhoto(jeremy.slug) || jeremy.photo} initials={jeremy.initials} alt={jeremy.name} />
-                  </div>
-                  <span className="mkt-fl-contact-k">Votre interlocuteur</span>
-                  <b>{jeremy.name}</b>
-                  <span className="mkt-fl-contact-r">{jeremy.role}</span>
-                  <p>Jeremy prend contact avec chaque freelance qui rejoint le réseau.</p>
-                  <Link className="mkt-fl-contact-more" href={`/le-cabinet/${jeremy.slug}`}>Découvrir son profil</Link>
-                </>
-              )}
-            </aside>
           </div>
         </div>
       </section>

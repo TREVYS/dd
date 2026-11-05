@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export type BoardJob = {
   id: string;
@@ -13,54 +13,65 @@ export type BoardJob = {
   summary: string;
 };
 
-type Mode = "salarie" | "independant";
+type Mode = "salarie" | "freelance";
 
-const FREELANCE_URL = "https://app.trevys-advisory.fr/candidature";
 const isIndependant = (contract: string) => /freelance|ind[ée]pendant|portage/i.test(contract);
 
-export function JobsBoard({ jobs }: { jobs: BoardJob[] }) {
+export function JobsBoard({ jobs, freelance }: { jobs: BoardJob[]; freelance: ReactNode }) {
   const [mode, setMode] = useState<Mode>("salarie");
-  const counts = {
-    salarie: jobs.filter((j) => !isIndependant(j.contract)).length,
-    independant: jobs.filter((j) => isIndependant(j.contract)).length,
-  };
-  const shown = jobs.filter((j) => (mode === "independant") === isIndependant(j.contract));
-  const n = shown.length;
+  const salaried = jobs.filter((j) => !isIndependant(j.contract));
+  const missions = jobs.filter((j) => isIndependant(j.contract));
+  const shown = mode === "salarie" ? salaried : missions;
+  const n = salaried.length;
+
+  // Lien « #freelances » (bouton du haut de page) : ouvre directement l'onglet Freelances.
+  useEffect(() => {
+    const sync = () => {
+      if (window.location.hash === "#freelances") {
+        setMode("freelance");
+        document.getElementById("offres")?.scrollIntoView({ behavior: "smooth" });
+      } else if (window.location.hash === "#offres") setMode("salarie");
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
 
   return (
     <>
       <div className="shead">
-        <span className="eyebrow">Nos offres</span>
+        <span className="eyebrow">{mode === "salarie" ? "Nos offres" : "Nous rejoindre"}</span>
         <h2>
-          {n === 0
-            ? mode === "independant" ? <>Missions <em>indépendantes</em></> : <>Nos <em>postes</em></>
-            : <>{n} {mode === "independant" ? "mission" : "poste"}{n > 1 ? "s" : ""} ouvert{mode === "independant" ? "e" : ""}{n > 1 ? "s" : ""}</>}
+          {mode === "freelance"
+            ? <>Rejoindre notre <em>réseau</em></>
+            : n === 0 ? <>Nos <em>postes</em></> : <>{n} poste{n > 1 ? "s" : ""} ouvert{n > 1 ? "s" : ""}</>}
         </h2>
       </div>
 
-      <div className="mkt-jobsw" role="group" aria-label="Type d'offres">
+      <div className="mkt-jobsw" role="group" aria-label="Type de collaboration">
         <button
           type="button"
           className={mode === "salarie" ? "on" : ""}
           aria-pressed={mode === "salarie"}
           onClick={() => setMode("salarie")}
         >
-          Salariés <small>CDI · CDD · alternance</small>
-          <b>{counts.salarie}</b>
+          Offres d&apos;emploi <small>CDI · CDD</small>
+          <b>{salaried.length}</b>
         </button>
         <button
           type="button"
-          className={mode === "independant" ? "on" : ""}
-          aria-pressed={mode === "independant"}
-          onClick={() => setMode("independant")}
+          className={mode === "freelance" ? "on" : ""}
+          aria-pressed={mode === "freelance"}
+          onClick={() => setMode("freelance")}
         >
-          Indépendants <small>freelance · mission</small>
-          <b>{counts.independant}</b>
+          Freelances <small>notre réseau</small>
         </button>
-        <span className={`mkt-jobsw-thumb${mode === "independant" ? " right" : ""}`} aria-hidden="true" />
+        <span className={`mkt-jobsw-thumb${mode === "freelance" ? " right" : ""}`} aria-hidden="true" />
       </div>
 
-      <div className="mkt-jobx-list">
+      {mode === "freelance" && <div className="mkt-jobsw-fl">{freelance}</div>}
+
+      <div className="mkt-jobx-list" style={shown.length === 0 && mode === "freelance" ? { display: "none" } : undefined}>
         {shown.map((j) => {
           const conseil = /conseil|consult/i.test(j.category);
           return (
@@ -92,21 +103,13 @@ export function JobsBoard({ jobs }: { jobs: BoardJob[] }) {
           );
         })}
 
-        {mode === "salarie" ? (
+        {mode === "salarie" && (
           <a className="mkt-jobx-spont" href="mailto:contact@trevys.fr?subject=Candidature%20spontanée">
             <span>
               <b>{n === 0 ? "Aucun poste ouvert pour l'instant" : "Pas d'offre à votre mesure ?"}</b>
               Envoyez-nous une candidature spontanée — les bons profils n&apos;attendent pas la bonne annonce.
             </span>
             <span className="mkt-jobx-spont-go">Candidature spontanée →</span>
-          </a>
-        ) : (
-          <a className="mkt-jobx-spont" href={FREELANCE_URL} target="_blank" rel="noopener noreferrer">
-            <span>
-              <b>{n === 0 ? "Pas de mission publiée en ce moment" : "Vous ne voyez pas votre expertise ?"}</b>
-              Nous faisons souvent appel à des renforts : rejoignez notre réseau de freelances, Jeremy Roch vous recontacte.
-            </span>
-            <span className="mkt-jobx-spont-go">Rejoindre le réseau →</span>
           </a>
         )}
       </div>
