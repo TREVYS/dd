@@ -14,6 +14,7 @@ const GROUPS: Group[] = [
     title: "Pilotage",
     items: [
       { href: "/admin", label: "Tableau de bord", ic: "home", exact: true },
+      { href: "/admin/taches", label: "Mes tâches", ic: "check" },
       { href: "/admin/statistiques", label: "Statistiques", ic: "chart" },
     ],
   },

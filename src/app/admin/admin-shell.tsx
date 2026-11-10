@@ -13,7 +13,7 @@ import { AlfredAvatar } from "./alfred-avatar";
 const TABS = [
   { href: "/admin", label: "Accueil", ic: "home", exact: true },
   { href: "/admin/communication/calendrier", label: "Brouillons", ic: "draft", also: ["/admin/communication/reseaux", "/admin/communication/mailings"] },
-  { href: "/admin/communication/newsletter", label: "Newsletter", ic: "mail" },
+  { href: "/admin/taches", label: "Tâches", ic: "check" },
   { href: "/admin/messages", label: "Messages", ic: "inbox" },
 ];
 const ALFRED_HREF = "/admin/communication";

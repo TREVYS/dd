@@ -794,3 +794,43 @@
   .adm-stack .adm-actions,.adm-stack td:last-child form{flex-wrap:wrap;justify-content:flex-start}
   .adm-stack td:last-child:not([data-l=""]) .adm-actions{grid-column:1 / -1}
 }
+
+/* ── Mes tâches ───────────────────────────────────────── */
+.tk-tabs{display:flex;gap:.4rem;margin:0 0 1rem}
+.tk-tabs a{padding:.5rem 1rem;border-radius:100px;border:1px solid var(--line);background:#fff;font-weight:700;font-size:.88rem;color:var(--ink);text-decoration:none}
+.tk-tabs a b{margin-left:.35rem;color:var(--o)}
+.tk-tabs a.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tk-tabs a.on b{color:#FBB040}
+.tk-add{display:grid;grid-template-columns:1fr 160px 150px auto;gap:.6rem;align-items:center;margin-bottom:1rem;padding:.8rem}
+.tk-add input,.tk-add select{width:100%;padding:.65rem .8rem;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fff;min-width:0}
+.tk-add input[name=title]{font-weight:600}
+.tk-group{margin-bottom:1.3rem}
+.tk-group h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:#8a7d6a;margin:0 0 .55rem;display:flex;align-items:center;gap:.5rem}
+.tk-group h2 span{background:var(--o-tint,#FDF3EA);color:var(--o);border-radius:100px;padding:.05rem .5rem;font-size:.75rem}
+.tk-group.late h2{color:#C23B3B}.tk-group.late h2 span{background:#FDECEC;color:#C23B3B}
+.tk-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+.tk-item{display:flex;gap:.8rem;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:.8rem .9rem}
+.tk-item.hi{border-left:4px solid var(--o)}
+.tk-item.done{opacity:.75}.tk-item.done .tk-title{text-decoration:line-through;color:#8a7d6a}
+.tk-check{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid #CFC6B8;background:#fff;color:transparent;display:grid;place-items:center;cursor:pointer;transition:all .15s;margin-top:1px}
+.tk-check:hover{border-color:#2E9E6B;color:#2E9E6B;background:#F1FAF3}
+.tk-check.on{border-color:#2E9E6B;background:#2E9E6B;color:#fff;cursor:default}
+.tk-body{flex:1;min-width:0}
+.tk-title{font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+.tk-note{font-size:.88rem;color:#6E6353;margin-top:.2rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.tk-meta{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.4rem}
+.tk-chip{font-size:.72rem;font-weight:700;padding:.15rem .55rem;border-radius:100px;background:#F3EFE9;color:#6E6353}
+.tk-chip.today{background:#FDF0E3;color:#C2410C}
+.tk-chip.late{background:#FDECEC;color:#C23B3B}
+.tk-chip.hi{background:var(--o);color:#fff}
+.tk-src{font-size:.72rem;color:#A99C86}
+.tk-edit summary{font-size:.78rem;color:#A99C86;cursor:pointer;margin-top:.35rem;width:max-content}
+.tk-edit summary:hover{color:var(--o)}
+.tk-arch-act{display:flex;gap:.35rem;flex:none}
+.tk-empty{text-align:center;padding:2rem 1rem;color:#6E6353;font-weight:600}
+@media (max-width:760px){
+  .tk-add{grid-template-columns:1fr 1fr}
+  .tk-add input[name=title]{grid-column:1/-1}
+  .tk-add .adm-btn{grid-column:1/-1}
+  .tk-arch-act{flex-direction:column}
+}

@@ -2,6 +2,7 @@
 // émojis pour un rendu professionnel et homogène.
 const PATHS: Record<string, React.ReactNode> = {
   home: <path d="M3 10.5 12 3l9 7.5M5 9.5V21h5v-6h4v6h5V9.5" />,
+  check: <path d="M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />,
   chart: <path d="M4 20V10M10 20V4M16 20v-8M21 20H3" />,
   draft: <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M9 13h6M9 17h6" />,
   megaphone: <path d="M3 11v3a1 1 0 0 0 1 1h2l3 5h2v-5m-7-4 12-5v12L9 14m-5-3h5" />,

@@ -5,6 +5,7 @@
 //  - les publications programmées (posts réseaux, articles, mailings) ;
 //  - le rapport d'audience hebdomadaire Telegram ;
 //  - le résumé quotidien de la boîte contact@trevys.fr (Telegram) ;
+//  - le rappel du matin des tâches de John (Telegram) ;
 //  - l'annonce de mise à jour après un déploiement.
 // Les visites du site et du cockpit restent des déclencheurs complémentaires.
 
@@ -36,6 +37,12 @@ async function tick() {
     await maybeSendDailyMailDigest();
   } catch (e) {
     console.error("[heartbeat] résumé des mails:", e);
+  }
+  try {
+    const { maybeSendDailyTasksDigest } = await import("@/lib/tasks");
+    await maybeSendDailyTasksDigest();
+  } catch (e) {
+    console.error("[heartbeat] rappel des tâches:", e);
   }
   try {
     const { maybeSyncYoutubeWeekly } = await import("@/lib/youtube-sync");

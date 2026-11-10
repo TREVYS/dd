@@ -6,6 +6,7 @@ import { AdminShell } from "./admin-shell";
 import { unreadCount } from "@/lib/newsletter";
 import { unreadMessages } from "@/lib/contact-messages";
 import { unreadApplications } from "@/lib/jobs";
+import { urgentTaskCount } from "@/lib/tasks";
 import { runDueRoutines } from "@/lib/alfred-routines-run";
 import { maybeSendWeeklyStatsReport } from "@/lib/stats-report";
 
@@ -40,6 +41,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     "/admin/communication/newsletter": unreadCount(),
     "/admin/messages": unreadMessages(),
     "/admin/recrutement": unreadApplications(),
+    "/admin/taches": urgentTaskCount(),
   };
 
   return (

@@ -19,6 +19,7 @@ import { setPeoplePhoto, removePeoplePhoto, listPeoplePhotos } from "@/lib/peopl
 import { TEAM } from "@/lib/team";
 import { CONSULTANTS } from "@/lib/consultants";
 import { listUploads } from "@/lib/media";
+import { addTask, listOpenTasks, listArchivedTasks, completeTask, reopenTask, updateTask, removeTask, getTask, normalizeDue, normalizePriority, tasksContextBlock, type TaskSource } from "@/lib/tasks";
 
 export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type AgentResult = { reply: string; actions: string[] };
@@ -84,6 +85,7 @@ Tes moyens d'action (outils) :
 - lister_medias : liste les fichiers de la médiathèque (/uploads/…) pour choisir une image de couverture ou illustrer un contenu.
 - web_search : recherche sur Internet. USAGE STRICTEMENT RÉSERVÉ à la préparation et à la rédaction d'articles (rediger_article, modifier_article) : vérifier une actualité, un chiffre, un texte officiel, une date d'entrée en vigueur. Ne l'utilise JAMAIS pour autre chose (pas pour les posts, mailings, candidatures, ni pour des questions générales — pour cela, appuie-toi sur ta GED et ta connaissance). Cite tes sources dans l'article quand tu t'appuies sur une recherche.
 - creer_routine / lister_routines : mets en place des automatismes récurrents (ex. « un article par semaine sur la RFE, le lundi »). Chaque exécution produit un BROUILLON à valider — jamais de publication directe.
+- ajouter_tache / lister_taches / terminer_tache / modifier_tache / supprimer_tache : tu gères aussi la TODO personnelle de John (voir TÂCHES DE JOHN ci-dessous). Dès qu'il te confie un sujet à ne pas oublier (« note… », « rappelle-moi de… », « je dois… », en vrac sur Telegram), crée la ou les tâches sans demander confirmation, avec une échéance si elle est donnée ou évidente, puis confirme en une ligne. Quand il dit qu'un sujet est fait, archive la tâche correspondante avec terminer_tache. S'il te demande « qu'est-ce que j'ai à faire ? », réponds à partir de la liste, en commençant par les retards et l'urgent, et aide-le à prioriser ou à préparer le sujet (brouillon de mail, plan, etc.).
 - definir_photo / retirer_photo : change la photo d'un associé ou d'un consultant du site à partir d'une image de la médiathèque (à faire uniquement sur demande explicite).
 - lister_candidatures / refuser_candidature / inviter_entretien : gère le recrutement. RÈGLE ABSOLUE : refuser ou inviter envoie un e-mail réel au candidat — uniquement sur instruction explicite et non ambiguë de John (sinon, liste et demande confirmation).
 - chercher_documents : cherche dans la GED du cabinet (base documentaire fournie par John : PDF, notes, guides, rangés par thème). UTILISE-LE dès qu'une question de John porte sur un contenu documentaire précis, ou avant de rédiger sur un sujet couvert par un thème de la GED — tu réponds alors à partir des documents, en citant le document utilisé.
@@ -115,7 +117,7 @@ function buildSystem(): string {
       studioBlock = `\n\n---\n\nSTUDIO INSTAGRAM (goûts de John pour les visuels) : ${st.style.trim() || "(pas de note)"} — ${st.templates.length} maquette(s) de fond configurée(s).`;
     }
   } catch { /* studio absent : sans incidence */ }
-  return `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE (état actuel, généré à l'instant) :\n\n${siteKnowledgeBlock()}\n\n---\n\n${OPERATING}${studioBlock}${feedbackBlock()}`;
+  return `${alfredSystemBlock()}\n\n---\n\nCONNAISSANCE DU SITE (état actuel, généré à l'instant) :\n\n${siteKnowledgeBlock()}\n\n---\n\n${OPERATING}\n\n---\n\n${tasksContextBlock()}${studioBlock}${feedbackBlock()}`;
 }
 
 const TOOLS = [
@@ -289,6 +291,62 @@ const TOOLS = [
     name: "lister_routines",
     description: "Liste les routines récurrentes existantes.",
     input_schema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "ajouter_tache",
+    description: "Ajoute une tâche à la todo de John (un sujet à traiter pour ne pas l'oublier). Utilise-le dès que John dit « note », « rappelle-moi », « ajoute à ma todo », « je dois… ». Plusieurs sujets = un appel par tâche.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        titre: { type: "string", description: "Intitulé court et actionnable (commence par un verbe : « Rappeler Dupont pour le bilan »)" },
+        note: { type: "string", description: "Détails utiles (contexte, contact, montant…) — facultatif" },
+        echeance: { type: "string", description: "Date limite AAAA-MM-JJ si John en donne une (« vendredi », « demain », « fin du mois » : convertis à partir de la date du jour)" },
+        priorite: { type: "string", enum: ["haute", "normale", "basse"] },
+      },
+      required: ["titre"],
+    },
+  },
+  {
+    name: "lister_taches",
+    description: "Liste les tâches de John : ouvertes (par défaut) ou archivées (terminées).",
+    input_schema: {
+      type: "object" as const,
+      properties: { archives: { type: "boolean", description: "true pour les tâches terminées/archivées" } },
+    },
+  },
+  {
+    name: "terminer_tache",
+    description: "Marque une tâche comme terminée : elle est archivée. Quand John dit « c'est fait », « terminé », « réglé » à propos d'un sujet, retrouve la tâche correspondante (id dans la liste des tâches) et appelle cet outil.",
+    input_schema: {
+      type: "object" as const,
+      properties: { id: { type: "string" } },
+      required: ["id"],
+    },
+  },
+  {
+    name: "modifier_tache",
+    description: "Modifie une tâche ouverte (intitulé, note, échéance, priorité) ou la rouvre si elle était archivée (rouvrir=true).",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        id: { type: "string" },
+        titre: { type: "string" },
+        note: { type: "string" },
+        echeance: { type: "string", description: "AAAA-MM-JJ, ou chaîne vide pour retirer l'échéance" },
+        priorite: { type: "string", enum: ["haute", "normale", "basse"] },
+        rouvrir: { type: "boolean" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "supprimer_tache",
+    description: "Supprime définitivement une tâche (créée par erreur). Pour une tâche accomplie, préfère terminer_tache (archivage).",
+    input_schema: {
+      type: "object" as const,
+      properties: { id: { type: "string" } },
+      required: ["id"],
+    },
   },
   {
     name: "definir_photo",
@@ -514,7 +572,7 @@ function findApplication(query: string): JobApplication | undefined {
   return apps.find((a) => a.id === q) ?? apps.find((a) => a.name.toLowerCase().includes(q));
 }
 
-async function runTool(name: string, input: Record<string, unknown>, actions: string[]): Promise<string> {
+async function runTool(name: string, input: Record<string, unknown>, actions: string[], taskSource: TaskSource = "alfred"): Promise<string> {
   if (name === "rediger_article") {
     // Couverture : celle choisie par Alfred si elle existe vraiment dans la
     // médiathèque, sinon choix automatique par thème (repli : 5-1.png).
@@ -679,6 +737,48 @@ async function runTool(name: string, input: Record<string, unknown>, actions: st
     });
     actions.push(`Routine créée : « ${r.label} » (${describeSchedule(r)})`);
     return `Routine enregistrée (${describeSchedule(r)}). Elle produira des brouillons à valider. Modifiable dans « Routines d'Alfred ».`;
+  }
+  if (name === "ajouter_tache") {
+    const titre = String(input.titre ?? "").trim();
+    if (!titre) return "Intitulé de tâche manquant.";
+    const t = addTask({
+      title: titre,
+      note: input.note ? String(input.note) : undefined,
+      due: normalizeDue(input.echeance),
+      priority: normalizePriority(input.priorite),
+      source: taskSource,
+    });
+    actions.push(`Tâche ajoutée : « ${t.title} »${t.due ? ` (échéance ${t.due.split("-").reverse().join("/")})` : ""}`);
+    return `Tâche enregistrée (id ${t.id}). Visible dans « Mes tâches » du cockpit.`;
+  }
+  if (name === "lister_taches") {
+    const list = input.archives ? listArchivedTasks().slice(0, 50) : listOpenTasks();
+    return JSON.stringify(list.map((t) => ({ id: t.id, titre: t.title, note: t.note ?? null, echeance: t.due ?? null, priorite: t.priority, terminee: t.doneAt ?? null })));
+  }
+  if (name === "terminer_tache") {
+    const t = completeTask(String(input.id ?? ""));
+    if (!t) return "Tâche introuvable — consulte lister_taches pour retrouver l'id.";
+    actions.push(`Tâche terminée et archivée : « ${t.title} »`);
+    return "Tâche archivée.";
+  }
+  if (name === "modifier_tache") {
+    const id = String(input.id ?? "");
+    if (input.rouvrir) reopenTask(id);
+    const patch: Parameters<typeof updateTask>[1] = {};
+    if (typeof input.titre === "string" && input.titre.trim()) patch.title = input.titre.trim();
+    if (typeof input.note === "string") patch.note = input.note.trim() || undefined;
+    if (typeof input.echeance === "string") patch.due = normalizeDue(input.echeance);
+    if (typeof input.priorite === "string") patch.priority = normalizePriority(input.priorite);
+    const t = updateTask(id, patch);
+    if (!t) return "Tâche introuvable — consulte lister_taches pour retrouver l'id.";
+    actions.push(`Tâche mise à jour : « ${t.title} »`);
+    return "Tâche mise à jour.";
+  }
+  if (name === "supprimer_tache") {
+    const t = getTask(String(input.id ?? ""));
+    if (!t || !removeTask(t.id)) return "Tâche introuvable.";
+    actions.push(`Tâche supprimée : « ${t.title} »`);
+    return "Tâche supprimée.";
   }
   if (name === "lister_routines") {
     return JSON.stringify(
@@ -1482,7 +1582,7 @@ export async function reviseText(content: string, instruction: string): Promise<
   return revised || content;
 }
 
-export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
+export async function runCommsAgent(history: ChatTurn[], opts?: { source?: TaskSource }): Promise<AgentResult> {
   const apiKey = getSetting("anthropicApiKey");
   if (!apiKey) {
     return {
@@ -1535,7 +1635,7 @@ export async function runCommsAgent(history: ChatTurn[]): Promise<AgentResult> {
     const toolResults: Anthropic.ToolResultBlockParam[] = [];
     for (const block of res.content) {
       if (block.type === "tool_use") {
-        const out = await runTool(block.name, block.input as Record<string, unknown>, actions);
+        const out = await runTool(block.name, block.input as Record<string, unknown>, actions, opts?.source ?? "alfred");
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: out });
       }
     }

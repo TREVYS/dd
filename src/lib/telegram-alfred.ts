@@ -158,7 +158,20 @@ export async function handleTelegramMessage(update: {
 
   if (effectiveText === "/start") {
     await sendTelegram(
-      "🎩 Alfred à votre service — votre assistant polyvalent. Rédaction (articles, posts, newsletters, offres, posts RH…), questions pro (fiscalité, RFE, RH — je consulte votre GED), recrutement, statistiques, conseils. Envoyez-moi aussi vos fichiers, je les range. Tout contenu part en brouillon dans le cockpit — vous validez. (/reset pour repartir de zéro)",
+      "🎩 Alfred à votre service — votre assistant polyvalent. Rédaction (articles, posts, newsletters, offres, posts RH…), questions pro (fiscalité, RFE, RH — je consulte votre GED), recrutement, statistiques, conseils. Envoyez-moi aussi vos fichiers, je les range. Votre todo : « note : rappeler X vendredi », « c'est fait : … », /taches pour la liste. Tout contenu part en brouillon dans le cockpit — vous validez. (/reset pour repartir de zéro)",
+    );
+    return;
+  }
+  if (effectiveText === "/taches" || effectiveText === "/todo") {
+    const { listOpenTasks } = await import("@/lib/tasks");
+    const { parisToday } = await import("@/lib/dates");
+    const today = parisToday();
+    const open = listOpenTasks();
+    await sendTelegram(
+      open.length
+        ? `📋 ${open.length} tâche(s) ouverte(s) :\n` + open.map((t, i) => `${i + 1}. ${t.title}${t.due ? ` — ${t.due.split("-").reverse().join("/")}${t.due < today ? " ⚠️" : ""}` : ""}`).join("\n") + "\n\nDites « c'est fait : … » pour archiver."
+        : "✅ Aucune tâche ouverte. Dites-moi « note : … » pour en ajouter une.",
+      { plain: true },
     );
     return;
   }
@@ -177,7 +190,7 @@ export async function handleTelegramMessage(update: {
   const typing = setInterval(() => sendTelegramTyping().catch(() => {}), 4500);
   try {
     const { runCommsAgent } = await import("@/lib/comms-agent");
-    const { reply, actions } = await runCommsAgent(turns);
+    const { reply, actions } = await runCommsAgent(turns, { source: "telegram" });
     const suffix = actions.length ? `\n\n✅ ${actions.join("\n✅ ")}` : "";
     const full = (reply + suffix).trim() || "C'est fait.";
 
