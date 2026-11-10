@@ -2,7 +2,7 @@
   min-height:100vh;display:grid;grid-template-columns:250px 1fr;background:var(--bg);color:var(--ink);
   gap:14px;padding:14px;
   font-family:var(--font-geist-sans),system-ui,sans-serif}
-.adm-side{background:var(--card);color:var(--ink2);border:1px solid var(--line);border-radius:22px;padding:1.3rem 1rem;display:flex;flex-direction:column;gap:.15rem;position:sticky;top:14px;height:calc(100vh - 28px);box-shadow:0 10px 30px -22px rgba(27,23,18,.4)}
+.adm-side{background:var(--card);color:var(--ink2);border:1px solid var(--line);border-radius:22px;padding:1.3rem 1rem;display:flex;flex-direction:column;gap:.15rem;position:sticky;top:14px;height:calc(100vh - 28px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;box-shadow:0 10px 30px -22px rgba(27,23,18,.4)}
 .adm-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.05rem;padding:.3rem .6rem 1rem}
 .adm-brand b{color:var(--o)}
 .adm-grp{font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);font-weight:700;padding:.95rem .7rem .4rem}
@@ -834,3 +834,13 @@
   .tk-add .adm-btn{grid-column:1/-1}
   .tk-arch-act{flex-direction:column}
 }
+
+/* Pas de débordement : le menu défile dans sa carte, les tableaux de l'audience restent dans l'écran */
+#audience .adm-table{width:100%;table-layout:fixed}
+#audience .adm-table td{overflow-wrap:anywhere}
+#audience .ck-bars2 .lb{overflow:hidden;text-overflow:clip;white-space:nowrap}
+.adm-cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.adm-cols2>*{min-width:0}
+#audience .adm-cols2{margin-bottom:1.5rem}
+#audience .adm-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1180px){#audience .adm-cols2{grid-template-columns:1fr}#audience .adm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
