@@ -21,6 +21,8 @@ const result = spawnSync(process.execPath, [nextBin, "build"], {
     // dans un fil d'exécution séparé, que Gandi refuse parfois de créer
     // (« Error: EAGAIN … ERR_WORKER_INIT_FAILED »).
     NEXT_TURBOPACK_USE_WORKER: process.env.NEXT_TURBOPACK_USE_WORKER || "0",
+    // Active les réglages « peu de fils » de next.config.ts (build Gandi).
+    LOW_THREADS_BUILD: process.env.LOW_THREADS_BUILD || "1",
     NEXT_TELEMETRY_DISABLED: "1",
     // Saute la vérification TypeScript du build (manque de threads chez Gandi) ;
     // le typage est contrôlé avant chaque envoi du code.

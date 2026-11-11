@@ -15,6 +15,13 @@ const nextConfig: NextConfig = {
   // (sinon 15 workers → dépassement de ressources / SIGSEGV au build).
   experimental: {
     cpus: 1,
+    // Build Gandi : la génération des pages et les extensions du bundler
+    // tournent dans des fils du processus principal plutôt que dans des
+    // processus séparés (chaque processus Node coûte une dizaine de fils,
+    // et le quota de l'instance est vite atteint : « can't spawn worker thread »).
+    ...(process.env.LOW_THREADS_BUILD === "1"
+      ? { workerThreads: true, turbopackPluginRuntimeStrategy: "workerThreads" as const }
+      : {}),
     // Les candidatures embarquent un CV (jusqu'à 3 Mo) : on relève largement la
     // limite des Server Actions (1 Mo par défaut, qui rejetait silencieusement
     // toute candidature avec un CV un peu lourd). Marge confortable au-delà des
