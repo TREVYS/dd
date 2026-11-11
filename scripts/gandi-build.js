@@ -17,6 +17,10 @@ const result = spawnSync(process.execPath, [nextBin, "build"], {
     // Plafonne la mémoire du build sous la limite de l'instance (2 Go) pour
     // éviter que le processus soit tué (OOM) en pleine compilation.
     NODE_OPTIONS: `${process.env.NODE_OPTIONS || ""} --max-old-space-size=1536`.trim(),
+    // Compile dans le processus principal : par défaut, Next lance Turbopack
+    // dans un fil d'exécution séparé, que Gandi refuse parfois de créer
+    // (« Error: EAGAIN … ERR_WORKER_INIT_FAILED »).
+    NEXT_TURBOPACK_USE_WORKER: process.env.NEXT_TURBOPACK_USE_WORKER || "0",
     NEXT_TELEMETRY_DISABLED: "1",
     // Saute la vérification TypeScript du build (manque de threads chez Gandi) ;
     // le typage est contrôlé avant chaque envoi du code.
