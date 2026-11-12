@@ -41,6 +41,8 @@ export async function saveArticleAction(formData: FormData) {
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
   revalidatePath("/admin/articles");
+  // « Enregistrer et continuer » : on reste sur l'article.
+  if (formData.get("stay") === "1") redirect(`/admin/articles/${slug}?saved=1`);
   redirect("/admin/articles");
 }
 

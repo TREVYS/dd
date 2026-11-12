@@ -10,10 +10,10 @@ export default async function EditArticle({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string }>;
 }) {
   const { slug } = await params;
-  const { error } = await searchParams;
+  const { error, saved } = await searchParams;
   const article = getRawArticle(slug);
   if (!article) notFound();
   const translation = getPostEn(slug);
@@ -29,6 +29,7 @@ export default async function EditArticle({
         article={article}
         translation={translation ? { title: translation.meta.title, excerpt: translation.meta.excerpt, body: translation.content } : null}
         translateError={error === "translate"}
+        saved={saved === "1"}
       />
     </>
   );

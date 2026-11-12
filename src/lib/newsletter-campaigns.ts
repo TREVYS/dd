@@ -234,7 +234,9 @@ function emailTag(label: string): string {
     ? ["#1f2a44", "#ffffff", "#1f2a44"]
     : l.startsWith("expertise")
       ? ["#E26A0F", "#ffffff", "#C2410C"]
-      : ["#f6efe3", "#6b5f4c", "#eadfcd"];
+      : l.startsWith("club")
+        ? ["#2E9E6B", "#ffffff", "#23805a"]
+        : ["#f6efe3", "#6b5f4c", "#eadfcd"];
   return (
     `<span style="display:inline-block;padding:2px 9px;margin:0 5px 0 0;font-family:Arial,Helvetica,sans-serif;` +
     `font-size:10px;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;color:${fg};` +

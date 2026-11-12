@@ -12,7 +12,7 @@ export type PickPost = {
   mailSent?: { count: number; lastSentAt: string };
 };
 
-const METIERS = ["Consulting", "Expertise comptable", "Transverse"] as const;
+const METIERS = ["Consulting", "Expertise comptable", "Club client", "Transverse"] as const;
 
 // Sélecteur d'articles à diffuser : recherche par mots-clés, filtre par
 // métier, et liste des articles choisis — réordonnable par glisser-déposer

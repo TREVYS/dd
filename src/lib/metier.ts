@@ -1,8 +1,10 @@
 // Étiquette « métier » d'un article, déduite de sa catégorie : Consulting,
 // Expertise comptable, ou Transverse (actualité générale, sujets communs).
-export type Metier = "Consulting" | "Expertise comptable" | "Transverse";
+// « Club client » n'est jamais déduite : elle se choisit à la main (contenus
+// réservés à la vie du club : événements, rencontres, avantages clients).
+export type Metier = "Consulting" | "Expertise comptable" | "Club client" | "Transverse";
 
-export const METIERS: Metier[] = ["Consulting", "Expertise comptable", "Transverse"];
+export const METIERS: Metier[] = ["Consulting", "Expertise comptable", "Club client", "Transverse"];
 
 // Métier effectif d'un article : l'étiquette choisie à la main dans l'éditeur
 // prime ; sinon elle est déduite de la catégorie.

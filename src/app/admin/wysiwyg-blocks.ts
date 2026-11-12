@@ -17,10 +17,11 @@ export type Block = {
   imagePos?: "droite" | "gauche"; // vignette positionnée (article) — absent = pleine largeur
   videoId?: string;
   tags?: string[]; // newsletter : ligne [[Tag]] [[Tag2]]
+  hashes?: string; // sous-titre de niveau 4 à 6 (#### …) : niveau d'origine conservé à l'enregistrement
 };
 
 let seq = 0;
-const nid = () => `b${Date.now().toString(36)}${(seq++).toString(36)}`;
+const nid = () => `b${Date.now().toString(36)}${(seq++).toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 // --- Markdown (brut) -> HTML inline limité (gras, italique, liens, code) ---
 function mdInlineToHtml(s: string): string {
@@ -57,7 +58,17 @@ function block(type: BlockType, text = ""): Block {
 }
 
 // Markdown -> blocs (même grammaire que markdownToEmailHtml / mdToHtml).
-export function parseMarkdown(md: string): Block[] {
+// stableIds : identifiants prévisibles (s0, s1…) pour le contenu initial de
+// l'éditeur — la page est d'abord rendue par le serveur puis reprise par le
+// navigateur, et les deux doivent attribuer les mêmes identifiants, sinon
+// l'éditeur ne retrouve plus ses blocs à l'écran (curseur perdu).
+export function parseMarkdown(md: string, stableIds = false): Block[] {
+  const blocks = parseMarkdownRaw(md);
+  if (stableIds) blocks.forEach((b, i) => { b.id = `s${i}`; });
+  return blocks;
+}
+
+function parseMarkdownRaw(md: string): Block[] {
   const lines = (md || "").replace(/\r\n/g, "\n").split("\n");
   const blocks: Block[] = [];
   let buf: string[] = [];
@@ -73,6 +84,7 @@ export function parseMarkdown(md: string): Block[] {
     let m: RegExpMatchArray | null;
     if (/^#{2}\s+/.test(line)) { flushPara(); blocks.push(block("h2", line.replace(/^#{2}\s+/, ""))); }
     else if (/^#{3}\s+/.test(line)) { flushPara(); blocks.push(block("h3", line.replace(/^#{3}\s+/, ""))); }
+    else if ((m = line.match(/^(#{4,6})\s+(.*)$/))) { flushPara(); blocks.push({ ...block("h3", m[2]), hashes: m[1] }); }
     else if (/^>\s?/.test(line)) { flushPara(); blocks.push(block("quote", line.replace(/^>\s?/, ""))); }
     else if (/^[-*]\s+/.test(line)) { flushPara(); blocks.push(block("li", line.replace(/^[-*]\s+/, ""))); }
     else if (/^\d+\.\s+/.test(line)) { flushPara(); blocks.push(block("oli", line.replace(/^\d+\.\s+/, ""))); }
@@ -107,7 +119,7 @@ export function serializeBlocks(blocks: Block[]): string {
     const text = htmlInlineToMd(b.html ?? "");
     switch (b.type) {
       case "h2": out.push(`## ${text}`); break;
-      case "h3": out.push(`### ${text}`); break;
+      case "h3": out.push(`${b.hashes ?? "###"} ${text}`); break;
       case "quote": out.push(`> ${text}`); break;
       case "li": out.push(`- ${text}`); break;
       case "oli": out.push(`1. ${text}`); break;
@@ -136,4 +148,115 @@ export function serializeBlocks(blocks: Block[]): string {
 export function newBlock(type: BlockType): Block {
   if (type === "hr") return { id: nid(), type };
   return block(type, "");
+}
+
+// --- HTML collé (Word, Google Docs, page web, e-mail, ChatGPT…) -> Markdown ---
+// On ne garde que la structure utile : paragraphes, titres, listes, citations,
+// gras, italique et liens. Tout le reste (polices, couleurs, tableaux de mise
+// en page) est abandonné : le texte arrive propre, au style du site.
+export function htmlToMarkdown(html: string): string {
+  if (typeof DOMParser === "undefined") return "";
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const out: string[] = [];
+  const BLOCKS = new Set(["P", "DIV", "H1", "H2", "H3", "H4", "H5", "H6", "LI", "UL", "OL", "BLOCKQUOTE", "TABLE", "TR", "HR", "SECTION", "ARTICLE", "HEADER", "FOOTER", "MAIN", "PRE", "FIGURE"]);
+
+  const esc = (t: string) => t.replace(/\s+/g, " ");
+  const wrap = (mark: string, t: string) => {
+    const m = t.match(/^(\s*)([\s\S]*?)(\s*)$/);
+    return m && m[2] ? `${m[1]}${mark}${m[2]}${mark}${m[3]}` : t;
+  };
+
+  const inline = (node: Node): string => {
+    if (node.nodeType === Node.TEXT_NODE) return esc(node.textContent ?? "");
+    if (node.nodeType !== Node.ELEMENT_NODE) return "";
+    const el = node as HTMLElement;
+    const tag = el.tagName;
+    if (tag === "BR") return " ";
+    if (tag === "STYLE" || tag === "SCRIPT" || tag === "META" || tag === "IMG") return "";
+    let t = Array.from(el.childNodes).map(inline).join("");
+    const style = (el.getAttribute("style") ?? "").toLowerCase();
+    const weight = style.match(/font-weight:\s*(\w+)/)?.[1];
+    const notBold = weight === "normal" || weight === "400";
+    const bold = ((tag === "B" || tag === "STRONG") && !notBold) || weight === "bold" || Number(weight) >= 600;
+    const italic = tag === "I" || tag === "EM" || /font-style:\s*italic/.test(style);
+    if (tag === "A") {
+      const href = el.getAttribute("href") ?? "";
+      if (t.trim() && /^(https?:|mailto:|tel:|\/)/.test(href)) t = `[${t.trim()}](${href.replace(/[\s)]/g, "")})`;
+    }
+    if (italic) t = wrap("*", t);
+    if (bold) t = wrap("**", t);
+    return t;
+  };
+
+  // Vrai si l'élément contient un bloc, même enveloppé (Google Docs entoure
+  // tout le contenu d'une balise <b> neutre, Word de <span>…).
+  const BLOCK_SEL = Array.from(BLOCKS).join(",").toLowerCase();
+  const hasBlockChild = (el: Element) => !!el.querySelector(BLOCK_SEL);
+  const isBlockish = (n: Node) => n.nodeType === Node.ELEMENT_NODE && (BLOCKS.has((n as Element).tagName) || hasBlockChild(n as Element));
+  const push = (prefix: string, text: string) => {
+    const t = text.replace(/\s+/g, " ").trim();
+    if (t) out.push(prefix + t);
+  };
+
+  const walk = (el: Element, ctx: { list?: "ul" | "ol"; quote?: boolean }) => {
+    const tag = el.tagName;
+    if (tag === "STYLE" || tag === "SCRIPT" || tag === "HEAD") return;
+    if (tag === "HR") { out.push("---"); return; }
+    if (tag === "UL" || tag === "OL") {
+      Array.from(el.children).forEach((c) => walk(c, { ...ctx, list: tag === "OL" ? "ol" : "ul" }));
+      return;
+    }
+    if (tag === "BLOCKQUOTE") {
+      if (hasBlockChild(el)) el.childNodes.forEach((c) => { if (isBlockish(c)) walk(c as Element, { ...ctx, quote: true }); else push("> ", inline(c)); });
+      else push("> ", inline(el));
+      return;
+    }
+    if (tag === "TR") {
+      push("", Array.from(el.children).map((c) => inline(c).trim()).filter(Boolean).join(" — "));
+      return;
+    }
+    if (/^H[1-6]$/.test(tag)) {
+      // Dans un titre, le gras est implicite.
+      push(tag === "H1" || tag === "H2" ? "## " : "### ", inline(el).replace(/\*\*/g, ""));
+      return;
+    }
+    if (hasBlockChild(el)) {
+      // Conteneur : texte direct éventuel, puis les blocs enfants.
+      let buf = "";
+      const flush = () => { if (buf.trim()) push(tag === "LI" ? (ctx.list === "ol" ? "1. " : "- ") : ctx.quote ? "> " : "", buf); buf = ""; };
+      el.childNodes.forEach((n) => {
+        if (isBlockish(n)) { flush(); walk(n as Element, ctx); }
+        else buf += inline(n);
+      });
+      flush();
+      return;
+    }
+    const text = inline(el);
+    if (tag === "LI") push(ctx.list === "ol" ? "1. " : "- ", text);
+    else if (ctx.quote) push("> ", text);
+    else push("", text);
+  };
+
+  // Corps sans aucun bloc (simple fragment de texte mis en forme).
+  if (!hasBlockChild(doc.body)) {
+    push("", inline(doc.body));
+  } else {
+    let buf = "";
+    const flush = () => { push("", buf); buf = ""; };
+    doc.body.childNodes.forEach((n) => {
+      if (isBlockish(n)) { flush(); walk(n as Element, {}); }
+      else buf += inline(n);
+    });
+    flush();
+  }
+
+  // Lignes de liste consécutives sans ligne vide entre elles, le reste séparé.
+  const lines: string[] = [];
+  out.forEach((l, i) => {
+    const prev = out[i - 1];
+    const sameList = prev !== undefined && ((/^- /.test(l) && /^- /.test(prev)) || (/^1\. /.test(l) && /^1\. /.test(prev)));
+    if (i > 0) lines.push(sameList ? "\n" : "\n\n");
+    lines.push(l);
+  });
+  return lines.join("");
 }

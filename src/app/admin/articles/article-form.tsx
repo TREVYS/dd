@@ -5,6 +5,7 @@ import { MarkdownEditor } from "../markdown-editor";
 import { ImageField } from "../image-field";
 import { ArticleDiffusion } from "./article-diffusion";
 import { PendingButton } from "../pending-button";
+import { SaveBar } from "../save-bar";
 import type { ArticleInput } from "@/lib/content-admin";
 import { getAllPosts } from "@/lib/blog";
 import { METIERS, metierOf } from "@/lib/metier";
@@ -12,10 +13,12 @@ export function ArticleForm({
   article,
   translation,
   translateError,
+  saved,
 }: {
   article?: ArticleInput;
   translation?: { title: string; excerpt: string; body: string } | null;
   translateError?: boolean;
+  saved?: boolean;
 }) {
   const isEdit = !!article?.slug;
   // Catégories déjà utilisées (les plus fréquentes d'abord) : suggérées
@@ -28,6 +31,7 @@ export function ArticleForm({
   const categories = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
   return (
     <>
+    {saved && <div className="adm-note" style={{ marginBottom: "1rem", borderColor: "#bfe3c9", background: "#f1faf3" }}>✓ Article enregistré.</div>}
     <form action={saveArticleAction} className="adm-form">
       {isEdit && <input type="hidden" name="originalSlug" value={article!.slug} />}
 
@@ -59,7 +63,17 @@ export function ArticleForm({
       </div>
 
       <div className="adm-field">
-        <label>Étiquette métier <small>(affichée dans la newsletter — « Automatique » la déduit de la catégorie)</small></label>
+        <label>Image de couverture <small>— importez un fichier ou collez une URL</small></label>
+        <ImageField name="image" defaultValue={article?.image ?? ""} />
+      </div>
+
+      <div className="adm-field">
+        <label>Résumé <small>(affiché dans la liste et « En bref »)</small></label>
+        <textarea name="excerpt" style={{ minHeight: 90 }} defaultValue={article?.excerpt ?? ""} placeholder="Résumé en une ou deux phrases." />
+      </div>
+
+      <div className="adm-field">
+        <label>Étiquette <small>(affichée dans la newsletter — « Automatique » la déduit de la catégorie ; « Club client » se choisit à la main)</small></label>
         <select name="metier" defaultValue={article?.metier ?? ""}>
           <option value="">
             Automatique{article?.category ? ` (${metierOf(article.category)})` : ""}
@@ -70,6 +84,9 @@ export function ArticleForm({
         </select>
       </div>
 
+      <details className="adm-opts">
+        <summary>Options avancées <small>— auteur, adresse de l&apos;article</small></summary>
+        <div style={{ marginTop: ".9rem" }}>
       <div className="adm-row2">
         <div className="adm-field">
           <label>Auteur <small>(optionnel)</small></label>
@@ -81,25 +98,15 @@ export function ArticleForm({
         </div>
       </div>
 
-      <div className="adm-field">
-        <label>Image de couverture <small>— importez un fichier ou collez une URL</small></label>
-        <ImageField name="image" defaultValue={article?.image ?? ""} />
-      </div>
+        </div>
+      </details>
 
       <div className="adm-field">
-        <label>Résumé <small>(affiché dans la liste et « En bref »)</small></label>
-        <textarea name="excerpt" style={{ minHeight: 90 }} defaultValue={article?.excerpt ?? ""} placeholder="Résumé en une ou deux phrases." />
-      </div>
-
-      <div className="adm-field">
-        <label>Contenu <small>— servez-vous de la barre d&apos;outils pour mettre en forme (titres, gras, listes, image, pièce jointe). Pas besoin de connaître le code.</small></label>
+        <label>Contenu <small>— écrivez comme dans Word : Entrée pour un nouveau paragraphe, collez un texte existant, déplacez ou supprimez un bloc avec les boutons qui apparaissent à sa droite.</small></label>
         <MarkdownEditor name="body" defaultValue={article?.body ?? ""} placeholder={"## Introduction\n\nVotre texte…"} />
       </div>
 
-      <div className="adm-actions">
-        <button className="adm-btn" type="submit">{isEdit ? "Enregistrer" : "Publier l'article"}</button>
-        <Link className="adm-btn ghost" href="/admin/articles">Annuler</Link>
-      </div>
+      <SaveBar isEdit={isEdit} cancelHref="/admin/articles" viewHref={isEdit ? `/blog/${article!.slug}` : undefined} />
     </form>
 
     {isEdit && (
