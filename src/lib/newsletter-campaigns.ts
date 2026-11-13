@@ -212,16 +212,44 @@ function inline(s: string): string {
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
 }
 
-// Bouton « bulletproof » : structure en tableau + couleurs pleines, le seul
-// motif fiable dans Outlook (les dégradés et certains fonds y sont supprimés).
+// Forme arrondie pour Outlook de bureau (moteur Word) : il ignore
+// border-radius et le rembourrage des liens — d'où des boutons carrés et
+// énormes. On lui sert donc une forme vectorielle (VML) aux dimensions
+// fixes, et le HTML/CSS normal à tous les autres clients (Gmail, Apple Mail,
+// mobile, Outlook web). Les deux versions ne s'affichent jamais ensemble.
+function msoPill(opts: { href?: string; label: string; width: number; height: number; fill: string; color: string; fontSize: number }): string {
+  const { href, label, width, height, fill, color, fontSize } = opts;
+  return (
+    `<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" ` +
+    (href ? `href="${href}" ` : "") +
+    `style="height:${height}px;v-text-anchor:middle;width:${width}px;" arcsize="50%" stroke="f" fillcolor="${fill}">` +
+    `<w:anchorlock/><center style="color:${color};font-family:Arial,Helvetica,sans-serif;font-size:${fontSize}px;font-weight:bold;">${label}</center>` +
+    `</v:roundrect><![endif]-->`
+  );
+}
+const notMso = (html: string) => `<!--[if !mso]><!-- -->${html}<!--<![endif]-->`;
+
+// Largeur approximative d'un libellé en Arial gras (Outlook exige une
+// largeur fixe pour la forme vectorielle).
+function textWidth(label: string, fontSize: number): number {
+  const plain = label.replace(/&[a-z#0-9]+;/gi, "x");
+  return Math.round(plain.length * fontSize * 0.6);
+}
+
+// Bouton d'action : pilule orange, identique partout (voir msoPill).
+// L'espacement autour est porté par une cellule de tableau : Outlook ignore
+// les marges des tableaux, ce qui collait le texte suivant au bouton.
 function emailButton(rawHref: string, label: string): string {
   const href = esc(abs(rawHref));
+  const text = `${label}&nbsp;&rarr;`;
+  const width = Math.max(150, Math.min(440, textWidth(text, 15) + 56));
   return (
-    // Rembourrage porté par la cellule UNIQUEMENT (le porter aussi sur le
-    // lien fait un double cadre dans Outlook).
-    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"><tr>` +
-    `<td bgcolor="#E26A0F" style="background-color:#E26A0F;border-radius:100px;padding:12px 28px;">` +
-    `<a href="${href}" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">${label}&nbsp;&rarr;</a>` +
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:6px 0 24px;">` +
+    msoPill({ href, label: text, width, height: 44, fill: "#E26A0F", color: "#ffffff", fontSize: 15 }) +
+    notMso(
+      `<a href="${href}" style="display:inline-block;background-color:#E26A0F;border-radius:100px;padding:13px 28px;` +
+      `font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:18px;font-weight:bold;color:#ffffff;text-decoration:none;">${text}</a>`,
+    ) +
     `</td></tr></table>`
   );
 }
@@ -237,10 +265,15 @@ function emailTag(label: string): string {
       : l.startsWith("club")
         ? ["#2E9E6B", "#ffffff", "#23805a"]
         : ["#f6efe3", "#6b5f4c", "#eadfcd"];
+  const text = esc(label).toUpperCase();
   return (
-    `<span style="display:inline-block;padding:2px 9px;margin:0 5px 0 0;font-family:Arial,Helvetica,sans-serif;` +
-    `font-size:10px;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;color:${fg};` +
-    `background-color:${bg};border:1px solid ${border};border-radius:100px;">${esc(label)}</span>`
+    msoPill({ label: text, width: textWidth(text, 10) + 26, height: 20, fill: bg, color: fg, fontSize: 10 }) +
+    `<!--[if mso]>&nbsp;<![endif]-->` +
+    notMso(
+      `<span style="display:inline-block;padding:3px 10px;margin:0 5px 0 0;font-family:Arial,Helvetica,sans-serif;` +
+      `font-size:10px;line-height:14px;font-weight:bold;letter-spacing:.4px;color:${fg};` +
+      `background-color:${bg};border:1px solid ${border};border-radius:100px;">${text}</span>`,
+    )
   );
 }
 
@@ -294,12 +327,14 @@ export function markdownToEmailHtml(md: string): string {
       );
     } else if (/^#{3}\s+/.test(line)) {
       flushList();
-      out.push(`<h3 style="font-family:Arial,Helvetica,sans-serif;font-size:17px;margin:20px 0 8px;clear:both;color:#1a1208;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
+      out.push(`<h3 style="font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:1.35;margin:14px 0 8px;color:#1a1208;">${inline(line.replace(/^#{3}\s+/, ""))}</h3>`);
     } else if (/^(\[\[[^\]]+\]\]\s*)+$/.test(line.trim())) {
       // Ligne composée uniquement d'étiquettes [[…]] → rangée de pastilles.
       flushList();
       const tags = [...line.matchAll(/\[\[([^\]]+)\]\]/g)].map((t) => emailTag(t[1].trim()));
-      out.push(`<div style="margin:24px 0 -12px;clear:both;">${tags.join("")}</div>`);
+      out.push(
+        `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:6px 0 2px;">${tags.join("")}</td></tr></table>`,
+      );
     } else if ((m = line.match(/^!\[([^\]]*)\|(droite|gauche|right|left)\]\(([^)\s]+)\)\s*$/i))) {
       // Vignette d'article : ![alt|droite](url) ou ![alt|gauche](url).
       // Volontairement PAS en image flottante (align+float) : Outlook (moteur
@@ -334,7 +369,13 @@ export function markdownToEmailHtml(md: string): string {
       );
     } else if (/^---+$/.test(line.trim())) {
       flushList();
-      out.push(`<hr style="border:none;border-top:1px solid #f0e4d3;margin:26px 0;clear:both;" />`);
+      // Filet fin dans un tableau : <hr> sort épais et gris foncé dans Outlook.
+      out.push(
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:8px 0 26px;">` +
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>` +
+        `<td height="1" bgcolor="#f0e4d3" style="height:1px;font-size:0;line-height:0;background-color:#f0e4d3;">&nbsp;</td>` +
+        `</tr></table></td></tr></table>`,
+      );
     } else if (/^[-*]\s+/.test(line)) {
       (list ??= []).push(`<li style="margin:0 0 6px;">${inline(line.replace(/^[-*]\s+/, ""))}</li>`);
     } else if (line.trim() === "") {
@@ -356,10 +397,12 @@ export function markdownToEmailHtml(md: string): string {
 // en carré discret sur les clients qui ignorent le radius — jamais cassé).
 function socialBadge(href: string, label: string, bg: string): string {
   return (
-    `<a href="${href}" style="text-decoration:none;display:inline-block;margin:0 5px;">` +
-    `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>` +
-    `<td width="34" height="34" align="center" valign="middle" bgcolor="${bg}" style="width:34px;height:34px;border-radius:50%;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#ffffff;">${label}</td>` +
-    `</tr></table></a>`
+    msoPill({ href, label, width: 34, height: 34, fill: bg, color: "#ffffff", fontSize: 13 }) +
+    `<!--[if mso]>&nbsp;&nbsp;<![endif]-->` +
+    notMso(
+      `<a href="${href}" style="display:inline-block;width:34px;height:34px;line-height:34px;margin:0 5px;border-radius:50%;` +
+      `background-color:${bg};font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#ffffff;text-align:center;text-decoration:none;">${label}</a>`,
+    )
   );
 }
 
@@ -376,7 +419,9 @@ export function wrapEmail(
     socialBadge("https://x.com/JohnLevy0", "X", "#111111") +
     socialBadge("https://www.youtube.com/@Trevysadvisory", "&#9654;", "#E23D28");
   return `<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trevys</title></head>
+<html lang="fr" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Trevys</title>
+<!--[if mso]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><style>table{border-collapse:collapse;}p{margin:0 0 16px;}</style><![endif]-->
+</head>
 <body style="margin:0;padding:0;background-color:#f2ece2;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f2ece2">
     <tr><td align="center" style="padding:28px 12px;">
