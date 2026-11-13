@@ -103,7 +103,7 @@ export async function runScheduledPublications(): Promise<void> {
 
     // 3) Mailings programmés (envoi à tous les abonnés).
     try {
-      const { listCampaigns, updateCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl } = await import("@/lib/newsletter-campaigns");
+      const { listCampaigns, updateCampaign, markdownToEmailHtml, wrapEmail, unsubscribeUrl, unsubscribeOneClickUrl, markdownToEmailText } = await import("@/lib/newsletter-campaigns");
       const { mailerConfigured, sendPersonalized } = await import("@/lib/mailer");
       const due = listCampaigns().filter((c) => c.status === "brouillon" && c.sendAt && c.sendAt <= d);
       for (const camp of due) {
@@ -149,6 +149,8 @@ export async function runScheduledPublications(): Promise<void> {
           const count = await sendPersonalized(recipients, camp.subject, (email) =>
             trackLinks(wrapEmail(bodyHtml, unsubscribeUrl(email)), camp.id, email) +
             `<img src="${openPixelUrl(camp.id, email)}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;" />`,
+            undefined,
+            { textFor: (email) => markdownToEmailText(camp.body, unsubscribeUrl(email)), unsubscribeFor: unsubscribeOneClickUrl },
           );
           updateCampaign(camp.id, { status: "envoye", sentAt: new Date().toISOString(), sentCount: count });
           await sendTelegram(`💌 Mailing programmé envoyé : « ${camp.subject} » → ${count} contact(s). Analyse dans le cockpit.`, { plain: true }).catch(() => {});

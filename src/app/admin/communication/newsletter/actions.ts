@@ -12,11 +12,13 @@ import {
   markdownToEmailHtml,
   wrapEmail,
   unsubscribeUrl,
+  unsubscribeOneClickUrl,
+  markdownToEmailText,
   resolveTargetRecipients,
   claimSend,
   releaseSend,
 } from "@/lib/newsletter-campaigns";
-import { sendCampaign, sendPersonalized, mailerConfigured, senderAddress } from "@/lib/mailer";
+import { sendMail, sendPersonalized, mailerConfigured, senderAddress } from "@/lib/mailer";
 
 async function guard() {
   const session = await auth();
@@ -213,7 +215,16 @@ export async function sendTestAction(formData: FormData) {
     redirect(`/admin/communication/newsletter/${id}?error=notconfig`);
   }
   try {
-    await sendCampaign([to], `[Test] ${c.subject}`, wrapEmail(markdownToEmailHtml(c.body), unsubscribeUrl(to)));
+    // Même format que l'envoi réel (destinataire en « À », version texte,
+    // désinscription en un clic) : le test reflète ce que recevront les abonnés.
+    await sendMail({
+      to: [to],
+      subject: `[Test] ${c.subject}`,
+      html: wrapEmail(markdownToEmailHtml(c.body), unsubscribeUrl(to)),
+      bcc: false,
+      text: markdownToEmailText(c.body, unsubscribeUrl(to)),
+      listUnsubscribeUrl: unsubscribeOneClickUrl(to),
+    });
   } catch {
     redirect(`/admin/communication/newsletter/${id}?error=send`);
   }
@@ -259,6 +270,8 @@ export async function sendCampaignAction(formData: FormData) {
     count = await sendPersonalized(recipients, c.subject, (email) =>
       trackLinks(wrapEmail(bodyHtml, unsubscribeUrl(email)), id, email) +
       `<img src="${openPixelUrl(id, email)}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;" />`,
+      undefined,
+      { textFor: (email) => markdownToEmailText(c.body, unsubscribeUrl(email)), unsubscribeFor: unsubscribeOneClickUrl },
     );
     if (count === 0) redirect(`/admin/communication/newsletter/${id}?error=send`);
   } catch {

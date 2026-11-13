@@ -180,6 +180,41 @@ export function unsubscribeUrl(email: string): string {
   return `${SITE_URL}/desinscription?e=${encodeURIComponent(email)}&t=${unsubscribeToken(email)}`;
 }
 
+// Désinscription « en un clic » (en-tête List-Unsubscribe des messageries) :
+// même jeton signé, mais sur une adresse qui accepte la requête automatique
+// envoyée par Gmail, Outlook, Apple Mail… quand le lecteur clique sur leur
+// bouton « Se désabonner ».
+export function unsubscribeOneClickUrl(email: string): string {
+  return `${SITE_URL}/api/nl/unsub?e=${encodeURIComponent(email)}&t=${unsubscribeToken(email)}`;
+}
+
+// Version texte brut d'une campagne (jointe à la version mise en forme).
+export function markdownToEmailText(md: string, unsubUrl?: string): string {
+  const body = md
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map((line) => {
+      const l = line.trimEnd();
+      if (/^(\[\[[^\]]+\]\]\s*)+$/.test(l.trim())) return [...l.matchAll(/\[\[([^\]]+)\]\]/g)].map((t) => t[1].trim().toUpperCase()).join(" · ");
+      if (/^!\[[^\]]*\]\([^)]*\)\s*$/.test(l)) return null; // images : sans objet en texte
+      if (/^---+$/.test(l.trim())) return "----------------------------------------";
+      return l
+        .replace(/^#{2,6}\s+/, "")
+        .replace(/^>\s?/, "")
+        .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, txt: string, url: string) => `${txt.replace(/\s*→\s*$/, "")} : ${url.startsWith("/") ? SITE_URL + url : url}`)
+        .replace(/\*\*([^*]+)\*\*/g, "$1")
+        .replace(/(^|[^*])\*([^*]+)\*/g, "$1$2");
+    })
+    .filter((l): l is string => l !== null)
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return (
+    `${body}\n\n--\nT.A. Trevys Advisory — 1 rue Le Nôtre, 75016 Paris\n${SITE_URL}\n` +
+    (unsubUrl ? `Se désinscrire : ${unsubUrl}\n` : "")
+  );
+}
+
 // --- Rendu e-mail --------------------------------------------------------
 
 function esc(s: string): string {

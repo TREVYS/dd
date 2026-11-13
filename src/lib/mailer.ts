@@ -73,13 +73,92 @@ export type MailInput = {
   // transactionnels : refus, invitation, confirmation — meilleur rendu et
   // meilleure délivrabilité).
   bcc?: boolean;
+  // Version texte brut de l'e-mail (jointe à la version HTML) et lien de
+  // désinscription en un clic : deux signaux attendus par les filtres
+  // anti-spam pour un envoi de type newsletter. Quand l'un des deux est
+  // fourni, le message est transmis à Microsoft au format MIME (voir
+  // sendMime) — seul moyen d'ajouter ces éléments via Graph.
+  text?: string;
+  listUnsubscribeUrl?: string;
 };
+
+// --- Envoi au format MIME ---------------------------------------------------
+const b64Lines = (s: string) => (Buffer.from(s, "utf8").toString("base64").match(/.{1,76}/g) ?? []).join("\r\n");
+
+// Objet encodé (RFC 2047) : découpé en mots courts pour rester sous la
+// longueur de ligne autorisée, sans couper un caractère accentué en deux.
+function encodeSubject(subject: string): string {
+  if (/^[\x20-\x7e]*$/.test(subject)) return subject;
+  const words: string[] = [];
+  let chunk = "";
+  for (const ch of subject) {
+    if (Buffer.byteLength(chunk + ch, "utf8") > 42) { words.push(chunk); chunk = ""; }
+    chunk += ch;
+  }
+  if (chunk) words.push(chunk);
+  return words.map((w) => `=?UTF-8?B?${Buffer.from(w, "utf8").toString("base64")}?=`).join("\r\n ");
+}
+
+export function buildMime(sender: string, input: MailInput): string {
+  const { to, subject, html, replyTo, text, listUnsubscribeUrl } = input;
+  const boundary = `=_trevys_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+  const headers = [
+    `From: <${sender}>`,
+    `To: ${to.map((a) => `<${a}>`).join(", ")}`,
+    `Subject: ${encodeSubject(subject)}`,
+    ...(replyTo ? [`Reply-To: <${replyTo}>`] : []),
+    "MIME-Version: 1.0",
+    ...(listUnsubscribeUrl
+      ? [
+          `List-Unsubscribe: <${listUnsubscribeUrl}>,\r\n <mailto:${sender}?subject=unsubscribe>`,
+          "List-Unsubscribe-Post: List-Unsubscribe=One-Click",
+        ]
+      : []),
+    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+  ];
+  const part = (type: string, content: string) =>
+    `--${boundary}\r\nContent-Type: ${type}; charset="UTF-8"\r\nContent-Transfer-Encoding: base64\r\n\r\n${b64Lines(content)}\r\n`;
+  return (
+    headers.join("\r\n") + "\r\n\r\n" +
+    (text ? part("text/plain", text) : "") +
+    part("text/html", html) +
+    `--${boundary}--\r\n`
+  );
+}
+
+async function sendMime(token: string, sender: string, input: MailInput): Promise<void> {
+  const res = await fetch(
+    `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(sender)}/sendMail`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "text/plain" },
+      body: Buffer.from(buildMime(sender, input), "utf8").toString("base64"),
+    },
+  );
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Envoi MIME refusé (${res.status}). ${txt.slice(0, 200)}`);
+  }
+}
 
 // Envoie un e-mail via Graph depuis l'adresse du cabinet.
 // Les destinataires sont mis en Cci (bcc) pour un envoi de masse discret.
-export async function sendMail({ to, subject, html, replyTo, attachments, bcc = true }: MailInput): Promise<void> {
+export async function sendMail(input: MailInput): Promise<void> {
+  const { to, subject, html, replyTo, attachments, bcc = true } = input;
   const token = await getToken();
   const sender = senderAddress();
+
+  // Newsletter nominative (version texte et/ou désinscription en un clic) :
+  // format MIME. En cas de refus par Microsoft, on retombe sur l'envoi
+  // classique ci-dessous — une campagne ne doit jamais échouer pour cela.
+  if (!bcc && !attachments?.length && (input.text || input.listUnsubscribeUrl)) {
+    try {
+      await sendMime(token, sender, input);
+      return;
+    } catch (e) {
+      console.error("[mailer] MIME indisponible, envoi classique :", (e as Error).message);
+    }
+  }
 
   const recipients = to.map((address) => ({ emailAddress: { address } }));
   const message: Record<string, unknown> = bcc
@@ -146,6 +225,8 @@ export async function sendPersonalized(
   subject: string,
   htmlFor: (email: string) => string,
   replyTo?: string,
+  // Newsletters : version texte et lien de désinscription propres à chacun.
+  extras?: { textFor?: (email: string) => string; unsubscribeFor?: (email: string) => string },
 ): Promise<number> {
   // Anti-spam : cadence maîtrisée, transparente pour l'utilisateur —
   // un petit délai entre chaque e-mail, et une vraie pause tous les 50
@@ -159,7 +240,14 @@ export async function sendPersonalized(
   for (let i = 0; i < recipients.length; i++) {
     const email = recipients[i];
     try {
-      await sendMail({ to: [email], subject, html: htmlFor(email), replyTo });
+      // Le destinataire est le vrai « À » du message. (Avant, il était en
+      // copie cachée d'un e-mail adressé au cabinet : un signal typique de
+      // courrier indésirable pour les filtres.)
+      await sendMail({
+        to: [email], subject, html: htmlFor(email), replyTo, bcc: false,
+        text: extras?.textFor?.(email),
+        listUnsubscribeUrl: extras?.unsubscribeFor?.(email),
+      });
       sent += 1;
     } catch (e) {
       console.error(`[mailer] échec pour ${email}:`, (e as Error).message);
