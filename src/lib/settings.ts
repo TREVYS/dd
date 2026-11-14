@@ -26,6 +26,7 @@ export type SettingKey =
   | "whatsappToken"
   | "whatsappPhoneId"
   | "whatsappVerifyToken"
+  | "whatsappAppSecret"
   | "youtubeApiKey"
   | "youtubeChannelHandle";
 
@@ -50,6 +51,7 @@ const ENV: Record<SettingKey, string> = {
   whatsappToken: "WHATSAPP_TOKEN",
   whatsappPhoneId: "WHATSAPP_PHONE_ID",
   whatsappVerifyToken: "WHATSAPP_VERIFY_TOKEN",
+  whatsappAppSecret: "WHATSAPP_APP_SECRET",
   youtubeApiKey: "YOUTUBE_API_KEY",
   youtubeChannelHandle: "YOUTUBE_CHANNEL_HANDLE",
 };
@@ -64,14 +66,22 @@ export const SECRET_KEYS: SettingKey[] = [
   "msClientSecret",
   "whatsappToken",
   "whatsappVerifyToken",
+  "whatsappAppSecret",
   "youtubeApiKey",
 ];
 
 type Store = Partial<Record<SettingKey, string>>;
 
+let permsChecked = false;
+
 export function readSettings(): Store {
   try {
     if (!fs.existsSync(FILE)) return {};
+    if (!permsChecked) {
+      // Une fois par démarrage : resserre les droits d'un fichier existant.
+      permsChecked = true;
+      try { fs.chmodSync(FILE, 0o600); } catch { /* sans incidence */ }
+    }
     return JSON.parse(fs.readFileSync(FILE, "utf8"));
   } catch {
     return {};
@@ -86,7 +96,11 @@ export function writeSettings(patch: Store) {
   for (const k of Object.keys(next) as SettingKey[]) {
     if (!next[k]) delete next[k];
   }
-  fs.writeFileSync(FILE, JSON.stringify(next, null, 2), "utf8");
+  // Fichier lisible uniquement par le compte qui fait tourner l'application
+  // (il contient les clés API) — y compris s'il existait déjà avec des
+  // droits plus larges.
+  fs.writeFileSync(FILE, JSON.stringify(next, null, 2), { encoding: "utf8", mode: 0o600 });
+  try { fs.chmodSync(FILE, 0o600); } catch { /* système de fichiers sans droits Unix */ }
 }
 
 // Valeur effective : réglage saisi, sinon variable d'environnement.

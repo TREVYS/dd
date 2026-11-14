@@ -14,7 +14,7 @@ const KEYS: SettingKey[] = [
   "instagramClientId", "instagramClientSecret",
   "msTenantId", "msClientId", "msClientSecret", "msSender",
   "recruitEmail", "linkedinOrgId",
-  "whatsappToken", "whatsappPhoneId", "whatsappVerifyToken",
+  "whatsappToken", "whatsappPhoneId", "whatsappVerifyToken", "whatsappAppSecret",
   "youtubeApiKey", "youtubeChannelHandle",
 ];
 

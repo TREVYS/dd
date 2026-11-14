@@ -5,6 +5,15 @@ import { redirect } from "next/navigation";
 import { addPost, updatePost, deletePost, getPost, listPosts, type PostNetwork } from "@/lib/social-posts";
 import { publishPost } from "@/lib/social";
 import { draftSocialPost } from "@/lib/comms-agent";
+import { auth } from "@/lib/auth";
+
+// Chaque action serveur est un point d'entrée HTTP à part entière : elle doit
+// vérifier elle-même la session (la protection des pages /admin ne suffit pas).
+// Ces actions rédigent avec l'IA et publient sur les réseaux du cabinet.
+async function guard() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Non autorisé");
+}
 
 const PATH = "/admin/communication/reseaux";
 
@@ -17,6 +26,7 @@ export async function draftPostAction(
   _prev: { content: string; generated: boolean; error?: string },
   formData: FormData,
 ): Promise<{ content: string; generated: boolean; error?: string }> {
+  await guard();
   const topic = String(formData.get("topic") ?? "").trim();
   const network = net(formData.get("network"));
   if (!topic) return { content: "", generated: false, error: "Indiquez un sujet." };
@@ -29,6 +39,7 @@ export async function draftPostAction(
 }
 
 export async function createPostAction(formData: FormData) {
+  await guard();
   const content = String(formData.get("content") ?? "").trim();
   if (!content) return;
   const scheduledDate = String(formData.get("scheduledDate") ?? "");
@@ -47,6 +58,7 @@ export async function createPostAction(formData: FormData) {
 }
 
 export async function schedulePostAction(formData: FormData) {
+  await guard();
   const id = String(formData.get("id") ?? "");
   const scheduledDate = String(formData.get("scheduledDate") ?? "");
   const scheduledTime = String(formData.get("scheduledTime") ?? "");
@@ -60,12 +72,14 @@ export async function schedulePostAction(formData: FormData) {
 }
 
 export async function deletePostAction(formData: FormData) {
+  await guard();
   deletePost(String(formData.get("id") ?? ""));
   revalidatePath(PATH);
 }
 
 // Vide d'un coup tous les brouillons de la file.
 export async function deleteAllDraftsAction() {
+  await guard();
   for (const p of listPosts()) {
     if (p.status === "brouillon") deletePost(p.id);
   }
@@ -74,6 +88,7 @@ export async function deleteAllDraftsAction() {
 
 // Change (ou retire) l'image d'un post en attente.
 export async function setPostImageAction(formData: FormData) {
+  await guard();
   const id = String(formData.get("id") ?? "");
   const image = String(formData.get("image") ?? "").trim();
   updatePost(id, { image: image || undefined });
@@ -84,6 +99,7 @@ export async function setPostImageAction(formData: FormData) {
 // d'échec, le post RESTE en brouillon et l'erreur est affichée — on ne marque
 // plus jamais « publié » un post qui n'est pas parti.
 export async function publishPostAction(formData: FormData) {
+  await guard();
   const id = String(formData.get("id") ?? "");
   const post = getPost(id);
   if (!post) return;
@@ -121,6 +137,7 @@ export async function publishPostAction(formData: FormData) {
 // Déplacement d'une carte du planning (glisser-déposer) : change la date,
 // garde l'heure. Un brouillon déposé sur un jour devient planifié.
 export async function movePostAction(id: string, scheduledDate: string) {
+  await guard();
   if (!id || !/^\d{4}-\d{2}-\d{2}$/.test(scheduledDate)) return;
   updatePost(id, { status: "planifie", scheduledDate });
   revalidatePath("/admin/communication/planning");
@@ -130,6 +147,7 @@ export async function movePostAction(id: string, scheduledDate: string) {
 // Assistant de remplissage : Alfred prépare un planning de posts sur une
 // semaine ou un mois (LinkedIn + Instagram, visuels générés), en planifié.
 export async function generatePlanAction(formData: FormData) {
+  await guard();
   const period = formData.get("period") === "mois" ? "mois" : "semaine";
   const { planPosts } = await import("@/lib/comms-agent");
   const n = await planPosts(period, {
@@ -149,6 +167,7 @@ export async function previewIgVisualAction(
   _prev: { url?: string; error?: string },
   formData: FormData,
 ): Promise<{ url?: string; error?: string }> {
+  await guard();
   try {
     const { makeInstagramVisual } = await import("@/lib/ig-visual");
     const title = String(formData.get("title") ?? "").trim() || "Votre titre ici";

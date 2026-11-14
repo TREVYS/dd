@@ -19,6 +19,7 @@ const CFG_GROUPS = [
     { k: "whatsappToken", label: "Jeton d'accès permanent", ph: "EAAG…", secret: true },
     { k: "whatsappPhoneId", label: "ID du numéro de téléphone", ph: "ex. 109876543210", secret: false },
     { k: "whatsappVerifyToken", label: "Jeton de vérification du webhook (à votre choix)", ph: "une chaîne secrète au choix", secret: true },
+    { k: "whatsappAppSecret", label: "Clé secrète de l'application Meta (recommandé : authentifie les messages reçus)", ph: "Meta → Application → Paramètres → Général", secret: true },
   ] },
   { title: "Notifications Telegram", fields: [
     { k: "telegramBotToken", label: "Jeton du bot", ph: "123456:ABC…", secret: true },
